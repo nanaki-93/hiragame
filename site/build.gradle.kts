@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kobweb.application)
     alias(libs.plugins.kobwebx.markdown)
+    alias(libs.plugins.jetbrains.compose)
 }
 
 group = "com.github.nanaki_93"
@@ -24,9 +25,9 @@ kotlin {
     configAsKobwebApplication("nanaki_93" /*, includeServer = true*/)
 
     sourceSets {
-//        commonMain.dependencies {
-//          // Add shared dependencies between JS and JVM here if building a fullstack app
-//        }
+        commonMain.dependencies {
+            implementation(compose.runtime)
+        }
 
         jsMain.dependencies {
             implementation(libs.compose.runtime)
@@ -37,6 +38,10 @@ kotlin {
             // Uncomment the following if you want access to a large set of font-awesome icons:
             // implementation(libs.silk.icons.fa)
             implementation(libs.kobwebx.markdown)
+            implementation(compose.html.core)
+            implementation(libs.kobweb.core)
+            implementation(libs.kobweb.silk)
+            implementation(libs.silk.icons.fa)
         }
 
         // Uncomment the following if you pass `includeServer = true` into the `configAsKobwebApplication` call.
@@ -45,3 +50,6 @@ kotlin {
 //        }
     }
 }
+
+
+
