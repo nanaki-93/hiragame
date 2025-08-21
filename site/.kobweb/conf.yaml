@@ -1,0 +1,14 @@
+site:
+  title: "Hiragame"
+
+server:
+  files:
+    dev:
+      contentRoot: "build/processedResources/js/main/public"
+      script: "build/kotlin-webpack/js/developmentExecutable/nanaki_93.js"
+      api: "build/libs/nanaki_93.jar"
+    prod:
+      script: "build/kotlin-webpack/js/productionExecutable/nanaki_93.js"
+      siteRoot: ".kobweb/site"
+
+  port: 8080
