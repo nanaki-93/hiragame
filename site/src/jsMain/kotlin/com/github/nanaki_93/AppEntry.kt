@@ -19,7 +19,7 @@ import com.varabyte.kobweb.silk.theme.colors.loadFromLocalStorage
 import com.varabyte.kobweb.silk.theme.colors.saveToLocalStorage
 import com.varabyte.kobweb.silk.theme.colors.systemPreference
 
-private const val COLOR_MODE_KEY = "nanaki_93:colorMode"
+private const val COLOR_MODE_KEY = "hiragame:colorMode"
 
 @InitSilk
 fun initColorMode(ctx: InitSilkContext) {

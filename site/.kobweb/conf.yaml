@@ -5,10 +5,10 @@ server:
   files:
     dev:
       contentRoot: "build/processedResources/js/main/public"
-      script: "build/kotlin-webpack/js/developmentExecutable/nanaki_93.js"
-      api: "build/libs/nanaki_93.jar"
+      script: "build/kotlin-webpack/js/developmentExecutable/hiragame.js"
+      api: "build/libs/hiragame.jar"
     prod:
-      script: "build/kotlin-webpack/js/productionExecutable/nanaki_93.js"
+      script: "build/kotlin-webpack/js/productionExecutable/hiragame.js"
       siteRoot: ".kobweb/site"
 
   port: 8080

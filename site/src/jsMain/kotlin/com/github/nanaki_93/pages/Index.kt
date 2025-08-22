@@ -2,6 +2,12 @@ package com.github.nanaki_93.pages
 
 
 import androidx.compose.runtime.*
+import com.github.nanaki_93.ButtonStyle
+import com.github.nanaki_93.CardStyle
+import com.github.nanaki_93.GameContainerStyle
+import com.github.nanaki_93.HiraganaCharStyle
+import com.github.nanaki_93.InputStyle
+import com.github.nanaki_93.StatItemStyle
 import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
@@ -16,14 +22,10 @@ import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.components.forms.Button
 import com.varabyte.kobweb.silk.components.forms.TextInput
 import com.varabyte.kobweb.silk.components.text.SpanText
-import com.varabyte.kobweb.silk.style.CssStyle
-import com.varabyte.kobweb.silk.style.base
 import com.varabyte.kobweb.silk.style.toModifier
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.*
-import org.jetbrains.compose.web.css.AlignItems
-import org.jetbrains.compose.web.css.JustifyContent
 import kotlin.random.Random
 
 // Data classes
@@ -43,83 +45,6 @@ data class GameState(
     val feedback: String = "",
     val isCorrect: Boolean? = null
 )
-
-// Styles
-val GameContainerStyle = CssStyle.base {
-    Modifier
-        .fillMaxSize()
-        .styleModifier {
-            background("linear-gradient(135deg, rgba(102, 126, 234, 1.0) 0%, rgba(118, 75, 162, 1.0) 100%)")
-        }
-        .minHeight(100.vh)
-        .display(DisplayStyle.Flex)
-        .justifyContent(JustifyContent.Center)
-        .alignItems(AlignItems.Center)
-        .fontFamily("Arial", "sans-serif")
-}
-
-val CardStyle = CssStyle.base {
-    Modifier
-        .background(rgba(255, 255, 255, 0.1))
-        .borderRadius(20.px)
-        .padding(2.cssRem)
-        .boxShadow(
-            0.px, 8.px, 32.px, 0.px,
-            color = rgba(31, 38, 135, 0.37),
-            inset = false
-        )
-        .border(1.px, LineStyle.Solid, rgba(255, 255, 255, 0.18))
-        .maxWidth(500.px)
-        .width(90.percent)
-        .textAlign(TextAlign.Center)
-        .color(Colors.White)
-}
-
-
-
-val HiraganaCharStyle = CssStyle.base {
-    Modifier
-        .fontSize(6.cssRem)
-        .fontWeight(FontWeight.Bold)
-        .margin(1.cssRem, 0.px)
-        .textShadow(3.px, 3.px, 6.px, rgba(0, 0, 0, 0.4))
-}
-
-val StatItemStyle = CssStyle.base {
-    Modifier
-        .background(rgba(255, 255, 255, 0.2))
-        .padding(0.5.cssRem, 1.cssRem)
-        .borderRadius(10.px)
-        .flexGrow(1)
-        .minWidth(100.px)
-        .margin(0.25.cssRem)
-}
-
-val InputStyle = CssStyle.base {
-    Modifier
-        .background(rgba(255, 255, 255, 0.2))
-        .border(2.px, LineStyle.Solid, rgba(255, 255, 255, 0.3))
-        .borderRadius(10.px)
-        .padding(0.8.cssRem)
-        .fontSize(1.2.cssRem)
-        .color(Colors.White)
-        .textAlign(TextAlign.Center)
-        .width(100.percent)
-        .margin(1.cssRem, 0.px)
-}
-
-val ButtonStyle = CssStyle.base {
-    Modifier
-        .styleModifier { background("linear-gradient(45deg, rgba(255, 107, 107, 1.0) 0%, rgba(78, 205, 196, 1.0) 100%)") }
-        .border(0.px)
-        .padding(0.8.cssRem, 2.cssRem)
-        .fontSize(1.1.cssRem)
-        .color(Colors.White)
-        .borderRadius(25.px)
-        .cursor(Cursor.Pointer)
-        .boxShadow(0.px, 4.px, 15.px, color = rgba(0, 0, 0, 0.2))
-        .transition(Transition.all(0.3.s))
-}
 
 
 // Hiragana data

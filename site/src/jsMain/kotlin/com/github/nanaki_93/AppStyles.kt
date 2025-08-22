@@ -1,10 +1,14 @@
 package com.github.nanaki_93
 
+import com.varabyte.kobweb.compose.css.Cursor
+import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.ScrollBehavior
 import com.varabyte.kobweb.compose.css.TextAlign
+import com.varabyte.kobweb.compose.css.Transition
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
+import com.varabyte.kobweb.compose.ui.styleModifier
 import com.varabyte.kobweb.silk.components.forms.ButtonStyle
 import com.varabyte.kobweb.silk.components.forms.ButtonVars
 import com.varabyte.kobweb.silk.components.layout.HorizontalDividerStyle
@@ -46,19 +50,6 @@ fun initSiteStyles(ctx: InitSilkContext) {
     }
 }
 
-val HeadlineTextStyle = CssStyle.base {
-    Modifier
-        .fontSize(3.cssRem)
-        .textAlign(TextAlign.Start)
-        .lineHeight(1.2) //1.5x doesn't look as good on very large text
-}
-
-val SubheadlineTextStyle = CssStyle.base {
-    Modifier
-        .fontSize(1.cssRem)
-        .textAlign(TextAlign.Start)
-        .color(colorMode.toPalette().color.toRgb().copyf(alpha = 0.8f))
-}
 
 val CircleButtonVariant = ButtonStyle.addVariantBase {
     Modifier.padding(0.px).borderRadius(50.percent)
@@ -66,4 +57,79 @@ val CircleButtonVariant = ButtonStyle.addVariantBase {
 
 val UncoloredButtonVariant = ButtonStyle.addVariantBase {
     Modifier.setVariable(ButtonVars.BackgroundDefaultColor, Colors.Transparent)
+}
+
+// Styles
+val GameContainerStyle = CssStyle.base {
+    Modifier
+        .fillMaxSize()
+        .styleModifier {
+            background("linear-gradient(135deg, rgba(102, 126, 234, 1.0) 0%, rgba(118, 75, 162, 1.0) 100%)")
+        }
+        .minHeight(100.vh)
+        .display(DisplayStyle.Flex)
+        .justifyContent(JustifyContent.Center)
+        .alignItems(AlignItems.Center)
+        .fontFamily("Arial", "sans-serif")
+}
+val CardStyle = CssStyle.Companion.base {
+    Modifier.Companion
+        .background(rgba(255, 255, 255, 0.1))
+        .borderRadius(20.px)
+        .padding(2.cssRem)
+        .boxShadow(
+            0.px, 8.px, 32.px, 0.px,
+            color = rgba(31, 38, 135, 0.37),
+            inset = false
+        )
+        .border(1.px, LineStyle.Companion.Solid, rgba(255, 255, 255, 0.18))
+        .maxWidth(500.px)
+        .width(90.percent)
+        .textAlign(TextAlign.Companion.Center)
+        .color(Colors.White)
+}
+
+
+val HiraganaCharStyle = CssStyle.Companion.base {
+    Modifier.Companion
+        .fontSize(6.cssRem)
+        .fontWeight(FontWeight.Companion.Bold)
+        .margin(1.cssRem, 0.px)
+        .textShadow(3.px, 3.px, 6.px, rgba(0, 0, 0, 0.4))
+}
+
+val StatItemStyle = CssStyle.Companion.base {
+    Modifier.Companion
+        .background(rgba(255, 255, 255, 0.2))
+        .padding(0.5.cssRem, 1.cssRem)
+        .borderRadius(10.px)
+        .flexGrow(1)
+        .minWidth(100.px)
+        .margin(0.25.cssRem)
+}
+
+val InputStyle = CssStyle.Companion.base {
+    Modifier.Companion
+        .background(rgba(255, 255, 255, 0.2))
+        .border(2.px, LineStyle.Companion.Solid, rgba(255, 255, 255, 0.3))
+        .borderRadius(10.px)
+        .padding(0.8.cssRem)
+        .fontSize(1.2.cssRem)
+        .color(Colors.White)
+        .textAlign(TextAlign.Companion.Center)
+        .width(100.percent)
+        .margin(1.cssRem, 0.px)
+}
+
+val ButtonStyle = CssStyle.Companion.base {
+    Modifier.Companion
+        .styleModifier { background("linear-gradient(45deg, rgba(255, 107, 107, 1.0) 0%, rgba(78, 205, 196, 1.0) 100%)") }
+        .border(0.px)
+        .padding(0.8.cssRem, 2.cssRem)
+        .fontSize(1.1.cssRem)
+        .color(Colors.White)
+        .borderRadius(25.px)
+        .cursor(Cursor.Companion.Pointer)
+        .boxShadow(0.px, 4.px, 15.px, color = rgba(0, 0, 0, 0.2))
+        .transition(Transition.Companion.all(0.3.s))
 }
