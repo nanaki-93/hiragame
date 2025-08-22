@@ -51,14 +51,6 @@ fun initSiteStyles(ctx: InitSilkContext) {
 }
 
 
-val CircleButtonVariant = ButtonStyle.addVariantBase {
-    Modifier.padding(0.px).borderRadius(50.percent)
-}
-
-val UncoloredButtonVariant = ButtonStyle.addVariantBase {
-    Modifier.setVariable(ButtonVars.BackgroundDefaultColor, Colors.Transparent)
-}
-
 // Styles
 val GameContainerStyle = CssStyle.base {
     Modifier
@@ -72,8 +64,8 @@ val GameContainerStyle = CssStyle.base {
         .alignItems(AlignItems.Center)
         .fontFamily("Arial", "sans-serif")
 }
-val CardStyle = CssStyle.Companion.base {
-    Modifier.Companion
+val CardStyle = CssStyle.base {
+    Modifier
         .background(rgba(255, 255, 255, 0.1))
         .borderRadius(20.px)
         .padding(2.cssRem)
@@ -82,24 +74,24 @@ val CardStyle = CssStyle.Companion.base {
             color = rgba(31, 38, 135, 0.37),
             inset = false
         )
-        .border(1.px, LineStyle.Companion.Solid, rgba(255, 255, 255, 0.18))
+        .border(1.px, LineStyle.Solid, rgba(255, 255, 255, 0.18))
         .maxWidth(500.px)
         .width(90.percent)
-        .textAlign(TextAlign.Companion.Center)
+        .textAlign(TextAlign.Center)
         .color(Colors.White)
 }
 
 
-val HiraganaCharStyle = CssStyle.Companion.base {
-    Modifier.Companion
+val HiraganaCharStyle = CssStyle.base {
+    Modifier
         .fontSize(6.cssRem)
-        .fontWeight(FontWeight.Companion.Bold)
+        .fontWeight(FontWeight.Bold)
         .margin(1.cssRem, 0.px)
         .textShadow(3.px, 3.px, 6.px, rgba(0, 0, 0, 0.4))
 }
 
-val StatItemStyle = CssStyle.Companion.base {
-    Modifier.Companion
+val StatItemStyle = CssStyle.base {
+    Modifier
         .background(rgba(255, 255, 255, 0.2))
         .padding(0.5.cssRem, 1.cssRem)
         .borderRadius(10.px)
@@ -108,28 +100,28 @@ val StatItemStyle = CssStyle.Companion.base {
         .margin(0.25.cssRem)
 }
 
-val InputStyle = CssStyle.Companion.base {
-    Modifier.Companion
+val InputStyle = CssStyle.base {
+    Modifier
         .background(rgba(255, 255, 255, 0.2))
-        .border(2.px, LineStyle.Companion.Solid, rgba(255, 255, 255, 0.3))
+        .border(2.px, LineStyle.Solid, rgba(255, 255, 255, 0.3))
         .borderRadius(10.px)
         .padding(0.8.cssRem)
         .fontSize(1.2.cssRem)
         .color(Colors.White)
-        .textAlign(TextAlign.Companion.Center)
+        .textAlign(TextAlign.Center)
         .width(100.percent)
         .margin(1.cssRem, 0.px)
 }
 
-val ButtonStyle = CssStyle.Companion.base {
-    Modifier.Companion
+val ButtonStyle = CssStyle.base {
+    Modifier
         .styleModifier { background("linear-gradient(45deg, rgba(255, 107, 107, 1.0) 0%, rgba(78, 205, 196, 1.0) 100%)") }
         .border(0.px)
         .padding(0.8.cssRem, 2.cssRem)
         .fontSize(1.1.cssRem)
         .color(Colors.White)
         .borderRadius(25.px)
-        .cursor(Cursor.Companion.Pointer)
+        .cursor(Cursor.Pointer)
         .boxShadow(0.px, 4.px, 15.px, color = rgba(0, 0, 0, 0.2))
-        .transition(Transition.Companion.all(0.3.s))
+        .transition(Transition.all(0.3.s))
 }

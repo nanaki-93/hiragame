@@ -1,0 +1,24 @@
+package com.github.nanaki_93.components.widgets
+
+import androidx.compose.runtime.*
+import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.modifiers.*
+import com.varabyte.kobweb.silk.components.forms.Button
+import com.varabyte.kobweb.silk.components.text.SpanText
+import com.github.nanaki_93.ButtonStyle
+import com.varabyte.kobweb.silk.style.toModifier
+
+@Composable
+fun SubmitButton(
+    onClick: () -> Unit,
+    isAnswering: Boolean,
+    userInput: String
+) {
+    Button(
+        onClick = { onClick() },
+        modifier = ButtonStyle.toModifier(),
+        enabled = userInput.isNotEmpty() && !isAnswering
+    ) {
+        SpanText(if (isAnswering) "Checking..." else "Submit")
+    }
+}
