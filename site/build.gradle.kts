@@ -22,7 +22,9 @@ kobweb {
                 meta(name = "keywords", content = "hiragana, japanese, learning, game, education")
             }
         }
+
     }
+
 }
 
 kotlin {
