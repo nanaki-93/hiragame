@@ -1,6 +1,6 @@
 site:
   title: "Hiragame"
-  baseUrl: "/hiragame/"
+  basePath: "hiragame"
 
 server:
   files:
