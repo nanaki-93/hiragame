@@ -1,4 +1,5 @@
 import com.varabyte.kobweb.gradle.application.util.configAsKobwebApplication
+import kotlinx.html.meta
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -14,7 +15,21 @@ version = "1.0-SNAPSHOT"
 kobweb {
     app {
         index {
-            description.set("Powered by Kobweb")
+            description.set("Learn Hiragana with gamification!")
+            head.add {
+                meta {
+                    name= "viewport"
+                    content = "width=device-width, initial-scale=1.0"
+                }
+                meta {
+                    name ="description"
+                    content ="Interactive Hiragana learning game with gamification elements"
+                }
+                meta {
+                    name= "keywords"
+                    content ="hiragana, japanese, learning, game, education"
+                }
+            }
         }
     }
 }
