@@ -1,4 +1,3 @@
-
 name: Deploy to GitHub Pages
 
 on:
@@ -8,7 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: read
       pages: write
@@ -30,7 +29,14 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Export site
-        run: ./gradlew kobwebExport
+        run: ./gradlew :site:kobwebExport
+
+      - name: List exported files (debug)
+        run: |
+          echo "Contents of site/.kobweb/site:"
+          ls -la site/.kobweb/site/ || echo "Directory not found"
+          echo "Contents of .kobweb/site:"
+          ls -la .kobweb/site/ || echo "Directory not found"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

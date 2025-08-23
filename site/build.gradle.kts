@@ -17,18 +17,9 @@ kobweb {
         index {
             description.set("Learn Hiragana with gamification!")
             head.add {
-                meta {
-                    name= "viewport"
-                    content = "width=device-width, initial-scale=1.0"
-                }
-                meta {
-                    name ="description"
-                    content ="Interactive Hiragana learning game with gamification elements"
-                }
-                meta {
-                    name= "keywords"
-                    content ="hiragana, japanese, learning, game, education"
-                }
+                meta(name = "viewport", content = "width=device-width, initial-scale=1.0")
+                meta(name = "description", content = "Interactive Hiragana learning game with gamification elements")
+                meta(name = "keywords", content = "hiragana, japanese, learning, game, education")
             }
         }
     }
