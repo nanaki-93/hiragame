@@ -1,5 +1,4 @@
 site:
-  basePath: "https://nanaki-93.github.io/"
   title: "Hiragame"
 
 server:
@@ -11,5 +10,6 @@ server:
     prod:
       script: "build/kotlin-webpack/js/productionExecutable/hiragame.js"
       siteRoot: ".kobweb/site"
+      basePath: "https://nanaki-93.github.io/hiragana/"
 
   port: 8080
