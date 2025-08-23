@@ -30,7 +30,7 @@ kobweb {
 kotlin {
     // This example is frontend only. However, for a fullstack app, you can uncomment the includeServer parameter
     // and the `jvmMain` source set below.
-    configAsKobwebApplication("hiragame" /*, includeServer = true*/)
+    configAsKobwebApplication("hiragame" , includeServer = true)
 
     sourceSets {
         commonMain.dependencies {
@@ -46,10 +46,10 @@ kotlin {
             implementation(libs.silk.icons.fa)
         }
 
-        // Uncomment the following if you pass `includeServer = true` into the `configAsKobwebApplication` call.
-//        jvmMain.dependencies {
-//            compileOnly(libs.kobweb.api) // Provided by Kobweb backend at runtime
-//        }
+
+        jvmMain.dependencies {
+            compileOnly(libs.kobweb.api) // Provided by Kobweb backend at runtime
+        }
     }
 }
 

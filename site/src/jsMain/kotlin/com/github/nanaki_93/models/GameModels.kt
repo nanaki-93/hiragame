@@ -3,7 +3,7 @@ package com.github.nanaki_93.models
 data class HiraganaChar(
     val char: String,
     val romanization: String,
-    val difficulty: Int = 1
+    val level: Int = 1,
 )
 
 data class GameState(
@@ -28,63 +28,193 @@ fun GameState.getNextCharacter(): GameState =
 // Hiragana data
 
 val hiraganaCharsLv1 = listOf(
-    HiraganaChar("あ", "a", 1),
-    HiraganaChar("い", "i", 1),
-    HiraganaChar("う", "u", 1),
-    HiraganaChar("え", "e", 1),
-    HiraganaChar("お", "o", 1),
-    HiraganaChar("か", "ka", 1),
-    HiraganaChar("き", "ki", 1),
-    HiraganaChar("く", "ku", 1),
-    HiraganaChar("け", "ke", 1),
-    HiraganaChar("こ", "ko", 1),
-)
+    // Basic vowels
+    HiraganaChar("あ", "a"),
+    HiraganaChar("い", "i"),
+    HiraganaChar("う", "u"),
+    HiraganaChar("え", "e"),
+    HiraganaChar("お", "o"),
+
+    // K-line (ka-gyou)
+    HiraganaChar("か", "ka"),
+    HiraganaChar("き", "ki"),
+    HiraganaChar("く", "ku"),
+    HiraganaChar("け", "ke"),
+    HiraganaChar("こ", "ko"),
+
+    )
+val hiraganaCharsLv1Pro = listOf(
+
+    // Y-line (ya-gyou)
+    HiraganaChar("や", "ya"),
+    HiraganaChar("ゆ", "yu"),
+    HiraganaChar("よ", "yo"),
+    // W-line (wa-gyou)
+    HiraganaChar("わ", "wa"),
+    HiraganaChar("を", "wo"), // Particle "o"
+    // G-line (ga-gyou) - with dakuten (tenten)
+    HiraganaChar("が", "ga"),
+    HiraganaChar("ぎ", "gi"),
+    HiraganaChar("ぐ", "gu"),
+    HiraganaChar("げ", "ge"),
+    HiraganaChar("ご", "go"),
+
+    )
+
 val hiraganaCharsLv2 = listOf(
-    HiraganaChar("さ", "sa", 2),
-    HiraganaChar("し", "shi", 2),
-    HiraganaChar("す", "su", 2),
-    HiraganaChar("せ", "se", 2),
-    HiraganaChar("そ", "so", 2),
-    HiraganaChar("た", "ta", 2),
-    HiraganaChar("ち", "chi", 2),
-    HiraganaChar("つ", "tsu", 2),
-    HiraganaChar("て", "te", 2),
-    HiraganaChar("と", "to", 2),
-    HiraganaChar("な", "na", 2),
-    HiraganaChar("に", "ni", 2),
-    HiraganaChar("ぬ", "nu", 2),
-    HiraganaChar("ね", "ne", 2),
-    HiraganaChar("の", "no", 2),
-)
+    // S-line (sa-gyou)
+    HiraganaChar("さ", "sa"),
+    HiraganaChar("し", "shi"),
+    HiraganaChar("す", "su"),
+    HiraganaChar("せ", "se"),
+    HiraganaChar("そ", "so"),
+    // T-line (ta-gyou)
+    HiraganaChar("た", "ta"),
+    HiraganaChar("ち", "chi"),
+    HiraganaChar("つ", "tsu"),
+    HiraganaChar("て", "te"),
+    HiraganaChar("と", "to"),
+
+
+    )
+val hiraganaCharsLv2Pro = listOf(
+
+    // Z-line (za-gyou) - with dakuten (tenten)
+    HiraganaChar("ざ", "za"),
+    HiraganaChar("じ", "ji"),
+    HiraganaChar("ず", "zu"),
+    HiraganaChar("ぜ", "ze"),
+    HiraganaChar("ぞ", "zo"),
+
+    // D-line (da-gyou) - with dakuten (tenten)
+    HiraganaChar("だ", "da"),
+    HiraganaChar("ぢ", "di"), // Note: pronounced "ji" but romanized as "di"
+    HiraganaChar("づ", "du"), // Note: pronounced "zu" but romanized as "du"
+    HiraganaChar("で", "de"),
+    HiraganaChar("ど", "do"),
+
+    )
+
 val hiraganaCharsLv3 = listOf(
-    HiraganaChar("は", "ha", 3),
-    HiraganaChar("ひ", "hi", 3),
-    HiraganaChar("ふ", "fu", 3),
-    HiraganaChar("へ", "he", 3),
-    HiraganaChar("ほ", "ho", 3),
-    HiraganaChar("ま", "ma", 3),
-    HiraganaChar("み", "mi", 3),
-    HiraganaChar("む", "mu", 3),
-    HiraganaChar("め", "me", 3),
-    HiraganaChar("も", "mo", 3),
-)
+    // N-line (na-gyou)
+    HiraganaChar("な", "na"),
+    HiraganaChar("に", "ni"),
+    HiraganaChar("ぬ", "nu"),
+    HiraganaChar("ね", "ne"),
+    HiraganaChar("の", "no"),
+
+    // H-line (ha-gyou)
+    HiraganaChar("は", "ha"),
+    HiraganaChar("ひ", "hi"),
+    HiraganaChar("ふ", "fu"),
+    HiraganaChar("へ", "he"),
+    HiraganaChar("ほ", "ho"),
+
+
+    )
+val hiraganaCharsLv3Pro = listOf(
+    // B-line (ba-gyou) - with dakuten (tenten)
+    HiraganaChar("ば", "ba"),
+    HiraganaChar("び", "bi"),
+    HiraganaChar("ぶ", "bu"),
+    HiraganaChar("べ", "be"),
+    HiraganaChar("ぼ", "bo"),
+    // P-line (pa-gyou) - with handakuten (maru)
+    HiraganaChar("ぱ", "pa"),
+    HiraganaChar("ぴ", "pi"),
+    HiraganaChar("ぷ", "pu"),
+    HiraganaChar("ぺ", "pe"),
+    HiraganaChar("ぽ", "po"),
+
+    )
 val hiraganaCharsLv4 = listOf(
-    HiraganaChar("や", "ya", 4),
-    HiraganaChar("ゆ", "yu", 4),
-    HiraganaChar("よ", "yo", 4),
-    HiraganaChar("ら", "ra", 4),
-    HiraganaChar("り", "ri", 4),
-    HiraganaChar("る", "ru", 4),
-    HiraganaChar("れ", "re", 4),
-    HiraganaChar("ろ", "ro", 4),
-    HiraganaChar("わ", "wa", 4),
-    HiraganaChar("ん", "n", 4),
-    HiraganaChar("を", "wu", 4)
+
+    // M-line (ma-gyou)
+    HiraganaChar("ま", "ma"),
+    HiraganaChar("み", "mi"),
+    HiraganaChar("む", "mu"),
+    HiraganaChar("め", "me"),
+    HiraganaChar("も", "mo"),
+
+    // R-line (ra-gyou)
+    HiraganaChar("ら", "ra"),
+    HiraganaChar("り", "ri"),
+    HiraganaChar("る", "ru"),
+    HiraganaChar("れ", "re"),
+    HiraganaChar("ろ", "ro"),
+
+    )
+
+val hiraganaCharsLv5 = listOf(
+    // N
+    HiraganaChar("ん", "n"),
+
+    // Combination characters (ya-yu-yo combinations)
+    HiraganaChar("きゃ", "kya"),
+    HiraganaChar("きゅ", "kyu"),
+    HiraganaChar("きょ", "kyo"),
+
+    HiraganaChar("ぎゃ", "gya"),
+    HiraganaChar("ぎゅ", "gyu"),
+    HiraganaChar("ぎょ", "gyo"),
+    HiraganaChar("しゃ", "sha"),
+    HiraganaChar("しゅ", "shu"),
+    HiraganaChar("しょ", "sho"),
+)
+val hiraganaCharsLv6 = listOf(
+
+    HiraganaChar("じゃ", "ja"),
+    HiraganaChar("じゅ", "ju"),
+    HiraganaChar("じょ", "jo"),
+
+    HiraganaChar("ちゃ", "cha"),
+    HiraganaChar("ちゅ", "chu"),
+    HiraganaChar("ちょ", "cho"),
+
+
+    HiraganaChar("にゃ", "nya"),
+    HiraganaChar("にゅ", "nyu"),
+    HiraganaChar("にょ", "nyo"),
+)
+val hiraganaCharsLv7 = listOf(
+
+    HiraganaChar("ひゃ", "hya"),
+    HiraganaChar("ひゅ", "hyu"),
+    HiraganaChar("ひょ", "hyo"),
+
+    HiraganaChar("びゃ", "bya"),
+    HiraganaChar("びゅ", "byu"),
+    HiraganaChar("びょ", "byo"),
+
+    HiraganaChar("ぴゃ", "pya"),
+    HiraganaChar("ぴゅ", "pyu"),
+    HiraganaChar("ぴょ", "pyo"),
+)
+
+
+val hiraganaCharsLv8 = listOf(
+
+    HiraganaChar("みゃ", "mya"),
+    HiraganaChar("みゅ", "myu"),
+    HiraganaChar("みょ", "myo"),
+
+    HiraganaChar("りゃ", "rya"),
+    HiraganaChar("りゅ", "ryu"),
+    HiraganaChar("りょ", "ryo"),
+
+    HiraganaChar("ぢゃ", "dya"), // Rarely used
+    HiraganaChar("ぢゅ", "dyu"), // Rarely used
+    HiraganaChar("ぢょ", "dyo"), // Rarely used
+
 )
 
 val hiraganaLvMap = mapOf(
     1 to hiraganaCharsLv1,
-    2 to hiraganaCharsLv1 + hiraganaCharsLv2,
-    3 to hiraganaCharsLv1 + hiraganaCharsLv2 + hiraganaCharsLv3,
-    4 to hiraganaCharsLv1 + hiraganaCharsLv2 + hiraganaCharsLv3 + hiraganaCharsLv4
+    2 to hiraganaCharsLv2,
+    3 to hiraganaCharsLv3,
+    4 to hiraganaCharsLv4,
+    5 to hiraganaCharsLv5,
+    6 to hiraganaCharsLv6,
+    7 to hiraganaCharsLv7,
+    8 to hiraganaCharsLv8,
 )

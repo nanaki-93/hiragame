@@ -1,7 +1,6 @@
 package com.github.nanaki_93.service
 
 import com.github.nanaki_93.models.*
-import kotlinx.coroutines.delay
 
 class GameService {
 
@@ -11,7 +10,7 @@ class GameService {
     }
 
 
-    suspend fun processAnswer(
+    fun processAnswer(
         gameState: GameState,
         userInput: String,
         level: Int,
