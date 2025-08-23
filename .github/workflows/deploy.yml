@@ -31,12 +31,16 @@ jobs:
       - name: Export site
         run: ./gradlew :site:kobwebExport
 
-      - name: List exported files (debug)
+      - name: Fix directory structure for GitHub Pages
         run: |
-          echo "Contents of site/.kobweb/site:"
-          ls -la site/.kobweb/site/ || echo "Directory not found"
-          echo "Contents of .kobweb/site:"
-          ls -la .kobweb/site/ || echo "Directory not found"
+          cd site/.kobweb/site
+          # Copy the main page index.html to root
+          cp pages/index.html ./index.html
+          # Verify the structure
+          echo "=== Final structure ==="
+          ls -la
+          echo "=== Root index.html exists ==="
+          ls -la index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
