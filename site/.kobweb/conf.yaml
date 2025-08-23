@@ -10,6 +10,6 @@ server:
     prod:
       script: "build/kotlin-webpack/js/productionExecutable/hiragame.js"
       siteRoot: ".kobweb/site"
-      basePath: "https://nanaki-93.github.io/hiragana/"
+      basePath: "https://nanaki-93.github.io/hiragame/"
 
   port: 8080
