@@ -26,11 +26,8 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Grant execute permission for Gradle wrapper
-        run: chmod +x ./gradlew
-
       - name: Export site
-        run: ./gradlew kobwebExport --layout static
+        run: ./gradlew kobwebExport
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
