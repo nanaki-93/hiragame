@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kobweb.application)
     alias(libs.plugins.kobwebx.markdown)
     alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 group = "com.github.nanaki_93"
@@ -48,6 +49,7 @@ kotlin {
 
 
         jvmMain.dependencies {
+            implementation(libs.kotlinx.serialization.json)
             compileOnly(libs.kobweb.api) // Provided by Kobweb backend at runtime
         }
     }

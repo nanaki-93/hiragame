@@ -5,18 +5,11 @@ import com.varabyte.kobweb.api.Api
 import com.varabyte.kobweb.api.ApiContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.core.RowMapper
-import org.springframework.jdbc.core.queryForObject
-import org.springframework.stereotype.Repository
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
-import java.sql.ResultSet
 import java.time.OffsetDateTime
-import java.util.concurrent.TimeUnit
-import javax.sql.DataSource
 
 /**
  * NOTE: For this code to work, you must configure a PostgreSQL database connection
@@ -48,54 +41,6 @@ data class HiraganaContent(
     val timestamp: OffsetDateTime
 )
 
-// A RowMapper to convert a ResultSet row into a HiraganaContent object.
-class HiraganaContentRowMapper : RowMapper<HiraganaContent> {
-    override fun mapRow(rs: ResultSet, rowNum: Int): HiraganaContent {
-        return HiraganaContent(
-            id = rs.getLong("id"),
-            hiragana = rs.getString("hiragana"),
-            romaji = rs.getString("romaji"),
-            topic = rs.getString("topic"),
-            contentType = rs.getString("content_type"),
-            timestamp = rs.getObject("timestamp", OffsetDateTime::class.java)
-        )
-    }
-}
-
-/**
- * Repository interface for data access operations.
- */
-interface HiraganaContentRepository {
-    fun save(content: HiraganaContent): HiraganaContent
-    fun findRecentByTopicAndType(topic: String, contentType: String): List<HiraganaContent>
-}
-
-/**
- * Implementation of HiraganaContentRepository using Spring's JdbcTemplate.
- */
-@Repository
-class JdbcHiraganaContentRepository(private val jdbcTemplate: JdbcTemplate) : HiraganaContentRepository {
-    private val rowMapper = HiraganaContentRowMapper()
-
-    override fun save(content: HiraganaContent): HiraganaContent {
-        // Insert new content into the database
-        val sql = "INSERT INTO hiragana_content (hiragana, romaji, topic, content_type, timestamp) VALUES (?, ?, ?, ?, ?)"
-        jdbcTemplate.update(sql, content.hiragana, content.romaji, content.topic, content.contentType, content.timestamp)
-        return content // For simplicity, we just return the input object
-    }
-
-    override fun findRecentByTopicAndType(topic: String, contentType: String): List<HiraganaContent> {
-        val freshnessThresholdDays = 7
-        val sql = """
-            SELECT id, hiragana, romaji, topic, content_type, timestamp 
-            FROM hiragana_content 
-            WHERE topic = ? AND content_type = ? AND timestamp > NOW() - INTERVAL '$freshnessThresholdDays days'
-            ORDER BY timestamp DESC
-            LIMIT 10
-        """
-        return jdbcTemplate.query(sql, rowMapper, topic, contentType)
-    }
-}
 
 // A serializable class to represent the API response
 @Serializable
@@ -114,28 +59,14 @@ data class SerializedHiraganaContent(
 // --- Backend API Endpoint ---
 
 @Api
-suspend fun generateHiragana(ctx: ApiContext): GenerationResponse {
+fun generateHiragana(ctx: ApiContext): GenerationResponse {
     val topic = ctx.req.params["topic"] ?: return GenerationResponse(emptyList(), "error")
     val contentType = ctx.req.params["contentType"] ?: return GenerationResponse(emptyList(), "error")
 
     // Assuming the repository is injected or instantiated here.
     // In a Spring context, this would be auto-wired.
-    val jdbcTemplate = ctx.getService<JdbcTemplate>() // Example of getting service
-    val repository = JdbcHiraganaContentRepository(jdbcTemplate)
 
     // 1. Check PostgreSQL cache first
-    try {
-        val cachedContent = repository.findRecentByTopicAndType(topic, contentType)
-        if (cachedContent.isNotEmpty()) {
-            val randomizedContent = cachedContent
-                .shuffled()
-                .map { SerializedHiraganaContent(it.hiragana, it.romaji) }
-            return GenerationResponse(randomizedContent, "cache")
-        }
-    } catch (e: Exception) {
-        ctx.logger.error("Error fetching from PostgreSQL: ${e.message}")
-        // Continue to AI generation as a fallback
-    }
 
     // 2. Cache miss, call Gemini API
     ctx.logger.info("Cache miss for topic: '$topic'. Calling Gemini API...")
@@ -160,7 +91,7 @@ suspend fun generateHiragana(ctx: ApiContext): GenerationResponse {
             if (generatedContentList.isNotEmpty()) {
                 // 3. Save new content to PostgreSQL
                 generatedContentList.forEach { content ->
-                    repository.save(content)
+                    println("Saving content to database: $content")
                 }
 
                 val serializedContent = generatedContentList.map { SerializedHiraganaContent(it.hiragana, it.romaji) }
