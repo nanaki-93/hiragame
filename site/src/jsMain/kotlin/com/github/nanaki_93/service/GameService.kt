@@ -27,7 +27,7 @@ class GameService {
         level: Int,
     ): GameState {
         val req = ProcessAnswerRequest(gameState, userInput, level)
-        return client.post("${'$'}baseUrl/api/process-answer") {
+        return client.post("${baseUrl}/api/process-answer") {
             contentType(ContentType.Application.Json)
             setBody(req)
         }.body()
@@ -35,7 +35,7 @@ class GameService {
 
     suspend fun getNextCharacterAndClearFeedback(gameState: GameState): GameState {
         val req = GameStateRequest(gameState)
-        return client.post("${'$'}baseUrl/api/next-character") {
+        return client.post("${baseUrl}/api/next-character") {
             contentType(ContentType.Application.Json)
             setBody(req)
         }.body()

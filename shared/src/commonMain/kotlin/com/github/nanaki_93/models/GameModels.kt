@@ -88,9 +88,9 @@ val hiraganaCharsLv4 = listOf(
 
 val hiraganaLvMap = mapOf(
     1 to hiraganaCharsLv1,
-    2 to hiraganaCharsLv1 + hiraganaCharsLv2,
-    3 to hiraganaCharsLv1 + hiraganaCharsLv2 + hiraganaCharsLv3,
-    4 to hiraganaCharsLv1 + hiraganaCharsLv2 + hiraganaCharsLv3 + hiraganaCharsLv4
+    2 to hiraganaCharsLv2,
+    3 to hiraganaCharsLv3,
+    4 to hiraganaCharsLv4
 )
 
 @Serializable

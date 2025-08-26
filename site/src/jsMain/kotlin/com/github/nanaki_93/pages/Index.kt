@@ -5,7 +5,10 @@ import androidx.compose.runtime.*
 import com.github.nanaki_93.CardStyle
 import com.github.nanaki_93.GameContainerStyle
 import com.github.nanaki_93.components.sections.QuestionArea
+import com.github.nanaki_93.components.widgets.GameMode
+import com.github.nanaki_93.components.widgets.GameModeSelector
 import com.github.nanaki_93.components.widgets.GameStats
+import com.github.nanaki_93.components.widgets.LevelSelector
 import com.github.nanaki_93.components.widgets.ProgressBar
 import com.github.nanaki_93.models.GameState
 import com.github.nanaki_93.models.getNextCharacter
@@ -34,6 +37,7 @@ fun HomePage() {
     var userInput by remember { mutableStateOf("") }
     var isAnswering by remember { mutableStateOf(false) }
     var level by remember { mutableStateOf(1) }
+    var gameMode by remember { mutableStateOf(GameMode.SIGN) }
 
     val gameService = remember { GameService() }
 
@@ -49,6 +53,15 @@ fun HomePage() {
         isAnswering = false
     }
 
+    fun selectLevel(selectedLevel: Int) {
+
+        level = selectedLevel
+        gameState = gameState.copy(
+            level = selectedLevel,
+            hiraganaList = hiraganaLvMap[selectedLevel] ?: hiraganaCharsLv1
+        ).getNextCharacter()
+
+    }
 
     // Initialize with first character
     LaunchedEffect(Unit) {
@@ -71,6 +84,20 @@ fun HomePage() {
                     .fontWeight(FontWeight.Bold)
                     .textShadow(2.px, 2.px, 4.px, rgba(0, 0, 0, 0.3))
             )
+            GameModeSelector (
+                currentMode = gameMode,
+                onModeSelected = { selectedMode ->
+                    gameMode = selectedMode
+                    // You can add logic here to handle mode changes
+                    // For example, reset game state or change question type
+                }
+            )
+
+
+            LevelSelector(
+                currentLevel = level,
+                onLevelSelected =  { selectedLevel -> selectLevel(selectedLevel) }
+            )
 
             GameStats(gameState)
             ProgressBar(gameState)
@@ -84,7 +111,7 @@ fun HomePage() {
 
             // Instructions
             SpanText(
-                "Level ${gameState.level}: Learning ${hiraganaCharsLv1.size} new characters each level",
+                "Level ${gameState.level}: ${hiraganaCharsLv1.size} questions each level",
                 Modifier.fontSize(0.9.cssRem).opacity(0.7)
             )
         }
