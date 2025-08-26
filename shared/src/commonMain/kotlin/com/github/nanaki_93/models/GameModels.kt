@@ -2,10 +2,18 @@ package com.github.nanaki_93.models
 
 import kotlinx.serialization.Serializable
 
+
+enum class GameMode(val displayName: String) {
+    SIGN("Sign"),
+    WORD("Word"),
+    SENTENCE("Sentence")
+}
+
 @Serializable
-data class HiraganaChar(
+data class HiraganaQuestion(
     val char: String,
     val romanization: String,
+    val translation: String? = null,
     val difficulty: Int = 1
 )
 
@@ -16,13 +24,13 @@ data class GameState(
     val level: Int = 1,
     val totalAnswered: Int = 0,
     val correctAnswers: Int = 0,
-    val currentChar: HiraganaChar? = null,
-    val hiraganaList: List<HiraganaChar> = emptyList(),
+    val currentChar: HiraganaQuestion? = null,
+    val hiraganaList: List<HiraganaQuestion> = emptyList(),
     val feedback: String = "",
     val isCorrect: Boolean? = null
 )
 
-fun GameState.getNextCharacter(): GameState =
+fun GameState.getNextQuestion(): GameState =
     if (this.hiraganaList.isNotEmpty()) {
         copy(currentChar = this.hiraganaList[kotlin.random.Random.nextInt(this.hiraganaList.size)])
     } else {
@@ -31,66 +39,66 @@ fun GameState.getNextCharacter(): GameState =
 
 // Hiragana data
 
-val hiraganaCharsLv1 = listOf(
-    HiraganaChar("あ", "a", 1),
-    HiraganaChar("い", "i", 1),
-    HiraganaChar("う", "u", 1),
-    HiraganaChar("え", "e", 1),
-    HiraganaChar("お", "o", 1),
-    HiraganaChar("か", "ka", 1),
-    HiraganaChar("き", "ki", 1),
-    HiraganaChar("く", "ku", 1),
-    HiraganaChar("け", "ke", 1),
-    HiraganaChar("こ", "ko", 1),
+val hiraganaCharsLv1s = listOf(
+    HiraganaQuestion("あ", "a"),
+    HiraganaQuestion("い", "i"),
+    HiraganaQuestion("う", "u"),
+    HiraganaQuestion("え", "e"),
+    HiraganaQuestion("お", "o"),
+    HiraganaQuestion("か", "ka"),
+    HiraganaQuestion("き", "ki"),
+    HiraganaQuestion("く", "ku"),
+    HiraganaQuestion("け", "ke"),
+    HiraganaQuestion("こ", "ko"),
 )
-val hiraganaCharsLv2 = listOf(
-    HiraganaChar("さ", "sa", 2),
-    HiraganaChar("し", "shi", 2),
-    HiraganaChar("す", "su", 2),
-    HiraganaChar("せ", "se", 2),
-    HiraganaChar("そ", "so", 2),
-    HiraganaChar("た", "ta", 2),
-    HiraganaChar("ち", "chi", 2),
-    HiraganaChar("つ", "tsu", 2),
-    HiraganaChar("て", "te", 2),
-    HiraganaChar("と", "to", 2),
-    HiraganaChar("な", "na", 2),
-    HiraganaChar("に", "ni", 2),
-    HiraganaChar("ぬ", "nu", 2),
-    HiraganaChar("ね", "ne", 2),
-    HiraganaChar("の", "no", 2),
+val hiraganaCharsLv2s = listOf(
+    HiraganaQuestion("さ", "sa"),
+    HiraganaQuestion("し", "shi"),
+    HiraganaQuestion("す", "su"),
+    HiraganaQuestion("せ", "se"),
+    HiraganaQuestion("そ", "so"),
+    HiraganaQuestion("た", "ta"),
+    HiraganaQuestion("ち", "chi"),
+    HiraganaQuestion("つ", "tsu"),
+    HiraganaQuestion("て", "te"),
+    HiraganaQuestion("と", "to"),
+    HiraganaQuestion("な", "na"),
+    HiraganaQuestion("に", "ni"),
+    HiraganaQuestion("ぬ", "nu"),
+    HiraganaQuestion("ね", "ne"),
+    HiraganaQuestion("の", "no"),
 )
-val hiraganaCharsLv3 = listOf(
-    HiraganaChar("は", "ha", 3),
-    HiraganaChar("ひ", "hi", 3),
-    HiraganaChar("ふ", "fu", 3),
-    HiraganaChar("へ", "he", 3),
-    HiraganaChar("ほ", "ho", 3),
-    HiraganaChar("ま", "ma", 3),
-    HiraganaChar("み", "mi", 3),
-    HiraganaChar("む", "mu", 3),
-    HiraganaChar("め", "me", 3),
-    HiraganaChar("も", "mo", 3),
+val hiraganaCharsLv3s = listOf(
+    HiraganaQuestion("は", "ha"),
+    HiraganaQuestion("ひ", "hi"),
+    HiraganaQuestion("ふ", "fu"),
+    HiraganaQuestion("へ", "he"),
+    HiraganaQuestion("ほ", "ho"),
+    HiraganaQuestion("ま", "ma"),
+    HiraganaQuestion("み", "mi"),
+    HiraganaQuestion("む", "mu"),
+    HiraganaQuestion("め", "me"),
+    HiraganaQuestion("も", "mo"),
 )
-val hiraganaCharsLv4 = listOf(
-    HiraganaChar("や", "ya", 4),
-    HiraganaChar("ゆ", "yu", 4),
-    HiraganaChar("よ", "yo", 4),
-    HiraganaChar("ら", "ra", 4),
-    HiraganaChar("り", "ri", 4),
-    HiraganaChar("る", "ru", 4),
-    HiraganaChar("れ", "re", 4),
-    HiraganaChar("ろ", "ro", 4),
-    HiraganaChar("わ", "wa", 4),
-    HiraganaChar("ん", "n", 4),
-    HiraganaChar("を", "wu", 4)
+val hiraganaCharsLv4s = listOf(
+    HiraganaQuestion("や", "ya"),
+    HiraganaQuestion("ゆ", "yu"),
+    HiraganaQuestion("よ", "yo"),
+    HiraganaQuestion("ら", "ra"),
+    HiraganaQuestion("り", "ri"),
+    HiraganaQuestion("る", "ru"),
+    HiraganaQuestion("れ", "re"),
+    HiraganaQuestion("ろ", "ro"),
+    HiraganaQuestion("わ", "wa"),
+    HiraganaQuestion("ん", "n"),
+    HiraganaQuestion("を", "wu"),
 )
 
 val hiraganaLvMap = mapOf(
-    1 to hiraganaCharsLv1,
-    2 to hiraganaCharsLv2,
-    3 to hiraganaCharsLv3,
-    4 to hiraganaCharsLv4
+    1 to hiraganaCharsLv1s,
+    2 to hiraganaCharsLv2s,
+    3 to hiraganaCharsLv3s,
+    4 to hiraganaCharsLv4s
 )
 
 @Serializable
@@ -98,3 +106,6 @@ data class ProcessAnswerRequest(val gameState: GameState, val userInput: String,
 
 @Serializable
 data class GameStateRequest(val gameState: GameState)
+
+@Serializable
+data class GameModeRequest(val gameMode: GameMode)

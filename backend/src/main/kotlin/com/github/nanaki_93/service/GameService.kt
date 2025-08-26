@@ -1,14 +1,42 @@
 package com.github.nanaki_93.service
 
+import com.github.nanaki_93.models.AISentenceQuestion
+import com.github.nanaki_93.models.AIWordQuestion
+import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.GameState
-import com.github.nanaki_93.models.getNextCharacter
+import com.github.nanaki_93.models.HiraganaQuestion
+import com.github.nanaki_93.models.getNextQuestion
 import com.github.nanaki_93.models.hiraganaLvMap
 import org.springframework.stereotype.Service
 
 @Service
-class GameService {
+class GameService(private val aiQuestionService: AIQuestionService) {
     fun calculateLevel(correctAnswers: Int): Int {
         return minOf(5, (correctAnswers / 10) + 1)
+    }
+
+    fun selectGameMode(gameMode: GameMode): GameState {
+        return when (gameMode) {
+            GameMode.SIGN -> GameState(hiraganaList = hiraganaLvMap[1] ?: emptyList()).getNextQuestion()
+            GameMode.WORD -> GameState(hiraganaList = hiraganaWordQuestions("food")).getNextQuestion()
+            GameMode.SENTENCE -> GameState(hiraganaList = hiraganaSentenceQuestions("food")).getNextQuestion()
+        }
+
+    }
+
+    private fun hiraganaWordQuestions(topic: String): List<HiraganaQuestion> {
+        return wordToHiraganaQuestions(aiQuestionService.generateWordQuestion(topic))
+    }
+
+    private fun hiraganaSentenceQuestions(topic: String): List<HiraganaQuestion> {
+        return sentenceToHiraganaQuestions(aiQuestionService.generateSentenceQuestion(topic))
+    }
+
+    private fun wordToHiraganaQuestions(questions: List<AIWordQuestion>): List<HiraganaQuestion> {
+        return questions.map { HiraganaQuestion(it.hiraganaWord, it.romanization,it.englishWord) }
+    }
+    private fun sentenceToHiraganaQuestions(questions: List<AISentenceQuestion>): List<HiraganaQuestion> {
+        return questions.map { HiraganaQuestion(it.hiraganaSentence, it.romanization,it.englishSentence) }
     }
 
     fun processAnswer(
@@ -44,7 +72,7 @@ class GameService {
     }
 
     fun getNextCharacterAndClearFeedback(gameState: GameState): GameState {
-        return gameState.getNextCharacter().copy(
+        return gameState.getNextQuestion().copy(
             feedback = "",
             isCorrect = null
         )

@@ -2,6 +2,7 @@
 package com.github.nanaki_93.components.widgets
 
 import androidx.compose.runtime.*
+import com.github.nanaki_93.models.GameMode
 import com.varabyte.kobweb.compose.css.Cursor
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.TextAlign
@@ -14,11 +15,7 @@ import com.varabyte.kobweb.silk.components.forms.Button
 import com.varabyte.kobweb.silk.components.text.SpanText
 import org.jetbrains.compose.web.css.*
 
-enum class GameMode(val displayName: String) {
-    SIGN("Sign"),
-    WORD("Word"),
-    SENTENCE("Sentence")
-}
+
 
 @Composable
 fun GameModeSelector(

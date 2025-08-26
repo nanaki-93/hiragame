@@ -40,4 +40,12 @@ class GameService {
             setBody(req)
         }.body()
     }
+
+    suspend fun selectGameMode(gameMode: GameMode): GameState {
+        val req = GameModeRequest(gameMode)
+        return client.post("${baseUrl}/api/game-mode") {
+            contentType(ContentType.Application.Json)
+            setBody(req)
+        }.body()
+    }
 }

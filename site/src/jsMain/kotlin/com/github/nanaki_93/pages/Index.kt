@@ -5,14 +5,14 @@ import androidx.compose.runtime.*
 import com.github.nanaki_93.CardStyle
 import com.github.nanaki_93.GameContainerStyle
 import com.github.nanaki_93.components.sections.QuestionArea
-import com.github.nanaki_93.components.widgets.GameMode
 import com.github.nanaki_93.components.widgets.GameModeSelector
 import com.github.nanaki_93.components.widgets.GameStats
 import com.github.nanaki_93.components.widgets.LevelSelector
 import com.github.nanaki_93.components.widgets.ProgressBar
+import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.GameState
-import com.github.nanaki_93.models.getNextCharacter
-import com.github.nanaki_93.models.hiraganaCharsLv1
+import com.github.nanaki_93.models.getNextQuestion
+import com.github.nanaki_93.models.hiraganaCharsLv1s
 import com.github.nanaki_93.models.hiraganaLvMap
 import com.github.nanaki_93.service.GameService
 import com.varabyte.kobweb.compose.css.*
@@ -26,8 +26,8 @@ import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.*
-
 
 
 @Page
@@ -41,12 +41,13 @@ fun HomePage() {
 
     val gameService = remember { GameService() }
 
+    val coroutineScope = rememberCoroutineScope()
     suspend fun submitAnswer() {
         if (isAnswering || gameState.currentChar == null) return
 
         isAnswering = true
-        gameState = gameService.processAnswer(gameState, userInput,level)
-        level =gameState.level
+        gameState = gameService.processAnswer(gameState, userInput, level)
+        level = gameState.level
         userInput = ""
         delay(1500)
         gameState = gameService.getNextCharacterAndClearFeedback(gameState)
@@ -58,16 +59,16 @@ fun HomePage() {
         level = selectedLevel
         gameState = gameState.copy(
             level = selectedLevel,
-            hiraganaList = hiraganaLvMap[selectedLevel] ?: hiraganaCharsLv1
-        ).getNextCharacter()
+            hiraganaList = hiraganaLvMap[selectedLevel] ?: hiraganaCharsLv1s
+        ).getNextQuestion()
 
     }
 
     // Initialize with first character
     LaunchedEffect(Unit) {
         gameState = gameState.copy(
-            hiraganaList = hiraganaCharsLv1,
-        ).getNextCharacter()
+            hiraganaList = hiraganaCharsLv1s,
+        ).getNextQuestion()
     }
 
     Box(GameContainerStyle.toModifier()) {
@@ -84,19 +85,19 @@ fun HomePage() {
                     .fontWeight(FontWeight.Bold)
                     .textShadow(2.px, 2.px, 4.px, rgba(0, 0, 0, 0.3))
             )
-            GameModeSelector (
+            GameModeSelector(
                 currentMode = gameMode,
                 onModeSelected = { selectedMode ->
-                    gameMode = selectedMode
-                    // You can add logic here to handle mode changes
-                    // For example, reset game state or change question type
+                    coroutineScope.launch {
+                        gameState = gameService.selectGameMode(selectedMode)
+                    }
                 }
             )
 
 
             LevelSelector(
                 currentLevel = level,
-                onLevelSelected =  { selectedLevel -> selectLevel(selectedLevel) }
+                onLevelSelected = { selectedLevel -> selectLevel(selectedLevel) }
             )
 
             GameStats(gameState)
@@ -105,13 +106,13 @@ fun HomePage() {
                 gameState = gameState,
                 userInput = userInput,
                 isAnswering = isAnswering,
-                onInputChange = { userInput = it},
-                onSubmit = {submitAnswer()},
-                )
+                onInputChange = { userInput = it },
+                onSubmit = { submitAnswer() },
+            )
 
             // Instructions
             SpanText(
-                "Level ${gameState.level}: ${hiraganaCharsLv1.size} questions each level",
+                "Level ${gameState.level}: ${hiraganaCharsLv1s.size} questions each level",
                 Modifier.fontSize(0.9.cssRem).opacity(0.7)
             )
         }

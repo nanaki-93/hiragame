@@ -13,12 +13,12 @@ class AIController(
 ) {
 
     @GetMapping("/word")
-    fun generateWord(@RequestParam topic: String): AIWordQuestion {
+    fun generateWord(@RequestParam topic: String): List<AIWordQuestion> {
         return aiQuestionService.generateWordQuestion(topic)
     }
 
     @GetMapping("/sentence")
-    fun generateSentence(@RequestParam topic: String): AISentenceQuestion {
+    fun generateSentence(@RequestParam topic: String): List<AISentenceQuestion> {
         return aiQuestionService.generateSentenceQuestion(topic)
     }
 
