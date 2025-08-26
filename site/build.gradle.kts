@@ -3,10 +3,16 @@ import kotlinx.html.meta
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kobweb.application)
     alias(libs.plugins.kobwebx.markdown)
-    alias(libs.plugins.jetbrains.compose)
+}
+
+repositories {
+    mavenCentral()
+    google()
+    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
 }
 
 group = "com.github.nanaki_93"
@@ -22,36 +28,33 @@ kobweb {
                 meta(name = "keywords", content = "hiragana, japanese, learning, game, education")
             }
         }
-
     }
-
 }
 
 kotlin {
-    // This example is frontend only. However, for a fullstack app, you can uncomment the includeServer parameter
-    // and the `jvmMain` source set below.
-    configAsKobwebApplication("hiragame" /*, includeServer = true*/)
+    configAsKobwebApplication("hiragame")
 
     sourceSets {
-        commonMain.dependencies {
-            implementation(compose.runtime)
-        }
 
-        jsMain.dependencies {
-            implementation(libs.compose.runtime)
-            implementation(libs.compose.html.core)
-            implementation(libs.kobweb.core)
-            implementation(libs.kobweb.silk)
-            implementation(libs.kobwebx.markdown)
-            implementation(libs.silk.icons.fa)
-        }
 
-        // Uncomment the following if you pass `includeServer = true` into the `configAsKobwebApplication` call.
-//        jvmMain.dependencies {
-//            compileOnly(libs.kobweb.api) // Provided by Kobweb backend at runtime
-//        }
+        val jsMain by getting {
+            dependencies {
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.html.core)
+                implementation(libs.kobweb.core)
+                implementation(libs.kobweb.silk)
+                implementation(libs.kobwebx.markdown)
+                implementation(libs.silk.icons.fa)
+
+                // Shared models/logic
+                implementation(project(":shared"))
+
+                // Ktor client for JS
+                implementation("io.ktor:ktor-client-core:2.3.11")
+                implementation("io.ktor:ktor-client-js:2.3.11")
+                implementation("io.ktor:ktor-client-content-negotiation:2.3.11")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.11")
+            }
+        }
     }
 }
-
-
-

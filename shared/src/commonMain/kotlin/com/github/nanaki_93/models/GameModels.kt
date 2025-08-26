@@ -1,11 +1,15 @@
 package com.github.nanaki_93.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class HiraganaChar(
     val char: String,
     val romanization: String,
     val difficulty: Int = 1
 )
 
+@Serializable
 data class GameState(
     val score: Int = 0,
     val streak: Int = 0,
@@ -84,7 +88,13 @@ val hiraganaCharsLv4 = listOf(
 
 val hiraganaLvMap = mapOf(
     1 to hiraganaCharsLv1,
-    2 to hiraganaCharsLv1 + hiraganaCharsLv2,
-    3 to hiraganaCharsLv1 + hiraganaCharsLv2 + hiraganaCharsLv3,
-    4 to hiraganaCharsLv1 + hiraganaCharsLv2 + hiraganaCharsLv3 + hiraganaCharsLv4
+    2 to hiraganaCharsLv2,
+    3 to hiraganaCharsLv3,
+    4 to hiraganaCharsLv4
 )
+
+@Serializable
+data class ProcessAnswerRequest(val gameState: GameState, val userInput: String, val level: Int)
+
+@Serializable
+data class GameStateRequest(val gameState: GameState)

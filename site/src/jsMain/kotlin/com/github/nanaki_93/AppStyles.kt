@@ -9,17 +9,12 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.styleModifier
-import com.varabyte.kobweb.silk.components.forms.ButtonStyle
-import com.varabyte.kobweb.silk.components.forms.ButtonVars
 import com.varabyte.kobweb.silk.components.layout.HorizontalDividerStyle
 import com.varabyte.kobweb.silk.init.InitSilk
 import com.varabyte.kobweb.silk.init.InitSilkContext
 import com.varabyte.kobweb.silk.init.registerStyleBase
 import com.varabyte.kobweb.silk.style.CssStyle
-import com.varabyte.kobweb.silk.style.addVariantBase
 import com.varabyte.kobweb.silk.style.base
-import com.varabyte.kobweb.silk.theme.colors.palette.color
-import com.varabyte.kobweb.silk.theme.colors.palette.toPalette
 import com.varabyte.kobweb.silk.theme.modifyStyleBase
 import org.jetbrains.compose.web.css.*
 
@@ -125,3 +120,5 @@ val ButtonStyle = CssStyle.base {
         .boxShadow(0.px, 4.px, 15.px, color = rgba(0, 0, 0, 0.2))
         .transition(Transition.all(0.3.s))
 }
+
+

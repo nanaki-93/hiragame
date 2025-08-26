@@ -10,4 +10,4 @@ server:
     prod:
       script: "build/kotlin-webpack/js/productionExecutable/hiragame.js"
 
-  port: 8080
+  port: 8081

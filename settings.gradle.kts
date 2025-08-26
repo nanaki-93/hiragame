@@ -30,3 +30,5 @@ gradle.settingsEvaluated {
 rootProject.name = "hiragame"
 
 include(":site")
+include(":shared")
+include(":backend")
