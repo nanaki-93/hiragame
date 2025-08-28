@@ -4,7 +4,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.5"
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.spring)
-
+    alias(libs.plugins.kotlin.jpa)
 }
 
 group = "com.github.nanaki_93"

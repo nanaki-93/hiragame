@@ -19,7 +19,7 @@ class BatchQuestionGenerationService(
 
     @Async
     fun generateBulkQuestions(
-        totalQuestions: Int = 10000,
+        totalQuestions: Int = 100,
         batchSize: Int = 20,
         delayBetweenBatches: Long = 2000
     ): CompletableFuture<String> {

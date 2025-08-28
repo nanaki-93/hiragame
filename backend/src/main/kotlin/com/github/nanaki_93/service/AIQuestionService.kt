@@ -9,72 +9,47 @@ import org.springframework.http.MediaType
 import org.springframework.beans.factory.annotation.Value
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.nanaki_93.config.ai.AiConfig
+import com.github.nanaki_93.config.ai.OpenAiConfig
 import com.github.nanaki_93.models.AIQuestion
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.repository.HiraganaQuestion
 import com.github.nanaki_93.repository.HiraganaQuestionRepository
 import org.slf4j.LoggerFactory
 import org.springframework.ai.chat.client.ChatClient
-import org.springframework.ai.chat.messages.UserMessage
 import org.springframework.ai.chat.prompt.ChatOptions
 
-import org.springframework.ai.chat.prompt.Prompt
 import org.springframework.ai.ollama.OllamaChatModel
 
 import org.springframework.http.HttpStatus
 
 @Service
 class AIQuestionService(
-    private val ollamaChatModel: OllamaChatModel,
+    ollamaChatModel: OllamaChatModel,
     private val restTemplate: RestTemplate = RestTemplate(),
     private val objectMapper: ObjectMapper = ObjectMapper(),
-    private val hiragamaRepository: HiraganaQuestionRepository
+    private val hiragamaRepository: HiraganaQuestionRepository,
+    private val aiConfig: AiConfig
 ) {
+    @Value("\${ai.service.provider:gemini}")
+    private lateinit var aiProvider: String
 
     private val logger = LoggerFactory.getLogger(AIQuestionService::class.java)
     private val chatClient = ChatClient.create(ollamaChatModel)
 
-    @Value("\${ai.service.provider:gemini}")
-    private lateinit var aiProvider: String
-
-    // OpenAI Configuration (backup)
-    @Value("\${openai.api.key:}")
-    private lateinit var openAiApiKey: String
-
-    @Value("\${openai.api.url:https://api.openai.com/v1/chat/completions}")
-    private lateinit var openAiApiUrl: String
-
-    // Gemini Configuration
-    @Value("\${gemini.api.key:}")
-    private lateinit var geminiApiKey: String
-
-    @Value("\${gemini.api.url:https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent}")
-    private lateinit var geminiApiUrl: String
-
-    @Value("\${ollama.api.url:http://localhost:11434/api/generate}")
-    private lateinit var ollamaApiUrl: String
-
-    @Value("\${ollama.model:llama3.2:1b}")
-    private lateinit var ollamaModel: String
 
 
     fun generateAndStoreWordQuestion(topic: String, difficulty: Int, nQuestions: Int): List<AIQuestion> {
         val response = generateWordQuestion(topic, difficulty, nQuestions)
-        val toDB = response.map { el ->
-            HiraganaQuestion(
-                hiragana = el.hiragana,
-                romanization = el.romanization,
-                translation = el.translation,
-                topic = el.topic,
-                difficulty = el.level
-            )
-        }
-        hiragamaRepository.saveAll(toDB)
-        return response
+        return storeQuestions(response)
     }
 
     fun generateAndStoreSentenceQuestion(topic: String, difficulty: Int, nQuestions: Int): List<AIQuestion> {
         val response = generateSentenceQuestion(topic, difficulty, nQuestions)
+        return storeQuestions(response)
+    }
+
+    private fun storeQuestions(response: List<AIQuestion>): List<AIQuestion> {
         val toDB = response.map { el ->
             HiraganaQuestion(
                 hiragana = el.hiragana,
@@ -84,9 +59,13 @@ class AIQuestionService(
                 difficulty = el.level
             )
         }
-        hiragamaRepository.saveAll(toDB)
+        val toSave =
+            toDB.filter { question -> hiragamaRepository.findHiraganaQuestionByHiragana(question.hiragana) == null }
+
+        hiragamaRepository.saveAll(toSave)
         return response
     }
+
     fun generateWordQuestion(topic: String, level: Int, nQuestions: Int): List<AIQuestion> {
         val prompt = """
         You are a Japanese language teacher. Generate exactly $nQuestions UNIQUE Japanese words related to "$topic".
@@ -96,11 +75,11 @@ class AIQuestionService(
         2. Use ONLY hiragana characters
         3. Words must be common and appropriate for Japanese learners
         4. Difficulty level: $level (1=beginner, 5=advanced)
-        5. Each line must follow this exact CSV format: hiragana,romanization,translation,topic,level
+        5. Each line must follow this exact CSV format: hiragana;romanization;translation;topic;level
         
         EXAMPLES (do not copy these):
-        ひらがな,hiragana,hiragana script,basics,1
-        さかな,sakana,fish,food,1
+        ひらがな;hiragana;hiragana script;basics;1
+        さかな;sakana;fish;food;1
         
         Generate exactly $nQuestions DIFFERENT words about $topic now:
     """.trimIndent()
@@ -118,11 +97,11 @@ class AIQuestionService(
         2. Use ONLY hiragana characters
         3. Sentences must be simple and grammatically correct
         4. Appropriate for Japanese learners at difficulty level $difficulty
-        5. Each line must follow this exact CSV format: hiragana,romanization,translation,topic,level
+        5. Each line must follow this exact CSV format: hiragana;romanization;translation;topic;level
         
         EXAMPLES (do not copy these):
-        きょうはあついです,kyou wa atsui desu,Today is hot,weather,$difficulty
-        わたしはがくせいです,watashi wa gakusei desu,I am a student,school,$difficulty
+        きょうはあついです;kyou wa atsui desu;Today is hot;weather;$difficulty
+        わたしはがくせいです;watashi wa gakusei desu;I am a student;school;$difficulty
         
         Generate exactly $nQuestions DIFFERENT sentences about $topic now:
     """.trimIndent()
@@ -259,7 +238,7 @@ class AIQuestionService(
             val response = chatClient.prompt()
                 .user(prompt)
                 .options(ChatOptions.builder()
-                    .temperature(0.8)
+                    .temperature(0.1)
                     .topK(40)
                     .topP(0.9)
                     .build())
@@ -279,27 +258,9 @@ class AIQuestionService(
 
     private fun callOllama(prompt: String): String {
         return try {
-            val requestBody = mapOf(
-                "model" to ollamaModel,
-                "prompt" to prompt,
-                "stream" to false,
-                "options" to mapOf(
-                    "temperature" to 0.8,      // Higher creativity
-                    "top_p" to 0.9,           // Nucleus sampling
-                    "top_k" to 40,            // Limit vocabulary choices
-                    "repeat_penalty" to 1.1,   // Penalize repetition
-                    "num_predict" to 500       // Limit response length
-                )
-            )
-
-            val headers = HttpHeaders().apply {
-                contentType = MediaType.APPLICATION_JSON
-            }
-
-            val request = HttpEntity(requestBody, headers)
 
             logger.info("Calling Ollama API with anti-repetition settings")
-            val response = restTemplate.postForEntity(ollamaApiUrl, request, String::class.java)
+            val response = restTemplate.postForEntity(aiConfig.getApiUrl(), aiConfig.getRequest(prompt), String::class.java)
 
             if (response.statusCode == HttpStatus.OK) {
                 extractOllamaContent(response.body ?: "")
@@ -326,33 +287,9 @@ class AIQuestionService(
 
 
     private fun callGemini(prompt: String): String {
-        val headers = HttpHeaders().apply {
-            contentType = MediaType.APPLICATION_JSON
-        }
-
-        val requestBody = mapOf(
-            "contents" to listOf(
-                mapOf(
-                    "parts" to listOf(
-                        mapOf("text" to prompt)
-                    )
-                )
-            ),
-            "generationConfig" to mapOf(
-                "temperature" to 0.8,
-                "topK" to 40, // Lower for more focused responses
-                "topP" to 0.95,
-                "maxOutputTokens" to 2048,
-                "responseMimeType" to "text/plain",
-                "stopSequences" to listOf<String>() // Let it generate full CSV
-            )
-        )
-
-        val request = HttpEntity(requestBody, headers)
-        val urlWithKey = "$geminiApiUrl?key=$geminiApiKey"
 
         try {
-            val response = restTemplate.postForObject(urlWithKey, request, String::class.java)
+            val response = restTemplate.postForObject(aiConfig.getApiUrl(), aiConfig.getRequest(prompt), String::class.java)
             return extractGeminiContent(response ?: "")
         } catch (e: Exception) {
             logger.error("Failed to call Gemini API: ${e.message}")
@@ -391,27 +328,10 @@ class AIQuestionService(
 
 
     private fun callOpenAI(prompt: String): String {
-        val headers = HttpHeaders().apply {
-            contentType = MediaType.APPLICATION_JSON
-            setBearerAuth(openAiApiKey)
-        }
-
-        val requestBody = mapOf(
-            "model" to "gpt-3.5-turbo",
-            "messages" to listOf(
-                mapOf(
-                    "role" to "user",
-                    "content" to prompt
-                )
-            ),
-            "max_tokens" to 150,
-            "temperature" to 0.7
-        )
-
-        val request = HttpEntity(requestBody, headers)
 
         try {
-            val response = restTemplate.postForObject(openAiApiUrl, request, String::class.java)
+            val response = restTemplate.postForObject(aiConfig.getApiUrl(), aiConfig.getRequest(prompt),
+                String::class.java)
             return extractContentFromResponse(response ?: "")
         } catch (e: Exception) {
             // Fallback to predefined content if AI call fails

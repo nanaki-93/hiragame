@@ -13,7 +13,7 @@ class BatchController(
 
     @PostMapping("/generate")
     fun startBulkGeneration(
-        @RequestParam(defaultValue = "10000") totalQuestions: Int,
+        @RequestParam(defaultValue = "100") totalQuestions: Int,
         @RequestParam(defaultValue = "5") batchSize: Int,
         @RequestParam(defaultValue = "3000") delayMs: Long
     ): CompletableFuture<String> {

@@ -33,6 +33,7 @@ data class HiraganaQuestion(
 
 @Repository
 interface HiraganaQuestionRepository : JpaRepository<HiraganaQuestion, UUID>{
+    fun findHiraganaQuestionByHiragana(hiragana: String): HiraganaQuestion?
     fun countByGameMode(gameMode: String): Long
 
 }
