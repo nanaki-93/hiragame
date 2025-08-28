@@ -1,7 +1,7 @@
 package com.github.nanaki_93.controller
 
-import com.github.nanaki_93.models.AIWordQuestion
-import com.github.nanaki_93.models.AISentenceQuestion
+import com.github.nanaki_93.models.AIQuestion
+
 import com.github.nanaki_93.service.AIQuestionService
 import org.springframework.web.bind.annotation.*
 
@@ -12,14 +12,14 @@ class AIController(
     private val aiQuestionService: AIQuestionService
 ) {
 
-    @GetMapping("/word")
-    fun generateWord(@RequestParam topic: String): List<AIWordQuestion> {
-        return aiQuestionService.generateWordQuestion(topic)
+    @GetMapping("/words")
+    fun generateWord(@RequestParam topic: String, @RequestParam difficulty: Int, @RequestParam nQuestions: Int): List<AIQuestion> {
+        return aiQuestionService.generateAndStoreWordQuestion(topic, difficulty, nQuestions)
     }
 
-    @GetMapping("/sentence")
-    fun generateSentence(@RequestParam topic: String): List<AISentenceQuestion> {
-        return aiQuestionService.generateSentenceQuestion(topic)
+    @GetMapping("/sentences")
+    fun generateSentence(@RequestParam topic: String, @RequestParam difficulty: Int, @RequestParam nQuestions: Int): List<AIQuestion> {
+        return aiQuestionService.generateAndStoreSentenceQuestion(topic,difficulty,nQuestions)
     }
 
     @GetMapping("/topics")

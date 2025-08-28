@@ -3,18 +3,12 @@ package com.github.nanaki_93.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AIWordQuestion(
-    val hiraganaWord: String,
+data class AIQuestion(
+    val hiragana: String,
     val romanization: String,
-    val englishWord: String,
-    val topic: String
+    val translation: String,
+    val topic: String,
+    val level: Int = 1,
 )
 
-@Serializable
-data class AISentenceQuestion(
-    val hiraganaSentence: String,
-    val romanization: String,
-    val englishSentence: String,
-    val topic: String
-)
 

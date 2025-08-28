@@ -1,0 +1,12 @@
+### GET request to example server
+GET http://localhost:8080/api/ai/words?
+    topic=food&
+    difficulty=1&
+    nQuestions=20
+
+###
+
+GET http://localhost:8080/api/ai/sentences?
+    topic=food&
+    difficulty=1&
+    nQuestions=20

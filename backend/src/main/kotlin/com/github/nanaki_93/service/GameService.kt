@@ -1,10 +1,9 @@
 package com.github.nanaki_93.service
 
-import com.github.nanaki_93.models.AISentenceQuestion
-import com.github.nanaki_93.models.AIWordQuestion
+import com.github.nanaki_93.models.AIQuestion
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.GameState
-import com.github.nanaki_93.models.HiraganaQuestion
+import com.github.nanaki_93.models.HiraganaQuestionDto
 import com.github.nanaki_93.models.getNextQuestion
 import com.github.nanaki_93.models.hiraganaLvMap
 import org.springframework.stereotype.Service
@@ -24,19 +23,19 @@ class GameService(private val aiQuestionService: AIQuestionService) {
 
     }
 
-    private fun hiraganaWordQuestions(topic: String): List<HiraganaQuestion> {
-        return wordToHiraganaQuestions(aiQuestionService.generateWordQuestion(topic))
+    private fun hiraganaWordQuestions(topic: String): List<HiraganaQuestionDto> {
+        return wordToHiraganaQuestions(aiQuestionService.generateWordQuestion(topic, 1, 10))
     }
 
-    private fun hiraganaSentenceQuestions(topic: String): List<HiraganaQuestion> {
-        return sentenceToHiraganaQuestions(aiQuestionService.generateSentenceQuestion(topic))
+    private fun hiraganaSentenceQuestions(topic: String): List<HiraganaQuestionDto> {
+        return sentenceToHiraganaQuestions(aiQuestionService.generateSentenceQuestion(topic, 1, 10))
     }
 
-    private fun wordToHiraganaQuestions(questions: List<AIWordQuestion>): List<HiraganaQuestion> {
-        return questions.map { HiraganaQuestion(it.hiraganaWord, it.romanization,it.englishWord) }
+    private fun wordToHiraganaQuestions(questions: List<AIQuestion>): List<HiraganaQuestionDto> {
+        return questions.map { HiraganaQuestionDto(it.hiragana, it.romanization,it.translation) }
     }
-    private fun sentenceToHiraganaQuestions(questions: List<AISentenceQuestion>): List<HiraganaQuestion> {
-        return questions.map { HiraganaQuestion(it.hiraganaSentence, it.romanization,it.englishSentence) }
+    private fun sentenceToHiraganaQuestions(questions: List<AIQuestion>): List<HiraganaQuestionDto> {
+        return questions.map { HiraganaQuestionDto(it.hiragana, it.romanization,it.translation) }
     }
 
     fun processAnswer(
@@ -54,7 +53,7 @@ class GameService(private val aiQuestionService: AIQuestionService) {
         var newList = gameState.hiraganaList
 
         if (isCorrect) {
-            newList = gameState.hiraganaList.filter { it.char != currentChar.char }
+            newList = gameState.hiraganaList.filter { it.hiragana != currentChar.hiragana }
         }
         if (newLevel > level) {
             newList = hiraganaLvMap[newLevel] ?: emptyList()

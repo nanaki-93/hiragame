@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: hiragame-postgres
+    environment:
+      POSTGRES_DB: hiragame
+      POSTGRES_USER: hiradmin
+      POSTGRES_PASSWORD: hiradmin
+      TZ: Europe/Rome
+      PGTZ: Europe/Rome
+    ports:
+      - "5455:5432"
+    volumes:
+      - postgres_hiragame:/var/lib/postgresql/data
+    restart: unless-stopped
+    command: >
+      postgres
+      -c timezone=Europe/Rome
+      -c log_timezone=Europe/Rome
+
+  ollama:
+    container_name: hiragame-ollama
+    image: ollama/ollama:latest
+    ports:
+      - '11434:11434'
+    volumes:
+      - ollama_hiragame:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  postgres_hiragame:
+  ollama_hiragame:

@@ -1,8 +1,6 @@
 package com.github.nanaki_93.service
 
 
-import com.github.nanaki_93.models.AIWordQuestion
-import com.github.nanaki_93.models.AISentenceQuestion
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.http.HttpEntity
@@ -11,15 +9,31 @@ import org.springframework.http.MediaType
 import org.springframework.beans.factory.annotation.Value
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.nanaki_93.models.AIQuestion
+import com.github.nanaki_93.models.GameMode
+import com.github.nanaki_93.repository.HiraganaQuestion
+import com.github.nanaki_93.repository.HiraganaQuestionRepository
 import org.slf4j.LoggerFactory
+import org.springframework.ai.chat.client.ChatClient
+import org.springframework.ai.chat.messages.UserMessage
+import org.springframework.ai.chat.prompt.ChatOptions
+
+import org.springframework.ai.chat.prompt.Prompt
+import org.springframework.ai.ollama.OllamaChatModel
+
+import org.springframework.http.HttpStatus
 
 @Service
 class AIQuestionService(
+    private val ollamaChatModel: OllamaChatModel,
     private val restTemplate: RestTemplate = RestTemplate(),
-    private val objectMapper: ObjectMapper = ObjectMapper()
+    private val objectMapper: ObjectMapper = ObjectMapper(),
+    private val hiragamaRepository: HiraganaQuestionRepository
 ) {
 
     private val logger = LoggerFactory.getLogger(AIQuestionService::class.java)
+    private val chatClient = ChatClient.create(ollamaChatModel)
+
     @Value("\${ai.service.provider:gemini}")
     private lateinit var aiProvider: String
 
@@ -37,75 +51,279 @@ class AIQuestionService(
     @Value("\${gemini.api.url:https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent}")
     private lateinit var geminiApiUrl: String
 
+    @Value("\${ollama.api.url:http://localhost:11434/api/generate}")
+    private lateinit var ollamaApiUrl: String
 
-    fun generateWordQuestion(topic: String): List<AIWordQuestion> {
+    @Value("\${ollama.model:llama3.2:1b}")
+    private lateinit var ollamaModel: String
+
+
+    fun generateAndStoreWordQuestion(topic: String, difficulty: Int, nQuestions: Int): List<AIQuestion> {
+        val response = generateWordQuestion(topic, difficulty, nQuestions)
+        val toDB = response.map { el ->
+            HiraganaQuestion(
+                hiragana = el.hiragana,
+                romanization = el.romanization,
+                translation = el.translation,
+                topic = el.topic,
+                difficulty = el.level
+            )
+        }
+        hiragamaRepository.saveAll(toDB)
+        return response
+    }
+
+    fun generateAndStoreSentenceQuestion(topic: String, difficulty: Int, nQuestions: Int): List<AIQuestion> {
+        val response = generateSentenceQuestion(topic, difficulty, nQuestions)
+        val toDB = response.map { el ->
+            HiraganaQuestion(
+                hiragana = el.hiragana,
+                romanization = el.romanization,
+                translation = el.translation,
+                topic = el.topic,
+                difficulty = el.level
+            )
+        }
+        hiragamaRepository.saveAll(toDB)
+        return response
+    }
+    fun generateWordQuestion(topic: String, level: Int, nQuestions: Int): List<AIQuestion> {
         val prompt = """
-            Generate exactly 10 Japanese words related to the topic "$topic" using ONLY hiragana characters.
-            The words should be appropriate for Japanese learners and use common vocabulary.
-            
-            IMPORTANT: Respond with ONLY valid JSON, no markdown formatting or code blocks.
-            Use this exact JSON format:
-            [
-                {
-                    "hiraganaWord": "ひらがな",
-                    "romanization": "hiragana",
-                    "englishWord": "english translation",
-                    "topic": "$topic"
-                },
-                {
-                    "hiraganaWord": "たべもの",
-                    "romanization": "tabemono",
-                    "englishWord": "food",
-                    "topic": "$topic"
-                }
-            ]
-            
-            Generate 10 complete entries following this exact pattern.
-        """.trimIndent()
+        You are a Japanese language teacher. Generate exactly $nQuestions UNIQUE Japanese words related to "$topic".
+        
+        STRICT REQUIREMENTS:
+        1. Each word must be DIFFERENT (no duplicates)
+        2. Use ONLY hiragana characters
+        3. Words must be common and appropriate for Japanese learners
+        4. Difficulty level: $level (1=beginner, 5=advanced)
+        5. Each line must follow this exact CSV format: hiragana,romanization,translation,topic,level
+        
+        EXAMPLES (do not copy these):
+        ひらがな,hiragana,hiragana script,basics,1
+        さかな,sakana,fish,food,1
+        
+        Generate exactly $nQuestions DIFFERENT words about $topic now:
+    """.trimIndent()
 
         val response = callAI(prompt)
-        return parseWordResponse(response, topic)
+        return removeDuplicatesAndParse(response, topic, GameMode.WORD, nQuestions)
+    }
+
+    fun generateSentenceQuestion(topic: String, difficulty: Int, nQuestions: Int): List<AIQuestion> {
+        val prompt = """
+        You are a Japanese language teacher. Generate exactly $nQuestions UNIQUE Japanese sentences about "$topic".
+        
+        STRICT REQUIREMENTS:
+        1. Each sentence must be DIFFERENT (no duplicates)
+        2. Use ONLY hiragana characters
+        3. Sentences must be simple and grammatically correct
+        4. Appropriate for Japanese learners at difficulty level $difficulty
+        5. Each line must follow this exact CSV format: hiragana,romanization,translation,topic,level
+        
+        EXAMPLES (do not copy these):
+        きょうはあついです,kyou wa atsui desu,Today is hot,weather,$difficulty
+        わたしはがくせいです,watashi wa gakusei desu,I am a student,school,$difficulty
+        
+        Generate exactly $nQuestions DIFFERENT sentences about $topic now:
+    """.trimIndent()
+
+        val response = callAI(prompt)
+        return removeDuplicatesAndParse(response, topic, GameMode.SENTENCE, nQuestions)
     }
 
 
-    fun generateSentenceQuestion(topic: String): List<AISentenceQuestion> {
-        val prompt = """
-            Generate exactly 10 simple Japanese sentences related to the topic "$topic" using ONLY hiragana characters.
-            The sentences should be appropriate for Japanese learners, grammatically correct, and easy to understand.
-            
-            IMPORTANT: Respond with ONLY valid JSON, no markdown formatting or code blocks.
-            Use this exact JSON format:
-            [
-                {
-                    "hiraganaSentence": "きょうはいいてんきです",
-                    "romanization": "kyou wa ii tenki desu",
-                    "englishSentence": "It's a nice day today",
-                    "topic": "$topic"
-                },
-                {
-                    "hiraganaSentence": "あさごはんをたべます",
-                    "romanization": "asagohan wo tabemasu",
-                    "englishSentence": "I eat breakfast",
-                    "topic": "$topic"
-                }
-            ]
-            
-            Generate 10 complete entries following this exact pattern.
-        """.trimIndent()
+    private fun removeDuplicatesAndParse(csvResponse: String, topic: String, gameMode: GameMode, requestedCount: Int): List<AIQuestion> {
+        try {
+            logger.info("Parsing CSV response and removing duplicates")
 
-        val response = callAI(prompt)
-        logger.info("AI Response: $response")
-        return parseSentenceResponse(response, topic)
+            val cleanedResponse = cleanCsvFromMarkdown(csvResponse.trim())
+            val questions = mutableListOf<AIQuestion>()
+            val seenHiragana = mutableSetOf<String>()
+
+            cleanedResponse.lines().forEach { line ->
+                if (line.isNotBlank() && line.contains(",")) {
+                    try {
+                        val parts = line.split(",").map { it.trim().removeSurrounding("\"") }
+                        if (parts.size >= 4) {
+                            val hiragana = parts[0]
+
+                            // Skip if we've already seen this hiragana
+                            if (!seenHiragana.contains(hiragana)) {
+                                seenHiragana.add(hiragana)
+                                questions.add(
+                                    AIQuestion(
+                                        hiragana = hiragana,
+                                        romanization = parts[1],
+                                        translation = parts[2],
+                                        topic = parts.getOrNull(3) ?: topic,
+                                        level = parts.getOrNull(4)?.toIntOrNull() ?: 1
+                                    )
+                                )
+                            } else {
+                                logger.debug("Skipping duplicate hiragana: $hiragana")
+                            }
+                        }
+                    } catch (e: Exception) {
+                        logger.warn("Failed to parse CSV line: $line", e)
+                    }
+                }
+            }
+
+            logger.info("Successfully parsed ${questions.size} unique questions from ${cleanedResponse.lines().size} total lines")
+
+            // If we don't have enough unique questions, generate more or use fallback
+            return if (questions.size >= requestedCount) {
+                questions.take(requestedCount)
+            } else {
+                logger.warn("Only got ${questions.size} unique questions, requested $requestedCount")
+                if (questions.isEmpty()) {
+                    getFallback(topic, gameMode)
+                } else {
+                    questions
+                }
+            }
+
+        } catch (e: Exception) {
+            logger.error("Failed to parse CSV response: ${e.message}")
+            return getFallback(topic, gameMode)
+        }
     }
 
+
+    private fun parseCsvResponse(csvResponse: String, topic: String, gameMode: GameMode): List<AIQuestion> {
+        try {
+            logger.info("Parsing CSV response: $csvResponse")
+
+            val cleanedResponse = cleanCsvFromMarkdown(csvResponse.trim())
+            val questions = mutableListOf<AIQuestion>()
+
+            cleanedResponse.lines().forEach { line ->
+                if (line.isNotBlank() && line.contains(",")) {
+                    try {
+                        val parts = line.split(",").map { it.trim().removeSurrounding("\"") }
+                        if (parts.size >= 4) {
+                            questions.add(
+                                AIQuestion(
+                                    hiragana = parts[0],
+                                    romanization = parts[1],
+                                    translation = parts[2],
+                                    topic = parts.getOrNull(3) ?: topic,
+                                    level = parts.getOrNull(4)?.toIntOrNull() ?: 1
+                                )
+                            )
+                        }
+                    } catch (e: Exception) {
+                        logger.warn("Failed to parse CSV line: $line", e)
+                        // Continue with next line instead of failing completely
+                    }
+                }
+            }
+
+            logger.info("Successfully parsed ${questions.size} questions from CSV")
+            return questions.ifEmpty { getFallback(topic, gameMode) }
+
+        } catch (e: Exception) {
+            logger.error("Failed to parse CSV response: ${e.message}")
+            return getFallback(topic, gameMode)
+        }
+    }
+
+    private fun cleanCsvFromMarkdown(text: String): String {
+        return text
+            .replace("```csv", "")
+            .replace("```", "")
+            .replace("CSV:", "")
+            .trim()
+            .lines()
+            .filter { it.isNotBlank() && !it.startsWith("#") }
+            .joinToString("\n")
+    }
 
     private fun callAI(prompt: String): String {
         return when (aiProvider.lowercase()) {
             "gemini" -> callGemini(prompt)
             "openai" -> callOpenAI(prompt)
-            else -> callGemini(prompt) // default to free Gemini
+            "ollama" -> callOllamaWithSpringAI(prompt)
+            else -> {
+                logger.warn("Unknown AI provider: $aiProvider, falling back to Local Ollama")
+                callOllama(prompt)
+            }
+
         }
     }
+
+    private fun callOllamaWithSpringAI(prompt: String): String {
+        return try {
+            logger.info("Calling Ollama via Spring AI with anti-repetition settings")
+
+            val response = chatClient.prompt()
+                .user(prompt)
+                .options(ChatOptions.builder()
+                    .temperature(0.8)
+                    .topK(40)
+                    .topP(0.9)
+                    .build())
+                .call()
+                .content()
+
+            logger.info("Received response from Spring AI: ${response?.take(100)}...")
+            response ?: ""
+
+        } catch (e: Exception) {
+            logger.error("Error calling Ollama via Spring AI: ${e.message}", e)
+            // Fallback to direct call
+            callOllama(prompt)
+        }
+    }
+
+
+    private fun callOllama(prompt: String): String {
+        return try {
+            val requestBody = mapOf(
+                "model" to ollamaModel,
+                "prompt" to prompt,
+                "stream" to false,
+                "options" to mapOf(
+                    "temperature" to 0.8,      // Higher creativity
+                    "top_p" to 0.9,           // Nucleus sampling
+                    "top_k" to 40,            // Limit vocabulary choices
+                    "repeat_penalty" to 1.1,   // Penalize repetition
+                    "num_predict" to 500       // Limit response length
+                )
+            )
+
+            val headers = HttpHeaders().apply {
+                contentType = MediaType.APPLICATION_JSON
+            }
+
+            val request = HttpEntity(requestBody, headers)
+
+            logger.info("Calling Ollama API with anti-repetition settings")
+            val response = restTemplate.postForEntity(ollamaApiUrl, request, String::class.java)
+
+            if (response.statusCode == HttpStatus.OK) {
+                extractOllamaContent(response.body ?: "")
+            } else {
+                logger.error("Ollama API call failed with status: ${response.statusCode}")
+                ""
+            }
+        } catch (e: Exception) {
+            logger.error("Error calling Ollama API: ${e.message}", e)
+            ""
+        }
+    }
+
+
+    private fun extractOllamaContent(response: String): String {
+        return try {
+            val jsonNode = objectMapper.readTree(response)
+            jsonNode.get("response")?.asText() ?: ""
+        } catch (e: Exception) {
+            logger.error("Error extracting content from Ollama response: ${e.message}", e)
+            ""
+        }
+    }
+
 
     private fun callGemini(prompt: String): String {
         val headers = HttpHeaders().apply {
@@ -121,11 +339,12 @@ class AIQuestionService(
                 )
             ),
             "generationConfig" to mapOf(
-                "temperature" to 0.7,
-                "topK" to 64,
+                "temperature" to 0.8,
+                "topK" to 40, // Lower for more focused responses
                 "topP" to 0.95,
-                "maxOutputTokens" to 800, // Increased from 150 to 800
-                "responseMimeType" to "text/plain"
+                "maxOutputTokens" to 2048,
+                "responseMimeType" to "text/plain",
+                "stopSequences" to listOf<String>() // Let it generate full CSV
             )
         )
 
@@ -134,11 +353,11 @@ class AIQuestionService(
 
         try {
             val response = restTemplate.postForObject(urlWithKey, request, String::class.java)
-            logger.info("Gemini Response: $response")
             return extractGeminiContent(response ?: "")
         } catch (e: Exception) {
             logger.error("Failed to call Gemini API: ${e.message}")
-            return "Failed to call Gemini API"
+            Thread.sleep(5000)
+            throw e
         }
     }
 
@@ -161,6 +380,7 @@ class AIQuestionService(
             return "Failed to parse Gemini response"
         }
     }
+
     private fun cleanJsonFromMarkdown(text: String): String {
         // Remove markdown code block markers if present
         return text
@@ -210,30 +430,8 @@ class AIQuestionService(
         }
     }
 
-    private fun parseWordResponse(aiResponse: String, topic: String): List<AIWordQuestion> {
-        try {
 
-            // Clean the response first
-            val cleanedResponse = cleanJsonFromMarkdown(aiResponse.trim())
-            val jsonNode: JsonNode = objectMapper.readTree(cleanedResponse)
-
-            return jsonNode.map { node ->
-                AIWordQuestion(
-                    hiraganaWord = node.path("hiraganaWord").asText(),
-                    romanization = node.path("romanization").asText(),
-                    englishWord = node.path("englishWord").asText(),
-                    topic = topic
-                )
-            }
-        } catch (e: Exception) {
-            logger.error("Failed to parse word response: ${e.message}")
-            // Fallback word based on topic
-            return getFallbackWord(topic)
-        }
-    }
-
-
-    private fun parseSentenceResponse(aiResponse: String, topic: String): List<AISentenceQuestion> {
+    private fun parseResponse(aiResponse: String, topic: String, gameMode: GameMode): List<AIQuestion> {
         try {
             logger.info("Parsing sentence response: $aiResponse")
 
@@ -243,54 +441,37 @@ class AIQuestionService(
 
             val jsonNode: JsonNode = objectMapper.readTree(cleanedResponse)
             return jsonNode.map { node ->
-                AISentenceQuestion(
-                    hiraganaSentence = node.path("hiraganaSentence").asText(),
+                AIQuestion(
+                    hiragana = node.path("hiragana").asText(),
                     romanization = node.path("romanization").asText(),
-                    englishSentence = node.path("englishSentence").asText(),
-                    topic = topic
+                    translation = node.path("translation").asText(),
+                    topic = topic,
+                    level = node.path("level").asInt()
                 )
             }
 
         } catch (e: Exception) {
             logger.error("Failed to parse sentence response: ${e.message}")
             // Fallback sentence based on topic
-            return getFallbackSentence(topic)
+            return getFallback(topic, gameMode)
         }
     }
 
 
-    private fun getFallbackWord(topic: String): List<AIWordQuestion> {
-        val fallbacks = mapOf(
-            "food" to listOf(AIWordQuestion("たべもの", "tabemono", " ",topic)),
-            "animals" to listOf(AIWordQuestion("いぬ", "inu", " ",topic)),
-            "colors" to listOf(AIWordQuestion("あか", "aka", " ",topic)),
-            "family" to listOf(AIWordQuestion("かぞく", "kazoku", " ",topic)),
-            "school" to listOf(AIWordQuestion("がっこう", "gakkou", " ",topic)),
-            "weather" to listOf(AIWordQuestion("てんき", "tenki", " ",topic)),
-            "time" to listOf(AIWordQuestion("じかん", "jikan", " ",topic)),
-            "body" to listOf(AIWordQuestion("からだ", "karada", " ",topic)),
-            "house" to listOf(AIWordQuestion("いえ", "ie", " ",topic)),
-            "nature" to listOf(AIWordQuestion("しぜん", "shizen", " ",topic))
-        )
+    private fun getFallback(topic: String, gameMode: GameMode): List<AIQuestion> {
+        return when (gameMode) {
+            GameMode.WORD -> listOf(AIQuestion("たべもの", "tabemono", " ", topic))
+            GameMode.SENTENCE -> listOf(
+                AIQuestion(
+                    "きょうはいいてんきです",
+                    "kyou wa ii tenki desu",
+                    "daily life",
+                    topic
+                )
+            )
 
-        return fallbacks[topic] ?: listOf(AIWordQuestion("にほん", "nihon", "",topic))
-    }
-
-    private fun getFallbackSentence(topic: String): List<AISentenceQuestion> {
-        val fallbacks = mapOf(
-            "daily life" to listOf(AISentenceQuestion("きょうはいいてんきです", "kyou wa ii tenki desu", "daily life", topic)),
-            "food" to listOf(AISentenceQuestion("ばんごはんをたべます", "bangohan wo tabemasu", " food", topic)),
-            "animals" to listOf(AISentenceQuestion("いぬがすきです", "inu ga suki desu", " animals", topic)),
-            "school" to listOf(AISentenceQuestion("がっこうにいきます", "gakkou ni ikimasu", " school", topic)),
-            "family" to listOf(AISentenceQuestion("かぞくとすんでいます", "kazoku to sunde imasu", " family", topic)),
-            "weather" to listOf(AISentenceQuestion("あめがふっています", "ame ga futte imasu", " weather", topic)),
-            "time" to listOf(AISentenceQuestion("いまなんじですか", "ima nanji desu ka", " time", topic)),
-            "greeting" to listOf(AISentenceQuestion("おはようございます", "ohayou gozaimasu", " greeting", topic)),
-            "shopping" to listOf(AISentenceQuestion("みせでかいものをします", "mise de kaimono wo shimasu", " shopping", topic)),
-            "travel" to listOf(AISentenceQuestion("りょこうにいきたいです", "ryokou ni ikitai desu", " travel", topic))
-        )
-
-        return fallbacks[topic] ?:listOf( AISentenceQuestion("にほんごをべんきょうします", "nihongo wo benkyou shimasu","", topic))
+            else -> listOf(AIQuestion("きょうはいいてんきです", "kyou wa ii tenki desu", "daily life", topic))
+        }
     }
 
     // Method to get available topics

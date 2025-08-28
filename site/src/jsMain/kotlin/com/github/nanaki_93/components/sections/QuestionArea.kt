@@ -38,7 +38,7 @@ fun QuestionArea(
         verticalArrangement = Arrangement.Center
     ) {
         gameState.currentChar?.let { char ->
-            SpanText(char.char, HiraganaCharStyle.toModifier())
+            SpanText(char.hiragana, HiraganaCharStyle.toModifier())
 
             SpanText(
                 "What is the romanization?",
