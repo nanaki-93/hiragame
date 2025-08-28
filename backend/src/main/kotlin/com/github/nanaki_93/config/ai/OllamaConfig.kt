@@ -1,12 +1,24 @@
 package com.github.nanaki_93.config.ai
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import kotlin.text.get
 
-class OllamaConfig : AiConfig {
+@Service
+@Profile("ollama")
+class OllamaConfig(
+    private val objectMapper: ObjectMapper = ObjectMapper(),
+    private val restTemplate: RestTemplate = RestTemplate()
+) : AiConfig {
 
+    private val logger = org.slf4j.LoggerFactory.getLogger(OllamaConfig::class.java)
     @Value("\${ollama.api.url:http://localhost:11434/api/generate}")
     private lateinit var ollamaApiUrl: String
 
@@ -35,5 +47,33 @@ class OllamaConfig : AiConfig {
         )
     )
 
+    override fun callApi(prompt: String): String {
+        return try {
+
+            logger.info("Calling Ollama API with anti-repetition settings")
+            val response = restTemplate.postForEntity(getApiUrl(), getRequest(prompt), String::class.java)
+
+            if (response.statusCode == HttpStatus.OK) {
+                extractOllamaContent(response.body ?: "")
+            } else {
+                logger.error("Ollama API call failed with status: ${response.statusCode}")
+                ""
+            }
+        } catch (e: Exception) {
+            logger.error("Error calling Ollama API: ${e.message}", e)
+            ""
+        }
+    }
+
+
+    private fun extractOllamaContent(response: String): String {
+        return try {
+            val jsonNode = objectMapper.readTree(response)
+            jsonNode.get("response")?.asText() ?: ""
+        } catch (e: Exception) {
+            logger.error("Error extracting content from Ollama response: ${e.message}", e)
+            ""
+        }
+    }
 
 }

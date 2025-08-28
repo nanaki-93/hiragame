@@ -24,20 +24,16 @@ import org.springframework.ai.ollama.OllamaChatModel
 import org.springframework.http.HttpStatus
 
 @Service
-class AIQuestionService(
-    ollamaChatModel: OllamaChatModel,
-    private val restTemplate: RestTemplate = RestTemplate(),
-    private val objectMapper: ObjectMapper = ObjectMapper(),
+abstract class AIQuestionService(
     private val hiragamaRepository: HiraganaQuestionRepository,
-    private val aiConfig: AiConfig
 ) {
     @Value("\${ai.service.provider:gemini}")
     private lateinit var aiProvider: String
 
     private val logger = LoggerFactory.getLogger(AIQuestionService::class.java)
-    private val chatClient = ChatClient.create(ollamaChatModel)
 
 
+    abstract fun callAI(prompt: String): String
 
     fun generateAndStoreWordQuestion(topic: String, difficulty: Int, nQuestions: Int): List<AIQuestion> {
         val response = generateWordQuestion(topic, difficulty, nQuestions)
@@ -111,7 +107,12 @@ class AIQuestionService(
     }
 
 
-    private fun removeDuplicatesAndParse(csvResponse: String, topic: String, gameMode: GameMode, requestedCount: Int): List<AIQuestion> {
+    private fun removeDuplicatesAndParse(
+        csvResponse: String,
+        topic: String,
+        gameMode: GameMode,
+        requestedCount: Int
+    ): List<AIQuestion> {
         try {
             logger.info("Parsing CSV response and removing duplicates")
 
@@ -168,45 +169,6 @@ class AIQuestionService(
         }
     }
 
-
-    private fun parseCsvResponse(csvResponse: String, topic: String, gameMode: GameMode): List<AIQuestion> {
-        try {
-            logger.info("Parsing CSV response: $csvResponse")
-
-            val cleanedResponse = cleanCsvFromMarkdown(csvResponse.trim())
-            val questions = mutableListOf<AIQuestion>()
-
-            cleanedResponse.lines().forEach { line ->
-                if (line.isNotBlank() && line.contains(",")) {
-                    try {
-                        val parts = line.split(",").map { it.trim().removeSurrounding("\"") }
-                        if (parts.size >= 4) {
-                            questions.add(
-                                AIQuestion(
-                                    hiragana = parts[0],
-                                    romanization = parts[1],
-                                    translation = parts[2],
-                                    topic = parts.getOrNull(3) ?: topic,
-                                    level = parts.getOrNull(4)?.toIntOrNull() ?: 1
-                                )
-                            )
-                        }
-                    } catch (e: Exception) {
-                        logger.warn("Failed to parse CSV line: $line", e)
-                        // Continue with next line instead of failing completely
-                    }
-                }
-            }
-
-            logger.info("Successfully parsed ${questions.size} questions from CSV")
-            return questions.ifEmpty { getFallback(topic, gameMode) }
-
-        } catch (e: Exception) {
-            logger.error("Failed to parse CSV response: ${e.message}")
-            return getFallback(topic, gameMode)
-        }
-    }
-
     private fun cleanCsvFromMarkdown(text: String): String {
         return text
             .replace("```csv", "")
@@ -218,167 +180,7 @@ class AIQuestionService(
             .joinToString("\n")
     }
 
-    private fun callAI(prompt: String): String {
-        return when (aiProvider.lowercase()) {
-            "gemini" -> callGemini(prompt)
-            "openai" -> callOpenAI(prompt)
-            "ollama" -> callOllamaWithSpringAI(prompt)
-            else -> {
-                logger.warn("Unknown AI provider: $aiProvider, falling back to Local Ollama")
-                callOllama(prompt)
-            }
-
-        }
-    }
-
-    private fun callOllamaWithSpringAI(prompt: String): String {
-        return try {
-            logger.info("Calling Ollama via Spring AI with anti-repetition settings")
-
-            val response = chatClient.prompt()
-                .user(prompt)
-                .options(ChatOptions.builder()
-                    .temperature(0.1)
-                    .topK(40)
-                    .topP(0.9)
-                    .build())
-                .call()
-                .content()
-
-            logger.info("Received response from Spring AI: ${response?.take(100)}...")
-            response ?: ""
-
-        } catch (e: Exception) {
-            logger.error("Error calling Ollama via Spring AI: ${e.message}", e)
-            // Fallback to direct call
-            callOllama(prompt)
-        }
-    }
-
-
-    private fun callOllama(prompt: String): String {
-        return try {
-
-            logger.info("Calling Ollama API with anti-repetition settings")
-            val response = restTemplate.postForEntity(aiConfig.getApiUrl(), aiConfig.getRequest(prompt), String::class.java)
-
-            if (response.statusCode == HttpStatus.OK) {
-                extractOllamaContent(response.body ?: "")
-            } else {
-                logger.error("Ollama API call failed with status: ${response.statusCode}")
-                ""
-            }
-        } catch (e: Exception) {
-            logger.error("Error calling Ollama API: ${e.message}", e)
-            ""
-        }
-    }
-
-
-    private fun extractOllamaContent(response: String): String {
-        return try {
-            val jsonNode = objectMapper.readTree(response)
-            jsonNode.get("response")?.asText() ?: ""
-        } catch (e: Exception) {
-            logger.error("Error extracting content from Ollama response: ${e.message}", e)
-            ""
-        }
-    }
-
-
-    private fun callGemini(prompt: String): String {
-
-        try {
-            val response = restTemplate.postForObject(aiConfig.getApiUrl(), aiConfig.getRequest(prompt), String::class.java)
-            return extractGeminiContent(response ?: "")
-        } catch (e: Exception) {
-            logger.error("Failed to call Gemini API: ${e.message}")
-            Thread.sleep(5000)
-            throw e
-        }
-    }
-
-
-    private fun extractGeminiContent(response: String): String {
-        try {
-            val jsonNode: JsonNode = objectMapper.readTree(response)
-            val textContent = jsonNode.path("candidates")
-                .get(0)
-                .path("content")
-                .path("parts")
-                .get(0)
-                .path("text")
-                .asText()
-
-            // Clean up markdown code blocks if present
-            return cleanJsonFromMarkdown(textContent)
-        } catch (e: Exception) {
-            logger.error("Failed to parse Gemini response: ${e.message}")
-            return "Failed to parse Gemini response"
-        }
-    }
-
-    private fun cleanJsonFromMarkdown(text: String): String {
-        // Remove markdown code block markers if present
-        return text
-            .replace("```json", "")
-            .replace("```", "")
-            .trim()
-    }
-
-
-    private fun callOpenAI(prompt: String): String {
-
-        try {
-            val response = restTemplate.postForObject(aiConfig.getApiUrl(), aiConfig.getRequest(prompt),
-                String::class.java)
-            return extractContentFromResponse(response ?: "")
-        } catch (e: Exception) {
-            // Fallback to predefined content if AI call fails
-            logger.error("Failed to call OpenAI API: ${e.message}")
-            return "Failed to call OpenAI API"
-        }
-    }
-
-    private fun extractContentFromResponse(response: String): String {
-        try {
-            val jsonNode: JsonNode = objectMapper.readTree(response)
-            return jsonNode.path("choices").get(0).path("message").path("content").asText()
-        } catch (e: Exception) {
-            logger.error("Failed to parse AI response: ${e.message}")
-            return "Failed to parse AI response"
-        }
-    }
-
-
-    private fun parseResponse(aiResponse: String, topic: String, gameMode: GameMode): List<AIQuestion> {
-        try {
-            logger.info("Parsing sentence response: $aiResponse")
-
-            // Clean the response first
-            val cleanedResponse = cleanJsonFromMarkdown(aiResponse.trim())
-            logger.info("Cleaned sentence response: $cleanedResponse")
-
-            val jsonNode: JsonNode = objectMapper.readTree(cleanedResponse)
-            return jsonNode.map { node ->
-                AIQuestion(
-                    hiragana = node.path("hiragana").asText(),
-                    romanization = node.path("romanization").asText(),
-                    translation = node.path("translation").asText(),
-                    topic = topic,
-                    level = node.path("level").asInt()
-                )
-            }
-
-        } catch (e: Exception) {
-            logger.error("Failed to parse sentence response: ${e.message}")
-            // Fallback sentence based on topic
-            return getFallback(topic, gameMode)
-        }
-    }
-
-
-    private fun getFallback(topic: String, gameMode: GameMode): List<AIQuestion> {
+    protected fun getFallback(topic: String, gameMode: GameMode): List<AIQuestion> {
         return when (gameMode) {
             GameMode.WORD -> listOf(AIQuestion("たべもの", "tabemono", " ", topic))
             GameMode.SENTENCE -> listOf(

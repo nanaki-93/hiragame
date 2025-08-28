@@ -1,5 +1,6 @@
 package com.github.nanaki_93.config.ai
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.HttpEntity
 import org.springframework.stereotype.Service
 
@@ -7,4 +8,10 @@ import org.springframework.stereotype.Service
 interface AiConfig {
     fun getApiUrl(): String
     fun getRequest(prompt: String): HttpEntity<Map<String, Any>>
+
+    fun callApi(prompt: String): String
+    fun cleanJsonFromMarkdown(text: String): String = text
+        .replace("```json", "")
+        .replace("```", "")
+        .trim()
 }

@@ -21,13 +21,13 @@ class BatchQuestionGenerationService(
     fun generateBulkQuestions(
         totalQuestions: Int = 100,
         batchSize: Int = 20,
-        delayBetweenBatches: Long = 2000
+        delayBetweenBatches: Long = 2000,
+        gameMode: GameMode = GameMode.WORD,
+        difficulty: Int = 1,
     ): CompletableFuture<String> {
         return CompletableFuture.supplyAsync {
             try {
                 val topics = aiQuestionService.getAvailableTopics()
-                val difficulties = listOf(1, 2, 3, 4, 5)
-                val gameTypes = listOf(GameMode.WORD, GameMode.SENTENCE)
 
                 val totalSaved = AtomicInteger(0)
                 val totalBatches = (totalQuestions / batchSize) + if (totalQuestions % batchSize > 0) 1 else 0
@@ -37,12 +37,9 @@ class BatchQuestionGenerationService(
                 for (batch in 1..totalBatches) {
                     try {
                         val questionsInThisBatch = minOf(batchSize, totalQuestions - ((batch - 1) * batchSize))
-
                         val topic = topics[(batch - 1) % topics.size]
-                        val difficulty = difficulties[(batch - 1) % difficulties.size]
-                        val gameType = gameTypes[(batch - 1) % gameTypes.size]
 
-                        val questions = if (gameType == GameMode.WORD) {
+                        val questions = if (gameMode == GameMode.WORD) {
                             aiQuestionService.generateWordQuestion(topic, difficulty, questionsInThisBatch)
                         } else {
                             aiQuestionService.generateSentenceQuestion(topic, difficulty, questionsInThisBatch)
@@ -56,14 +53,16 @@ class BatchQuestionGenerationService(
                                     translation = it.translation,
                                     topic = it.topic,
                                     difficulty = it.level,
-                                    gameMode = gameType.name
+                                    gameMode = gameMode.name
                                 )
                             }
 
-                            hiraganaRepository.saveAll(dbEntities)
+                            //filter duplicates
+                            val dbEntitiesFiltered = dbEntities.distinctBy { it.hiragana }
+                            hiraganaRepository.saveAll(dbEntitiesFiltered)
                             val saved = totalSaved.addAndGet(questions.size)
 
-                            logger.info("Batch $batch/$totalBatches completed. Got ${questions.size} questions. Topic: $topic, Difficulty: $difficulty, Type: $gameType. Total saved: $saved")
+                            logger.info("Batch $batch/$totalBatches completed. Got ${questions.size} questions, filtered : ${dbEntitiesFiltered}. Topic: $topic, Difficulty: $difficulty, Type: $gameMode. Total saved: $saved")
                         } else {
                             logger.warn("Batch $batch returned no questions")
                         }

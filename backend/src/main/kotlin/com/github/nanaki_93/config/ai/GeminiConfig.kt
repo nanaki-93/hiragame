@@ -1,14 +1,23 @@
 package com.github.nanaki_93.config.ai
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
 
 @Service
-class GeminiConfig : AiConfig {
+@Profile("gemini", "default")
+class GeminiConfig(
+    private val objectMapper: ObjectMapper = ObjectMapper(),
+    private val restTemplate: RestTemplate = RestTemplate()
+) : AiConfig {
 
+    private val logger = org.slf4j.LoggerFactory.getLogger(GeminiConfig::class.java)
     // Gemini Configuration
     @Value("\${gemini.api.key:}")
     private lateinit var geminiApiKey: String
@@ -17,13 +26,36 @@ class GeminiConfig : AiConfig {
     private lateinit var geminiApiUrl: String
 
 
-    override fun getApiUrl(): String = "$geminiApiUrl?key=$geminiApiKey"
+    override fun callApi(prompt: String): String {
+        val response = restTemplate.postForObject(getApiUrl(), getRequest(prompt), String::class.java) ?: ""
+        return extractContentFromResponse(response)
+    }
 
+    override fun getApiUrl(): String = "$geminiApiUrl?key=$geminiApiKey"
 
     override fun getRequest(prompt: String): HttpEntity<Map<String, Any>> {
         return HttpEntity(getRequestBody(prompt), HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
         })
+    }
+
+    private fun extractContentFromResponse(response: String): String {
+        try {
+            val jsonNode: JsonNode = objectMapper.readTree(response)
+            val textContent = jsonNode.path("candidates")
+                .get(0)
+                .path("content")
+                .path("parts")
+                .get(0)
+                .path("text")
+                .asText()
+
+            // Clean up markdown code blocks if present
+            return cleanJsonFromMarkdown(textContent)
+        } catch (e: Exception) {
+            logger.error("Failed to parse Gemini response: ${e.message}")
+            return "Failed to parse Gemini response"
+        }
     }
 
 
