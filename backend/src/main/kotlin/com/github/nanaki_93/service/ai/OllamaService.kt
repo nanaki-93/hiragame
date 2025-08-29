@@ -1,4 +1,4 @@
-package com.github.nanaki_93.config.ai
+package com.github.nanaki_93.service.ai
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
@@ -9,16 +9,15 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
-import kotlin.text.get
 
 @Service
 @Profile("ollama")
-class OllamaConfig(
+class OllamaService(
     private val objectMapper: ObjectMapper = ObjectMapper(),
     private val restTemplate: RestTemplate = RestTemplate()
-) : AiConfig {
+) : AiService {
 
-    private val logger = org.slf4j.LoggerFactory.getLogger(OllamaConfig::class.java)
+    private val logger = org.slf4j.LoggerFactory.getLogger(OllamaService::class.java)
     @Value("\${ollama.api.url:http://localhost:11434/api/generate}")
     private lateinit var ollamaApiUrl: String
 
@@ -26,9 +25,7 @@ class OllamaConfig(
     private lateinit var ollamaModel: String
 
 
-    override fun getApiUrl(): String = ollamaApiUrl
-
-    override fun getRequest(prompt: String): HttpEntity<Map<String, Any>> = HttpEntity(getRequestBody(prompt),
+    fun getRequest(prompt: String): HttpEntity<Map<String, Any>> = HttpEntity(getRequestBody(prompt),
         HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
         })
@@ -51,7 +48,7 @@ class OllamaConfig(
         return try {
 
             logger.info("Calling Ollama API with anti-repetition settings")
-            val response = restTemplate.postForEntity(getApiUrl(), getRequest(prompt), String::class.java)
+            val response = restTemplate.postForEntity(ollamaApiUrl, getRequest(prompt), String::class.java)
 
             if (response.statusCode == HttpStatus.OK) {
                 extractOllamaContent(response.body ?: "")
@@ -64,8 +61,6 @@ class OllamaConfig(
             ""
         }
     }
-
-
     private fun extractOllamaContent(response: String): String {
         return try {
             val jsonNode = objectMapper.readTree(response)

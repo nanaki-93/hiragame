@@ -1,9 +1,8 @@
-package com.github.nanaki_93.config.ai
+package com.github.nanaki_93.service.ai
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -14,12 +13,12 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 @Profile("openai")
-class OpenAiConfig(
+class OpenAiService(
     private val objectMapper: ObjectMapper = ObjectMapper(),
     private val restTemplate: RestTemplate = RestTemplate()
-) : AiConfig {
+) : AiService {
 
-    private val logger = org.slf4j.LoggerFactory.getLogger(OpenAiConfig::class.java)
+    private val logger = org.slf4j.LoggerFactory.getLogger(OpenAiService::class.java)
 
     @Value("\${openai.api.key:}")
     private lateinit var openAiApiKey: String
@@ -29,12 +28,11 @@ class OpenAiConfig(
 
 
     override fun callApi(prompt: String): String {
-        val response = restTemplate.postForObject(getApiUrl(), getRequest(prompt), String::class.java) ?: ""
+        val response = restTemplate.postForObject(openAiApiUrl, getRequest(prompt), String::class.java) ?: ""
         return extractContentFromResponse(response)
     }
 
-    override fun getApiUrl(): String = openAiApiUrl
-    override fun getRequest(prompt: String): HttpEntity<Map<String, Any>> =
+    fun getRequest(prompt: String): HttpEntity<Map<String, Any>> =
         HttpEntity(openAIReqBody(prompt), openAIHeaders(openAiApiKey))
 
     private fun openAIHeaders(openAiApiKey: String) = HttpHeaders().apply {

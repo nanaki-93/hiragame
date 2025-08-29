@@ -1,7 +1,8 @@
-package com.github.nanaki_93.config.ai
+package com.github.nanaki_93.service.ai
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.nanaki_93.util.CleanUtil.cleanJsonFromMarkdown
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpEntity
@@ -12,32 +13,29 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 @Profile("gemini", "default")
-class GeminiConfig(
+class GeminiService(
     private val objectMapper: ObjectMapper = ObjectMapper(),
     private val restTemplate: RestTemplate = RestTemplate()
-) : AiConfig {
+) : AiService {
 
-    private val logger = org.slf4j.LoggerFactory.getLogger(GeminiConfig::class.java)
-    // Gemini Configuration
+    private val logger = org.slf4j.LoggerFactory.getLogger(GeminiService::class.java)
     @Value("\${gemini.api.key:}")
     private lateinit var geminiApiKey: String
-
     @Value("\${gemini.api.url:https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent}")
     private lateinit var geminiApiUrl: String
 
 
     override fun callApi(prompt: String): String {
-        val response = restTemplate.postForObject(getApiUrl(), getRequest(prompt), String::class.java) ?: ""
+        val response =
+            restTemplate.postForObject("$geminiApiUrl?key=$geminiApiKey", getRequest(prompt), String::class.java) ?: ""
         return extractContentFromResponse(response)
     }
 
-    override fun getApiUrl(): String = "$geminiApiUrl?key=$geminiApiKey"
 
-    override fun getRequest(prompt: String): HttpEntity<Map<String, Any>> {
-        return HttpEntity(getRequestBody(prompt), HttpHeaders().apply {
+    fun getRequest(prompt: String): HttpEntity<Map<String, Any>> =
+        HttpEntity(getRequestBody(prompt), HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
         })
-    }
 
     private fun extractContentFromResponse(response: String): String {
         try {

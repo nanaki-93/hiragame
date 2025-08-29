@@ -11,4 +11,3 @@ data class AIQuestion(
     val level: Int = 1,
 )
 
-
