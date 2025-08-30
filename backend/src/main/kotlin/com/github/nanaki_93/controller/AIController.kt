@@ -1,6 +1,8 @@
 package com.github.nanaki_93.controller
 
 import com.github.nanaki_93.models.AIQuestion
+import com.github.nanaki_93.models.GameMode
+import com.github.nanaki_93.models.Level
 
 import com.github.nanaki_93.service.AIQuestionService
 import com.github.nanaki_93.service.BatchQuestionGenerationService
@@ -16,13 +18,13 @@ class AIController(
 ) {
 
     @GetMapping("/words")
-    fun generateWord(@RequestParam topic: String, @RequestParam difficulty: Int, @RequestParam nQuestions: Int): List<AIQuestion> {
-        return aiQuestionService.generateAndStoreWordQuestion(topic, difficulty, nQuestions)
+    fun generateWord(@RequestParam topic: String, @RequestParam level: String, @RequestParam nQuestions: Int): List<AIQuestion> {
+        return aiQuestionService.generateAndStoreWordQuestion(topic, level.let { Level.valueOf(it) }, nQuestions)
     }
 
     @GetMapping("/sentences")
-    fun generateSentence(@RequestParam topic: String, @RequestParam difficulty: Int, @RequestParam nQuestions: Int): List<AIQuestion> {
-        return aiQuestionService.generateAndStoreSentenceQuestion(topic,difficulty,nQuestions)
+    fun generateSentence(@RequestParam topic: String, @RequestParam level: String, @RequestParam nQuestions: Int): List<AIQuestion> {
+        return aiQuestionService.generateAndStoreSentenceQuestion(topic,level.let { Level.valueOf(it) },nQuestions)
     }
 
     @GetMapping("/topics")
@@ -35,9 +37,10 @@ class AIController(
     fun startBulkGeneration(
         @RequestParam(defaultValue = "100") totalQuestions: Int,
         @RequestParam(defaultValue = "5") batchSize: Int,
-        @RequestParam(defaultValue = "3000") delayMs: Long
+        @RequestParam(defaultValue = "3000") delayMs: Long,
+        @RequestParam(defaultValue = "WORD") gameMode: String,
     ): CompletableFuture<String> {
-        return batchService.generateBulkQuestions(totalQuestions, batchSize, delayMs)
+        return batchService.generateBulkQuestions(totalQuestions, batchSize, delayMs, gameMode.let { GameMode.valueOf(it) })
     }
 
     @GetMapping("/batch-status")

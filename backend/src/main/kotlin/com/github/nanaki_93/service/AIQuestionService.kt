@@ -4,6 +4,8 @@ package com.github.nanaki_93.service
 import org.springframework.stereotype.Service
 import com.github.nanaki_93.service.ai.AiService
 import com.github.nanaki_93.models.AIQuestion
+import com.github.nanaki_93.models.GameMode
+import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.repository.HiraganaQuestion
 import com.github.nanaki_93.repository.HiraganaQuestionRepository
 import com.github.nanaki_93.util.CleanUtil.cleanCsvFromMarkdown
@@ -26,32 +28,40 @@ class AIQuestionService(
         }
     }
 
-    fun generateAndStoreWordQuestion(topic: String, difficulty: Int, nQuestions: Int): List<AIQuestion> {
-        val response = generateWordQuestion(topic, difficulty, nQuestions)
-        return storeQuestions(response)
+    fun generateAndStoreWordQuestion(
+        topic: String = "food",
+        level: Level = Level.N5,
+        nQuestions: Int = 5
+    ): List<AIQuestion> {
+        val response = generateWordQuestion(topic, level, nQuestions)
+        return storeQuestions(response, GameMode.WORD)
     }
 
-    fun generateAndStoreSentenceQuestion(topic: String, difficulty: Int, nQuestions: Int): List<AIQuestion> {
-        val response = generateSentenceQuestion(topic, difficulty, nQuestions)
-        return storeQuestions(response)
+    fun generateAndStoreSentenceQuestion(
+        topic: String = "food",
+        level: Level = Level.N5,
+        nQuestions: Int = 5
+    ): List<AIQuestion> {
+        val response = generateSentenceQuestion(topic, level, nQuestions)
+        return storeQuestions(response, GameMode.SENTENCE)
     }
 
 
-    fun generateWordQuestion(topic: String, level: Int, nQuestions: Int): List<AIQuestion> {
+    fun generateWordQuestion(topic: String, level: Level, nQuestions: Int): List<AIQuestion> {
         val prompt = aiService.getWordsPrompt(topic, level, nQuestions)
         val response = callAI(prompt)
         return removeDuplicatesAndParse(response, topic)
     }
 
-    fun generateSentenceQuestion(topic: String, difficulty: Int, nQuestions: Int): List<AIQuestion> {
-        val prompt = aiService.getSentencesPrompt(topic, difficulty, nQuestions)
+    fun generateSentenceQuestion(topic: String, level: Level, nQuestions: Int): List<AIQuestion> {
+        val prompt = aiService.getSentencesPrompt(topic, level, nQuestions)
         val response = callAI(prompt)
         return removeDuplicatesAndParse(response, topic)
     }
 
 
-    private fun storeQuestions(response: List<AIQuestion>): List<AIQuestion> {
-        response.map { it.toHiraganaQuestion() }
+    fun storeQuestions(response: List<AIQuestion>, gameMode: GameMode): List<AIQuestion> {
+        response.map { it.toHiraganaQuestion(gameMode) }
             .let { toDB -> toDB.filterNot { it.hiragana in findExistingHiragana(toDB) } }
             .takeIf { it.isNotEmpty() }
             ?.let {
@@ -92,7 +102,7 @@ class AIQuestionService(
     private fun fromCsvLineToQuestion(line: String, topic: String): AIQuestion? {
         return try {
             val parts = line.split(";").map { it.trim().removeSurrounding("\"") }
-            AIQuestion(parts[0], parts[1], parts[2], topic, parts[3].toInt())
+            AIQuestion(parts[0], parts[1], parts[2], topic, Level.valueOf(parts[3]))
         } catch (e: Exception) {
             logger.warn("Failed to parse CSV line: $line - ${e.message}")
             null
@@ -101,6 +111,7 @@ class AIQuestionService(
 
 
     // Method to get available topics
+    // TODO GET MORE TOPICS
     fun getAvailableTopics(): List<String> {
         return listOf(
             "food", "animals", "colors", "family", "school",

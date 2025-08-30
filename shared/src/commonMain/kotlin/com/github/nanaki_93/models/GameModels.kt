@@ -8,6 +8,15 @@ enum class GameMode(val displayName: String) {
     WORD("Word"),
     SENTENCE("Sentence")
 }
+enum class Level(val displayName: String) {
+    N5("N5"),
+    N5_PLUS("N5+"),
+    N4("N4"),
+    N4_PLUS("N4+"),
+    N3("N3"),
+    N2("N2"),
+    N1("N1");
+}
 
 @Serializable
 data class HiraganaQuestionDto(
@@ -15,7 +24,7 @@ data class HiraganaQuestionDto(
     val romanization: String,
     val translation: String? = null,
     val topic: String = "",
-    val difficulty: Int = 1
+    val level: Level = Level.N5
 )
 
 @Serializable

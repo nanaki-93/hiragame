@@ -8,6 +8,6 @@ data class AIQuestion(
     val romanization: String,
     val translation: String,
     val topic: String,
-    val level: Int = 1,
+    val level: Level = Level.N5,
 )
 

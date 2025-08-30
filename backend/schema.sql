@@ -8,6 +8,7 @@ CREATE TABLE if not exists hiragana_questions
     romanization VARCHAR(255) NOT NULL,
     translation  VARCHAR(255),
     topic        VARCHAR(255) NOT NULL DEFAULT '',
-    difficulty   INTEGER      NOT NULL DEFAULT 1,
-    game_mode    VARCHAR(255) NOT NULL
+    level        VARCHAR(255) NOT NULL DEFAULT 1,
+    game_mode    VARCHAR(255) NOT NULL,
+    created_at   TIMESTAMP    NOT NULL DEFAULT NOW()
 );

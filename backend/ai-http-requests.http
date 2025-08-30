@@ -1,22 +1,22 @@
 ### GET request to example server
 GET http://localhost:8080/api/ai/words?
     topic=food&
-    difficulty=5&
+    level=5&
     nQuestions=20
 
 ###
 
 GET http://localhost:8080/api/ai/sentences?
     topic=sport&
-    difficulty=4&
-    nQuestions=50
+    level=4&
+    nQuestions=5
 
 ###
-POST http://localhost:8080/api/batch/generate?
-    totalQuestions=100&
-    batchSize=20&
-    delayMs=3000
+POST http://localhost:8080/api/ai/batch-generate?
+    totalQuestions={{$random.integer(100)}}&
+    batchSize={{$random.integer(100)}}&
+    delayMs={{$random.integer(100)}}
 
 ###
 
-GET http://localhost:8080/api/batch/status
+GET http://localhost:8080/api/batch/batch-status

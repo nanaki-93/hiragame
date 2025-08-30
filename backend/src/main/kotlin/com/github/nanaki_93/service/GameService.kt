@@ -4,6 +4,7 @@ import com.github.nanaki_93.models.AIQuestion
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.GameState
 import com.github.nanaki_93.models.HiraganaQuestionDto
+import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.models.getNextQuestion
 import com.github.nanaki_93.models.hiraganaLvMap
 import org.springframework.stereotype.Service
@@ -24,11 +25,11 @@ class GameService(private val aiQuestionService: AIQuestionService) {
     }
 
     private fun hiraganaWordQuestions(topic: String): List<HiraganaQuestionDto> {
-        return wordToHiraganaQuestions(aiQuestionService.generateWordQuestion(topic, 1, 10))
+        return wordToHiraganaQuestions(aiQuestionService.generateWordQuestion(topic, Level.N5, 10))
     }
 
     private fun hiraganaSentenceQuestions(topic: String): List<HiraganaQuestionDto> {
-        return sentenceToHiraganaQuestions(aiQuestionService.generateSentenceQuestion(topic, 1, 10))
+        return sentenceToHiraganaQuestions(aiQuestionService.generateSentenceQuestion(topic, Level.N5, 10))
     }
 
     private fun wordToHiraganaQuestions(questions: List<AIQuestion>): List<HiraganaQuestionDto> {

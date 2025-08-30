@@ -1,11 +1,14 @@
 package com.github.nanaki_93.service
 
 
-import com.github.nanaki_93.models.AIQuestion
+import com.github.nanaki_93.model.BatchParameters
+import com.github.nanaki_93.model.BatchResult
+import com.github.nanaki_93.model.GenerationContext
 import com.github.nanaki_93.models.GameMode
+import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.repository.HiraganaQuestionRepository
-import com.github.nanaki_93.util.toHiraganaQuestion
 import org.slf4j.LoggerFactory
+
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import java.util.concurrent.atomic.AtomicInteger
@@ -66,7 +69,7 @@ class BatchQuestionGenerationService(
             logger.info(
                 "Batch $batchNumber/${context.totalBatches} completed. " +
                         "Got ${batchResult.questionsRequested} questions " +
-                        "Topic: ${batchResult.topic}, Difficulty: ${batchResult.difficulty}, " +
+                        "Topic: ${batchResult.topic}, Difficulty: ${batchResult.level}, " +
                         "Total saved: ${batchResult.questionsInserted}"
             )
 
@@ -84,7 +87,7 @@ class BatchQuestionGenerationService(
             questionsInThisBatch = calculateQuestionsInBatch(context, batchNumber),
             topic = selectTopicForBatch(context.topics, batchNumber),
             gameMode = context.gameMode,
-            difficulty = calculateDifficultyForBatch(batchNumber)
+            level = calculateDifficultyForBatch(batchNumber)
         )
 
 
@@ -92,7 +95,7 @@ class BatchQuestionGenerationService(
             questionsRequested = bp.questionsInThisBatch,
             questionsInserted = insertQuestionBatch(bp),
             topic = bp.topic,
-            difficulty = bp.difficulty
+            level = bp.level
         )
     }
 
@@ -102,29 +105,23 @@ class BatchQuestionGenerationService(
     private fun selectTopicForBatch(topics: List<String>, batchNumber: Int): String =
         topics[(batchNumber - 1) % topics.size]
 
-    private fun calculateDifficultyForBatch(batchNumber: Int): Int = batchNumber % 5 + 1
+    private fun calculateDifficultyForBatch(batchNumber: Int): Level = Level.entries[(batchNumber - 1) % 5]
 
 
-    private fun insertQuestionBatch(batchParameters: BatchParameters): Int {
+    private fun insertQuestionBatch(bp: BatchParameters): Int {
         try {
-            generateQuestions(batchParameters)
-                .map { it.toHiraganaQuestion() }
-                .distinctBy { it.hiragana }
-                .let { hiraganaRepository.saveAll(it) }
-                .size
+            if (bp.gameMode == GameMode.WORD) {
+                aiQuestionService.generateAndStoreWordQuestion(bp.topic, bp.level, bp.questionsInThisBatch)
+            } else {
+                aiQuestionService.generateAndStoreSentenceQuestion(bp.topic, bp.level, bp.questionsInThisBatch)
+            }
         } catch (e: Exception) {
-            logger.error("Error in batch ${batchParameters.batchNumber}: ${e.message}", e)
+            logger.error("Error in batch ${bp.batchNumber}: ${e.message}", e)
         }
         return 0
     }
 
-    private fun generateQuestions(
-        bp: BatchParameters
-    ): List<AIQuestion> = if (bp.gameMode == GameMode.WORD) {
-        aiQuestionService.generateWordQuestion(bp.topic, bp.difficulty, bp.questionsInThisBatch)
-    } else {
-        aiQuestionService.generateSentenceQuestion(bp.topic, bp.difficulty, bp.questionsInThisBatch)
-    }
+
 
 
     fun getGenerationStatus(): Map<String, Any> {
@@ -137,26 +134,4 @@ class BatchQuestionGenerationService(
     }
 }
 
-data class BatchParameters(
-    val batchNumber: Int,
-    val questionsInThisBatch: Int,
-    val topic: String,
-    val gameMode: GameMode,
-    val difficulty: Int,
-)
 
-private data class GenerationContext(
-    val totalQuestions: Int,
-    val batchSize: Int,
-    val totalBatches: Int,
-    val topics: List<String>,
-    val gameMode: GameMode,
-    val questionsGenerated: AtomicInteger
-)
-
-private data class BatchResult(
-    val questionsRequested: Int,
-    val questionsInserted: Int,
-    val topic: String,
-    val difficulty: Int
-)
