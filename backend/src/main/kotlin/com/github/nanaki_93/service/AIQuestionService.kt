@@ -8,6 +8,7 @@ import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.repository.HiraganaQuestion
 import com.github.nanaki_93.repository.HiraganaQuestionRepository
+import com.github.nanaki_93.util.CleanUtil
 import com.github.nanaki_93.util.CleanUtil.cleanCsvFromMarkdown
 import com.github.nanaki_93.util.toHiraganaQuestion
 import org.slf4j.LoggerFactory
@@ -85,10 +86,29 @@ class AIQuestionService(
 
             val seenHiragana = mutableSetOf<String>()
 
-            return cleanCsvFromMarkdown(csvResponse.trim())
+            val cleanedCsv = cleanCsvFromMarkdown(csvResponse.trim())
+
+            // For N5 level, filter out non-hiragana content
+            val filteredCsv = if (topic.contains("N5") || csvResponse.contains("N5")) {
+                CleanUtil.filterHiraganaOnlyLines(cleanedCsv)
+            } else {
+                cleanedCsv
+            }
+
+
+            return filteredCsv
                 .lineSequence()
                 .filter { it.isNotBlank() && it.contains(";") }
                 .mapNotNull { fromCsvLineToQuestion(it, topic) }
+                .filter { question ->
+                    // Additional validation for hiragana-only content at N5 level
+                    if (question.level == Level.N5) {
+                        CleanUtil.isOnlyHiragana(question.hiragana)
+                    } else {
+                        true
+                    }
+                }
+
                 .filter { question -> seenHiragana.add(question.hiragana) } //more performant than distinctBy
                 .toList()
 
