@@ -36,25 +36,25 @@ class AIQuestionService(
     }
 
     fun generateAndStoreQuestions(
-        topic: String = "food",
         level: Level = Level.N5,
         nQuestions: Int = 5,
         gameMode: GameMode = GameMode.WORD,
-    ): List<AIQuestion> {
-        val allQuestions = generateQuestionsBatch(topic, level, nQuestions, gameMode)
+    ): Int {
+        val allQuestions = generateQuestionsBatch(level, nQuestions, gameMode)
+        logger.info("Generated ${allQuestions.size} questions for level $level")
         val filteredQuestions = filterQuestions(allQuestions)
-        return storeQuestions(filteredQuestions, GameMode.WORD)
-
+        logger.info("Filtered double in the list and only hiragana chars for N5 Level:  ${filteredQuestions.size} questions for level $level")
+        return storeQuestions(filteredQuestions, gameMode)
     }
 
-    private fun generateQuestionsBatch(topic: String, level: Level, nQuestions: Int,gameMode: GameMode): List<AIQuestion> {
+    private fun generateQuestionsBatch(level: Level, nQuestions: Int, gameMode: GameMode): List<AIQuestion> {
         val responseList = mutableListOf<AIQuestion>()
         var remainingQuestions = nQuestions
 
         repeat((nQuestions / MAX_QUESTIONS_PER_BATCH) + 1) {
             val questionsToMake = minOf(remainingQuestions, MAX_QUESTIONS_PER_BATCH)
             if (questionsToMake > 0) {
-                responseList.addAll(generateQuestion(topic, level, questionsToMake,gameMode))
+                responseList.addAll(generateQuestions(level, questionsToMake, gameMode))
                 remainingQuestions -= questionsToMake
             }
             Thread.sleep(3000)
@@ -67,7 +67,12 @@ class AIQuestionService(
         return questions.filter { question ->
             // Additional validation for hiragana-only content at N5 level
             if (question.level == Level.N5) {
-                CleanUtil.isOnlyHiragana(question.hiragana)
+                if (CleanUtil.isOnlyHiragana(question.hiragana)) {
+                    true
+                } else {
+                    logger.warn("Skipping question with non-hiragana content: $question")
+                    false
+                }
             } else {
                 true
             }
@@ -76,23 +81,35 @@ class AIQuestionService(
         }
     }
 
-    fun generateQuestion(topic: String, level: Level, nQuestions: Int, gameMode: GameMode): List<AIQuestion> {
-        val prompt = aiService.getPrompt(topic, level, nQuestions, gameMode)
+    fun generateQuestions(level: Level, nQuestions: Int, gameMode: GameMode): List<AIQuestion> {
+        val prompt = aiService.getPrompt(level, nQuestions, gameMode)
         val response = callAI(prompt)
-        return removeDuplicatesAndParse(response, topic)
+        return parseFromCsvToAiQuestions(response)
     }
 
-    fun storeQuestions(response: List<AIQuestion>, gameMode: GameMode): List<AIQuestion> {
-        response.map { it.toHiraganaQuestion(gameMode) }
-            .let { toDB -> toDB.filterNot { it.hiragana in findExistingHiragana(toDB) } }
+    fun storeQuestions(response: List<AIQuestion>, gameMode: GameMode): Int {
+        return response.map { it.toHiraganaQuestion(gameMode) }
+            .let { toDB ->
+                toDB.filterNot {
+                    val alreadyInDb = findExistingHiragana(toDB)
+                    if (it.hiragana in alreadyInDb) {
+                        logger.info("Question already exists in DB: ${it.hiragana}")
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
             .takeIf { it.isNotEmpty() }
             ?.let {
+                logger.info("DB => Saved ${it.size} new questions out of ${response.size} generated")
                 hiraganaRepository.saveAll(it)
-                logger.info("Saved ${it.size} new questions out of ${response.size} generated")
-            }
-            ?: logger.info("No new questions to save, all ${response.size} questions already exist")
+                it.size
+            } ?: run {
+            logger.info("No new questions to save, all ${response.size} questions already exist")
+            return 0
+        }
 
-        return response
     }
 
     private fun findExistingHiragana(toDB: List<HiraganaQuestion>): Set<String> =
@@ -101,37 +118,16 @@ class AIQuestionService(
             .map { it.hiragana }
             .toSet()
 
-    private fun removeDuplicatesAndParse(csvResponse: String, topic: String): List<AIQuestion> {
+    private fun parseFromCsvToAiQuestions(csvResponse: String): List<AIQuestion> {
         try {
-            logger.info("Parsing CSV response and removing duplicates")
-
-            val seenHiragana = mutableSetOf<String>()
-            val cleanedCsv = cleanCsvFromMarkdown(csvResponse.trim())
-
-            // For N5 level, filter out non-hiragana content
-            val filteredCsv = if (topic.contains("N5") || csvResponse.contains("N5")) {
-                CleanUtil.filterHiraganaOnlyLines(cleanedCsv)
-            } else {
-                cleanedCsv
-            }
-
-            return filteredCsv
+            logger.info("Parsing CSV response to questions")
+            logger.info("CSV response lines: ${csvResponse.lines().size}")
+            val result = cleanCsvFromMarkdown(csvResponse.trim())
                 .lineSequence()
                 .filter { it.isNotBlank() && it.contains(";") }
-                .mapNotNull { fromCsvLineToQuestion(it, topic) }
-                .filter { question ->
-                    // Additional validation for hiragana-only content at N5 level
-                    if (question.level == Level.N5) {
-                        CleanUtil.isOnlyHiragana(question.hiragana)
-                    } else {
-                        true
-                    }
-                }
-
-                .filter { question -> seenHiragana.add(question.hiragana) } //more performant than distinctBy
+                .mapNotNull { fromCsvLineToQuestion(it) }
                 .toList()
-
-
+            return result
         } catch (e: Exception) {
             logger.error("Failed to parse CSV response: ${e.message}")
             return emptyList()
@@ -139,10 +135,10 @@ class AIQuestionService(
     }
 
 
-    private fun fromCsvLineToQuestion(line: String, topic: String): AIQuestion? {
+    private fun fromCsvLineToQuestion(line: String): AIQuestion? {
         return try {
             val parts = line.split(";").map { it.trim().removeSurrounding("\"") }
-            AIQuestion(parts[0], parts[1], parts[2], topic, Level.valueOf(parts[3]))
+            AIQuestion(parts[0], parts[1], parts[2], parts[3], Level.valueOf(parts[4]))
         } catch (e: Exception) {
             logger.warn("Failed to parse CSV line: $line - ${e.message}")
             null
@@ -150,13 +146,4 @@ class AIQuestionService(
     }
 
 
-    // Method to get available topics
-    // TODO GET MORE TOPICS
-    fun getAvailableTopics(): List<String> {
-        return listOf(
-            "food", "animals", "colors", "family", "school",
-            "weather", "time", "body", "house", "nature",
-            "daily life", "greeting", "shopping", "travel"
-        )
-    }
 }

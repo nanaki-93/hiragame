@@ -1,11 +1,12 @@
 package com.github.nanaki_93.controller
 
-import com.github.nanaki_93.models.AIQuestion
+
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
 
 import com.github.nanaki_93.service.AIQuestionService
 import com.github.nanaki_93.service.BatchQuestionGenerationService
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.concurrent.CompletableFuture
 
@@ -18,19 +19,15 @@ class AIController(
 ) {
 
     @GetMapping("/words")
-    fun generateWord(@RequestParam topic: String, @RequestParam level: String, @RequestParam nQuestions: Int): List<AIQuestion> {
-        return aiQuestionService.generateAndStoreQuestions(topic, level.let { Level.valueOf(it) }, nQuestions, GameMode.WORD)
+    fun generateWord( @RequestParam level: String, @RequestParam nQuestions: Int): ResponseEntity<Int> {
+        return ResponseEntity.ok(aiQuestionService.generateAndStoreQuestions( level.let { Level.valueOf(it) }, nQuestions, GameMode.WORD))
     }
 
     @GetMapping("/sentences")
-    fun generateSentence(@RequestParam topic: String, @RequestParam level: String, @RequestParam nQuestions: Int): List<AIQuestion> {
-        return aiQuestionService.generateAndStoreQuestions(topic,level.let { Level.valueOf(it) },nQuestions, GameMode.SENTENCE)
+    fun generateSentence( @RequestParam level: String, @RequestParam nQuestions: Int): ResponseEntity<Int> {
+        return ResponseEntity.ok(aiQuestionService.generateAndStoreQuestions(level.let { Level.valueOf(it) },nQuestions, GameMode.SENTENCE))
     }
 
-    @GetMapping("/topics")
-    fun getAvailableTopics(): List<String> {
-        return aiQuestionService.getAvailableTopics()
-    }
 
 
     @PostMapping("/batch-generate")

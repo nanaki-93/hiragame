@@ -43,7 +43,6 @@ class BatchQuestionGenerationService(
     }
 
     private fun createGenerationContext(totalQuestions: Int, batchSize: Int, gameMode: GameMode): GenerationContext {
-        val topics = aiQuestionService.getAvailableTopics()
         val totalBatches = calculateTotalBatches(totalQuestions, batchSize)
 
         logger.info("Starting CSV bulk generation: $totalQuestions questions in $totalBatches batches")
@@ -52,7 +51,6 @@ class BatchQuestionGenerationService(
             totalQuestions = totalQuestions,
             batchSize = batchSize,
             totalBatches = totalBatches,
-            topics = topics,
             gameMode = gameMode,
             questionsGenerated = AtomicInteger(0)
         )
@@ -69,7 +67,7 @@ class BatchQuestionGenerationService(
             logger.info(
                 "Batch $batchNumber/${context.totalBatches} completed. " +
                         "Got ${batchResult.questionsRequested} questions " +
-                        "Topic: ${batchResult.topic}, Difficulty: ${batchResult.level}, " +
+                        " Difficulty: ${batchResult.level}, " +
                         "Total saved: ${batchResult.questionsInserted}"
             )
 
@@ -85,7 +83,6 @@ class BatchQuestionGenerationService(
         val bp = BatchParameters(
             batchNumber = batchNumber,
             questionsInThisBatch = calculateQuestionsInBatch(context, batchNumber),
-            topic = selectTopicForBatch(context.topics, batchNumber),
             gameMode = context.gameMode,
             level = calculateDifficultyForBatch(batchNumber)
         )
@@ -94,7 +91,6 @@ class BatchQuestionGenerationService(
         return BatchResult(
             questionsRequested = bp.questionsInThisBatch,
             questionsInserted = insertQuestionBatch(bp),
-            topic = bp.topic,
             level = bp.level
         )
     }
@@ -102,24 +98,13 @@ class BatchQuestionGenerationService(
     private fun calculateQuestionsInBatch(context: GenerationContext, batchNumber: Int): Int =
         minOf(context.batchSize, context.totalQuestions - ((batchNumber - 1) * context.batchSize))
 
-    private fun selectTopicForBatch(topics: List<String>, batchNumber: Int): String =
-        topics[(batchNumber - 1) % topics.size]
-
     private fun calculateDifficultyForBatch(batchNumber: Int): Level = Level.entries[(batchNumber - 1) % 5]
-
-
 
     private fun insertQuestionBatch(bp: BatchParameters): Int {
         return try {
-            val countBefore = hiraganaRepository.countByGameMode(bp.gameMode.name)
-
-            aiQuestionService.generateAndStoreQuestions(bp.topic, bp.level, bp.questionsInThisBatch, bp.gameMode)
-
-            val countAfter = hiraganaRepository.countByGameMode(bp.gameMode.name)
-            val actuallyInserted = countAfter - countBefore
-
+            val actuallyInserted =aiQuestionService.generateAndStoreQuestions( bp.level, bp.questionsInThisBatch, bp.gameMode)
             logger.info("Batch ${bp.batchNumber}: Actually inserted $actuallyInserted new questions into database")
-            actuallyInserted.toInt()
+            actuallyInserted
         } catch (e: Exception) {
             logger.error("Error in batch ${bp.batchNumber}: ${e.message}", e)
             0

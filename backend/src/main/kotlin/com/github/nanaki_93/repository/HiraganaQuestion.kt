@@ -40,6 +40,7 @@ data class HiraganaQuestion(
 @Repository
 interface HiraganaQuestionRepository : JpaRepository<HiraganaQuestion, UUID>{
 
+
     fun countByGameMode(gameMode: String): Long
     fun findAllByHiraganaIn(hiragana: List<String>): List<HiraganaQuestion>
 

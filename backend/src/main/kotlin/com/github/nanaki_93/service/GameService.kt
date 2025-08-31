@@ -18,18 +18,18 @@ class GameService(private val aiQuestionService: AIQuestionService) {
     fun selectGameMode(gameMode: GameMode): GameState {
         return when (gameMode) {
             GameMode.SIGN -> GameState(hiraganaList = hiraganaLvMap[1] ?: emptyList()).getNextQuestion()
-            GameMode.WORD -> GameState(hiraganaList = hiraganaWordQuestions("food")).getNextQuestion()
-            GameMode.SENTENCE -> GameState(hiraganaList = hiraganaSentenceQuestions("food")).getNextQuestion()
+            GameMode.WORD -> GameState(hiraganaList = hiraganaWordQuestions()).getNextQuestion()
+            GameMode.SENTENCE -> GameState(hiraganaList = hiraganaSentenceQuestions()).getNextQuestion()
         }
 
     }
 
-    private fun hiraganaWordQuestions(topic: String): List<HiraganaQuestionDto> {
-        return wordToHiraganaQuestions(aiQuestionService.generateQuestion(topic, Level.N5, 10, GameMode.WORD))
+    private fun hiraganaWordQuestions(): List<HiraganaQuestionDto> {
+        return wordToHiraganaQuestions(aiQuestionService.generateQuestions(Level.N5, 10, GameMode.WORD))
     }
 
-    private fun hiraganaSentenceQuestions(topic: String): List<HiraganaQuestionDto> {
-        return sentenceToHiraganaQuestions(aiQuestionService.generateQuestion(topic, Level.N5, 10, GameMode.SENTENCE))
+    private fun hiraganaSentenceQuestions(): List<HiraganaQuestionDto> {
+        return sentenceToHiraganaQuestions(aiQuestionService.generateQuestions(Level.N5, 10, GameMode.SENTENCE))
     }
 
     private fun wordToHiraganaQuestions(questions: List<AIQuestion>): List<HiraganaQuestionDto> {
