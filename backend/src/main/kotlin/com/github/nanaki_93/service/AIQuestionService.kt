@@ -12,54 +12,75 @@ import com.github.nanaki_93.util.CleanUtil
 import com.github.nanaki_93.util.CleanUtil.cleanCsvFromMarkdown
 import com.github.nanaki_93.util.toHiraganaQuestion
 import org.slf4j.LoggerFactory
+import kotlin.sequences.filter
+import kotlin.sequences.toList
 
 @Service
 class AIQuestionService(
     private val hiraganaRepository: HiraganaQuestionRepository,
     private val aiService: AiService
 ) {
+    companion object {
+        private const val MAX_QUESTIONS_PER_BATCH = 50
+    }
+
     private val logger = LoggerFactory.getLogger(AIQuestionService::class.java)
 
     fun callAI(prompt: String): String {
         return try {
             aiService.callApi(prompt)
         } catch (e: Exception) {
-            logger.error("Failed to call OpenAI API: ${e.message}")
-            "Failed to call OpenAI API"
+            logger.error("Failed to call AI API: ${e.message}")
+            "Failed to call AI API"
         }
     }
 
-    fun generateAndStoreWordQuestion(
+    fun generateAndStoreQuestions(
         topic: String = "food",
         level: Level = Level.N5,
-        nQuestions: Int = 5
+        nQuestions: Int = 5,
+        gameMode: GameMode = GameMode.WORD,
     ): List<AIQuestion> {
-        val response = generateWordQuestion(topic, level, nQuestions)
-        return storeQuestions(response, GameMode.WORD)
+        val allQuestions = generateQuestionsBatch(topic, level, nQuestions, gameMode)
+        val filteredQuestions = filterQuestions(allQuestions)
+        return storeQuestions(filteredQuestions, GameMode.WORD)
+
     }
 
-    fun generateAndStoreSentenceQuestion(
-        topic: String = "food",
-        level: Level = Level.N5,
-        nQuestions: Int = 5
-    ): List<AIQuestion> {
-        val response = generateSentenceQuestion(topic, level, nQuestions)
-        return storeQuestions(response, GameMode.SENTENCE)
+    private fun generateQuestionsBatch(topic: String, level: Level, nQuestions: Int,gameMode: GameMode): List<AIQuestion> {
+        val responseList = mutableListOf<AIQuestion>()
+        var remainingQuestions = nQuestions
+
+        repeat((nQuestions / MAX_QUESTIONS_PER_BATCH) + 1) {
+            val questionsToMake = minOf(remainingQuestions, MAX_QUESTIONS_PER_BATCH)
+            if (questionsToMake > 0) {
+                responseList.addAll(generateQuestion(topic, level, questionsToMake,gameMode))
+                remainingQuestions -= questionsToMake
+            }
+            Thread.sleep(3000)
+        }
+        return responseList
     }
 
+    private fun filterQuestions(questions: List<AIQuestion>): List<AIQuestion> {
+        val seenHiragana = mutableSetOf<String>()
+        return questions.filter { question ->
+            // Additional validation for hiragana-only content at N5 level
+            if (question.level == Level.N5) {
+                CleanUtil.isOnlyHiragana(question.hiragana)
+            } else {
+                true
+            }
+        }.filter { question ->
+            seenHiragana.add(question.hiragana) // more performant than distinctBy
+        }
+    }
 
-    fun generateWordQuestion(topic: String, level: Level, nQuestions: Int): List<AIQuestion> {
-        val prompt = aiService.getWordsPrompt(topic, level, nQuestions)
+    fun generateQuestion(topic: String, level: Level, nQuestions: Int, gameMode: GameMode): List<AIQuestion> {
+        val prompt = aiService.getPrompt(topic, level, nQuestions, gameMode)
         val response = callAI(prompt)
         return removeDuplicatesAndParse(response, topic)
     }
-
-    fun generateSentenceQuestion(topic: String, level: Level, nQuestions: Int): List<AIQuestion> {
-        val prompt = aiService.getSentencesPrompt(topic, level, nQuestions)
-        val response = callAI(prompt)
-        return removeDuplicatesAndParse(response, topic)
-    }
-
 
     fun storeQuestions(response: List<AIQuestion>, gameMode: GameMode): List<AIQuestion> {
         response.map { it.toHiraganaQuestion(gameMode) }
@@ -85,7 +106,6 @@ class AIQuestionService(
             logger.info("Parsing CSV response and removing duplicates")
 
             val seenHiragana = mutableSetOf<String>()
-
             val cleanedCsv = cleanCsvFromMarkdown(csvResponse.trim())
 
             // For N5 level, filter out non-hiragana content
@@ -94,7 +114,6 @@ class AIQuestionService(
             } else {
                 cleanedCsv
             }
-
 
             return filteredCsv
                 .lineSequence()
@@ -111,6 +130,7 @@ class AIQuestionService(
 
                 .filter { question -> seenHiragana.add(question.hiragana) } //more performant than distinctBy
                 .toList()
+
 
         } catch (e: Exception) {
             logger.error("Failed to parse CSV response: ${e.message}")

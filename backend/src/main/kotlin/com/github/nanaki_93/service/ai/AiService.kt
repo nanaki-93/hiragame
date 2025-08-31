@@ -1,5 +1,6 @@
 package com.github.nanaki_93.service.ai
 
+import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
 import org.springframework.stereotype.Service
 
@@ -9,7 +10,12 @@ interface AiService {
     fun callApi(prompt: String): String
 
 
-    fun getWordsPrompt(topic: String, level: Level, nQuestions: Int): String = """
+    fun getPrompt(topic: String, level: Level, nQuestions: Int, gameMode: GameMode): String = when (gameMode) {
+        GameMode.WORD, GameMode.SIGN -> getWordsPrompt(topic, level, nQuestions)
+        GameMode.SENTENCE -> getSentencesPrompt(topic, level, nQuestions)
+    }
+
+    private fun getWordsPrompt(topic: String, level: Level, nQuestions: Int): String = """
     You are a Japanese language teacher. Generate exactly $nQuestions UNIQUE Japanese words related to "$topic".
     
     STRICT REQUIREMENTS:
@@ -27,25 +33,29 @@ interface AiService {
             
     5. Each line must follow this exact CSV format: hiragana;romanization;translation;level
     
-    ${if (level == Level.N5) """
+    ${
+        if (level == Level.N5) """
     REMINDER FOR N5: Every Japanese character in your words must be hiragana only:
     - Correct: あ か き く け こ さ し す せ そ た ち つ て と な に ぬ ね の は ひ ふ へ ほ ま み む め も や ゆ よ ら り る れ ろ わ を ん
     - WRONG: Any katakana (ア カ キ) or kanji (漢字) characters
-    """ else ""}
+    """ else ""
+    }
     
     EXAMPLES (do not copy these):
-    ${if (level == Level.N5) """
+    ${
+        if (level == Level.N5) """
     さかな;sakana;fish;N5
     みず;mizu;water;N5
     """ else """
     ひらがな;hiragana;hiragana script;$level
     さかな;sakana;fish;$level
-    """}
+    """
+    }
     
     Generate exactly $nQuestions DIFFERENT words about $topic now:
 """.trimIndent()
 
-    fun getSentencesPrompt(topic: String, level: Level, nQuestions: Int): String = """
+    private fun getSentencesPrompt(topic: String, level: Level, nQuestions: Int): String = """
     You are a Japanese language teacher. Generate exactly $nQuestions UNIQUE Japanese sentences about "$topic".
     
     STRICT REQUIREMENTS:
@@ -62,20 +72,24 @@ interface AiService {
         N1 (Advanced): This is the highest level of the test. Passing the N1 means you have a comprehensive grasp of Japanese in a wide range of situations, including in-depth discussions, complex readings, and formal settings. The number of required kanji and vocabulary is quite extensive, with no official list, but you can expect to need roughly 2,000 kanji and 10,000+ words.
     5. Each line must follow this exact CSV format: hiragana;romanization;translation;level
     
-    ${if (level == Level.N5) """
+    ${
+        if (level == Level.N5) """
     REMINDER FOR N5: Every Japanese character in your sentences must be hiragana only:
     - Correct: あ か き く け こ さ し す せ そ た ち つ て と な に ぬ ね の は ひ ふ へ ほ ま み む め も や ゆ よ ら り る れ ろ わ を ん
     - WRONG: Any katakana (ア カ キ) or kanji (漢字) characters
-    """ else ""}
+    """ else ""
+    }
     
     EXAMPLES (do not copy these):
-    ${if (level == Level.N5) """
+    ${
+        if (level == Level.N5) """
     きょうはあついです;kyou wa atsui desu;Today is hot;N5
     わたしはがくせいです;watashi wa gakusei desu;I am a student;N5
     """ else """
     きょうはあついです;kyou wa atsui desu;Today is hot;$level
     わたしはがくせいです;watashi wa gakusei desu;I am a student;$level
-    """}
+    """
+    }
     
     Generate exactly $nQuestions DIFFERENT sentences about $topic now:
 """.trimIndent()

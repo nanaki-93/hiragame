@@ -19,12 +19,12 @@ class AIController(
 
     @GetMapping("/words")
     fun generateWord(@RequestParam topic: String, @RequestParam level: String, @RequestParam nQuestions: Int): List<AIQuestion> {
-        return aiQuestionService.generateAndStoreWordQuestion(topic, level.let { Level.valueOf(it) }, nQuestions)
+        return aiQuestionService.generateAndStoreQuestions(topic, level.let { Level.valueOf(it) }, nQuestions, GameMode.WORD)
     }
 
     @GetMapping("/sentences")
     fun generateSentence(@RequestParam topic: String, @RequestParam level: String, @RequestParam nQuestions: Int): List<AIQuestion> {
-        return aiQuestionService.generateAndStoreSentenceQuestion(topic,level.let { Level.valueOf(it) },nQuestions)
+        return aiQuestionService.generateAndStoreQuestions(topic,level.let { Level.valueOf(it) },nQuestions, GameMode.SENTENCE)
     }
 
     @GetMapping("/topics")

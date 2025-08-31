@@ -108,17 +108,22 @@ class BatchQuestionGenerationService(
     private fun calculateDifficultyForBatch(batchNumber: Int): Level = Level.entries[(batchNumber - 1) % 5]
 
 
+
     private fun insertQuestionBatch(bp: BatchParameters): Int {
-        try {
-            if (bp.gameMode == GameMode.WORD) {
-                aiQuestionService.generateAndStoreWordQuestion(bp.topic, bp.level, bp.questionsInThisBatch)
-            } else {
-                aiQuestionService.generateAndStoreSentenceQuestion(bp.topic, bp.level, bp.questionsInThisBatch)
-            }
+        return try {
+            val countBefore = hiraganaRepository.countByGameMode(bp.gameMode.name)
+
+            aiQuestionService.generateAndStoreQuestions(bp.topic, bp.level, bp.questionsInThisBatch, bp.gameMode)
+
+            val countAfter = hiraganaRepository.countByGameMode(bp.gameMode.name)
+            val actuallyInserted = countAfter - countBefore
+
+            logger.info("Batch ${bp.batchNumber}: Actually inserted $actuallyInserted new questions into database")
+            actuallyInserted.toInt()
         } catch (e: Exception) {
             logger.error("Error in batch ${bp.batchNumber}: ${e.message}", e)
+            0
         }
-        return 0
     }
 
 

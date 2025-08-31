@@ -25,11 +25,11 @@ class GameService(private val aiQuestionService: AIQuestionService) {
     }
 
     private fun hiraganaWordQuestions(topic: String): List<HiraganaQuestionDto> {
-        return wordToHiraganaQuestions(aiQuestionService.generateWordQuestion(topic, Level.N5, 10))
+        return wordToHiraganaQuestions(aiQuestionService.generateQuestion(topic, Level.N5, 10, GameMode.WORD))
     }
 
     private fun hiraganaSentenceQuestions(topic: String): List<HiraganaQuestionDto> {
-        return sentenceToHiraganaQuestions(aiQuestionService.generateSentenceQuestion(topic, Level.N5, 10))
+        return sentenceToHiraganaQuestions(aiQuestionService.generateQuestion(topic, Level.N5, 10, GameMode.SENTENCE))
     }
 
     private fun wordToHiraganaQuestions(questions: List<AIQuestion>): List<HiraganaQuestionDto> {
