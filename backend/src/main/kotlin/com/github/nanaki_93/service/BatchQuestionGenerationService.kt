@@ -6,7 +6,7 @@ import com.github.nanaki_93.model.BatchResult
 import com.github.nanaki_93.model.GenerationContext
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
-import com.github.nanaki_93.repository.HiraganaQuestionRepository
+import com.github.nanaki_93.repository.QuestionRepository
 import org.slf4j.LoggerFactory
 
 import org.springframework.scheduling.annotation.Async
@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture
 @Service
 class BatchQuestionGenerationService(
     private val aiQuestionService: AIQuestionService,
-    private val hiraganaRepository: HiraganaQuestionRepository
+    private val hiraganaRepository: QuestionRepository
 ) {
     private val logger = LoggerFactory.getLogger(BatchQuestionGenerationService::class.java)
 

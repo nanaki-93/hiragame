@@ -28,7 +28,7 @@ interface AiService {
        - CORRECT: みず (water), さかな (fish), ほん (book)
        - WRONG: みずがあります (there is water), あおいほん (blue book), きれいなさかな (beautiful fish)
     2. Each word must be COMPLETELY DIFFERENT (no duplicates, no variations of the same word)
-    3. ${if (level == Level.N5) "CRITICAL: Use ABSOLUTELY ONLY hiragana characters (ひらがな) - NO katakana (カタカナ), NO kanji (漢字), NO romaji" else "Use appropriate Japanese characters for the level"}
+    3. Use appropriate Japanese characters for the level
     4. Generate MAXIMUM VARIETY across different word types:
        - Nouns (objects, animals, people, places, concepts): ねこ, いえ, がっこう
        - Adjectives: あかい, おおきい, あたたかい
@@ -42,28 +42,12 @@ interface AiService {
         ${getLevelDescription(level)}
     6. Each line must follow this exact CSV format: hiragana;romanization;translation;topic;level
     
-    ${
-        if (level == Level.N5) """
-    REMINDER FOR N5: Every Japanese character must be hiragana only:
-    - Correct: あ か き く け こ さ し す せ そ た ち つ て と な に ぬ ね の は ひ ふ へ ほ ま み む め も や ゆ よ ら り る れ ろ わ を ん
-    - WRONG: Any katakana (ア カ キ) or kanji (漢字) characters
-    """ else ""
-    }
     
     VARIETY EXAMPLES (do not copy these, create your own diverse words):
-    ${
-        if (level == Level.N5) """
-    ねこ;neko;cat;animals;N5
-    あかい;akai;red;colors;N5
-    たべる;taberu;to eat;actions;N5
-    がっこう;gakkou;school;places;N5
-    きょう;kyou;today;time;N5
-    """ else """
+    
     ねこ;neko;cat;animals;$level
     べんきょう;benkyou;study;education;$level
     あたたかい;atatakai;warm;weather;$level
-    """
-    }
     
     Generate exactly $nQuestions COMPLETELY DIFFERENT single words covering maximum variety of topics ["${
         topicsByJLPTLevel[level]?.joinToString(
@@ -84,7 +68,7 @@ interface AiService {
        - CORRECT: きょうはあついです (Today is hot), わたしはがくせいです (I am a student)
        - WRONG: みず (water), ねこ (cat) - these are single words, not sentences
     2. Each sentence must be COMPLETELY DIFFERENT (no duplicates, no similar structures)
-    3. ${if (level == Level.N5) "CRITICAL: Use ABSOLUTELY ONLY hiragana characters (ひらがな) - NO katakana (カタカナ), NO kanji (漢字), NO romaji" else "Use appropriate Japanese characters for the level"}
+    3. Use appropriate Japanese characters for the level
     4. Generate MAXIMUM VARIETY in sentence patterns and structures:
        - Subject + Adjective: わたしはげんきです, ねこはかわいいです
        - Location sentences: がっこうにいきます, いえにいます
@@ -99,28 +83,12 @@ interface AiService {
         ${getLevelDescription(level)}
     7. Each line must follow this exact CSV format: hiragana;romanization;translation;topic;level
     
-    ${
-        if (level == Level.N5) """
-    REMINDER FOR N5: Every Japanese character must be hiragana only:
-    - Correct: あ か き く け こ さ し す せ そ た ち つ て と な に ぬ ね の は ひ ふ へ ほ ま み む め も や ゆ よ ら り る れ ろ わ を ん
-    - WRONG: Any katakana (ア カ キ) or kanji (漢字) characters
-    """ else ""
-    }
     
     VARIETY EXAMPLES (do not copy these, create your own diverse sentences):
-    ${
-        if (level == Level.N5) """
-    きょうはあついです;kyou wa atsui desu;Today is hot;weather;N5
-    わたしはがくせいです;watashi wa gakusei desu;I am a student;school;N5
-    ねこがねています;neko ga nete imasu;The cat is sleeping;animals;N5
-    あしたがっこうにいきます;ashita gakkou ni ikimasu;I will go to school tomorrow;daily life;N5
-    ほんをよんでいます;hon wo yonde imasu;I am reading a book;activities;N5
-    """ else """
+    
     きょうはあついです;kyou wa atsui desu;Today is hot;weather;$level
     としょかんでべんきょうします;toshokan de benkyou shimasu;I study at the library;education;$level
     ともだちとえいがをみました;tomodachi to eiga wo mimashita;I watched a movie with friends;entertainment;$level
-    """
-    }
     
     Generate exactly $nQuestions COMPLETELY DIFFERENT complete sentences (2+ words each) covering maximum variety of topics ["${
         topicsByJLPTLevel[level]?.joinToString(
@@ -131,7 +99,7 @@ interface AiService {
 
     private fun getLevelDescription(level: Level): String = when (level) {
         Level.N5 -> """
-        N5 (Beginner): Basic Japanese phrases and expressions. About 100 kanji and 800 vocabulary words. Simple sentences in hiragana, katakana, and basic kanji. Everyday topics spoken slowly. **IMPORTANT: For N5 level, use EXCLUSIVELY hiragana characters (あいうえお...) - absolutely no other character types allowed.**"""
+        N5 (Beginner): Basic Japanese phrases and expressions. About 100 kanji and 800 vocabulary words. Simple sentences in hiragana, katakana, and basic kanji. Everyday topics spoken slowly. """
 
         Level.N5_PLUS -> """
         N5_PLUS (Beginner+): Good grasp of basic Japanese with more complex sentences and expressions. About 150 kanji and 1,200 vocabulary words. More complex sentences and conversations at natural speed."""

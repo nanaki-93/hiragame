@@ -6,9 +6,8 @@ import com.github.nanaki_93.service.ai.AiService
 import com.github.nanaki_93.models.AIQuestion
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
-import com.github.nanaki_93.repository.HiraganaQuestion
-import com.github.nanaki_93.repository.HiraganaQuestionRepository
-import com.github.nanaki_93.util.CleanUtil
+import com.github.nanaki_93.repository.Question
+import com.github.nanaki_93.repository.QuestionRepository
 import com.github.nanaki_93.util.CleanUtil.cleanCsvFromMarkdown
 import com.github.nanaki_93.util.toHiraganaQuestion
 import org.slf4j.LoggerFactory
@@ -17,7 +16,7 @@ import kotlin.sequences.toList
 
 @Service
 class AIQuestionService(
-    private val hiraganaRepository: HiraganaQuestionRepository,
+    private val hiraganaRepository: QuestionRepository,
     private val aiService: AiService
 ) {
     companion object {
@@ -65,18 +64,6 @@ class AIQuestionService(
     private fun filterQuestions(questions: List<AIQuestion>): List<AIQuestion> {
         val seenHiragana = mutableSetOf<String>()
         return questions.filter { question ->
-            // Additional validation for hiragana-only content at N5 level
-            if (question.level == Level.N5) {
-                if (CleanUtil.isOnlyHiragana(question.hiragana)) {
-                    true
-                } else {
-                    logger.warn("Skipping question with non-hiragana content: $question")
-                    false
-                }
-            } else {
-                true
-            }
-        }.filter { question ->
             seenHiragana.add(question.hiragana) // more performant than distinctBy
         }
     }
@@ -92,8 +79,8 @@ class AIQuestionService(
             .let { toDB ->
                 toDB.filterNot {
                     val alreadyInDb = findExistingHiragana(toDB)
-                    if (it.hiragana in alreadyInDb) {
-                        logger.info("Question already exists in DB: ${it.hiragana}")
+                    if (it.japanese in alreadyInDb) {
+                        logger.info("Question already exists in DB: ${it.japanese}")
                         true
                     } else {
                         false
@@ -112,10 +99,10 @@ class AIQuestionService(
 
     }
 
-    private fun findExistingHiragana(toDB: List<HiraganaQuestion>): Set<String> =
+    private fun findExistingHiragana(toDB: List<Question>): Set<String> =
         hiraganaRepository
-            .findAllByHiraganaIn(toDB.map { it.hiragana })
-            .map { it.hiragana }
+            .findAllByJapaneseIn(toDB.map { it.japanese })
+            .map { it.japanese }
             .toSet()
 
     private fun parseFromCsvToAiQuestions(csvResponse: String): List<AIQuestion> {
