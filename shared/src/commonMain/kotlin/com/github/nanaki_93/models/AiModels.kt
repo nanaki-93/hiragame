@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AIQuestion(
-    val hiragana: String,
+    val japanese: String,
     val romanization: String,
     val translation: String,
     val topic: String,

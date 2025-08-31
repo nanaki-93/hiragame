@@ -1,17 +1,17 @@
 package com.github.nanaki_93.service
 
 
-import com.github.nanaki_93.model.BatchParameters
-import com.github.nanaki_93.model.BatchResult
-import com.github.nanaki_93.model.GenerationContext
+import com.github.nanaki_93.dto.Batch.toBatchParams
+import com.github.nanaki_93.dto.BatchParams
+import com.github.nanaki_93.dto.BatchResult
+import com.github.nanaki_93.dto.GenContext
+import com.github.nanaki_93.dto.QuestionDto
 import com.github.nanaki_93.models.GameMode
-import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.repository.QuestionRepository
 import org.slf4j.LoggerFactory
 
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
-import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.CompletableFuture
 
 @Service
@@ -23,105 +23,57 @@ class BatchQuestionGenerationService(
 
     @Async
     fun generateBulkQuestions(
-        totalQuestions: Int = 100,
-        batchSize: Int = 20,
-        delayBetweenBatches: Long = 2000,
-        gameMode: GameMode = GameMode.WORD,
-    ): CompletableFuture<String> {
-        return CompletableFuture.supplyAsync {
-            try {
-                val generationContext = createGenerationContext(totalQuestions, batchSize, gameMode)
-                val questionsGenerated = processBatches(generationContext, delayBetweenBatches)
-
-                logger.info("CSV bulk generation completed. Total questions saved: $questionsGenerated")
-                "CSV bulk generation completed. Generated $questionsGenerated questions."
-            } catch (e: Exception) {
-                logger.error("Bulk generation failed", e)
-                "Bulk generation failed: ${e.message}"
-            }
-        }
-    }
-
-    private fun createGenerationContext(totalQuestions: Int, batchSize: Int, gameMode: GameMode): GenerationContext {
-        val totalBatches = calculateTotalBatches(totalQuestions, batchSize)
-
-        logger.info("Starting CSV bulk generation: $totalQuestions questions in $totalBatches batches")
-
-        return GenerationContext(
-            totalQuestions = totalQuestions,
-            batchSize = batchSize,
-            totalBatches = totalBatches,
-            gameMode = gameMode,
-            questionsGenerated = AtomicInteger(0)
-        )
-    }
-
-    private fun calculateTotalBatches(totalQuestions: Int, batchSize: Int): Int =
-        (totalQuestions / batchSize) + if (totalQuestions % batchSize > 0) 1 else 0
-
-    private fun processBatches(context: GenerationContext, delayBetweenBatches: Long): Int {
-        for (batchNumber in 1..context.totalBatches) {
-            val batchResult = processSingleBatch(context, batchNumber)
-            context.questionsGenerated.addAndGet(batchResult.questionsInserted)
-
-            logger.info(
-                "Batch $batchNumber/${context.totalBatches} completed. " +
-                        "Got ${batchResult.questionsRequested} questions " +
-                        " Difficulty: ${batchResult.level}, " +
-                        "Total saved: ${batchResult.questionsInserted}"
-            )
-
-            if (batchNumber < context.totalBatches) {
-                Thread.sleep(delayBetweenBatches)
-            }
-        }
-        return context.questionsGenerated.get()
-    }
-
-    private fun processSingleBatch(context: GenerationContext, batchNumber: Int): BatchResult {
-
-        val bp = BatchParameters(
-            batchNumber = batchNumber,
-            questionsInThisBatch = calculateQuestionsInBatch(context, batchNumber),
-            gameMode = context.gameMode,
-            level = calculateDifficultyForBatch(batchNumber)
+        genContext: GenContext = GenContext(),
+        delayBetweenBatches: Long = 3000,
+    ): CompletableFuture<String> = runCatching { processBatches(genContext, delayBetweenBatches) }
+        .onSuccess { logger.info("CSV bulk generation completed. Total questions saved: $it") }
+        .map { "CSV bulk generation completed. Generated $it questions." }
+        .onFailure { logger.error("Bulk generation failed", it) }
+        .fold(
+            onSuccess = { CompletableFuture.completedFuture(it) },
+            onFailure = { CompletableFuture.completedFuture("Bulk generation failed: ${it.message}") }
         )
 
 
-        return BatchResult(
+    private fun processBatches(context: GenContext, delayBetweenBatches: Long): Int {
+        return (1..context.totalBatches)
+            .map { batchNumber ->
+                processSingleBatch(toBatchParams(context, batchNumber))
+                    .also { batchResult ->
+                        context.questionsGenerated.addAndGet(batchResult.questionsInserted)
+                        logger.info(
+                            "Batch $batchNumber/${context.totalBatches} completed. " + "Got ${batchResult.questionsRequested} questions " +
+                                    " Difficulty: ${batchResult.level}, " + "Total saved: ${batchResult.questionsInserted}"
+                        )
+                        if (batchNumber < context.totalBatches) {
+                            Thread.sleep(delayBetweenBatches)
+                        }
+                    }
+            }
+            .sumOf { it.questionsInserted }
+    }
+
+    private fun processSingleBatch(bp: BatchParams): BatchResult =
+        BatchResult(
             questionsRequested = bp.questionsInThisBatch,
             questionsInserted = insertQuestionBatch(bp),
             level = bp.level
         )
-    }
-
-    private fun calculateQuestionsInBatch(context: GenerationContext, batchNumber: Int): Int =
-        minOf(context.batchSize, context.totalQuestions - ((batchNumber - 1) * context.batchSize))
-
-    private fun calculateDifficultyForBatch(batchNumber: Int): Level = Level.entries[(batchNumber - 1) % 5]
-
-    private fun insertQuestionBatch(bp: BatchParameters): Int {
-        return try {
-            val actuallyInserted =aiQuestionService.generateAndStoreQuestions( bp.level, bp.questionsInThisBatch, bp.gameMode)
-            logger.info("Batch ${bp.batchNumber}: Actually inserted $actuallyInserted new questions into database")
-            actuallyInserted
-        } catch (e: Exception) {
-            logger.error("Error in batch ${bp.batchNumber}: ${e.message}", e)
-            0
-        }
-    }
 
 
+    private fun insertQuestionBatch(bp: BatchParams): Int =
+        runCatching { aiQuestionService.generateAndStoreQuestions(QuestionDto(bp.level, bp.questionsInThisBatch, bp.gameMode)) }
+            .also { logger.info("Batch ${bp.batchNumber}: Actually inserted $it new questions into database") }
+            .onFailure { logger.error("Error in batch ${bp.batchNumber}: ${it.message}", it) }
+            .getOrDefault(0)
 
 
-    fun getGenerationStatus(): Map<String, Any> {
-        val totalInDb = hiraganaRepository.count()
-        return mapOf(
-            "totalQuestionsInDatabase" to totalInDb,
+    fun getGenerationStatus(): Map<String, Any> =
+        mapOf(
+            "totalQuestionsInDatabase" to hiraganaRepository.count(),
             "wordQuestions" to hiraganaRepository.countByGameMode(GameMode.WORD.name),
             "sentenceQuestions" to hiraganaRepository.countByGameMode(GameMode.SENTENCE.name)
         )
-    }
 }
 
 

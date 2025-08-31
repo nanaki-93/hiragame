@@ -15,17 +15,11 @@ class GameController(
 ) {
 
     @PostMapping("/process-answer")
-    fun processAnswer(@RequestBody request: ProcessAnswerRequest): GameState {
-        return gameService.processAnswer(request.gameState, request.userInput, request.level)
-    }
+    fun processAnswer(@RequestBody request: ProcessAnswerRequest): GameState = gameService.processAnswer(request.gameState, request.userInput, request.level)
 
     @PostMapping("/next-character")
-    fun nextCharacter(@RequestBody request: GameStateRequest): GameState {
-        return gameService.getNextCharacterAndClearFeedback(request.gameState)
-    }
+    fun nextCharacter(@RequestBody request: GameStateRequest): GameState = gameService.getNextCharacterAndClearFeedback(request.gameState)
 
     @PostMapping("/game-mode")
-    fun selectGameMode(@RequestBody request: GameModeRequest): GameState {
-        return gameService.selectGameMode(request.gameMode)
-    }
+    fun selectGameMode(@RequestBody request: GameModeRequest): GameState = gameService.selectGameMode(request.gameMode)
 }

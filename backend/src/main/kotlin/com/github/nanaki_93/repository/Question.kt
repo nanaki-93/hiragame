@@ -7,7 +7,6 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import org.hibernate.proxy.HibernateProxy
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
@@ -39,28 +38,7 @@ data class Question(
     val hasKatakana: Boolean = false,
     @Column(nullable = false)
     val hasKanji: Boolean = false,
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null) return false
-        val oEffectiveClass =
-            if (other is HibernateProxy) other.hibernateLazyInitializer.persistentClass else other.javaClass
-        val thisEffectiveClass = this.javaClass
-        if (thisEffectiveClass != oEffectiveClass) return false
-        other as Question
-
-        return if (id != null) id == other.id else japanese.equals(other)
-    }
-
-    override fun hashCode(): Int =
-        javaClass.hashCode()
-
-    override fun toString(): String {
-        return "Question(id=$id, japanese='$japanese', romanization='$romanization', translation='$translation', topic='$topic', level='$level', gameMode='$gameMode', createdAt=$createdAt, hasKatakana=$hasKatakana, hasKanji=$hasKanji)"
-    }
-
-
-}
+)
 
 
 @Repository

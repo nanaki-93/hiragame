@@ -1,6 +1,8 @@
 package com.github.nanaki_93.controller
 
 
+import com.github.nanaki_93.dto.Batch.toGenContext
+import com.github.nanaki_93.dto.QuestionDto
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
 
@@ -19,29 +21,30 @@ class AIController(
 ) {
 
     @GetMapping("/words")
-    fun generateWord( @RequestParam level: String, @RequestParam nQuestions: Int): ResponseEntity<Int> {
-        return ResponseEntity.ok(aiQuestionService.generateAndStoreQuestions( level.let { Level.valueOf(it) }, nQuestions, GameMode.WORD))
-    }
+    fun generateWord(@RequestParam level: String, @RequestParam nQuestions: Int): ResponseEntity<Int> =
+        ResponseEntity.ok(aiQuestionService.generateAndStoreQuestions(QuestionDto(level.let { Level.valueOf(it) }, nQuestions, GameMode.WORD)))
 
     @GetMapping("/sentences")
-    fun generateSentence( @RequestParam level: String, @RequestParam nQuestions: Int): ResponseEntity<Int> {
-        return ResponseEntity.ok(aiQuestionService.generateAndStoreQuestions(level.let { Level.valueOf(it) },nQuestions, GameMode.SENTENCE))
-    }
-
+    fun generateSentence(@RequestParam level: String, @RequestParam nQuestions: Int): ResponseEntity<Int> = ResponseEntity.ok(
+        aiQuestionService.generateAndStoreQuestions(
+            QuestionDto(
+                level.let { Level.valueOf(it) },
+                nQuestions,
+                GameMode.SENTENCE
+            )
+        )
+    )
 
 
     @PostMapping("/batch-generate")
     fun startBulkGeneration(
         @RequestParam(defaultValue = "100") totalQuestions: Int,
         @RequestParam(defaultValue = "5") batchSize: Int,
-        @RequestParam(defaultValue = "3000") delayMs: Long,
         @RequestParam(defaultValue = "WORD") gameMode: String,
-    ): CompletableFuture<String> {
-        return batchService.generateBulkQuestions(totalQuestions, batchSize, delayMs, gameMode.let { GameMode.valueOf(it) })
-    }
+        @RequestParam(defaultValue = "3000") delayMs: Long,
+    ): CompletableFuture<String> =
+        batchService.generateBulkQuestions(toGenContext(totalQuestions, batchSize, gameMode.let { GameMode.valueOf(it) }), delayMs)
 
     @GetMapping("/batch-status")
-    fun getStatus(): Map<String, Any> {
-        return batchService.getGenerationStatus()
-    }
+    fun getStatus(): Map<String, Any> = batchService.getGenerationStatus()
 }

@@ -1,6 +1,5 @@
 package com.github.nanaki_93.service.ai
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
@@ -27,10 +26,14 @@ class OpenAiService(
     lateinit var openAiApiUrl: String
 
 
-    override fun callApi(prompt: String): String {
-        val response = restTemplate.postForObject(openAiApiUrl, getRequest(prompt), String::class.java) ?: ""
-        return extractContentFromResponse(response)
-    }
+    override fun callApi(prompt: String): String =
+        runCatching {
+            restTemplate.postForObject(openAiApiUrl, getRequest(prompt), String::class.java)
+        }
+            .map { it ?: "" }
+            .map(::extractContentFromResponse)
+            .onFailure { logger.error("Failed to call OpenAI API: ${it.message}") }
+            .getOrDefault("Failed to call OpenAI API")
 
     fun getRequest(prompt: String): HttpEntity<Map<String, Any>> =
         HttpEntity(openAIReqBody(prompt), openAIHeaders(openAiApiKey))
@@ -52,13 +55,14 @@ class OpenAiService(
         "temperature" to 0.7
     )
 
-    private fun extractContentFromResponse(response: String): String {
-        try {
-            val jsonNode: JsonNode = objectMapper.readTree(response)
-            return jsonNode.path("choices").get(0).path("message").path("content").asText()
-        } catch (e: Exception) {
-            logger.error("Failed to parse AI response: ${e.message}")
-            return "Failed to parse AI response"
+
+    private fun extractContentFromResponse(response: String): String =
+        runCatching {
+            objectMapper.readTree(response)
+                .path("choices")
+                .get(0).path("message").path("content").asText()
         }
-    }
+            .onFailure { logger.error("Failed to parse AI response: ${it.message}") }
+            .getOrElse { "Failed to parse AI response" }
+
 }

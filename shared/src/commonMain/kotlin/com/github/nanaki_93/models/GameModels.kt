@@ -25,7 +25,10 @@ data class HiraganaQuestionDto(
     val romanization: String,
     val translation: String? = null,
     val topic: String = "",
-    val level: Level = Level.N5
+    val level: Level = Level.N5,
+    val gameMode: GameMode = GameMode.SIGN,
+    val hasKatakana: Boolean = false,
+    val hasKanji: Boolean = false,
 )
 
 @Serializable

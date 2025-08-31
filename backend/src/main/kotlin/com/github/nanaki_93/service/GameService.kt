@@ -1,5 +1,6 @@
 package com.github.nanaki_93.service
 
+import com.github.nanaki_93.dto.QuestionDto
 import com.github.nanaki_93.models.AIQuestion
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.GameState
@@ -25,18 +26,18 @@ class GameService(private val aiQuestionService: AIQuestionService) {
     }
 
     private fun hiraganaWordQuestions(): List<HiraganaQuestionDto> {
-        return wordToHiraganaQuestions(aiQuestionService.generateQuestions(Level.N5, 10, GameMode.WORD))
+        return wordToHiraganaQuestions(aiQuestionService.generateQuestions(QuestionDto(Level.N5, 10, GameMode.WORD)))
     }
 
     private fun hiraganaSentenceQuestions(): List<HiraganaQuestionDto> {
-        return sentenceToHiraganaQuestions(aiQuestionService.generateQuestions(Level.N5, 10, GameMode.SENTENCE))
+        return sentenceToHiraganaQuestions(aiQuestionService.generateQuestions(QuestionDto(Level.N5, 10, GameMode.SENTENCE)))
     }
 
     private fun wordToHiraganaQuestions(questions: List<AIQuestion>): List<HiraganaQuestionDto> {
-        return questions.map { HiraganaQuestionDto(it.hiragana, it.romanization,it.translation) }
+        return questions.map { HiraganaQuestionDto(it.japanese, it.romanization,it.translation) }
     }
     private fun sentenceToHiraganaQuestions(questions: List<AIQuestion>): List<HiraganaQuestionDto> {
-        return questions.map { HiraganaQuestionDto(it.hiragana, it.romanization,it.translation) }
+        return questions.map { HiraganaQuestionDto(it.japanese, it.romanization,it.translation) }
     }
 
     fun processAnswer(

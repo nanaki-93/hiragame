@@ -18,6 +18,7 @@ class OllamaService(
 ) : AiService {
 
     private val logger = org.slf4j.LoggerFactory.getLogger(OllamaService::class.java)
+
     @Value("\${ollama.api.url:http://localhost:11434/api/generate}")
     private lateinit var ollamaApiUrl: String
 
@@ -25,7 +26,8 @@ class OllamaService(
     private lateinit var ollamaModel: String
 
 
-    fun getRequest(prompt: String): HttpEntity<Map<String, Any>> = HttpEntity(getRequestBody(prompt),
+    fun getRequest(prompt: String): HttpEntity<Map<String, Any>> = HttpEntity(
+        getRequestBody(prompt),
         HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
         })
@@ -44,31 +46,23 @@ class OllamaService(
         )
     )
 
-    override fun callApi(prompt: String): String {
-        return try {
-
-            logger.info("Calling Ollama API with anti-repetition settings")
-            val response = restTemplate.postForEntity(ollamaApiUrl, getRequest(prompt), String::class.java)
-
-            if (response.statusCode == HttpStatus.OK) {
-                extractOllamaContent(response.body ?: "")
-            } else {
-                logger.error("Ollama API call failed with status: ${response.statusCode}")
-                ""
+    override fun callApi(prompt: String): String =
+        runCatching { restTemplate.postForEntity(ollamaApiUrl, getRequest(prompt), String::class.java) }
+            .mapCatching {
+                if (it.statusCode == HttpStatus.OK) {
+                    extractOllamaContent(it.body ?: "")
+                } else {
+                    logger.error("Ollama API call failed with status: ${it.statusCode}")
+                    ""
+                }
             }
-        } catch (e: Exception) {
-            logger.error("Error calling Ollama API: ${e.message}", e)
-            ""
-        }
-    }
-    private fun extractOllamaContent(response: String): String {
-        return try {
-            val jsonNode = objectMapper.readTree(response)
-            jsonNode.get("response")?.asText() ?: ""
-        } catch (e: Exception) {
-            logger.error("Error extracting content from Ollama response: ${e.message}", e)
-            ""
-        }
-    }
+            .onFailure { logger.error("Error calling Ollama API: ${it.message}") }
+            .getOrDefault( "Failed to call Ollama API" )
+
+    private fun extractOllamaContent(response: String): String =
+        runCatching { objectMapper.readTree(response).get("response")?.asText() ?: "" }
+            .onFailure { logger.error("Error extracting content from Ollama response: ${it.message}") }
+            .getOrDefault( "Failed to extract content from Ollama response" )
+
 
 }

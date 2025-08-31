@@ -15,30 +15,22 @@ class OllamaOfflineService(
     private val logger = LoggerFactory.getLogger(OllamaOfflineService::class.java)
     private val chatClient = ChatClient.create(ollamaChatModel)
 
-
-    override fun callApi(prompt: String): String {
-        return try {
-            logger.info("Calling Ollama via Spring AI with anti-repetition settings")
-
-            val response = chatClient.prompt()
+    override fun callApi(prompt: String): String =
+        runCatching {
+            chatClient.prompt()
                 .user(prompt)
-                .options(ChatOptions.builder()
-                    .temperature(0.1)
-                    .topK(40)
-                    .topP(0.9)
-                    .build())
+                .options(
+                    ChatOptions.builder()
+                        .temperature(0.1)
+                        .topK(40)
+                        .topP(0.9)
+                        .build()
+                )
                 .call()
                 .content()
-
-            logger.info("Received response from Spring AI: ${response?.take(100)}...")
-            response ?: ""
-
-        } catch (e: Exception) {
-            logger.error("Error calling Ollama via Spring AI: ${e.message}", e)
-            "Failed to call Ollama via Spring AI"
         }
-    }
-
-
+            .also { logger.info("Received response from Spring AI: ${it.getOrNull()?.take(100)}...") }
+            .onFailure { logger.error("Error calling Ollama via Spring AI: ${it.message}") }
+            .getOrDefault("Failed to call Ollama via Spring AI")
 
 }

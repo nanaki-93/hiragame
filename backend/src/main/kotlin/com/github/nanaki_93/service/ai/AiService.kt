@@ -1,5 +1,6 @@
 package com.github.nanaki_93.service.ai
 
+import com.github.nanaki_93.dto.QuestionDto
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.models.topicsByJLPTLevel
@@ -11,9 +12,9 @@ interface AiService {
     fun callApi(prompt: String): String
 
 
-    fun getPrompt(level: Level, nQuestions: Int, gameMode: GameMode): String = when (gameMode) {
-        GameMode.WORD, GameMode.SIGN -> getWordsPrompt(level, nQuestions)
-        GameMode.SENTENCE -> getSentencesPrompt(level, nQuestions)
+    fun getPrompt(questionReq: QuestionDto): String = when (questionReq.gameMode) {
+        GameMode.WORD, GameMode.SIGN -> getWordsPrompt(questionReq.level, questionReq.nQuestions)
+        GameMode.SENTENCE -> getSentencesPrompt(questionReq.level, questionReq.nQuestions)
     }
 
     private fun getWordsPrompt(level: Level, nQuestions: Int): String = """
