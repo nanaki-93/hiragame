@@ -3,7 +3,7 @@ package com.github.nanaki_93.service.ai
 import com.github.nanaki_93.dto.QuestionDto
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
-import com.github.nanaki_93.models.topicsByJLPTLevel
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
@@ -13,16 +13,12 @@ interface AiService {
 
 
     fun getPrompt(questionReq: QuestionDto): String = when (questionReq.gameMode) {
-        GameMode.WORD, GameMode.SIGN -> getWordsPrompt(questionReq.level, questionReq.nQuestions)
-        GameMode.SENTENCE -> getSentencesPrompt(questionReq.level, questionReq.nQuestions)
-    }
+        GameMode.WORD, GameMode.SIGN -> getWordsPrompt(questionReq)
+        GameMode.SENTENCE -> getSentencesPrompt(questionReq)
+    }.also { LoggerFactory.getLogger(this.javaClass).info("===QuestionReq: $questionReq")}
 
-    private fun getWordsPrompt(level: Level, nQuestions: Int): String = """
-    You are a Japanese language teacher. Generate exactly $nQuestions UNIQUE Japanese SINGLE WORDS related to these topics ["${
-        topicsByJLPTLevel[level]?.joinToString(
-            ", "
-        )
-    }"].
+    private fun getWordsPrompt(questionReq: QuestionDto): String = """
+    You are a Japanese language teacher. Generate exactly ${questionReq.nQuestions} UNIQUE Japanese SINGLE WORDS related to this topic "${questionReq.topic}".
     
     STRICT REQUIREMENTS:
     1. CRITICAL: Generate ONLY SINGLE WORDS - NO phrases, NO sentences, NO multiple words
@@ -39,30 +35,22 @@ interface AiService {
        - Colors: あお, きいろ, みどり
        - Numbers: いち, に, さん
        - Family: おかあさん, おとうさん, きょうだい
-    5. Difficulty level based on JLPT: $level
-        ${getLevelDescription(level)}
+    5. Difficulty level based on JLPT: ${questionReq.level}
+        ${getLevelDescription(questionReq.level)}
     6. Each line must follow this exact CSV format: hiragana;romanization;translation;topic;level
     
     
     VARIETY EXAMPLES (do not copy these, create your own diverse words):
     
-    ねこ;neko;cat;animals;$level
-    べんきょう;benkyou;study;education;$level
-    あたたかい;atatakai;warm;weather;$level
+    ねこ;neko;cat;animals;${questionReq.level}
+    べんきょう;benkyou;study;education;${questionReq.level}
+    あたたかい;atatakai;warm;weather;${questionReq.level}
     
-    Generate exactly $nQuestions COMPLETELY DIFFERENT single words covering maximum variety of topics ["${
-        topicsByJLPTLevel[level]?.joinToString(
-            ", "
-        )
-    }"] now:
+    Generate exactly ${questionReq.nQuestions} COMPLETELY DIFFERENT single words covering maximum variety of this topic "${questionReq.topic}" now:
 """.trimIndent()
 
-    private fun getSentencesPrompt(level: Level, nQuestions: Int): String = """
-    You are a Japanese language teacher. Generate exactly $nQuestions UNIQUE Japanese COMPLETE SENTENCES about these topics ["${
-        topicsByJLPTLevel[level]?.joinToString(
-            ", "
-        )
-    }"].
+    private fun getSentencesPrompt(questionReq: QuestionDto): String = """
+    You are a Japanese language teacher. Generate exactly ${questionReq.nQuestions} UNIQUE Japanese COMPLETE SENTENCES about this topic "${questionReq.topic}".
     
     STRICT REQUIREMENTS:
     1. CRITICAL: Generate COMPLETE SENTENCES ONLY - each sentence must contain 2 OR MORE WORDS
@@ -80,36 +68,26 @@ interface AiService {
        - Daily activities: あさごはんをたべました, ともだちとはなします
        - Questions: これはなんですか, どこにいきますか
     5. Sentences must be grammatically correct and natural
-    6. Difficulty level based on JLPT: $level
-        ${getLevelDescription(level)}
+    6. Difficulty level based on JLPT: ${questionReq.level}
+        ${getLevelDescription(questionReq.level)}
     7. Each line must follow this exact CSV format: hiragana;romanization;translation;topic;level
     
     
     VARIETY EXAMPLES (do not copy these, create your own diverse sentences):
     
-    きょうはあついです;kyou wa atsui desu;Today is hot;weather;$level
-    としょかんでべんきょうします;toshokan de benkyou shimasu;I study at the library;education;$level
-    ともだちとえいがをみました;tomodachi to eiga wo mimashita;I watched a movie with friends;entertainment;$level
+    きょうはあついです;kyou wa atsui desu;Today is hot;weather;${questionReq.level}
+    としょかんでべんきょうします;toshokan de benkyou shimasu;I study at the library;education;${questionReq.level}
+    ともだちとえいがをみました;tomodachi to eiga wo mimashita;I watched a movie with friends;entertainment;${questionReq.level}
     
-    Generate exactly $nQuestions COMPLETELY DIFFERENT complete sentences (2+ words each) covering maximum variety of topics ["${
-        topicsByJLPTLevel[level]?.joinToString(
-            ", "
-        )
-    }"] now:
+    Generate exactly ${questionReq.nQuestions} COMPLETELY DIFFERENT complete sentences (2+ words each) covering maximum variety of this topic "${questionReq.topic}" now:
 """.trimIndent()
 
     private fun getLevelDescription(level: Level): String = when (level) {
         Level.N5 -> """
         N5 (Beginner): Basic Japanese phrases and expressions. About 100 kanji and 800 vocabulary words. Simple sentences in hiragana, katakana, and basic kanji. Everyday topics spoken slowly. """
 
-        Level.N5_PLUS -> """
-        N5_PLUS (Beginner+): Good grasp of basic Japanese with more complex sentences and expressions. About 150 kanji and 1,200 vocabulary words. More complex sentences and conversations at natural speed."""
-
         Level.N4 -> """
         N4 (Elementary): Stronger foundation in basic Japanese. Familiar topics in conversations and daily subjects. Around 1,500 words and 300 kanji."""
-
-        Level.N4_PLUS -> """
-        N4_PLUS (Elementary+): Advanced elementary level with complex sentences and expressions. About 200 kanji and 1,800 vocabulary words."""
 
         Level.N3 -> """
         N3 (Intermediate): Bridge between basic and advanced understanding. Slightly complex written material and natural conversations. Around 3,750 words and 650 kanji."""

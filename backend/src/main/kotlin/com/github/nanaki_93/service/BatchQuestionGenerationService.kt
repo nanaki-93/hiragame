@@ -62,7 +62,7 @@ class BatchQuestionGenerationService(
 
 
     private fun insertQuestionBatch(bp: BatchParams): Int =
-        runCatching { aiQuestionService.generateAndStoreQuestions(QuestionDto(bp.level, bp.questionsInThisBatch, bp.gameMode)) }
+        runCatching { aiQuestionService.generateAndStoreQuestions(QuestionDto(bp.level, bp.questionsInThisBatch, bp.gameMode,bp.topic)) }
             .also { logger.info("Batch ${bp.batchNumber}: Actually inserted $it new questions into database") }
             .onFailure { logger.error("Error in batch ${bp.batchNumber}: ${it.message}", it) }
             .getOrDefault(0)

@@ -67,9 +67,9 @@ class GeminiService(
             "temperature" to 0.8,
             "topK" to 40, // Lower for more focused responses
             "topP" to 0.95,
-            "maxOutputTokens" to 2048,
+            "maxOutputTokens" to 8192,
             "responseMimeType" to "text/plain",
-            "stopSequences" to listOf<String>() // Let it generate full CSV
+            "stopSequences" to listOf<String>()
         )
     )
 

@@ -11,9 +11,7 @@ enum class GameMode(val displayName: String) {
 
 enum class Level(val displayName: String) {
     N5("N5"),
-    N5_PLUS("N5+"),
     N4("N4"),
-    N4_PLUS("N4+"),
     N3("N3"),
     N2("N2"),
     N1("N1");

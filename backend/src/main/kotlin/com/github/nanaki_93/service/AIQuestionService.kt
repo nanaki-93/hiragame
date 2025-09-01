@@ -21,7 +21,7 @@ class AIQuestionService(
     private val aiService: AiService
 ) {
     companion object {
-        private const val MAX_QUESTIONS_PER_BATCH = 50
+        private const val MAX_QUESTIONS_PER_BATCH = 100
     }
 
     private val logger = LoggerFactory.getLogger(AIQuestionService::class.java)
