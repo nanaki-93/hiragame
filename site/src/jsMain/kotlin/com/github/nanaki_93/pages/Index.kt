@@ -10,10 +10,7 @@ import com.github.nanaki_93.components.widgets.GameStats
 import com.github.nanaki_93.components.widgets.LevelSelector
 import com.github.nanaki_93.components.widgets.ProgressBar
 import com.github.nanaki_93.models.GameMode
-import com.github.nanaki_93.models.GameState
-import com.github.nanaki_93.models.getNextQuestion
-import com.github.nanaki_93.models.hiraganaCharsLv1s
-import com.github.nanaki_93.models.hiraganaLvMap
+import com.github.nanaki_93.models.GameStateReq
 import com.github.nanaki_93.service.GameService
 import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
@@ -33,7 +30,7 @@ import org.jetbrains.compose.web.css.*
 @Page
 @Composable
 fun HomePage() {
-    var gameState by remember { mutableStateOf(GameState()) }
+    var gameStateReq by remember { mutableStateOf(GameStateReq()) }
     var userInput by remember { mutableStateOf("") }
     var isAnswering by remember { mutableStateOf(false) }
     var level by remember { mutableStateOf(1) }
@@ -43,32 +40,30 @@ fun HomePage() {
 
     val coroutineScope = rememberCoroutineScope()
     suspend fun submitAnswer() {
-        if (isAnswering || gameState.currentChar == null) return
+        if (isAnswering) return
 
         isAnswering = true
-        gameState = gameService.processAnswer(gameState, userInput, level)
-        level = gameState.level
+        gameStateReq = gameService.processAnswer(gameStateReq, userInput, level)
+        level = 1
         userInput = ""
         delay(1500)
-        gameState = gameService.getNextCharacterAndClearFeedback(gameState)
+        gameStateReq = gameService.getNextCharacterAndClearFeedback(gameStateReq)
         isAnswering = false
     }
 
     fun selectLevel(selectedLevel: Int) {
 
-        level = selectedLevel
-        gameState = gameState.copy(
-            level = selectedLevel,
-            hiraganaList = hiraganaLvMap[selectedLevel] ?: hiraganaCharsLv1s
-        ).getNextQuestion()
+//        level = selectedLevel
+//        gameStateReq = gameStateReq.copy(
+//            level = selectedLevel,
+//            hiraganaList = hiraganaLvMap[selectedLevel] ?: hiraganaCharsLv1s
+//        ).getNextQuestion()
 
     }
 
     // Initialize with first character
     LaunchedEffect(Unit) {
-        gameState = gameState.copy(
-            hiraganaList = hiraganaCharsLv1s,
-        ).getNextQuestion()
+        gameStateReq = gameStateReq.copy()
     }
 
     Box(GameContainerStyle.toModifier()) {
@@ -89,7 +84,7 @@ fun HomePage() {
                 currentMode = gameMode,
                 onModeSelected = { selectedMode ->
                     coroutineScope.launch {
-                        gameState = gameService.selectGameMode(selectedMode)
+                        gameStateReq = gameService.selectGameMode(selectedMode)
                     }
                 }
             )
@@ -100,10 +95,10 @@ fun HomePage() {
                 onLevelSelected = { selectedLevel -> selectLevel(selectedLevel) }
             )
 
-            GameStats(gameState)
-            ProgressBar(gameState)
+            GameStats(gameStateReq)
+            ProgressBar(gameStateReq)
             QuestionArea(
-                gameState = gameState,
+                gameStateReq = gameStateReq,
                 userInput = userInput,
                 isAnswering = isAnswering,
                 onInputChange = { userInput = it },
@@ -112,7 +107,7 @@ fun HomePage() {
 
             // Instructions
             SpanText(
-                "Level ${gameState.level}: ${hiraganaCharsLv1s.size} questions each level",
+                "Level ${1}:  questions each level",
                 Modifier.fontSize(0.9.cssRem).opacity(0.7)
             )
         }

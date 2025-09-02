@@ -1,15 +1,18 @@
-package com.github.nanaki_93.controller
+package com.github.nanaki_93.ai
 
-
-import com.github.nanaki_93.dto.Batch.toGenContext
+import com.github.nanaki_93.ai.generation.BatchQuestionGenerationService
+import com.github.nanaki_93.ai.model.Batch
 import com.github.nanaki_93.dto.QuestionDto
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
-
-import com.github.nanaki_93.service.AIQuestionService
-import com.github.nanaki_93.service.BatchQuestionGenerationService
+import com.github.nanaki_93.ai.generation.AIQuestionService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import java.util.concurrent.CompletableFuture
 
 @RestController
@@ -43,7 +46,7 @@ class AIController(
         @RequestParam(defaultValue = "WORD") gameMode: String,
         @RequestParam(defaultValue = "3000") delayMs: Long,
     ): CompletableFuture<String> =
-        batchService.generateBulkQuestions(toGenContext(totalQuestions, batchSize, gameMode.let { GameMode.valueOf(it) }), delayMs)
+        batchService.generateBulkQuestions(Batch.toGenContext(totalQuestions, batchSize, gameMode.let { GameMode.valueOf(it) }), delayMs)
 
     @GetMapping("/batch-status")
     fun getStatus(): Map<String, Any> = batchService.getGenerationStatus()

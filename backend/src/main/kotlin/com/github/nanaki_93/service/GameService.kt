@@ -1,83 +1,72 @@
 package com.github.nanaki_93.service
 
-import com.github.nanaki_93.dto.QuestionDto
-import com.github.nanaki_93.models.AIQuestion
-import com.github.nanaki_93.models.GameMode
-import com.github.nanaki_93.models.GameState
-import com.github.nanaki_93.models.HiraganaQuestionDto
+import com.github.nanaki_93.models.SelectRequest
+import com.github.nanaki_93.models.GameStateReq
+import com.github.nanaki_93.models.QuestionRequest
 import com.github.nanaki_93.models.Level
-import com.github.nanaki_93.models.getNextQuestion
-import com.github.nanaki_93.models.hiraganaLvMap
+import com.github.nanaki_93.repository.UserAnsweredQuestionRepository
+import com.github.nanaki_93.repository.UserGameStateRepository
+
+import com.github.nanaki_93.repository.UserLevelRepository
+import com.github.nanaki_93.util.toUUID
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
-class GameService(private val aiQuestionService: AIQuestionService) {
-    fun calculateLevel(correctAnswers: Int): Int {
-        return minOf(5, (correctAnswers / 10) + 1)
-    }
+class GameService(
+    private val levelRepo: UserLevelRepository,
+    private val userQuestionRepo: UserAnsweredQuestionRepository,
+    private val userGameStateRepo: UserGameStateRepository
+) {
 
-    fun selectGameMode(gameMode: GameMode): GameState {
-        return when (gameMode) {
-            GameMode.SIGN -> GameState(hiraganaList = hiraganaLvMap[1] ?: emptyList()).getNextQuestion()
-            GameMode.WORD -> GameState(hiraganaList = hiraganaWordQuestions()).getNextQuestion()
-            GameMode.SENTENCE -> GameState(hiraganaList = hiraganaSentenceQuestions()).getNextQuestion()
+    fun nextQuestion(selectReq: SelectRequest) = userQuestionRepo.findRandomBySelect(selectReq)
+
+
+    fun getAvailableLevels(selectRequest: SelectRequest): List<Level> =
+        levelRepo.findByUserId(UUID.fromString(selectRequest.userId))
+            .filter { it.isCompleted }
+            .map { Level.valueOf(it.level) }
+            .toList()
+
+
+    //todo it could be a good start to a chat with ai
+//    private fun sentenceToHiraganaQuestions(questions: List<AIQuestion>): List<QuestionRequest> {
+//        return questions.map { QuestionRequest(it.japanese, it.romanization, it.translation) }
+//    }
+
+    fun processAnswer(question: QuestionRequest ): GameStateReq {
+
+        val currentState = userGameStateRepo.findByUserId(question.userId.toUUID())
+
+        if(question.userInput.equals(question.japanese)){
+
+            userQuestionRepo.findById(question.userQuestionId.toUUID()).ifPresent { userQuestion ->
+                userQuestionRepo.save(userQuestion.copy(isCorrect = true))
+            }
+
+            val curLevel = levelRepo.findByUserIdAndLevelAndGameMode(question.userId.toUUID(),question.level.name,question.gameMode.name)
+
+
+            //check if new level
+            //get new question
+            //update game state
         }
-
-    }
-
-    private fun hiraganaWordQuestions(): List<HiraganaQuestionDto> {
-        return wordToHiraganaQuestions(aiQuestionService.generateQuestions(QuestionDto(Level.N5, 10, GameMode.WORD)))
-    }
-
-    private fun hiraganaSentenceQuestions(): List<HiraganaQuestionDto> {
-        return sentenceToHiraganaQuestions(aiQuestionService.generateQuestions(QuestionDto(Level.N5, 10, GameMode.SENTENCE)))
-    }
-
-    private fun wordToHiraganaQuestions(questions: List<AIQuestion>): List<HiraganaQuestionDto> {
-        return questions.map { HiraganaQuestionDto(it.japanese, it.romanization,it.translation) }
-    }
-    private fun sentenceToHiraganaQuestions(questions: List<AIQuestion>): List<HiraganaQuestionDto> {
-        return questions.map { HiraganaQuestionDto(it.japanese, it.romanization,it.translation) }
-    }
-
-    fun processAnswer(
-        gameState: GameState,
-        userInput: String,
-        level: Int,
-    ): GameState {
-        val currentChar = gameState.currentChar ?: return gameState
-        val isCorrect = userInput.lowercase().trim() == currentChar.romanization.lowercase()
-
-        val newCorrectAnswers = if (isCorrect) gameState.correctAnswers + 1 else gameState.correctAnswers
-        val newStreak = if (isCorrect) gameState.streak + 1 else 0
-        val newScore = gameState.score + if (isCorrect) (10 + newStreak * 2) else 0
-        val newLevel = calculateLevel(newCorrectAnswers)
-        var newList = gameState.hiraganaList
-
-        if (isCorrect) {
-            newList = gameState.hiraganaList.filter { it.hiragana != currentChar.hiragana }
+        else{
+            //update question with attemps
+            //get new question
+            //update game state
         }
-        if (newLevel > level) {
-            newList = hiraganaLvMap[newLevel] ?: emptyList()
-        }
-        return gameState.copy(
-            score = newScore,
-            streak = newStreak,
-            totalAnswered = gameState.totalAnswered + 1,
-            hiraganaList = newList,
-            correctAnswers = newCorrectAnswers,
-            level = newLevel,
-            feedback = generateFeedback(isCorrect, newStreak, currentChar.romanization),
-            isCorrect = isCorrect
-        )
-    }
-
-    fun getNextCharacterAndClearFeedback(gameState: GameState): GameState {
-        return gameState.getNextQuestion().copy(
+        return GameStateReq(
+            userId = question.userId,
+            score = 0,
+            streak = 0,
+            totalAnswered = 0,
+            correctAnswers = 0,
             feedback = "",
             isCorrect = null
         )
     }
+
 
     private fun generateFeedback(isCorrect: Boolean, streak: Int, correctAnswer: String): String {
         return if (isCorrect) {

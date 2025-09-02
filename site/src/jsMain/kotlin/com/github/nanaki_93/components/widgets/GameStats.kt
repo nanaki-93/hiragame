@@ -10,22 +10,22 @@ import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
 import com.github.nanaki_93.StatItemStyle
-import com.github.nanaki_93.models.GameState
+import com.github.nanaki_93.models.GameStateReq
 import com.varabyte.kobweb.compose.css.FontWeight
 import org.jetbrains.compose.web.css.*
 
 @Composable
-fun GameStats(gameState: GameState) {
+fun GameStats(gameStateReq: GameStateReq) {
     Row(
         Modifier.fillMaxWidth().flexWrap(FlexWrap.Wrap),
         horizontalArrangement = Arrangement.spacedBy(0.5.cssRem)
     ) {
-        StatItem("Score", "${gameState.score}")
-        StatItem("Streak", "${gameState.streak}")
-        StatItem("Level", "${gameState.level}")
+        StatItem("Score", "${gameStateReq.score}")
+        StatItem("Streak", "${gameStateReq.streak}")
+        StatItem("Level", "${1}")
 
-        val accuracy = if (gameState.totalAnswered > 0) {
-            (gameState.correctAnswers * 100 / gameState.totalAnswered)
+        val accuracy = if (gameStateReq.totalAnswered > 0) {
+            (gameStateReq.correctAnswers * 100 / gameStateReq.totalAnswered)
         } else 0
         StatItem("Accuracy", "$accuracy%")
     }

@@ -1,9 +1,6 @@
-package com.github.nanaki_93.service
-
+package com.github.nanaki_93.ai.generation
 
 import com.github.nanaki_93.dto.QuestionDto
-import org.springframework.stereotype.Service
-import com.github.nanaki_93.service.ai.AiService
 import com.github.nanaki_93.models.AIQuestion
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.repository.Question
@@ -12,13 +9,12 @@ import com.github.nanaki_93.util.cleanCsvFromMarkdown
 import com.github.nanaki_93.util.fromCsvLineToQuestion
 import com.github.nanaki_93.util.toHiraganaQuestion
 import org.slf4j.LoggerFactory
-import kotlin.sequences.filter
-import kotlin.sequences.toList
+import org.springframework.stereotype.Service
 
 @Service
 class AIQuestionService(
     private val hiraganaRepository: QuestionRepository,
-    private val aiService: AiService
+    private val aiService: AIService
 ) {
     companion object {
         private const val MAX_QUESTIONS_PER_BATCH = 100

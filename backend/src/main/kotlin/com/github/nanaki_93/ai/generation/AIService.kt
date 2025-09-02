@@ -1,4 +1,4 @@
-package com.github.nanaki_93.service.ai
+package com.github.nanaki_93.ai.generation
 
 import com.github.nanaki_93.dto.QuestionDto
 import com.github.nanaki_93.models.GameMode
@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
-interface AiService {
+interface AIService {
 
     fun callApi(prompt: String): String
 
@@ -26,7 +26,7 @@ interface AiService {
        - WRONG: みずがあります (there is water), あおいほん (blue book), きれいなさかな (beautiful fish)
     2. Each word must be COMPLETELY DIFFERENT (no duplicates, no variations of the same word)
     3. Use appropriate Japanese characters for the level
-    4. Generate MAXIMUM VARIETY across different word types:
+    4. Generate MAXIMUM VARIETY across different word types, following the "${questionReq.topic}" as closely as possible:
        - Nouns (objects, animals, people, places, concepts): ねこ, いえ, がっこう
        - Adjectives: あかい, おおきい, あたたかい
        - Verbs (in dictionary form): たべる, のむ, ねる
@@ -58,7 +58,7 @@ interface AiService {
        - WRONG: みず (water), ねこ (cat) - these are single words, not sentences
     2. Each sentence must be COMPLETELY DIFFERENT (no duplicates, no similar structures)
     3. Use appropriate Japanese characters for the level
-    4. Generate MAXIMUM VARIETY in sentence patterns and structures:
+    4. Generate MAXIMUM VARIETY in sentence patterns and structures, following the "${questionReq.topic}" as closely as possible:
        - Subject + Adjective: わたしはげんきです, ねこはかわいいです
        - Location sentences: がっこうにいきます, いえにいます
        - Time expressions: あしたはにちようびです, いまはごごです

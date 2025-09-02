@@ -1,4 +1,4 @@
-package com.github.nanaki_93.service.ai
+package com.github.nanaki_93.ai.generation
 
 import org.slf4j.LoggerFactory
 import org.springframework.ai.chat.client.ChatClient
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service
 @Profile("ollama")
 class OllamaOfflineService(
     ollamaChatModel: OllamaChatModel,
-) : AiService {
+) : AIService {
     private val logger = LoggerFactory.getLogger(OllamaOfflineService::class.java)
     private val chatClient = ChatClient.create(ollamaChatModel)
 

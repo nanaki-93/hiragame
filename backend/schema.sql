@@ -1,16 +1,65 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-DROP TABLE IF EXISTS question;
-CREATE TABLE if not exists question
+
+DROP TABLE IF EXISTS jp_users CASCADE;
+CREATE TABLE if not exists jp_users
 (
-    id           UUID PRIMARY KEY,
-    japanese     VARCHAR(255) NOT NULL UNIQUE,
-    romanization VARCHAR(255) NOT NULL,
-    translation  VARCHAR(255),
-    topic        VARCHAR(255) NOT NULL DEFAULT '',
-    level        VARCHAR(255) NOT NULL DEFAULT 1,
-    game_mode    VARCHAR(255) NOT NULL,
-    created_at   TIMESTAMP    NOT NULL DEFAULT NOW(),
-    has_katakana BOOLEAN      NOT NULL DEFAULT FALSE,
-    has_kanji    BOOLEAN      NOT NULL DEFAULT FALSE
+    id       uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name     text NOT NULL,
+    email    text NOT NULL,
+    password text NOT NULL
 );
+
+
+DROP TABLE IF EXISTS user_answered_question CASCADE;
+CREATE TABLE user_answered_question
+(
+    id              uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
+    user_id         uuid      NOT NULL REFERENCES jp_users (id) ON DELETE CASCADE,
+    question_id     uuid      NOT NULL REFERENCES question (id) ON DELETE CASCADE,
+    is_correct      boolean   NOT NULL,
+    answered_at     timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    attemps         integer,
+    lastAttemptedAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    game_mode       text      NOT NULL,
+    level           text,
+    UNIQUE (user_id, question_id, game_mode)
+);
+
+DROP TABLE IF EXISTS user_level CASCADE;
+CREATE TABLE if not exists user_level
+(
+    id            uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
+    user_id       uuid      NOT NULL REFERENCES jp_users (id) ON DELETE CASCADE,
+    level         text      NOT NULL,
+    is_completed  boolean   NOT NULL,
+    is_available  boolean   NOT NULL,
+    answered_at   timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    game_mode     text      NOT NULL,
+    correct_count integer,
+    UNIQUE (user_id, level, game_mode)
+);
+
+-- User game state table - stores current/paused game sessions
+CREATE TABLE user_game_state
+(
+    id                  uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
+    user_id             uuid      NOT NULL REFERENCES jp_users (id) ON DELETE CASCADE,
+    game_mode           text      NOT NULL,
+    level               text      NOT NULL DEFAULT 'N5',
+    score               integer   NOT NULL DEFAULT 0,
+    streak              integer   NOT NULL DEFAULT 0,
+    total_answered      integer   NOT NULL DEFAULT 0,
+    correct_answers     integer   NOT NULL DEFAULT 0,
+    last_answer_correct boolean,
+    created_at          timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at          timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, game_mode)
+);
+
+
+-- Indexes for performance
+CREATE INDEX idx_user_answered_questions_user_id ON user_answered_question (user_id);
+CREATE INDEX idx_user_answered_questions_question_id ON user_answered_question (question_id);
+CREATE INDEX idx_user_answered_questions_answered_at ON user_answered_question (answered_at);
+CREATE INDEX idx_user_answered_questions_game_mode ON user_answered_question (game_mode);

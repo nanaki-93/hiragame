@@ -13,14 +13,14 @@ import com.varabyte.kobweb.silk.style.toModifier
 import com.github.nanaki_93.HiraganaCharStyle
 import com.github.nanaki_93.InputStyle
 import com.github.nanaki_93.components.widgets.SubmitButton
-import com.github.nanaki_93.models.GameState
+import com.github.nanaki_93.models.GameStateReq
 import com.varabyte.kobweb.compose.css.FontWeight
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.*
 
 @Composable
 fun QuestionArea(
-    gameState: GameState,
+    gameStateReq: GameStateReq,
     userInput: String,
     isAnswering: Boolean,
     onInputChange: (String) -> Unit,
@@ -37,8 +37,8 @@ fun QuestionArea(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        gameState.currentChar?.let { char ->
-            SpanText(char.hiragana, HiraganaCharStyle.toModifier())
+        gameStateReq.currentQuestion?.let { char ->
+            SpanText(char.japanese, HiraganaCharStyle.toModifier())
 
             SpanText(
                 "What is the romanization?",
@@ -66,14 +66,14 @@ fun QuestionArea(
 
 
             // Feedback
-            if (gameState.feedback.isNotEmpty()) {
+            if (gameStateReq.feedback.isNotEmpty()) {
                 SpanText(
-                    gameState.feedback,
+                    gameStateReq.feedback,
                     Modifier
                         .fontSize(1.1.cssRem)
                         .fontWeight(FontWeight.Bold)
                         .color(
-                            when (gameState.isCorrect) {
+                            when (gameStateReq.isCorrect) {
                                 true -> rgba(76, 175, 80, 1.0)
                                 false -> rgba(244, 67, 54, 1.0)
                                 null -> Colors.White

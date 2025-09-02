@@ -5,6 +5,7 @@ import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.repository.Question
 import org.slf4j.LoggerFactory
+import java.util.UUID
 
 
 fun AIQuestion.toHiraganaQuestion(gameMode: GameMode): Question =
@@ -46,3 +47,5 @@ fun String.cleanJsonFromMarkdown(): String = this
 
 fun String.hasKatakana(): Boolean = this.any { it in '\u30A0'..'\u30FF' }
 fun String.hasKanji(): Boolean = this.any { it in '\u4E00'..'\u9FFF' }
+
+fun String?.toUUID(): UUID = UUID.fromString(this)

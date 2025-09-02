@@ -1,7 +1,8 @@
-package com.github.nanaki_93.service.ai
+package com.github.nanaki_93.ai.generation
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.nanaki_93.util.cleanJsonFromMarkdown
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpEntity
@@ -15,9 +16,9 @@ import org.springframework.web.client.RestTemplate
 class GeminiService(
     private val objectMapper: ObjectMapper = ObjectMapper(),
     private val restTemplate: RestTemplate = RestTemplate()
-) : AiService {
+) : AIService {
 
-    private val logger = org.slf4j.LoggerFactory.getLogger(GeminiService::class.java)
+    private val logger = LoggerFactory.getLogger(GeminiService::class.java)
 
     @Value("\${gemini.api.key:}")
     private lateinit var geminiApiKey: String

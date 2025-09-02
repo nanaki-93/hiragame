@@ -5,11 +5,11 @@ import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.styleModifier
-import com.github.nanaki_93.models.GameState
+import com.github.nanaki_93.models.GameStateReq
 import org.jetbrains.compose.web.css.*
 
 @Composable
-fun ProgressBar(gameState: GameState) {
+fun ProgressBar(gameStateReq: GameStateReq) {
     Box(
         Modifier
             .fillMaxWidth()
@@ -17,7 +17,7 @@ fun ProgressBar(gameState: GameState) {
             .background(rgba(255, 255, 255, 0.2))
             .borderRadius(5.px)
     ) {
-        val progress = ((gameState.correctAnswers % 10) * 10)
+        val progress = ((gameStateReq.correctAnswers % 10) * 10)
         Box(
             Modifier
                 .width(progress.percent)
