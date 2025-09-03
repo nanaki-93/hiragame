@@ -15,6 +15,14 @@ enum class Level(val displayName: String) {
     N1("N1");
 }
 
+fun Level.nextLevel(): Level = when (this) {
+    Level.N5 -> Level.N4
+    Level.N4 -> Level.N3
+    Level.N3 -> Level.N2
+    Level.N2 -> Level.N1
+    Level.N1 -> Level.N1
+}
+
 val jlptN5Topics = listOf(
     // Most basic everyday topics - survival Japanese
     "Greetings and Introductions",

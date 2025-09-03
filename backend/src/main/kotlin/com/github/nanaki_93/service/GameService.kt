@@ -4,12 +4,14 @@ import com.github.nanaki_93.models.SelectRequest
 import com.github.nanaki_93.models.GameStateReq
 import com.github.nanaki_93.models.QuestionRequest
 import com.github.nanaki_93.models.Level
+import com.github.nanaki_93.models.nextLevel
 import com.github.nanaki_93.repository.UserAnsweredQuestionRepository
 import com.github.nanaki_93.repository.UserGameStateRepository
 
 import com.github.nanaki_93.repository.UserLevelRepository
 import com.github.nanaki_93.util.toUUID
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime.now
 import java.util.UUID
 
 @Service
@@ -25,7 +27,7 @@ class GameService(
     fun getAvailableLevels(selectRequest: SelectRequest): List<Level> =
         levelRepo.findByUserId(UUID.fromString(selectRequest.userId))
             .filter { it.isCompleted }
-            .map { Level.valueOf(it.level) }
+            .map { it.level }
             .toList()
 
 
@@ -41,30 +43,65 @@ class GameService(
         if(question.userInput.equals(question.japanese)){
 
             userQuestionRepo.findById(question.userQuestionId.toUUID()).ifPresent { userQuestion ->
-                userQuestionRepo.save(userQuestion.copy(isCorrect = true))
+                userQuestionRepo.save(userQuestion.copy(isCorrect = true, answeredAt = now()))
             }
 
-            val curLevel = levelRepo.findByUserIdAndLevelAndGameMode(question.userId.toUUID(),question.level.name,question.gameMode.name)
+            val currLevelState = levelRepo.findByUserIdAndLevelAndGameMode(question.userId.toUUID(),question.level.name,question.gameMode.name)
+            //todo fix NextLevelCap
+            if((currLevelState.correctCount +1) > 100){
+                levelRepo.save(currLevelState.copy(isAvailable = false, isCompleted = true, correctCount = 100))
+                levelRepo.save(currLevelState.copy(level = currLevelState.level.nextLevel(), isAvailable = true, isCompleted = false, correctCount = 0))
+            }
+
+            val newStreak = currentState.streak + 1
+            val newScore = currentState.score + (10 * newStreak)
+            val feedback = generateFeedback(true, newStreak, question.japanese)
+
+            val gameState =userGameStateRepo.save(
+                currentState.copy(
+                    level = currLevelState.level,
+                    score = newScore,
+                    streak = newStreak,
+                    totalAnswered = currentState.totalAnswered + 1,
+                    correctAnswers = currentState.correctAnswers + 1,
+                    lastAnswerCorrect = true,
+                ))
 
 
-            //check if new level
-            //get new question
-            //update game state
+            return GameStateReq(
+                userId = currentState.userId.toString(),
+                score = gameState.score,
+                streak = gameState.streak,
+                totalAnswered = gameState.totalAnswered,
+                correctAnswers = gameState.correctAnswers,
+                feedback = generateFeedback(true, gameState.streak, question.japanese),
+                isCorrect = true
+            )
+        } else {
+            userQuestionRepo.findById(question.userQuestionId.toUUID()).ifPresent { userQuestion ->
+                userQuestionRepo.save(userQuestion.copy(isCorrect = false, answeredAt = now()))
+            }
+
+            userGameStateRepo.save(
+                currentState.copy(
+                    streak = 0,
+                    totalAnswered = currentState.totalAnswered + 1,
+                    lastAnswerCorrect = false
+                )
+            )
+
+            val gameState = userGameStateRepo.findByUserId(question.userId.toUUID())
+            return GameStateReq(
+                userId = gameState.userId.toString(),
+                score = gameState.score,
+                streak = gameState.streak,
+                totalAnswered = gameState.totalAnswered,
+                correctAnswers = gameState.correctAnswers,
+                feedback = generateFeedback(false, 0, question.japanese),
+                isCorrect = false
+            )
         }
-        else{
-            //update question with attemps
-            //get new question
-            //update game state
-        }
-        return GameStateReq(
-            userId = question.userId,
-            score = 0,
-            streak = 0,
-            totalAnswered = 0,
-            correctAnswers = 0,
-            feedback = "",
-            isCorrect = null
-        )
+
     }
 
 

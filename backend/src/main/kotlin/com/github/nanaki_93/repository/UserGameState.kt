@@ -23,8 +23,9 @@ data class UserGameState(
     @Column(name = "user_id", nullable = false)
     val userId: UUID,
 
+    //todo manage enum
     @Column(name = "level", nullable = false)
-    val level: String = Level.N5.name,
+    val level: Level = Level.N5,
 
     @Column(nullable = false)
     val score: Int = 0,
@@ -50,7 +51,7 @@ data class UserGameState(
 
 @Repository
 interface UserGameStateRepository : JpaRepository<UserGameState, UUID> {
-    fun findByUserId(userId: UUID): UserGameState?
+    fun findByUserId(userId: UUID): UserGameState
 
 
 }

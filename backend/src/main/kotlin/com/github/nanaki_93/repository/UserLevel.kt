@@ -1,5 +1,6 @@
 package com.github.nanaki_93.repository
 
+import com.github.nanaki_93.models.Level
 import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
@@ -17,8 +18,9 @@ data class UserLevel(
     @Column(nullable = false)
     val userId: UUID,
 
+    //todo fix level conversion from string to enum
     @Column(nullable = false)
-    val level: String,
+    val level: Level,
 
     @Column(nullable = false)
     val isCompleted: Boolean,
@@ -33,7 +35,7 @@ data class UserLevel(
     val gameMode: String,
 
     @Column
-    val correctCount: Int? = null
+    val correctCount: Int
 )
 
 @Repository
