@@ -48,7 +48,7 @@ class GameService(
 
             val currLevelState = levelRepo.findByUserIdAndLevelAndGameMode(question.userId.toUUID(),question.level.name,question.gameMode.name)
             //todo fix NextLevelCap
-            if((currLevelState.correctCount +1) > 100){
+            if((currLevelState.correctCount +1) == 100){
                 levelRepo.save(currLevelState.copy(isAvailable = false, isCompleted = true, correctCount = 100))
                 levelRepo.save(currLevelState.copy(level = currLevelState.level.nextLevel(), isAvailable = true, isCompleted = false, correctCount = 0))
             }
@@ -78,11 +78,11 @@ class GameService(
                 isCorrect = true
             )
         } else {
-            userQuestionRepo.findById(question.userQuestionId.toUUID()).ifPresent { userQuestion ->
-                userQuestionRepo.save(userQuestion.copy(isCorrect = false, answeredAt = now()))
+            userQuestionRepo.findById(question.userQuestionId.toUUID()).ifPresent { uq ->
+                userQuestionRepo.save(uq.copy(isCorrect = false, answeredAt = now(), attemps = uq.attemps?.inc()))
             }
 
-            userGameStateRepo.save(
+            val gameState =userGameStateRepo.save(
                 currentState.copy(
                     streak = 0,
                     totalAnswered = currentState.totalAnswered + 1,
@@ -90,7 +90,6 @@ class GameService(
                 )
             )
 
-            val gameState = userGameStateRepo.findByUserId(question.userId.toUUID())
             return GameStateReq(
                 userId = gameState.userId.toString(),
                 score = gameState.score,
