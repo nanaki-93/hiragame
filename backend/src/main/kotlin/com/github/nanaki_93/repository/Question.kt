@@ -1,9 +1,13 @@
 package com.github.nanaki_93.repository
 
+
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
+import com.github.nanaki_93.models.QuestionDto
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
 import jakarta.persistence.Table
@@ -28,10 +32,12 @@ data class Question(
     val translation: String,
     @Column(nullable = false)
     val topic: String = "",
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val level: String = Level.N5.name,
+    val level: Level = Level.N5,
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val gameMode: String = GameMode.SIGN.name,
+    val gameMode: GameMode = GameMode.SIGN,
     @Column(nullable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),
     @Column(nullable = false)
@@ -44,7 +50,20 @@ data class Question(
 @Repository
 interface QuestionRepository : JpaRepository<Question, UUID> {
 
-    fun countByGameMode(gameMode: String): Long
+    fun countByGameMode(gameMode: GameMode): Long
     fun findAllByJapaneseIn(japanese: List<String>): List<Question>
 
 }
+
+fun Question.toDto(): QuestionDto = QuestionDto(
+    id = id.toString(),
+    japanese = japanese,
+    romanization = romanization,
+    translation = translation,
+    topic = topic,
+    level = level,
+    gameMode = gameMode,
+    createdAt = createdAt.toString(),
+    hasKatakana = hasKatakana,
+    hasKanji = hasKanji
+)

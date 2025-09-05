@@ -21,31 +21,25 @@ class GameService {
 
     private val baseUrl: String = "http://localhost:8080" // TODO: externalize
 
-    suspend fun processAnswer(
-        gameStateReq: GameStateReq,
-        userInput: String,
-        level: Int,
-    ): GameStateReq {
-//        val req = ProcessAnswerRequest(gameStateReq, userInput,1,"")
+    suspend fun processAnswer(user: UserQuestionDto ): GameStateReq {
+
         return client.post("${baseUrl}/api/process-answer") {
             contentType(ContentType.Application.Json)
-            setBody("")
+            setBody(user)
         }.body()
     }
 
-    suspend fun getNextCharacterAndClearFeedback(gameStateReq: GameStateReq): GameStateReq {
-        val req = GameStateRequest(gameStateReq)
-        return client.post("${baseUrl}/api/next-character") {
+    suspend fun getNextQuestion(selectRequest: SelectRequest): QuestionDto? {
+        return client.post("${baseUrl}/api/next-question") {
             contentType(ContentType.Application.Json)
-            setBody(req)
+            setBody(selectRequest)
         }.body()
     }
 
-    suspend fun selectGameMode(gameMode: GameMode): GameStateReq {
-//        val req = SelectRequest(gameMode)
-        return client.post("${baseUrl}/api/game-mode") {
+    suspend fun selectGameMode(userId: String): List<Level> {
+        return client.post("${baseUrl}/api/select-game-mode") {
             contentType(ContentType.Application.Json)
-            setBody("")
+            setBody(userId)
         }.body()
     }
 }

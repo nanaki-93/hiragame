@@ -70,7 +70,7 @@ class BatchQuestionGenerationService(
     fun getGenerationStatus(): Map<String, Any> =
         mapOf(
             "totalQuestionsInDatabase" to hiraganaRepository.count(),
-            "wordQuestions" to hiraganaRepository.countByGameMode(GameMode.WORD.name),
-            "sentenceQuestions" to hiraganaRepository.countByGameMode(GameMode.SENTENCE.name)
+            "wordQuestions" to hiraganaRepository.countByGameMode(GameMode.WORD),
+            "sentenceQuestions" to hiraganaRepository.countByGameMode(GameMode.SENTENCE)
         )
 }

@@ -1,6 +1,7 @@
 package com.github.nanaki_93.components.widgets
 
 import androidx.compose.runtime.*
+import com.github.nanaki_93.models.Level
 import com.varabyte.kobweb.compose.css.Cursor
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.TextAlign
@@ -15,8 +16,9 @@ import org.jetbrains.compose.web.css.*
 
 @Composable
 fun LevelSelector(
-    currentLevel: Int = 1,
-    onLevelSelected: (Int) -> Unit = {}
+    availableLevels : List<Level>,
+    currentLevel: Level = Level.N5,
+    onLevelSelected: (Level) -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -24,7 +26,7 @@ fun LevelSelector(
             .gap(0.5.cssRem),
         horizontalArrangement = Arrangement.Center
     ) {
-        for (level in 1..5) {
+        for (level in availableLevels) {
             Button(
                 onClick = { onLevelSelected(level) },
                 modifier = Modifier
@@ -53,7 +55,7 @@ fun LevelSelector(
 
             ) {
                 SpanText(
-                    "Lv$level",
+                    "Lv${level.displayName}",
                     modifier = Modifier.color(Color.white)
                 )
 

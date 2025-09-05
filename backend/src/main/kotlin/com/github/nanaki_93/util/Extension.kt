@@ -14,8 +14,8 @@ fun AIQuestion.toHiraganaQuestion(gameMode: GameMode): Question =
         romanization = romanization,
         translation = translation,
         topic = topic,
-        level = level.name,
-        gameMode = gameMode.name,
+        level = level,
+        gameMode = gameMode,
         hasKatakana = japanese.hasKatakana(),
         hasKanji = japanese.hasKanji(),
     )

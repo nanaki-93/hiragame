@@ -23,7 +23,7 @@ data class UserGameState(
     @Column(name = "user_id", nullable = false)
     val userId: UUID,
 
-    //todo manage enum
+    @Enumerated(EnumType.STRING)
     @Column(name = "level", nullable = false)
     val level: Level = Level.N5,
 

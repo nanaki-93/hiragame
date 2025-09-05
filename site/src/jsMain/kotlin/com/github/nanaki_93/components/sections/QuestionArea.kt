@@ -37,7 +37,7 @@ fun QuestionArea(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        gameStateReq.currentQuestion?.let { char ->
+        gameStateReq.?.let { char ->
             SpanText(char.japanese, HiraganaCharStyle.toModifier())
 
             SpanText(

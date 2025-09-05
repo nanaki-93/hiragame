@@ -20,7 +20,7 @@ CREATE TABLE user_answered_question
     is_correct      boolean   NOT NULL,
     answered_at     timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     attemps         integer,
-    lastAttemptedAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_attempted_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     game_mode       text      NOT NULL,
     level           text,
     UNIQUE (user_id, question_id, game_mode)
@@ -40,8 +40,8 @@ CREATE TABLE if not exists user_level
     UNIQUE (user_id, level, game_mode)
 );
 
--- User game state table - stores current/paused game sessions
-CREATE TABLE user_game_state
+DROP TABLE IF EXISTS user_game_state CASCADE;
+CREATE TABLE if not exists user_game_state
 (
     id                  uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
     user_id             uuid      NOT NULL REFERENCES jp_users (id) ON DELETE CASCADE,

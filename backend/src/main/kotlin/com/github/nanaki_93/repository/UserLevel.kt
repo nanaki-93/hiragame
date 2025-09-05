@@ -18,7 +18,7 @@ data class UserLevel(
     @Column(nullable = false)
     val userId: UUID,
 
-    //todo fix level conversion from string to enum
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     val level: Level,
 
@@ -41,5 +41,5 @@ data class UserLevel(
 @Repository
 interface UserLevelRepository : JpaRepository<UserLevel, UUID> {
     fun findByUserId(userId: UUID): List<UserLevel>
-    fun findByUserIdAndLevelAndGameMode(userId: UUID, level: String, gameMode: String): UserLevel
+    fun findByUserIdAndLevelAndGameMode(userId: UUID, level: Level, gameMode: String): UserLevel
 }

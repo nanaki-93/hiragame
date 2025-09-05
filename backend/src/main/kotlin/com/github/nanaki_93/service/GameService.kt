@@ -2,7 +2,7 @@ package com.github.nanaki_93.service
 
 import com.github.nanaki_93.models.SelectRequest
 import com.github.nanaki_93.models.GameStateReq
-import com.github.nanaki_93.models.QuestionRequest
+import com.github.nanaki_93.models.UserQuestionDto
 import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.models.nextLevel
 import com.github.nanaki_93.repository.UserAnsweredQuestionRepository
@@ -24,8 +24,8 @@ class GameService(
     fun nextQuestion(selectReq: SelectRequest) = userQuestionRepo.findRandomBySelect(selectReq)
 
 
-    fun getAvailableLevels(selectRequest: SelectRequest): List<Level> =
-        levelRepo.findByUserId(UUID.fromString(selectRequest.userId))
+    fun getAvailableLevels(userId: String): List<Level> =
+        levelRepo.findByUserId(UUID.fromString(userId))
             .filter { it.isCompleted }
             .map { it.level }
             .toList()
@@ -36,7 +36,7 @@ class GameService(
 //        return questions.map { QuestionRequest(it.japanese, it.romanization, it.translation) }
 //    }
 
-    fun processAnswer(question: QuestionRequest ): GameStateReq {
+    fun processAnswer(question: UserQuestionDto ): GameStateReq {
 
         val currentState = userGameStateRepo.findByUserId(question.userId.toUUID())
 
@@ -46,7 +46,7 @@ class GameService(
                 userQuestionRepo.save(userQuestion.copy(isCorrect = true, answeredAt = now()))
             }
 
-            val currLevelState = levelRepo.findByUserIdAndLevelAndGameMode(question.userId.toUUID(),question.level.name,question.gameMode.name)
+            val currLevelState = levelRepo.findByUserIdAndLevelAndGameMode(question.userId.toUUID(),question.level,question.gameMode.name)
             //todo fix NextLevelCap
             if((currLevelState.correctCount +1) == 100){
                 levelRepo.save(currLevelState.copy(isAvailable = false, isCompleted = true, correctCount = 100))
@@ -55,7 +55,6 @@ class GameService(
 
             val newStreak = currentState.streak + 1
             val newScore = currentState.score + (10 * newStreak)
-            val feedback = generateFeedback(true, newStreak, question.japanese)
 
             val gameState =userGameStateRepo.save(
                 currentState.copy(

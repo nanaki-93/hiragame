@@ -2,6 +2,8 @@ package com.github.nanaki_93.pages
 
 
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import com.github.nanaki_93.CardStyle
 import com.github.nanaki_93.GameContainerStyle
 import com.github.nanaki_93.components.sections.QuestionArea
@@ -11,6 +13,8 @@ import com.github.nanaki_93.components.widgets.LevelSelector
 import com.github.nanaki_93.components.widgets.ProgressBar
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.GameStateReq
+import com.github.nanaki_93.models.Level
+import com.github.nanaki_93.models.SelectRequest
 import com.github.nanaki_93.service.GameService
 import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
@@ -31,9 +35,11 @@ import org.jetbrains.compose.web.css.*
 @Composable
 fun HomePage() {
     var gameStateReq by remember { mutableStateOf(GameStateReq()) }
+    var availableLevels by remember { mutableStateOf(listOf<Level>()) }
+
     var userInput by remember { mutableStateOf("") }
     var isAnswering by remember { mutableStateOf(false) }
-    var level by remember { mutableStateOf(1) }
+    var level by remember { mutableStateOf(Level.N5) }
     var gameMode by remember { mutableStateOf(GameMode.SIGN) }
 
     val gameService = remember { GameService() }
@@ -44,24 +50,21 @@ fun HomePage() {
 
         isAnswering = true
         gameStateReq = gameService.processAnswer(gameStateReq, userInput, level)
-        level = 1
+        level = Level.N5
         userInput = ""
         delay(1500)
-        gameStateReq = gameService.getNextCharacterAndClearFeedback(gameStateReq)
+        gameStateReq = gameService.getNextQuestion(gameStateReq)
         isAnswering = false
     }
 
-    fun selectLevel(selectedLevel: Int) {
+    suspend fun selectLevel(selectedLevel: Level) {
 
-//        level = selectedLevel
-//        gameStateReq = gameStateReq.copy(
-//            level = selectedLevel,
-//            hiraganaList = hiraganaLvMap[selectedLevel] ?: hiraganaCharsLv1s
-//        ).getNextQuestion()
+
+        val next = gameService.getNextQuestion(SelectRequest(gameMode, selectedLevel, "user-1"))
 
     }
 
-    // Initialize with first character
+    // Initialize with first question
     LaunchedEffect(Unit) {
         gameStateReq = gameStateReq.copy()
     }
@@ -82,17 +85,18 @@ fun HomePage() {
             )
             GameModeSelector(
                 currentMode = gameMode,
-                onModeSelected = { selectedMode ->
+                onModeSelected = { _ ->
                     coroutineScope.launch {
-                        gameStateReq = gameService.selectGameMode(selectedMode)
+                        availableLevels = gameService.selectGameMode("user-1")
                     }
                 }
             )
 
 
             LevelSelector(
+                availableLevels = availableLevels,
                 currentLevel = level,
-                onLevelSelected = { selectedLevel -> selectLevel(selectedLevel) }
+                onLevelSelected = { selectedLevel -> coroutineScope.launch { selectLevel(selectedLevel) } }
             )
 
             GameStats(gameStateReq)
@@ -107,7 +111,7 @@ fun HomePage() {
 
             // Instructions
             SpanText(
-                "Level ${1}:  questions each level",
+                "Level ${level.displayName}:  questions each level",
                 Modifier.fontSize(0.9.cssRem).opacity(0.7)
             )
         }
