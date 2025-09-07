@@ -70,7 +70,7 @@ val CardStyle = CssStyle.base {
             inset = false
         )
         .border(1.px, LineStyle.Solid, rgba(255, 255, 255, 0.18))
-        .maxWidth(500.px)
+        .maxWidth(800.px)
         .width(90.percent)
         .textAlign(TextAlign.Center)
         .color(Colors.White)
@@ -79,7 +79,7 @@ val CardStyle = CssStyle.base {
 
 val HiraganaCharStyle = CssStyle.base {
     Modifier
-        .fontSize(6.cssRem)
+        .fontSize(4.cssRem)
         .fontWeight(FontWeight.Bold)
         .margin(1.cssRem, 0.px)
         .textShadow(3.px, 3.px, 6.px, rgba(0, 0, 0, 0.4))

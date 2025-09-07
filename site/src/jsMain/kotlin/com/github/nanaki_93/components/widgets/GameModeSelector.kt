@@ -3,6 +3,8 @@ package com.github.nanaki_93.components.widgets
 
 import androidx.compose.runtime.*
 import com.github.nanaki_93.models.GameMode
+import com.github.nanaki_93.models.GameState
+
 import com.varabyte.kobweb.compose.css.Cursor
 import com.varabyte.kobweb.compose.css.FontWeight
 import com.varabyte.kobweb.compose.css.TextAlign
@@ -19,9 +21,16 @@ import org.jetbrains.compose.web.css.*
 
 @Composable
 fun GameModeSelector(
-    currentMode: GameMode = GameMode.SIGN,
+    state: GameState,
+    currentMode: GameMode? = null,
     onModeSelected: (GameMode) -> Unit = {}
 ) {
+    if (state == GameState.LOADING) return SpanText(
+        "Game mode selection will appear shortly...",
+        Modifier.fontSize(0.9.cssRem).opacity(0.7)
+    )
+
+    SpanText("Select a game mode to continue:", Modifier.fontSize(1.1.cssRem))
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -34,6 +43,7 @@ fun GameModeSelector(
                 modifier = Modifier
                     .padding(0.6.cssRem, 0.5.cssRem)
                     .borderRadius(10.px)
+                    .disabled(state != GameState.MODE_SELECTION)
                     .backgroundColor(
                         if (currentMode == mode) {
                             rgba(255, 255, 255, 0.3)

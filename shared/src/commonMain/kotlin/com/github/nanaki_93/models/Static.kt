@@ -1,12 +1,16 @@
 package com.github.nanaki_93.models
 
+import kotlinx.serialization.Serializable
 
+
+@Serializable
 enum class GameMode(val displayName: String) {
     SIGN("Sign"),
     WORD("Word"),
     SENTENCE("Sentence")
 }
 
+@Serializable
 enum class Level(val displayName: String) {
     N5("N5"),
     N4("N4"),

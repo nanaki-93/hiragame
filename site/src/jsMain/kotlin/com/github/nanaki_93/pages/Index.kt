@@ -1,21 +1,13 @@
 package com.github.nanaki_93.pages
 
-
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import com.github.nanaki_93.CardStyle
 import com.github.nanaki_93.GameContainerStyle
 import com.github.nanaki_93.components.sections.QuestionArea
-import com.github.nanaki_93.components.widgets.GameModeSelector
-import com.github.nanaki_93.components.widgets.GameStats
-import com.github.nanaki_93.components.widgets.LevelSelector
-import com.github.nanaki_93.components.widgets.ProgressBar
-import com.github.nanaki_93.models.GameMode
-import com.github.nanaki_93.models.GameStateReq
-import com.github.nanaki_93.models.Level
-import com.github.nanaki_93.models.SelectRequest
+import com.github.nanaki_93.components.widgets.*
+import com.github.nanaki_93.models.*
 import com.github.nanaki_93.service.GameService
+import com.github.nanaki_93.service.TokenManager
 import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
@@ -30,44 +22,111 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.*
 
+const val USER_ID = "2a456b71-d756-482d-b01a-d987b3a833bf"
+
 
 @Page
 @Composable
 fun HomePage() {
-    var gameStateReq by remember { mutableStateOf(GameStateReq()) }
+
+
+
+
+    val gameService = remember { GameService() }
+    var gameState by remember { mutableStateOf(GameState.LOADING) }
+    var gameStateUi by remember { mutableStateOf(GameStateUi(userId = USER_ID, stats = GameStatisticsUi())) }
+    var currentQuestion by remember { mutableStateOf(QuestionUi()) }
     var availableLevels by remember { mutableStateOf(listOf<Level>()) }
+    var userId by remember { mutableStateOf("") }
 
     var userInput by remember { mutableStateOf("") }
     var isAnswering by remember { mutableStateOf(false) }
-    var level by remember { mutableStateOf(Level.N5) }
-    var gameMode by remember { mutableStateOf(GameMode.SIGN) }
-
-    val gameService = remember { GameService() }
+    var selectedLevel by remember { mutableStateOf(null as Level?) }
+    var selectedGameMode by remember { mutableStateOf(null as GameMode?) }
 
     val coroutineScope = rememberCoroutineScope()
+
     suspend fun submitAnswer() {
         if (isAnswering) return
 
         isAnswering = true
-        gameStateReq = gameService.processAnswer(gameStateReq, userInput, level)
-        level = Level.N5
+        gameState = GameState.SHOWING_FEEDBACK
+
+        val userQuestionDto = UserQuestionDto(
+            userQuestionId = currentQuestion.id ?: "",
+            japanese = currentQuestion.japanese,
+            romanization = currentQuestion.romanization,
+            translation = currentQuestion.translation,
+            topic = currentQuestion.topic,
+            level = selectedLevel!!,
+            gameMode = selectedGameMode!!,
+            hasKatakana = currentQuestion.hasKatakana,
+            hasKanji = currentQuestion.hasKanji,
+            userInput = userInput,
+            userId = USER_ID
+        )
+
+        gameStateUi = gameService.processAnswer(userQuestionDto)
         userInput = ""
-        delay(1500)
-        gameStateReq = gameService.getNextQuestion(gameStateReq)
+
+        // Show feedback for 2 seconds
+        delay(2000)
+
+        // Get next question
+        currentQuestion = gameService.getNextQuestion(SelectRequest(selectedGameMode!!, selectedLevel!!, USER_ID))
+        gameState = GameState.PLAYING
         isAnswering = false
     }
 
-    suspend fun selectLevel(selectedLevel: Level) {
+    suspend fun selectGameMode(mode: GameMode) {
+        selectedGameMode = mode
+        availableLevels = gameService.selectGameMode(LevelListRequest(mode, USER_ID))
+        gameState = GameState.LEVEL_SELECTION
+    }
 
-
-        val next = gameService.getNextQuestion(SelectRequest(gameMode, selectedLevel, "user-1"))
+    suspend fun selectLevel(level: Level) {
+        selectedLevel = level
+        selectedGameMode?.let {gameMode->
+            currentQuestion = gameService.getNextQuestion(SelectRequest(gameMode, level, USER_ID))
+            gameState = GameState.PLAYING
+        }
 
     }
 
-    // Initialize with first question
+    // Single LaunchedEffect for initialization
     LaunchedEffect(Unit) {
-        gameStateReq = gameStateReq.copy()
+        // Step 1: Check JWT authentication
+        if (!TokenManager.isTokenValid()) {
+            kotlinx.browser.window.location.href = "/login"
+            return@LaunchedEffect
+        }
+
+        // Step 2: Get user data from JWT
+        val userData = TokenManager.getUserData()
+        if (userData == null) {
+            kotlinx.browser.window.location.href = "/login"
+            return@LaunchedEffect
+        }
+
+        userId = userData.userId
+
+        // Step 3: Initialize game state
+        try {
+            gameStateUi = gameService.getGameState(userId)
+            gameState = GameState.LOADING
+
+            // Step 4: Show loading for 2 seconds then proceed to mode selection
+            delay(2000)
+            gameState = GameState.MODE_SELECTION
+        } catch (e: Exception) {
+            console.error("Failed to initialize game:", e)
+            // Handle error appropriately
+        }
     }
+
+    // Early return if user is not authenticated
+    if (userId.isEmpty()) return
+
 
     Box(GameContainerStyle.toModifier()) {
         Column(
@@ -83,37 +142,52 @@ fun HomePage() {
                     .fontWeight(FontWeight.Bold)
                     .textShadow(2.px, 2.px, 4.px, rgba(0, 0, 0, 0.3))
             )
+
+            Spinner(isVisible = gameState== GameState.LOADING)
+
+            GameStats(
+                state = gameState,
+                gameMode = selectedGameMode,
+                level = selectedLevel,
+                statsUi = gameStateUi.stats
+            )
+
             GameModeSelector(
-                currentMode = gameMode,
-                onModeSelected = { _ ->
-                    coroutineScope.launch {
-                        availableLevels = gameService.selectGameMode("user-1")
-                    }
+                state = gameState,
+                currentMode = selectedGameMode,
+                onModeSelected = { mode ->
+                    coroutineScope.launch { selectGameMode(mode) }
                 }
             )
 
-
             LevelSelector(
+                state = gameState,
+                selectedGameMode = selectedGameMode,
                 availableLevels = availableLevels,
-                currentLevel = level,
-                onLevelSelected = { selectedLevel -> coroutineScope.launch { selectLevel(selectedLevel) } }
+                currentLevel = selectedLevel,
+                onLevelSelected = { level ->
+                    coroutineScope.launch { selectLevel(level) }
+                }
             )
 
-            GameStats(gameStateReq)
-            ProgressBar(gameStateReq)
+            SpanText(
+                "Level ${selectedLevel?.displayName?:""} - ${selectedGameMode?.displayName?:""} Mode",
+                Modifier.fontSize(0.9.cssRem).opacity(0.7)
+            )
+
+
             QuestionArea(
-                gameStateReq = gameStateReq,
+                state = gameState,
+                currentQuestion = currentQuestion,
                 userInput = userInput,
                 isAnswering = isAnswering,
                 onInputChange = { userInput = it },
-                onSubmit = { submitAnswer() },
+                onSubmit = { coroutineScope.launch { submitAnswer() } },
             )
 
-            // Instructions
-            SpanText(
-                "Level ${level.displayName}:  questions each level",
-                Modifier.fontSize(0.9.cssRem).opacity(0.7)
-            )
+            Feedback(state = gameState,gameStateUi = gameStateUi )
+
+
         }
     }
 }

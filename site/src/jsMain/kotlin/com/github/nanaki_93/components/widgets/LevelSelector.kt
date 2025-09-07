@@ -1,6 +1,8 @@
 package com.github.nanaki_93.components.widgets
 
 import androidx.compose.runtime.*
+import com.github.nanaki_93.models.GameMode
+import com.github.nanaki_93.models.GameState
 import com.github.nanaki_93.models.Level
 import com.varabyte.kobweb.compose.css.Cursor
 import com.varabyte.kobweb.compose.css.FontWeight
@@ -16,10 +18,19 @@ import org.jetbrains.compose.web.css.*
 
 @Composable
 fun LevelSelector(
+    state: GameState,
+    selectedGameMode: GameMode?,
     availableLevels : List<Level>,
-    currentLevel: Level = Level.N5,
+    currentLevel: Level?,
     onLevelSelected: (Level) -> Unit = {}
 ) {
+    if (state == GameState.LOADING) return
+
+    SpanText("Select your level:", Modifier.fontSize(1.1.cssRem))
+    SpanText(
+        "Mode: ${selectedGameMode?.displayName?:"N/A"}",
+        Modifier.fontSize(0.9.cssRem).opacity(0.8)
+    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -31,6 +42,7 @@ fun LevelSelector(
                 onClick = { onLevelSelected(level) },
                 modifier = Modifier
                     .padding(0.5.cssRem, 0.4.cssRem)
+                    .disabled(state != GameState.LEVEL_SELECTION)
                     .borderRadius(10.px)
                     .backgroundColor(
                         if (currentLevel == level) {

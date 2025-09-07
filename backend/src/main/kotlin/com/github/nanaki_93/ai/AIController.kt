@@ -2,7 +2,7 @@ package com.github.nanaki_93.ai
 
 import com.github.nanaki_93.ai.generation.BatchQuestionGenerationService
 import com.github.nanaki_93.ai.model.Batch
-import com.github.nanaki_93.dto.QuestionDto
+import com.github.nanaki_93.dto.AiQuestionDto
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.ai.generation.AIQuestionService
@@ -25,12 +25,12 @@ class AIController(
 
     @GetMapping("/words")
     fun generateWord(@RequestParam level: String, @RequestParam nQuestions: Int): ResponseEntity<Int> =
-        ResponseEntity.ok(aiQuestionService.generateAndStoreQuestions(QuestionDto(level.let { Level.valueOf(it) }, nQuestions, GameMode.WORD)))
+        ResponseEntity.ok(aiQuestionService.generateAndStoreQuestions(AiQuestionDto(level.let { Level.valueOf(it) }, nQuestions, GameMode.WORD)))
 
     @GetMapping("/sentences")
     fun generateSentence(@RequestParam level: String, @RequestParam nQuestions: Int): ResponseEntity<Int> = ResponseEntity.ok(
         aiQuestionService.generateAndStoreQuestions(
-            QuestionDto(
+            AiQuestionDto(
                 level.let { Level.valueOf(it) },
                 nQuestions,
                 GameMode.SENTENCE

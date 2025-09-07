@@ -1,14 +1,22 @@
 package com.github.nanaki_93.service
 
+import com.github.nanaki_93.dto.toModel
+import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.SelectRequest
-import com.github.nanaki_93.models.GameStateReq
+import com.github.nanaki_93.models.GameStateUi
+import com.github.nanaki_93.models.GameStatisticsUi
 import com.github.nanaki_93.models.UserQuestionDto
 import com.github.nanaki_93.models.Level
+import com.github.nanaki_93.models.LevelListRequest
 import com.github.nanaki_93.models.nextLevel
+import com.github.nanaki_93.repository.Question
+import com.github.nanaki_93.repository.QuestionRepository
 import com.github.nanaki_93.repository.UserAnsweredQuestionRepository
+import com.github.nanaki_93.repository.UserGameState
 import com.github.nanaki_93.repository.UserGameStateRepository
 
 import com.github.nanaki_93.repository.UserLevelRepository
+import com.github.nanaki_93.repository.toDto
 import com.github.nanaki_93.util.toUUID
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime.now
@@ -18,17 +26,36 @@ import java.util.UUID
 class GameService(
     private val levelRepo: UserLevelRepository,
     private val userQuestionRepo: UserAnsweredQuestionRepository,
-    private val userGameStateRepo: UserGameStateRepository
+    private val userGameStateRepo: UserGameStateRepository,
+    private val questionRepo: QuestionRepository
 ) {
 
-    fun nextQuestion(selectReq: SelectRequest) = userQuestionRepo.findRandomBySelect(selectReq)
+    fun nextQuestion(selectReq: SelectRequest): Question? =
+        userQuestionRepo.findRandomBySelect(selectReq)?.let {
+        questionRepo.findById(it)
+    }?.orElseThrow { RuntimeException("Question not found") }
 
 
-    fun getAvailableLevels(userId: String): List<Level> =
-        levelRepo.findByUserId(UUID.fromString(userId))
-            .filter { it.isCompleted }
+    fun getAvailableLevels(req: LevelListRequest): List<Level> =
+        levelRepo.findByUserIdAndGameModeAndIsAvailable(UUID.fromString(req.userId),req.gameMode.name,true)
             .map { it.level }
             .toList()
+
+
+    fun getGameState(userId:String) : UserGameState = userGameStateRepo.findByUserId(UUID.fromString(userId))?:
+    userGameStateRepo.save(userGameStateRepo.save(UserGameState(
+        id = UUID.randomUUID(),
+        userId = userId.toUUID(),
+        gameMode = GameMode.SIGN,
+        level = Level.N5,
+        score = 0,
+        streak = 0,
+        totalAnswered = 0,
+        correctAnswers = 0,
+        lastAnswerCorrect = null,
+        createdAt = now(),
+        updatedAt = now(),
+    )))
 
 
     //todo it could be a good start to a chat with ai
@@ -36,67 +63,77 @@ class GameService(
 //        return questions.map { QuestionRequest(it.japanese, it.romanization, it.translation) }
 //    }
 
-    fun processAnswer(question: UserQuestionDto ): GameStateReq {
+    fun processAnswer(question: UserQuestionDto ): GameStateUi {
 
-        val currentState = userGameStateRepo.findByUserId(question.userId.toUUID())
+        val currentState = userGameStateRepo.findByUserId(question.userId.toUUID())?: throw RuntimeException("Game State not found")
 
-        if(question.userInput.equals(question.japanese)){
+        if(question.userInput.equals(question.romanization, ignoreCase = true)){
 
             userQuestionRepo.findById(question.userQuestionId.toUUID()).ifPresent { userQuestion ->
-                userQuestionRepo.save(userQuestion.copy(isCorrect = true, answeredAt = now()))
+                userQuestionRepo.save(userQuestion.toDto().copy(isCorrect = true, answeredAt = now()).toModel())
             }
 
             val currLevelState = levelRepo.findByUserIdAndLevelAndGameMode(question.userId.toUUID(),question.level,question.gameMode.name)
             //todo fix NextLevelCap
             if((currLevelState.correctCount +1) == 100){
-                levelRepo.save(currLevelState.copy(isAvailable = false, isCompleted = true, correctCount = 100))
-                levelRepo.save(currLevelState.copy(level = currLevelState.level.nextLevel(), isAvailable = true, isCompleted = false, correctCount = 0))
+                levelRepo.save(currLevelState.toDto().copy(isAvailable = false, isCompleted = true, correctCount = 100).toModel())
+                levelRepo.save(currLevelState.toDto().copy(level = currLevelState.level.nextLevel(), isAvailable = true, isCompleted = false, correctCount = 0).toModel())
             }
 
             val newStreak = currentState.streak + 1
             val newScore = currentState.score + (10 * newStreak)
 
             val gameState =userGameStateRepo.save(
-                currentState.copy(
+                currentState.toDto().copy(
                     level = currLevelState.level,
                     score = newScore,
                     streak = newStreak,
                     totalAnswered = currentState.totalAnswered + 1,
                     correctAnswers = currentState.correctAnswers + 1,
                     lastAnswerCorrect = true,
-                ))
+                ).toModel())
 
-
-            return GameStateReq(
+            return GameStateUi(
                 userId = currentState.userId.toString(),
-                score = gameState.score,
-                streak = gameState.streak,
-                totalAnswered = gameState.totalAnswered,
-                correctAnswers = gameState.correctAnswers,
                 feedback = generateFeedback(true, gameState.streak, question.japanese),
-                isCorrect = true
-            )
-        } else {
-            userQuestionRepo.findById(question.userQuestionId.toUUID()).ifPresent { uq ->
-                userQuestionRepo.save(uq.copy(isCorrect = false, answeredAt = now(), attemps = uq.attemps?.inc()))
-            }
-
-            val gameState =userGameStateRepo.save(
-                currentState.copy(
-                    streak = 0,
-                    totalAnswered = currentState.totalAnswered + 1,
-                    lastAnswerCorrect = false
+                isCorrect = true,
+                updatedAt = currentState.updatedAt.toString(),
+                stats = GameStatisticsUi(
+                    score = currentState.score,
+                    streak = currentState.streak,
+                    totalAnswered = currentState.totalAnswered,
+                    correctAnswers = currentState.correctAnswers,
+                    lastAnswerCorrect = currentState.lastAnswerCorrect,
                 )
             )
 
-            return GameStateReq(
+
+        } else {
+            userQuestionRepo.findById(question.userQuestionId.toUUID()).ifPresent { uq ->
+                userQuestionRepo.save(uq.toDto().copy(isCorrect = false, answeredAt = now(), attemps = uq.attemps?.inc()).toModel())
+            }
+
+            val gameState =userGameStateRepo.save(
+                currentState.toDto().copy(
+                    streak = 0,
+                    totalAnswered = currentState.totalAnswered + 1,
+                    lastAnswerCorrect = false
+                ).toModel()
+            )
+
+
+            return GameStateUi(
                 userId = gameState.userId.toString(),
-                score = gameState.score,
-                streak = gameState.streak,
-                totalAnswered = gameState.totalAnswered,
-                correctAnswers = gameState.correctAnswers,
                 feedback = generateFeedback(false, 0, question.japanese),
-                isCorrect = false
+                isCorrect = false,
+                updatedAt = gameState.updatedAt.toString(),
+                stats = GameStatisticsUi(
+                    score = gameState.score,
+                    streak = gameState.streak,
+                    totalAnswered = gameState.totalAnswered,
+                    correctAnswers = gameState.correctAnswers,
+                    lastAnswerCorrect = gameState.lastAnswerCorrect,
+                )
             )
         }
 

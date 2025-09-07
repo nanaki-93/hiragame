@@ -1,6 +1,6 @@
 package com.github.nanaki_93.ai.generation
 
-import com.github.nanaki_93.dto.QuestionDto
+import com.github.nanaki_93.dto.AiQuestionDto
 import com.github.nanaki_93.models.AIQuestion
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.repository.Question
@@ -24,7 +24,7 @@ class AIQuestionService(
 
 
     fun generateAndStoreQuestions(
-        questionReq: QuestionDto
+        questionReq: AiQuestionDto
     ): Int = generateQuestionsInBatches(questionReq)
         .also { logger.info("Generated ${it.size} questions for level ${questionReq.level}") }
         .distinctBy { it.japanese }
@@ -32,7 +32,7 @@ class AIQuestionService(
         .let { storeQuestions(it, questionReq.gameMode) }
 
 
-    private fun generateQuestionsInBatches(questionReq: QuestionDto): List<AIQuestion> =
+    private fun generateQuestionsInBatches(questionReq: AiQuestionDto): List<AIQuestion> =
         calculateBatchSizes(questionReq.nQuestions)
             .map { batchSize ->
                 Thread.sleep(3000)
@@ -41,7 +41,7 @@ class AIQuestionService(
             .flatten()
 
 
-    fun generateQuestions(questionReq: QuestionDto): List<AIQuestion> =
+    fun generateQuestions(questionReq: AiQuestionDto): List<AIQuestion> =
         aiService.getPrompt(questionReq)
             .let(::callAI)
             .let(::parseFromCsvToAiQuestions)

@@ -1,7 +1,10 @@
 package com.github.nanaki_93.repository
 
 
-
+import com.github.nanaki_93.dto.UserGameStateDto
+import com.github.nanaki_93.models.GameMode
+import com.github.nanaki_93.models.GameStateUi
+import com.github.nanaki_93.models.GameStatisticsUi
 import com.github.nanaki_93.models.Level
 import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
@@ -12,9 +15,9 @@ import java.util.*
 @Entity
 @Table(
     name = "user_game_state",
-    uniqueConstraints = [UniqueConstraint(columnNames = ["user_id", ])]
+    uniqueConstraints = [UniqueConstraint(columnNames = ["user_id"])]
 )
-data class UserGameState(
+class UserGameState(
     @Id
     @GeneratedValue
     @Column(nullable = false)
@@ -22,6 +25,10 @@ data class UserGameState(
 
     @Column(name = "user_id", nullable = false)
     val userId: UUID,
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gameMode", nullable = false)
+    val gameMode: GameMode = GameMode.SIGN,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "level", nullable = false)
@@ -51,7 +58,33 @@ data class UserGameState(
 
 @Repository
 interface UserGameStateRepository : JpaRepository<UserGameState, UUID> {
-    fun findByUserId(userId: UUID): UserGameState
-
-
+    fun findByUserId(userId: UUID): UserGameState?
 }
+
+
+fun UserGameState.toDto() = UserGameStateDto(
+    id = id,
+    userId = userId,
+    gameMode = gameMode,
+    level = level,
+    score = score,
+    streak = streak,
+    totalAnswered = totalAnswered,
+    correctAnswers = correctAnswers,
+    lastAnswerCorrect = lastAnswerCorrect,
+)
+
+
+fun UserGameState.toUi() = GameStateUi(
+    userId = userId.toString(),
+    stats = GameStatisticsUi(
+        score = score,
+        streak = streak,
+        totalAnswered = totalAnswered,
+        correctAnswers = correctAnswers,
+        lastAnswerCorrect = lastAnswerCorrect,
+    ),
+    createdAt = createdAt.toString(),
+    updatedAt = updatedAt.toString()
+)
+

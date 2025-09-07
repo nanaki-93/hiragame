@@ -14,15 +14,15 @@ CREATE TABLE if not exists jp_users
 DROP TABLE IF EXISTS user_answered_question CASCADE;
 CREATE TABLE user_answered_question
 (
-    id              uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
-    user_id         uuid      NOT NULL REFERENCES jp_users (id) ON DELETE CASCADE,
-    question_id     uuid      NOT NULL REFERENCES question (id) ON DELETE CASCADE,
-    is_correct      boolean   NOT NULL,
-    answered_at     timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    attemps         integer,
-    last_attempted_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    game_mode       text      NOT NULL,
-    level           text,
+    id                uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id           uuid    NOT NULL REFERENCES jp_users (id) ON DELETE CASCADE,
+    question_id       uuid    NOT NULL REFERENCES question (id) ON DELETE CASCADE,
+    is_correct        boolean NOT NULL,
+    answered_at       timestamp,
+    attemps           integer,
+    last_attempted_at timestamp,
+    game_mode         text    NOT NULL,
+    level             text    not null,
     UNIQUE (user_id, question_id, game_mode)
 );
 

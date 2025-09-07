@@ -1,5 +1,6 @@
 package com.github.nanaki_93.repository
 
+import com.github.nanaki_93.dto.UserAnsweredQuestionDto
 import com.github.nanaki_93.models.SelectRequest
 import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
@@ -11,7 +12,7 @@ import java.util.*
 
 @Entity
 @Table(name = "user_answered_question")
-data class UserAnsweredQuestion(
+class UserAnsweredQuestion(
     @Id
     @GeneratedValue
     @Column(nullable = false)
@@ -48,14 +49,15 @@ interface UserAnsweredQuestionRepository : JpaRepository<UserAnsweredQuestion, U
 
     // Method 2: Random selection with object parameter
     @Query(nativeQuery = true, value = """
-        SELECT * FROM user_answered_question 
-        WHERE user_id = :#{#select.userId} 
+        SELECT question_id FROM user_answered_question 
+        WHERE user_id = CAST(:#{#select.userId} AS UUID)
         AND game_mode = :#{#select.gameMode.name} 
         AND level = :#{#select.level.name}
         ORDER BY RANDOM() 
         LIMIT 1
     """)
-    fun findRandomBySelect(@Param("select") select: SelectRequest): Question?
+    fun findRandomBySelect(@Param("select") select: SelectRequest): UUID?
+
 
 
     // Find all questions a user has not answered in a specific game mode
@@ -85,3 +87,14 @@ interface UserAnsweredQuestionRepository : JpaRepository<UserAnsweredQuestion, U
     @Query("SELECT COUNT(uaq) FROM UserAnsweredQuestion uaq WHERE uaq.userId = :userId")
     fun countTotalAnswersByUserId(@Param("userId") userId: UUID): Long
 }
+
+fun UserAnsweredQuestion.toDto() = UserAnsweredQuestionDto(
+    id = id,
+    userId = userId,
+    questionId = questionId,
+    isCorrect = isCorrect,
+    attemps = attemps,
+    lastAttemptedAt = lastAttemptedAt,
+    gameMode = gameMode,
+    level = level,
+)

@@ -4,10 +4,9 @@ import com.github.nanaki_93.ai.model.Batch
 import com.github.nanaki_93.ai.model.BatchParams
 import com.github.nanaki_93.ai.model.BatchResult
 import com.github.nanaki_93.ai.model.GenContext
-import com.github.nanaki_93.dto.QuestionDto
+import com.github.nanaki_93.dto.AiQuestionDto
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.repository.QuestionRepository
-import com.github.nanaki_93.ai.generation.AIQuestionService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
@@ -61,7 +60,7 @@ class BatchQuestionGenerationService(
 
 
     private fun insertQuestionBatch(bp: BatchParams): Int =
-        runCatching { aiQuestionService.generateAndStoreQuestions(QuestionDto(bp.level, bp.questionsInThisBatch, bp.gameMode, bp.topic)) }
+        runCatching { aiQuestionService.generateAndStoreQuestions(AiQuestionDto(bp.level, bp.questionsInThisBatch, bp.gameMode, bp.topic)) }
             .also { logger.info("Batch ${bp.batchNumber}: Actually inserted $it new questions into database") }
             .onFailure { logger.error("Error in batch ${bp.batchNumber}: ${it.message}", it) }
             .getOrDefault(0)

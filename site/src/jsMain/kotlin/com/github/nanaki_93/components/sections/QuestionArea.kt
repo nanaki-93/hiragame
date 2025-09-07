@@ -5,7 +5,6 @@ import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.forms.TextInput
 import com.varabyte.kobweb.silk.components.text.SpanText
@@ -13,19 +12,21 @@ import com.varabyte.kobweb.silk.style.toModifier
 import com.github.nanaki_93.HiraganaCharStyle
 import com.github.nanaki_93.InputStyle
 import com.github.nanaki_93.components.widgets.SubmitButton
-import com.github.nanaki_93.models.GameStateReq
-import com.varabyte.kobweb.compose.css.FontWeight
+import com.github.nanaki_93.models.GameState
+import com.github.nanaki_93.models.QuestionUi
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.*
 
 @Composable
 fun QuestionArea(
-    gameStateReq: GameStateReq,
+    state: GameState,
+    currentQuestion: QuestionUi,
     userInput: String,
     isAnswering: Boolean,
     onInputChange: (String) -> Unit,
     onSubmit: suspend () -> Unit,
 ) {
+    if (state != GameState.PLAYING && state != GameState.SHOWING_FEEDBACK) return
     val coroutineScope = rememberCoroutineScope()
     Column(
         Modifier
@@ -37,51 +38,32 @@ fun QuestionArea(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        gameStateReq.?.let { char ->
-            SpanText(char.japanese, HiraganaCharStyle.toModifier())
 
-            SpanText(
-                "What is the romanization?",
-                Modifier.fontSize(1.2.cssRem).opacity(0.9).margin(1.cssRem, 0.px)
-            )
+        SpanText(currentQuestion.japanese, HiraganaCharStyle.toModifier())
 
-            TextInput(
-                text = userInput,
-                onTextChange = onInputChange,
-                modifier = InputStyle.toModifier()
-                    .onKeyDown { keyboardEvent ->
-                        if (keyboardEvent.key == "Enter" && !isAnswering) {
-                            keyboardEvent.preventDefault()
-                            coroutineScope.launch { onSubmit() }
-                        }
-                    },
-                placeholder = "Type romanization here..."
-            )
+        SpanText(
+            "What is the romanization?",
+            Modifier.fontSize(1.2.cssRem).opacity(0.9).margin(1.cssRem, 0.px)
+        )
 
-            SubmitButton(
-                onClick = { coroutineScope.launch { onSubmit() } },
-                isAnswering = isAnswering,
-                userInput = userInput
-            )
+        TextInput(
+            text = userInput,
+            onTextChange = onInputChange,
+            modifier = InputStyle.toModifier()
+                .onKeyDown { keyboardEvent ->
+                    if (keyboardEvent.key == "Enter" && !isAnswering) {
+                        keyboardEvent.preventDefault()
+                        coroutineScope.launch { onSubmit() }
+                    }
+                },
+            placeholder = "Type romanization here..."
+        )
 
+        SubmitButton(
+            onClick = { coroutineScope.launch { onSubmit() } },
+            isAnswering = isAnswering,
+            userInput = userInput
+        )
 
-            // Feedback
-            if (gameStateReq.feedback.isNotEmpty()) {
-                SpanText(
-                    gameStateReq.feedback,
-                    Modifier
-                        .fontSize(1.1.cssRem)
-                        .fontWeight(FontWeight.Bold)
-                        .color(
-                            when (gameStateReq.isCorrect) {
-                                true -> rgba(76, 175, 80, 1.0)
-                                false -> rgba(244, 67, 54, 1.0)
-                                null -> Colors.White
-                            }
-                        )
-                        .margin(1.cssRem, 0.px)
-                )
-            }
-        }
     }
 }

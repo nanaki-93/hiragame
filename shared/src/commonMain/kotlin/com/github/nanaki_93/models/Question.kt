@@ -2,6 +2,7 @@ package com.github.nanaki_93.models
 
 import kotlinx.serialization.Serializable
 
+
 @Serializable
 data class UserQuestionDto(
     val userQuestionId: String,
@@ -19,11 +20,11 @@ data class UserQuestionDto(
 
 
 @Serializable
-data class QuestionDto(
+data class QuestionUi(
     val id: String? = null,
-    val japanese: String,
-    val romanization: String,
-    val translation: String,
+    val japanese: String ="",
+    val romanization: String ="",
+    val translation: String ="",
     val topic: String = "",
     val level: Level = Level.N5,
     val gameMode: GameMode = GameMode.SIGN,
@@ -31,27 +32,3 @@ data class QuestionDto(
     val hasKatakana: Boolean = false,
     val hasKanji: Boolean = false,
 )
-
-@Serializable
-data class GameStateReq(
-    val score: Int = 0,
-    val streak: Int = 0,
-    val totalAnswered: Int = 0,
-    val correctAnswers: Int = 0,
-    val feedback: String = "",
-    val isCorrect: Boolean? = null,
-    val userInput: String? = null,
-    val userId: String,
-)
-
-
-@Serializable
-data class GameStateRequest(val gameStateReq: GameStateReq)
-
-@Serializable
-data class SelectRequest(val gameMode: GameMode, val level: Level, val userId: String)
-
-
-
-
-

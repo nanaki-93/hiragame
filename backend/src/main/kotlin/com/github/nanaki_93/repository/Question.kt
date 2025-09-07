@@ -1,9 +1,10 @@
 package com.github.nanaki_93.repository
 
 
+import com.github.nanaki_93.dto.QuestionDto
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
-import com.github.nanaki_93.models.QuestionDto
+import com.github.nanaki_93.models.QuestionUi
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -19,7 +20,7 @@ import java.util.UUID
 
 @Entity
 @Table(name = "question")
-data class Question(
+class Question(
     @Id
     @GeneratedValue
     @Column(nullable = false)
@@ -55,7 +56,7 @@ interface QuestionRepository : JpaRepository<Question, UUID> {
 
 }
 
-fun Question.toDto(): QuestionDto = QuestionDto(
+fun Question.toUi(): QuestionUi = QuestionUi(
     id = id.toString(),
     japanese = japanese,
     romanization = romanization,
@@ -66,4 +67,17 @@ fun Question.toDto(): QuestionDto = QuestionDto(
     createdAt = createdAt.toString(),
     hasKatakana = hasKatakana,
     hasKanji = hasKanji
+)
+
+fun Question.toDto() = QuestionDto(
+    id = id,
+    japanese = japanese,
+    romanization = romanization,
+    translation = translation,
+    topic = topic,
+    level = level,
+    gameMode = gameMode,
+    createdAt = createdAt,
+    hasKatakana = hasKatakana,
+    hasKanji = hasKanji,
 )

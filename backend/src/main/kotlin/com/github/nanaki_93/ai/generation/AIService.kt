@@ -1,6 +1,6 @@
 package com.github.nanaki_93.ai.generation
 
-import com.github.nanaki_93.dto.QuestionDto
+import com.github.nanaki_93.dto.AiQuestionDto
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
 import org.slf4j.LoggerFactory
@@ -12,12 +12,12 @@ interface AIService {
     fun callApi(prompt: String): String
 
 
-    fun getPrompt(questionReq: QuestionDto): String = when (questionReq.gameMode) {
+    fun getPrompt(questionReq: AiQuestionDto): String = when (questionReq.gameMode) {
         GameMode.WORD, GameMode.SIGN -> getWordsPrompt(questionReq)
         GameMode.SENTENCE -> getSentencesPrompt(questionReq)
     }.also { LoggerFactory.getLogger(this.javaClass).info("===QuestionReq: $questionReq")}
 
-    private fun getWordsPrompt(questionReq: QuestionDto): String = """
+    private fun getWordsPrompt(questionReq: AiQuestionDto): String = """
     You are a Japanese language teacher. Generate exactly ${questionReq.nQuestions} UNIQUE Japanese SINGLE WORDS related to this topic "${questionReq.topic}".
     
     STRICT REQUIREMENTS:
@@ -49,7 +49,7 @@ interface AIService {
     Generate exactly ${questionReq.nQuestions} COMPLETELY DIFFERENT single words covering maximum variety of this topic "${questionReq.topic}" now:
 """.trimIndent()
 
-    private fun getSentencesPrompt(questionReq: QuestionDto): String = """
+    private fun getSentencesPrompt(questionReq: AiQuestionDto): String = """
     You are a Japanese language teacher. Generate exactly ${questionReq.nQuestions} UNIQUE Japanese COMPLETE SENTENCES about this topic "${questionReq.topic}".
     
     STRICT REQUIREMENTS:

@@ -1,5 +1,6 @@
 package com.github.nanaki_93.repository
 
+import com.github.nanaki_93.dto.UserLevelDto
 import com.github.nanaki_93.models.Level
 import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
@@ -9,7 +10,7 @@ import java.util.*
 
 @Entity
 @Table(name = "user_level")
-data class UserLevel(
+class UserLevel(
     @Id
     @GeneratedValue
     @Column(nullable = false)
@@ -42,4 +43,19 @@ data class UserLevel(
 interface UserLevelRepository : JpaRepository<UserLevel, UUID> {
     fun findByUserId(userId: UUID): List<UserLevel>
     fun findByUserIdAndLevelAndGameMode(userId: UUID, level: Level, gameMode: String): UserLevel
+    fun findByUserIdAndGameModeAndIsAvailable(userId: UUID, gameMode: String,isAvailable: Boolean): List<UserLevel>
+
 }
+
+
+
+fun UserLevel.toDto() = UserLevelDto(
+    id = id,
+    userId = userId,
+    level = level,
+    isCompleted = isCompleted,
+    isAvailable = isAvailable,
+    answeredAt = answeredAt,
+    gameMode = gameMode,
+    correctCount = correctCount,
+)
