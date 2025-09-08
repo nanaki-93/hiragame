@@ -1,5 +1,9 @@
 package com.github.nanaki_93.service
 
+import com.github.nanaki_93.models.AuthResponse
+import com.github.nanaki_93.models.ErrorResponse
+import com.github.nanaki_93.models.LoginRequest
+import com.github.nanaki_93.models.RegisterRequest
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.js.*
@@ -10,32 +14,6 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-@Serializable
-data class LoginRequest(
-    val email: String,
-    val password: String
-)
-
-@Serializable
-data class RegisterRequest(
-    val email: String,
-    val password: String,
-    val name: String? = null
-)
-
-@Serializable
-data class AuthResponse(
-    val token: String,
-    val userId: String,
-    val email: String,
-    val message: String? = null
-)
-
-@Serializable
-data class ErrorResponse(
-    val message: String,
-    val status: Int
-)
 
 class AuthService {
     private val client = HttpClient(Js) {
@@ -46,11 +24,11 @@ class AuthService {
 
     private val baseUrl = "http://localhost:8080"
 
-    suspend fun login(email: String, password: String): Result<AuthResponse> {
+    suspend fun login(name: String, password: String): Result<AuthResponse> {
         return try {
             val response = client.post("$baseUrl/api/auth/login") {
                 contentType(ContentType.Application.Json)
-                setBody(LoginRequest(email, password))
+                setBody(LoginRequest(name, password))
             }
 
             if (response.status.isSuccess()) {
@@ -65,11 +43,11 @@ class AuthService {
         }
     }
 
-    suspend fun register(email: String, password: String, name: String? = null): Result<AuthResponse> {
+    suspend fun register(name: String, password: String): Result<AuthResponse> {
         return try {
             val response = client.post("$baseUrl/api/auth/register") {
                 contentType(ContentType.Application.Json)
-                setBody(RegisterRequest(email, password, name))
+                setBody(RegisterRequest(name, password))
             }
 
             if (response.status.isSuccess()) {

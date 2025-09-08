@@ -1,4 +1,4 @@
-package com.github.nanaki_93.dto
+package com.github.nanaki_93.dto.ai
 
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
@@ -14,10 +14,8 @@ data class AiQuestionDto(
 )
 
 
-
-
 open class QuestionDto(
-    val id: UUID? = null,
+    val id: UUID,
     val japanese: String,
     val romanization: String,
     val translation: String,

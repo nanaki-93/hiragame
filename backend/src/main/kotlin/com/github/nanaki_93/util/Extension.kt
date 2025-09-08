@@ -10,6 +10,7 @@ import java.util.UUID
 
 fun AIQuestion.toHiraganaQuestion(gameMode: GameMode): Question =
     Question(
+        id = UUID.randomUUID(),
         japanese = japanese,
         romanization = romanization,
         translation = translation,

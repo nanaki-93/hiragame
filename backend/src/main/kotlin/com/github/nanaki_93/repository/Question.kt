@@ -1,7 +1,7 @@
 package com.github.nanaki_93.repository
 
 
-import com.github.nanaki_93.dto.QuestionDto
+import com.github.nanaki_93.dto.ai.QuestionDto
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.models.QuestionUi
@@ -24,7 +24,7 @@ class Question(
     @Id
     @GeneratedValue
     @Column(nullable = false)
-    val id: UUID? = null,
+    val id: UUID,
     @Column(nullable = false, unique = true)
     val japanese: String,
     @Column(nullable = false)

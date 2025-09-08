@@ -1,7 +1,7 @@
 package com.github.nanaki_93.repository
 
 
-import com.github.nanaki_93.dto.UserGameStateDto
+import com.github.nanaki_93.dto.game.UserGameStateDto
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.GameStateUi
 import com.github.nanaki_93.models.GameStatisticsUi

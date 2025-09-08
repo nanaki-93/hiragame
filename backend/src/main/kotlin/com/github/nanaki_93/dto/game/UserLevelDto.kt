@@ -1,5 +1,6 @@
-package com.github.nanaki_93.dto
+package com.github.nanaki_93.dto.game
 
+import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.repository.UserLevel
 import java.time.LocalDateTime
@@ -12,7 +13,7 @@ data class UserLevelDto(
     val isCompleted: Boolean,
     val isAvailable: Boolean,
     val answeredAt: LocalDateTime = LocalDateTime.now(),
-    val gameMode: String,
+    val gameMode: GameMode,
     val correctCount: Int
 )
 

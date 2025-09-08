@@ -30,11 +30,11 @@ fun LoginPage() {
     // Check if already logged in
     LaunchedEffect(Unit) {
         if (TokenManager.isTokenValid()) {
-            kotlinx.browser.window.location.href = "/"
+            kotlinx.browser.window.location.href = "/hiragame"
         }
     }
 
-    var email by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isLogin by remember { mutableStateOf(true) }
     var isLoading by remember { mutableStateOf(false) }
@@ -43,7 +43,7 @@ fun LoginPage() {
     val coroutineScope = rememberCoroutineScope()
 
     suspend fun handleLogin() {
-        if (email.isBlank() || password.isBlank()) {
+        if (name.isBlank() || password.isBlank()) {
             errorMessage = "Please fill in all fields"
             return
         }
@@ -52,18 +52,18 @@ fun LoginPage() {
         errorMessage = ""
 
         try {
-            val result = authService.login(email, password)
+            val result = authService.login(name, password)
 
             result.onSuccess { authResponse ->
                 // Save JWT token and user data
                 TokenManager.saveToken(
                     token = authResponse.token,
                     userId = authResponse.userId,
-                    email = authResponse.email
+                    name = authResponse.name
                 )
 
                 // Navigate to home page
-                kotlinx.browser.window.location.href = "/"
+                kotlinx.browser.window.location.href = "/hiragame"
             }.onFailure { exception ->
                 errorMessage = exception.message ?: "Login failed"
             }
@@ -75,7 +75,7 @@ fun LoginPage() {
     }
 
     suspend fun handleRegister() {
-        if (email.isBlank() || password.isBlank()) {
+        if (name.isBlank() || password.isBlank()) {
             errorMessage = "Please fill in all fields"
             return
         }
@@ -84,18 +84,19 @@ fun LoginPage() {
         errorMessage = ""
 
         try {
-            val result = authService.register(email, password)
+            val result = authService.register(name, password)
+
 
             result.onSuccess { authResponse ->
                 // Save JWT token and user data
                 TokenManager.saveToken(
                     token = authResponse.token,
                     userId = authResponse.userId,
-                    email = authResponse.email
+                    name = authResponse.name
                 )
 
                 // Navigate to home page
-                kotlinx.browser.window.location.href = "/"
+                kotlinx.browser.window.location.href = "/hiragame"
             }.onFailure { exception ->
                 errorMessage = exception.message ?: "Registration failed"
             }
@@ -133,9 +134,9 @@ fun LoginPage() {
                 verticalArrangement = Arrangement.spacedBy(1.cssRem)
             ) {
                 TextInput(
-                    text = email,
-                    onTextChange = { email = it },
-                    placeholder = "Email",
+                    text = name,
+                    onTextChange = { name = it },
+                    placeholder = "Name",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(0.8.cssRem)
@@ -149,6 +150,7 @@ fun LoginPage() {
                     text = password,
                     onTextChange = { password = it },
                     placeholder = "Password",
+                    password = true,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(0.8.cssRem)

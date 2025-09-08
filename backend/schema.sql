@@ -1,13 +1,14 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 
-DROP TABLE IF EXISTS jp_users CASCADE;
-CREATE TABLE if not exists jp_users
+DROP TABLE IF EXISTS jp_user CASCADE;
+CREATE TABLE if not exists jp_user
 (
-    id       uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name     text NOT NULL,
-    email    text NOT NULL,
-    password text NOT NULL
+    id         uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
+    name       text      NOT NULL UNIQUE,
+    password   text      NOT NULL,
+    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -15,7 +16,7 @@ DROP TABLE IF EXISTS user_answered_question CASCADE;
 CREATE TABLE user_answered_question
 (
     id                uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id           uuid    NOT NULL REFERENCES jp_users (id) ON DELETE CASCADE,
+    user_id           uuid    NOT NULL REFERENCES jp_user (id) ON DELETE CASCADE,
     question_id       uuid    NOT NULL REFERENCES question (id) ON DELETE CASCADE,
     is_correct        boolean NOT NULL,
     answered_at       timestamp,
@@ -30,7 +31,7 @@ DROP TABLE IF EXISTS user_level CASCADE;
 CREATE TABLE if not exists user_level
 (
     id            uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
-    user_id       uuid      NOT NULL REFERENCES jp_users (id) ON DELETE CASCADE,
+    user_id       uuid      NOT NULL REFERENCES jp_user (id) ON DELETE CASCADE,
     level         text      NOT NULL,
     is_completed  boolean   NOT NULL,
     is_available  boolean   NOT NULL,
@@ -44,7 +45,7 @@ DROP TABLE IF EXISTS user_game_state CASCADE;
 CREATE TABLE if not exists user_game_state
 (
     id                  uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
-    user_id             uuid      NOT NULL REFERENCES jp_users (id) ON DELETE CASCADE,
+    user_id             uuid      NOT NULL REFERENCES jp_user (id) ON DELETE CASCADE,
     game_mode           text      NOT NULL,
     level               text      NOT NULL DEFAULT 'N5',
     score               integer   NOT NULL DEFAULT 0,

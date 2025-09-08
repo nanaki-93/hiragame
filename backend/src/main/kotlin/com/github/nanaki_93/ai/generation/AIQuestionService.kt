@@ -1,6 +1,6 @@
 package com.github.nanaki_93.ai.generation
 
-import com.github.nanaki_93.dto.AiQuestionDto
+import com.github.nanaki_93.dto.ai.AiQuestionDto
 import com.github.nanaki_93.models.AIQuestion
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.repository.Question

@@ -1,6 +1,8 @@
 package com.github.nanaki_93.repository
 
-import com.github.nanaki_93.dto.UserAnsweredQuestionDto
+import com.github.nanaki_93.dto.game.UserAnsweredQuestionDto
+import com.github.nanaki_93.models.GameMode
+import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.models.SelectRequest
 import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
@@ -36,11 +38,13 @@ class UserAnsweredQuestion(
     @Column( nullable = false)
     val lastAttemptedAt: LocalDateTime = LocalDateTime.now(),
 
+    @Enumerated(EnumType.STRING)
     @Column( nullable = false)
-    val gameMode: String,
+    val gameMode: GameMode,
 
+    @Enumerated(EnumType.STRING)
     @Column( nullable = false)
-    val level: String,
+    val level: Level,
 )
 
 @Repository

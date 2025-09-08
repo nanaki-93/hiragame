@@ -1,6 +1,7 @@
 package com.github.nanaki_93.repository
 
-import com.github.nanaki_93.dto.UserLevelDto
+import com.github.nanaki_93.dto.game.UserLevelDto
+import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
 import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
@@ -32,8 +33,9 @@ class UserLevel(
     @Column(nullable = false)
     val answeredAt: LocalDateTime = LocalDateTime.now(),
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val gameMode: String,
+    val gameMode: GameMode,
 
     @Column
     val correctCount: Int
@@ -42,8 +44,8 @@ class UserLevel(
 @Repository
 interface UserLevelRepository : JpaRepository<UserLevel, UUID> {
     fun findByUserId(userId: UUID): List<UserLevel>
-    fun findByUserIdAndLevelAndGameMode(userId: UUID, level: Level, gameMode: String): UserLevel
-    fun findByUserIdAndGameModeAndIsAvailable(userId: UUID, gameMode: String,isAvailable: Boolean): List<UserLevel>
+    fun findByUserIdAndLevelAndGameMode(userId: UUID, level: Level, gameMode: GameMode): UserLevel
+    fun findByUserIdAndGameModeAndIsAvailable(userId: UUID, gameMode: GameMode,isAvailable: Boolean): List<UserLevel>
 
 }
 

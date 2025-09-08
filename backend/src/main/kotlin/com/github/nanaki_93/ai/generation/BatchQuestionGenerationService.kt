@@ -4,7 +4,7 @@ import com.github.nanaki_93.ai.model.Batch
 import com.github.nanaki_93.ai.model.BatchParams
 import com.github.nanaki_93.ai.model.BatchResult
 import com.github.nanaki_93.ai.model.GenContext
-import com.github.nanaki_93.dto.AiQuestionDto
+import com.github.nanaki_93.dto.ai.AiQuestionDto
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.repository.QuestionRepository
 import org.slf4j.LoggerFactory

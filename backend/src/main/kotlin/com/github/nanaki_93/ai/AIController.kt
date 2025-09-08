@@ -2,7 +2,7 @@ package com.github.nanaki_93.ai
 
 import com.github.nanaki_93.ai.generation.BatchQuestionGenerationService
 import com.github.nanaki_93.ai.model.Batch
-import com.github.nanaki_93.dto.AiQuestionDto
+import com.github.nanaki_93.dto.ai.AiQuestionDto
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.ai.generation.AIQuestionService

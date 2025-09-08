@@ -22,22 +22,23 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.*
 
-const val USER_ID = "2a456b71-d756-482d-b01a-d987b3a833bf"
-
 
 @Page
 @Composable
 fun HomePage() {
 
+    var userId by remember { mutableStateOf("") }
+    var userName by remember { mutableStateOf("") }
 
 
 
     val gameService = remember { GameService() }
+
     var gameState by remember { mutableStateOf(GameState.LOADING) }
-    var gameStateUi by remember { mutableStateOf(GameStateUi(userId = USER_ID, stats = GameStatisticsUi())) }
+    var gameStateUi by remember { mutableStateOf(GameStateUi(userId = userId, stats = GameStatisticsUi())) }
     var currentQuestion by remember { mutableStateOf(QuestionUi()) }
     var availableLevels by remember { mutableStateOf(listOf<Level>()) }
-    var userId by remember { mutableStateOf("") }
+
 
     var userInput by remember { mutableStateOf("") }
     var isAnswering by remember { mutableStateOf(false) }
@@ -63,7 +64,7 @@ fun HomePage() {
             hasKatakana = currentQuestion.hasKatakana,
             hasKanji = currentQuestion.hasKanji,
             userInput = userInput,
-            userId = USER_ID
+            userId = userId
         )
 
         gameStateUi = gameService.processAnswer(userQuestionDto)
@@ -73,21 +74,21 @@ fun HomePage() {
         delay(2000)
 
         // Get next question
-        currentQuestion = gameService.getNextQuestion(SelectRequest(selectedGameMode!!, selectedLevel!!, USER_ID))
+        currentQuestion = gameService.getNextQuestion(SelectRequest(selectedGameMode!!, selectedLevel!!, userId))
         gameState = GameState.PLAYING
         isAnswering = false
     }
 
     suspend fun selectGameMode(mode: GameMode) {
         selectedGameMode = mode
-        availableLevels = gameService.selectGameMode(LevelListRequest(mode, USER_ID))
+        availableLevels = gameService.selectGameMode(LevelListRequest(mode, userId))
         gameState = GameState.LEVEL_SELECTION
     }
 
     suspend fun selectLevel(level: Level) {
         selectedLevel = level
         selectedGameMode?.let {gameMode->
-            currentQuestion = gameService.getNextQuestion(SelectRequest(gameMode, level, USER_ID))
+            currentQuestion = gameService.getNextQuestion(SelectRequest(gameMode, level, userId))
             gameState = GameState.PLAYING
         }
 
@@ -97,18 +98,19 @@ fun HomePage() {
     LaunchedEffect(Unit) {
         // Step 1: Check JWT authentication
         if (!TokenManager.isTokenValid()) {
-            kotlinx.browser.window.location.href = "/login"
+            kotlinx.browser.window.location.href = "/hiragame/login"
             return@LaunchedEffect
         }
 
         // Step 2: Get user data from JWT
         val userData = TokenManager.getUserData()
         if (userData == null) {
-            kotlinx.browser.window.location.href = "/login"
+            kotlinx.browser.window.location.href = "/hiragame/login"
             return@LaunchedEffect
         }
 
         userId = userData.userId
+        userName = userData.name
 
         // Step 3: Initialize game state
         try {

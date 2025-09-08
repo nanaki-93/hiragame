@@ -1,4 +1,4 @@
-package com.github.nanaki_93.dto
+package com.github.nanaki_93.dto.game
 
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level

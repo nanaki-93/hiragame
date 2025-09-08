@@ -1,30 +1,52 @@
 package com.github.nanaki_93.service
 
+import com.github.nanaki_93.models.JWTPayload
+import com.github.nanaki_93.models.UserData
 import kotlinx.browser.localStorage
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.js.Date.Companion.now
 import kotlinx.serialization.encodeToString
 
-@Serializable
-data class JWTPayload(
-    val userId: String,
-    val email: String,
-    val exp: Long,
-    val iat: Long
-)
+
 
 object TokenManager {
     private const val TOKEN_KEY = "jwt_token"
     private const val USER_KEY = "user_data"
 
-    fun saveToken(token: String, userId: String, email: String) {
+    private val json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+    }
+
+    fun saveToken(token: String, userId: String, name: String) {
         localStorage.setItem(TOKEN_KEY, token)
-        localStorage.setItem(USER_KEY, Json.encodeToString(UserData(userId, email)))
+        localStorage.setItem(USER_KEY, Json.encodeToString(UserData(userId, name)))
     }
 
     fun getToken(): String? {
         return localStorage.getItem(TOKEN_KEY)
+    }
+
+    fun getCurrentUserId(): String? {
+        return try {
+            val token = getToken() ?: return null
+            if (!isTokenValid()) return null
+            val payload = decodeJWTPayload(token)
+            payload.userId
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun getCurrentUserName(): String? {
+        return try {
+            val token = getToken() ?: return null
+            if (!isTokenValid()) return null
+            val payload = decodeJWTPayload(token)
+            payload.name
+        } catch (e: Exception) {
+            null
+        }
     }
 
     fun getUserData(): UserData? {
@@ -42,9 +64,9 @@ object TokenManager {
 
         return try {
             val payload = decodeJWTPayload(token)
-            val currentTime = now()
+            val currentTime = now()/1000
             payload.exp > currentTime
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }
@@ -59,13 +81,14 @@ object TokenManager {
         if (parts.size != 3) throw IllegalArgumentException("Invalid JWT token")
 
         val payload = parts[1]
-        val decodedPayload = kotlinx.browser.window.atob(payload)
-        return Json.decodeFromString<JWTPayload>(decodedPayload)
+        // Fix Base64URL decoding by adding proper padding and replacing URL-safe characters
+        val paddedPayload = payload + "=".repeat((4 - payload.length % 4) % 4)
+        val base64Payload = paddedPayload.replace('-', '+').replace('_', '/')
+
+        val decodedPayload = kotlinx.browser.window.atob(base64Payload)
+
+        return json.decodeFromString<JWTPayload>(decodedPayload)
     }
+
 }
 
-@Serializable
-data class UserData(
-    val userId: String,
-    val email: String
-)

@@ -1,5 +1,7 @@
-package com.github.nanaki_93.dto
+package com.github.nanaki_93.dto.game
 
+import com.github.nanaki_93.models.GameMode
+import com.github.nanaki_93.models.Level
 import com.github.nanaki_93.repository.UserAnsweredQuestion
 import java.time.LocalDateTime
 import java.util.UUID
@@ -12,8 +14,8 @@ data class UserAnsweredQuestionDto(
     val answeredAt: LocalDateTime = LocalDateTime.now(),
     val attemps: Int? = null,
     val lastAttemptedAt: LocalDateTime = LocalDateTime.now(),
-    val gameMode: String,
-    val level: String,
+    val gameMode: GameMode,
+    val level: Level,
 )
 
 fun UserAnsweredQuestionDto.toModel() = UserAnsweredQuestion(
