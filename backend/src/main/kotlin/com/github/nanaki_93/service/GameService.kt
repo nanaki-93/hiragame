@@ -176,7 +176,7 @@ class GameService(
                 UserLevel(
                     userId = userId,
                     level = level,
-                    isAvailable = true,
+                    isAvailable = level == Level.N5,
                     isCompleted = false,
                     correctCount = 0,
                     gameMode = it,
@@ -185,8 +185,6 @@ class GameService(
         }.flatMap { it }
             .toList()
             .let { levelRepo.saveAll(it) }
-
-
     }
 
     private fun generateFeedback(isCorrect: Boolean, streak: Int, correctAnswer: String): String {

@@ -1,9 +1,9 @@
-
 package com.github.nanaki_93.service
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.*
@@ -12,13 +12,13 @@ import javax.crypto.SecretKey
 @Service
 class JWTService {
 
-    @Value("\${jwt.secret:your-super-secret-key-here-make-it-long-and-random-at-least-256-bits}")
+    @Value($$"${jwt.secret:your-super-secret-key-here-make-it-long-and-random-at-least-256-bits}")
     private lateinit var secretKey: String
 
-    @Value("\${jwt.expiration:86400000}")
+    @Value($$"${jwt.expiration:86400000}")
     private var jwtExpiration: Long = 86400000 // 24 hours
 
-    @Value("\${jwt.refresh-expiration:604800000}")
+    @Value($$"${jwt.refresh-expiration:604800000}")
     private var refreshExpiration: Long = 604800000 // 7 days
 
     private val key: SecretKey by lazy {
@@ -26,68 +26,59 @@ class JWTService {
     }
 
 
-    fun generateAccessToken(userId: String, name: String): String {
-        return generateToken(userId, name, jwtExpiration)
-    }
+    fun generateAccessToken(userId: String, name: String): String =
+        generateToken(userId, name, jwtExpiration)
 
-    fun generateRefreshToken(userId: String, name: String): String {
-        return generateToken(userId, name, refreshExpiration)
-    }
+    fun generateRefreshToken(userId: String, name: String): String =
+        generateToken(userId, name, refreshExpiration)
 
-    private fun generateToken(userId: String, name: String, expiration: Long): String {
-        val now = Date()
-        val expiryDate = Date(now.time + expiration)
-
-        return Jwts.builder()
+    private fun generateToken(userId: String, username: String, expiration: Long): String =
+        Jwts.builder()
             .subject(userId)
-            .claim("name", name)
-            .claim("userId", userId)
-            .issuedAt(now)
-            .expiration(expiryDate)
+            .claim("username", username)
+            .issuedAt(Date())
+            .expiration(Date(Date().time + expiration))
             .signWith(key)
             .compact()
+
+    fun extractUserId(token: String): String =
+        extractClaim(token) { claims -> claims.subject }
+
+    fun extractUsername(token: String): String =
+        extractClaim(token) { claims -> claims.get("username", String::class.java) }
+
+    fun extractExpiration(token: String): Date =
+        extractClaim(token) { claims -> claims.expiration }
+
+    fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T = claimsResolver(extractAllClaims(token))
+
+
+    private fun extractAllClaims(token: String): Claims = Jwts.parser()
+        .verifyWith(key)
+        .build()
+        .parseSignedClaims(token)
+        .payload
+
+    fun isTokenExpired(token: String): Boolean = extractExpiration(token).before(Date())
+
+    fun validateToken(token: String, username: String): Boolean = (extractUsername(token) == username && !isTokenExpired(token))
+
+    fun validateToken(token: String): Boolean = try {
+        !isTokenExpired(token)
+    } catch (_: Exception) {
+        false
     }
 
-    fun extractUserId(token: String): String {
-        return extractClaim(token) { claims -> claims.subject }
-    }
+     fun extractJwtFromRequest(request: HttpServletRequest): String? {
+        // First, try to get JWT from cookie
+        request.cookies?.find { it.name == "jwt" }?.value?.let { return it }
 
-    fun extractName(token: String): String {
-        return extractClaim(token) { claims -> claims.get("name", String::class.java) }
-    }
-
-    fun extractExpiration(token: String): Date {
-        return extractClaim(token) { claims -> claims.expiration }
-    }
-
-    fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T {
-        val claims = extractAllClaims(token)
-        return claimsResolver(claims)
-    }
-
-
-    private fun extractAllClaims(token: String): Claims {
-        return Jwts.parser()
-            .verifyWith(key)
-            .build()
-            .parseSignedClaims(token)
-            .payload
-    }
-
-    fun isTokenExpired(token: String): Boolean {
-        return extractExpiration(token).before(Date())
-    }
-
-    fun validateToken(token: String, userId: String): Boolean {
-        val tokenUserId = extractUserId(token)
-        return (tokenUserId == userId && !isTokenExpired(token))
-    }
-
-    fun validateToken(token: String): Boolean {
-        return try {
-            !isTokenExpired(token)
-        } catch (e: Exception) {
-            false
+        // Fallback to Authorization header (for backward compatibility or API clients)
+        val authHeader = request.getHeader("Authorization")
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7)
         }
+
+        return null
     }
 }

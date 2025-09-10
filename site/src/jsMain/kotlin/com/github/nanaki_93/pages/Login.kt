@@ -4,7 +4,6 @@ import androidx.compose.runtime.*
 import com.github.nanaki_93.CardStyle
 import com.github.nanaki_93.GameContainerStyle
 import com.github.nanaki_93.service.AuthService
-import com.github.nanaki_93.service.TokenManager
 import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
@@ -29,7 +28,7 @@ fun LoginPage() {
 
     // Check if already logged in
     LaunchedEffect(Unit) {
-        if (TokenManager.isTokenValid()) {
+        if (authService.isAuthenticated()) {
             kotlinx.browser.window.location.href = "/hiragame"
         }
     }
@@ -54,14 +53,7 @@ fun LoginPage() {
         try {
             val result = authService.login(name, password)
 
-            result.onSuccess { authResponse ->
-                // Save JWT token and user data
-                TokenManager.saveToken(
-                    token = authResponse.token,
-                    userId = authResponse.userId,
-                    name = authResponse.name
-                )
-
+            result.onSuccess { _ ->
                 // Navigate to home page
                 kotlinx.browser.window.location.href = "/hiragame"
             }.onFailure { exception ->
@@ -86,15 +78,7 @@ fun LoginPage() {
         try {
             val result = authService.register(name, password)
 
-
-            result.onSuccess { authResponse ->
-                // Save JWT token and user data
-                TokenManager.saveToken(
-                    token = authResponse.token,
-                    userId = authResponse.userId,
-                    name = authResponse.name
-                )
-
+            result.onSuccess { _ ->
                 // Navigate to home page
                 kotlinx.browser.window.location.href = "/hiragame"
             }.onFailure { exception ->

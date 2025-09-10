@@ -1,7 +1,6 @@
 package com.github.nanaki_93.components.widgets.auth
 
 import androidx.compose.runtime.Composable
-import com.github.nanaki_93.service.TokenManager
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.graphics.Colors
 import com.varabyte.kobweb.compose.ui.modifiers.*
@@ -10,12 +9,9 @@ import com.varabyte.kobweb.silk.components.text.SpanText
 import org.jetbrains.compose.web.css.*
 
 @Composable
-fun LogoutButton() {
+fun LogoutButton(onLogout: () -> Unit) {
     Button(
-        onClick = {
-            TokenManager.clearToken()
-            kotlinx.browser.window.location.href = "/login"
-        },
+        onClick = { onLogout() },
         modifier = Modifier
             .backgroundColor(rgba(255, 255, 255, 0.1))
             .color(Colors.White)

@@ -4,9 +4,11 @@ import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.security.core.userdetails.User
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.collections.emptyList
 
 @Entity
 @Table(name = "jp_user")
@@ -15,7 +17,7 @@ class JpUser(
     val id: UUID = UUID.randomUUID(),
 
     @Column(unique = true, nullable = false)
-    val name: String = "",
+    val username: String = "",
 
     @Column(nullable = false)
     val password: String = "", // Hashed password
@@ -31,10 +33,15 @@ class JpUser(
 
 
 @Repository
-interface UserRepository : JpaRepository<JpUser, String> {
-    fun findByName(name: String): Optional<JpUser>
-    fun existsByName(name: String): Boolean
+interface UserRepository : JpaRepository<JpUser, UUID> {
+    fun findByUsername(username: String): Optional<JpUser>
+    fun existsByUsername(username: String): Boolean
 }
+
+fun JpUser.ToUserDetail() = User.builder()
+    .username(username)
+    .password("")
+    .authorities(emptyList()).build()
 
 
 

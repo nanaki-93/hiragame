@@ -20,10 +20,10 @@ class GeminiService(
 
     private val logger = LoggerFactory.getLogger(GeminiService::class.java)
 
-    @Value("\${gemini.api.key:}")
+    @Value($$"${gemini.api.key:}")
     private lateinit var geminiApiKey: String
 
-    @Value("\${gemini.api.url:https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent}")
+    @Value($$"${gemini.api.url:https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent}")
     private lateinit var geminiApiUrl: String
 
 

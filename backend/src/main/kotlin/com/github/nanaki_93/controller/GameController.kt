@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = ["http://localhost:8081"])
 class GameController(
     private val gameService: GameService
 ) {

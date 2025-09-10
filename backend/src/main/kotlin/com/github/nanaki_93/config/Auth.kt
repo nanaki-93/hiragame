@@ -1,6 +1,7 @@
 
 package com.github.nanaki_93.config
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -28,6 +29,9 @@ class Auth(
     private val userDetailsService: UserDetailsService
 ) {
 
+
+    @Value($$"${frontend.origin.allowed:http://localhost:8081}")
+    private lateinit var originAllowed: String
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
@@ -67,13 +71,16 @@ class Auth(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOriginPatterns = listOf("*")
+        configuration.allowedOriginPatterns = listOf(originAllowed)
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true
+        // Explicitly expose the Set-Cookie header
+        configuration.exposedHeaders = listOf("Set-Cookie", "Authorization", "Content-Type")
 
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
         return source
+
     }
 }

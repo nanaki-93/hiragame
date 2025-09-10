@@ -12,13 +12,13 @@ data class LevelListRequest(val gameMode: GameMode, val userId: String)
 
 @Serializable
 data class LoginRequest(
-    val name: String,
+    val username: String,
     val password: String
 )
 
 @Serializable
 data class RegisterRequest(
-    val name: String,
+    val username: String,
     val password: String,
 )
 
@@ -27,7 +27,7 @@ data class AuthResponse(
     val token: String,
     val refreshToken: String,
     val userId: String,
-    val name: String,
+    val username: String,
     val message: String? = null
 )
 
@@ -41,14 +41,13 @@ data class ErrorResponse(
 @Serializable
 data class UserData(
     val userId: String,
-    val name: String
+    val username: String
 )
 
 @Serializable
 data class JWTPayload(
     val sub: String,
-    val userId: String,
-    val name: String,
+    val username: String,
     val exp: Long,
     val iat: Long
 )

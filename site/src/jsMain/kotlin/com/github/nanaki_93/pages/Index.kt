@@ -5,9 +5,10 @@ import com.github.nanaki_93.CardStyle
 import com.github.nanaki_93.GameContainerStyle
 import com.github.nanaki_93.components.sections.QuestionArea
 import com.github.nanaki_93.components.widgets.*
+import com.github.nanaki_93.components.widgets.auth.LogoutButton
 import com.github.nanaki_93.models.*
+import com.github.nanaki_93.service.AuthService
 import com.github.nanaki_93.service.GameService
-import com.github.nanaki_93.service.TokenManager
 import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
@@ -28,11 +29,11 @@ import org.jetbrains.compose.web.css.*
 fun HomePage() {
 
     var userId by remember { mutableStateOf("") }
-    var userName by remember { mutableStateOf("") }
-
+    var username by remember { mutableStateOf("") }
 
 
     val gameService = remember { GameService() }
+    val authService = remember { AuthService() }
 
     var gameState by remember { mutableStateOf(GameState.LOADING) }
     var gameStateUi by remember { mutableStateOf(GameStateUi(userId = userId, stats = GameStatisticsUi())) }
@@ -87,7 +88,7 @@ fun HomePage() {
 
     suspend fun selectLevel(level: Level) {
         selectedLevel = level
-        selectedGameMode?.let {gameMode->
+        selectedGameMode?.let { gameMode ->
             currentQuestion = gameService.getNextQuestion(SelectRequest(gameMode, level, userId))
             gameState = GameState.PLAYING
         }
@@ -97,20 +98,20 @@ fun HomePage() {
     // Single LaunchedEffect for initialization
     LaunchedEffect(Unit) {
         // Step 1: Check JWT authentication
-        if (!TokenManager.isTokenValid()) {
+        if (!authService.isAuthenticated()) {
             kotlinx.browser.window.location.href = "/hiragame/login"
             return@LaunchedEffect
         }
 
         // Step 2: Get user data from JWT
-        val userData = TokenManager.getUserData()
+        val userData = authService.getCurrentUser()
         if (userData == null) {
             kotlinx.browser.window.location.href = "/hiragame/login"
             return@LaunchedEffect
         }
 
         userId = userData.userId
-        userName = userData.name
+        username = userData.username
 
         // Step 3: Initialize game state
         try {
@@ -136,16 +137,23 @@ fun HomePage() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(1.cssRem)
         ) {
+
+            LogoutButton {
+                coroutineScope.launch {
+                    authService.logout()
+                    kotlinx.browser.window.location.href = "/login"
+                }
+            }
             // Title
             SpanText(
-                "ひらがな Master",
+                "ひらがな Master - $username",
                 Modifier
                     .fontSize(2.5.cssRem)
                     .fontWeight(FontWeight.Bold)
                     .textShadow(2.px, 2.px, 4.px, rgba(0, 0, 0, 0.3))
             )
 
-            Spinner(isVisible = gameState== GameState.LOADING)
+            Spinner(isVisible = gameState == GameState.LOADING)
 
             GameStats(
                 state = gameState,
@@ -173,7 +181,7 @@ fun HomePage() {
             )
 
             SpanText(
-                "Level ${selectedLevel?.displayName?:""} - ${selectedGameMode?.displayName?:""} Mode",
+                "Level ${selectedLevel?.displayName ?: ""} - ${selectedGameMode?.displayName ?: ""} Mode",
                 Modifier.fontSize(0.9.cssRem).opacity(0.7)
             )
 
@@ -187,8 +195,7 @@ fun HomePage() {
                 onSubmit = { coroutineScope.launch { submitAnswer() } },
             )
 
-            Feedback(state = gameState,gameStateUi = gameStateUi )
-
+            Feedback(state = gameState, gameStateUi = gameStateUi)
 
         }
     }
