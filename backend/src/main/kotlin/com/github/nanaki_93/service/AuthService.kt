@@ -1,8 +1,7 @@
 package com.github.nanaki_93.service
 
 import com.github.nanaki_93.models.AuthResponse
-import com.github.nanaki_93.models.LoginRequest
-import com.github.nanaki_93.models.RegisterRequest
+import com.github.nanaki_93.models.LoginRegisterRequest
 import com.github.nanaki_93.repository.JpUser
 import com.github.nanaki_93.repository.UserRepository
 import com.github.nanaki_93.util.toUUID
@@ -17,11 +16,11 @@ class AuthService(
     private val gameService: GameService,
 ) {
 
-    fun register(request: RegisterRequest): Result<AuthResponse> {
+    fun register(request: LoginRegisterRequest): AuthResponse {
         return try {
             // Check if user already exists
             if (userRepository.existsByUsername(request.username)) {
-                return Result.failure(Exception("User already exists with this email"))
+                throw Exception("User already exists with this email")
             }
 
             // Create new user
@@ -31,54 +30,52 @@ class AuthService(
             val savedUser = userRepository.save(user)
 
             gameService.initGame(savedUser.id)
-            //todo initialiaze db state for the user
             toAuthResponse(savedUser)
         } catch (e: Exception) {
-            Result.failure(e)
+            throw e
         }
     }
 
-    fun login(request: LoginRequest): Result<AuthResponse> {
+    fun login(request: LoginRegisterRequest): AuthResponse {
         return try {
 
-            val user = userRepository.findByUsername(request.username).orElse(null) ?: return Result.failure(Exception("Invalid credentials"))
+            val user = userRepository.findByUsername(request.username).orElse(null) ?: throw Exception("Invalid credentials")
             if (!passwordEncoder.matches(request.password, user.password)) {
-                return Result.failure(Exception("Invalid credentials"))
+                throw Exception("Invalid credentials")
             }
             toAuthResponse(user)
         } catch (e: Exception) {
-            Result.failure(e)
+            throw e
         }
     }
 
 
-    fun refreshToken(refreshToken: String): Result<AuthResponse> {
+    fun refreshToken(refreshToken: String): AuthResponse {
         return try {
             if (!jwtService.validateToken(refreshToken)) {
-                return Result.failure(Exception("Invalid refresh token"))
+                throw Exception("Invalid refresh token")
             }
 
             val userId = jwtService.extractUserId(refreshToken)
-            val user = userRepository.findById(userId.toUUID()).orElse(null) ?: return Result.failure(Exception("User not found"))
+            val user = userRepository.findById(userId.toUUID()).orElse(null) ?: throw Exception("User not found")
 
             toAuthResponse(user)
         } catch (e: Exception) {
-            Result.failure(e)
+            throw e
         }
     }
 
-    private fun toAuthResponse(user: JpUser): Result<AuthResponse> {
+    private fun toAuthResponse(user: JpUser): AuthResponse {
         // Generate tokens
         val accessToken = jwtService.generateAccessToken(user.id.toString(), user.username)
         val refreshToken = jwtService.generateRefreshToken(user.id.toString(), user.username)
 
-        return Result.success(
-            AuthResponse(
-                token = accessToken,
-                refreshToken = refreshToken,
-                userId = user.id.toString(),
-                username = user.username
-            )
+        return AuthResponse(
+            token = accessToken,
+            refreshToken = refreshToken,
+            userId = user.id.toString(),
+            username = user.username
+
         )
     }
 

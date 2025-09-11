@@ -71,12 +71,10 @@ class Auth(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOriginPatterns = listOf(originAllowed)
+        configuration.allowedOrigins = listOf(originAllowed)
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true
-        // Explicitly expose the Set-Cookie header
-        configuration.exposedHeaders = listOf("Set-Cookie", "Authorization", "Content-Type")
 
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)

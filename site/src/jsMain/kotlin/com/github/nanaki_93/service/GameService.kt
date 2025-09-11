@@ -7,34 +7,27 @@ import io.ktor.client.engine.js.Js
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.AcceptAllCookiesStorage
 import io.ktor.client.plugins.cookies.HttpCookies
-import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.header
-import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.util.AttributeKey
 import kotlinx.serialization.json.Json
 
 class GameService {
     private val client = HttpClient(Js) {
-        install(ContentNegotiation) {
-            json(Json { ignoreUnknownKeys = true })
-        }
-        // This ensures cookies are sent with requests
-        install(HttpCookies){
+
+        install(HttpCookies) {
             storage = AcceptAllCookiesStorage()
         }
 
-        defaultRequest {
-            // Enable credentials (cookies) for all requests
-            attributes.put(AttributeKey("credentials"), "include")
+        install(ContentNegotiation) {
+            json(Json { ignoreUnknownKeys = true })
         }
-
+        engine {
+            configureRequest { credentials = "include" }
+        }
 
     }
 

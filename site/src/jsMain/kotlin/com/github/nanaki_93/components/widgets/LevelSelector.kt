@@ -19,18 +19,13 @@ import org.jetbrains.compose.web.css.*
 @Composable
 fun LevelSelector(
     state: GameState,
-    selectedGameMode: GameMode?,
     availableLevels : List<Level>,
     currentLevel: Level?,
     onLevelSelected: (Level) -> Unit = {}
 ) {
-    if (state == GameState.LOADING) return
+    if (state != GameState.LEVEL_SELECTION) return
 
     SpanText("Select your level:", Modifier.fontSize(1.1.cssRem))
-    SpanText(
-        "Mode: ${selectedGameMode?.displayName?:"N/A"}",
-        Modifier.fontSize(0.9.cssRem).opacity(0.8)
-    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -42,7 +37,6 @@ fun LevelSelector(
                 onClick = { onLevelSelected(level) },
                 modifier = Modifier
                     .padding(0.5.cssRem, 0.4.cssRem)
-                    .disabled(state != GameState.LEVEL_SELECTION)
                     .borderRadius(10.px)
                     .backgroundColor(
                         if (currentLevel == level) {

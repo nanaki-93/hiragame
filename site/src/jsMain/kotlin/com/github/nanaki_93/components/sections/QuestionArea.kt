@@ -16,6 +16,7 @@ import com.github.nanaki_93.models.GameState
 import com.github.nanaki_93.models.QuestionUi
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.*
+import org.jetbrains.compose.web.dom.RadioGroup
 
 @Composable
 fun QuestionArea(

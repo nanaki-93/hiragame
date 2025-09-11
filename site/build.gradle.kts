@@ -48,12 +48,11 @@ kotlin {
 
                 // Shared models/logic
                 implementation(project(":shared"))
-
                 // Ktor client for JS
-                implementation("io.ktor:ktor-client-core:2.3.11")
-                implementation("io.ktor:ktor-client-js:2.3.11")
-                implementation("io.ktor:ktor-client-content-negotiation:2.3.11")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.11")
+                implementation("io.ktor:ktor-client-core:3.2.3")
+                implementation("io.ktor:ktor-client-js:3.2.3")
+                implementation("io.ktor:ktor-client-content-negotiation:3.2.3")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.3")
             }
         }
     }
