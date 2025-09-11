@@ -51,14 +51,8 @@ fun LoginPage() {
         errorMessage = ""
 
         try {
-            val result = authService.login(name, password)
-
-            result.onSuccess { _ ->
-                // Navigate to home page
-                kotlinx.browser.window.location.href = "/hiragame"
-            }.onFailure { exception ->
-                errorMessage = exception.message ?: "Login failed"
-            }
+            authService.login(name, password)
+            kotlinx.browser.window.location.href = "/hiragame"
         } catch (e: Exception) {
             errorMessage = "Network error: ${e.message}"
         } finally {
@@ -76,14 +70,9 @@ fun LoginPage() {
         errorMessage = ""
 
         try {
-            val result = authService.register(name, password)
+            authService.register(name, password)
+            kotlinx.browser.window.location.href = "/hiragame"
 
-            result.onSuccess { _ ->
-                // Navigate to home page
-                kotlinx.browser.window.location.href = "/hiragame"
-            }.onFailure { exception ->
-                errorMessage = exception.message ?: "Registration failed"
-            }
         } catch (e: Exception) {
             errorMessage = "Network error: ${e.message}"
         } finally {

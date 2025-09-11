@@ -49,16 +49,18 @@ fun initSiteStyles(ctx: InitSilkContext) {
 // Styles
 val GameContainerStyle = CssStyle.base {
     Modifier
-        .fillMaxSize()
+        .fillMaxWidth()
         .styleModifier {
             background("linear-gradient(135deg, rgba(102, 126, 234, 1.0) 0%, rgba(118, 75, 162, 1.0) 100%)")
         }
         .minHeight(100.vh)
         .display(DisplayStyle.Flex)
         .justifyContent(JustifyContent.Center)
-        .alignItems(AlignItems.Center)
+        .alignItems(AlignItems.FlexStart)
         .fontFamily("Arial", "sans-serif")
+        .padding(2.cssRem, 1.cssRem)
 }
+
 val CardStyle = CssStyle.base {
     Modifier
         .background(rgba(255, 255, 255, 0.1))

@@ -61,6 +61,7 @@ class JWTService {
 
     fun isTokenExpired(token: String): Boolean = extractExpiration(token).before(Date())
 
+    //TODO manage exipration exception for manage refresh token in the frontend
     fun validateToken(token: String, username: String): Boolean = (extractUsername(token) == username && !isTokenExpired(token))
 
     fun validateToken(token: String): Boolean = try {

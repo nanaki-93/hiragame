@@ -13,6 +13,7 @@ import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
+import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
@@ -105,10 +106,6 @@ fun HomePage() {
 
         // Step 2: Get user data from JWT
         val userData = authService.getCurrentUser()
-        if (userData == null) {
-            kotlinx.browser.window.location.href = "/hiragame/login"
-            return@LaunchedEffect
-        }
 
         userId = userData.userId
         username = userData.username
@@ -138,20 +135,27 @@ fun HomePage() {
             verticalArrangement = Arrangement.spacedBy(1.cssRem)
         ) {
 
-            LogoutButton {
-                coroutineScope.launch {
-                    authService.logout()
-                    kotlinx.browser.window.location.href = "/login"
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .gap(0.5.cssRem),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                LogoutButton {
+                    coroutineScope.launch {
+                        authService.logout()
+                        kotlinx.browser.window.location.href = "hiragame/login"
+                    }
                 }
+                // Title
+                SpanText(
+                    "ひらがな Master - $username",
+                    Modifier
+                        .fontSize(2.5.cssRem)
+                        .fontWeight(FontWeight.Bold)
+                        .textShadow(2.px, 2.px, 4.px, rgba(0, 0, 0, 0.3))
+                )
             }
-            // Title
-            SpanText(
-                "ひらがな Master - $username",
-                Modifier
-                    .fontSize(2.5.cssRem)
-                    .fontWeight(FontWeight.Bold)
-                    .textShadow(2.px, 2.px, 4.px, rgba(0, 0, 0, 0.3))
-            )
 
             Spinner(isVisible = gameState == GameState.LOADING)
 
@@ -172,17 +176,11 @@ fun HomePage() {
 
             LevelSelector(
                 state = gameState,
-                selectedGameMode = selectedGameMode,
                 availableLevels = availableLevels,
                 currentLevel = selectedLevel,
                 onLevelSelected = { level ->
                     coroutineScope.launch { selectLevel(level) }
                 }
-            )
-
-            SpanText(
-                "Level ${selectedLevel?.displayName ?: ""} - ${selectedGameMode?.displayName ?: ""} Mode",
-                Modifier.fontSize(0.9.cssRem).opacity(0.7)
             )
 
 

@@ -29,6 +29,7 @@ fun GameModeSelector(
         "Game mode selection will appear shortly...",
         Modifier.fontSize(0.9.cssRem).opacity(0.7)
     )
+    if (state != GameState.MODE_SELECTION) return
 
     SpanText("Select a game mode to continue:", Modifier.fontSize(1.1.cssRem))
     Row(
@@ -43,7 +44,6 @@ fun GameModeSelector(
                 modifier = Modifier
                     .padding(0.6.cssRem, 0.5.cssRem)
                     .borderRadius(10.px)
-                    .disabled(state != GameState.MODE_SELECTION)
                     .backgroundColor(
                         if (currentMode == mode) {
                             rgba(255, 255, 255, 0.3)
