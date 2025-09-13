@@ -33,8 +33,8 @@ fun HomePage() {
     var username by remember { mutableStateOf("") }
 
 
-    val gameService = remember { GameService() }
     val authService = remember { AuthService() }
+    val gameService = remember { GameService(authService) }
 
     var gameState by remember { mutableStateOf(GameState.LOADING) }
     var gameStateUi by remember { mutableStateOf(GameStateUi(userId = userId, stats = GameStatisticsUi())) }

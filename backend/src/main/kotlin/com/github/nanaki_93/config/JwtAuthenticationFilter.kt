@@ -10,17 +10,13 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+import kotlin.io.writer
 
 @Component
 class JwtAuthenticationFilter(
     private val jwtService: JWTService,
     private val userDetailsService: UserDetailsService
 ) : OncePerRequestFilter() {
-
-    companion object {
-        private const val BEARER_PREFIX = "Bearer "
-        private const val AUTHORIZATION_HEADER = "Authorization"
-    }
 
 
     override fun doFilterInternal(
@@ -39,21 +35,25 @@ class JwtAuthenticationFilter(
             if (SecurityContextHolder.getContext().authentication == null) {
                 authenticateUser(request, jwt)
             }
-        } catch (e: Exception) {
-            logger.warn("JWT authentication failed", e)
+            filterChain.doFilter(request, response)
+        } catch (e: io.jsonwebtoken.ExpiredJwtException) {
+            response.status = HttpServletResponse.SC_UNAUTHORIZED // 401
+        } catch (e: io.jsonwebtoken.JwtException) {
+            response.status = HttpServletResponse.SC_UNAUTHORIZED // 401
+        } catch (e: IllegalArgumentException) {
+            response.status = HttpServletResponse.SC_UNAUTHORIZED // 401
         }
-
         filterChain.doFilter(request, response)
     }
 
 
 
-    private fun authenticateUser(request: HttpServletRequest,  jwt: String) {
+    private fun authenticateUser(request: HttpServletRequest, jwt: String) {
         val username = jwtService.extractUsername(jwt)
-        if (jwtService.validateToken(jwt, username)) {
+        if (jwtService.validateToken(jwt)) {
 
             userDetailsService.loadUserByUsername(username).let {
-                UsernamePasswordAuthenticationToken(it,null,it.authorities)
+                UsernamePasswordAuthenticationToken(it, null, it.authorities)
             }.apply {
                 details = WebAuthenticationDetailsSource().buildDetails(request)
                 SecurityContextHolder.getContext().authentication = this

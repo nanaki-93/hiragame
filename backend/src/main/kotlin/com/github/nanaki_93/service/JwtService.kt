@@ -1,7 +1,12 @@
 package com.github.nanaki_93.service
 
+import com.github.nanaki_93.models.ACCESS_TOKEN
 import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.Jws
+import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Value
@@ -18,7 +23,7 @@ class JWTService {
     @Value($$"${jwt.expiration:86400000}")
     private var jwtExpiration: Long = 86400000 // 24 hours
 
-    @Value($$"${jwt.refresh-expiration:604800000}")
+    @Value($$"${jwt.refresh.expiration:604800000}")
     private var refreshExpiration: Long = 604800000 // 7 days
 
     private val key: SecretKey by lazy {
@@ -59,6 +64,7 @@ class JWTService {
         .parseSignedClaims(token)
         .payload
 
+    private fun extractJwt(token: String): Jws<Claims> = Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
     fun isTokenExpired(token: String): Boolean = extractExpiration(token).before(Date())
 
     //TODO manage exipration exception for manage refresh token in the frontend
@@ -70,9 +76,10 @@ class JWTService {
         false
     }
 
-     fun extractJwtFromRequest(request: HttpServletRequest): String? {
+
+    fun extractJwtFromRequest(request: HttpServletRequest): String? {
         // First, try to get JWT from cookie
-        request.cookies?.find { it.name == "jwt" }?.value?.let { return it }
+        request.cookies?.find { it.name == ACCESS_TOKEN }?.value?.let { return it }
 
         // Fallback to Authorization header (for backward compatibility or API clients)
         val authHeader = request.getHeader("Authorization")
