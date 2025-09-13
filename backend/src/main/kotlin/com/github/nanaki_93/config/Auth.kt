@@ -50,7 +50,8 @@ class Auth(
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http.csrf { it.disable() }
+        http.exceptionHandling { it.authenticationEntryPoint(JwtAuthenticationEntryPoint()) }
+            .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
             .authorizeHttpRequests { requests ->
                 requests

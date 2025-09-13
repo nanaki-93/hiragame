@@ -11,7 +11,7 @@ Content-Type: application/json
 ###
 POST http://localhost:8080/api/next-question
 Content-Type: application/json
-Cookie: access_token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2N2Q1ZmJiZC01YTE2LTQwMzAtOTYzZS1hMDY0OWFhOTJjM2YiLCJ1c2VybmFtZSI6Im5hbmFraSIsImlhdCI6MTc1NzcxNzE2MSwiZXhwIjoxNzU3NzE3MTYyfQ.uYY1QtAzrcOsFDCv5z1pNE8iwTie-gfbLMX357O2ntZBHbWn-JPXB6XYUxpIEhd4_cyRdnIbRfvhjMqVjKdOWA; Max-Age=604800; Expires=Fri, 19 Sep 2025 22:46:01 GMT; Domain=localhost; Path=/; HttpOnly
+Cookie: access_token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2N2Q1ZmJiZC01YTE2LTQwMzAtOTYzZS1hMDY0OWFhOTJjM2YiLCJ1c2VybmFtZSI6Im5hbmFraSIsImlhdCI6MTc1Nzc1MTQ5NiwiZXhwIjoxNzU3NzYxNDk2fQ.S13dWLBMvHdPasVaPIkNmCb6gxLkON7TATm66Sc5dDcpm0Q7mNDNNmitR9sVbuP--Tg_zUN3B538KaUlE-nu0g; Max-Age=604800; Expires=Sat, 20 Sep 2025 08:18:16 GMT; Domain=localhost; Path=/; HttpOnly
 
 {
   "gameMode": "SIGN",
@@ -35,3 +35,9 @@ Content-Type: application/json
   "username": "nanaki",
   "password": "nanaki"
 }
+
+
+###
+GET http://localhost:8080/api/auth/is-authenticated
+Content-Type: application/json
+Cookie: access_token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2N2Q1ZmJiZC01YTE2LTQwMzAtOTYzZS1hMDY0OWFhOTJjM2YiLCJ1c2VybmFtZSI6Im5hbmFraSIsImlhdCI6MTc1Nzc1NzU2MywiZXhwIjoxNzU3NzU3NTczfQ.OPkXiJJTlrpirK94Gp-Q10ues4h70ZooA0yeex66nm7WSGdOVdLElAoll-Bmk7oWLnc-Q95WWO3UrFhV_NJ-9w; Max-Age=604800; Expires=Sat, 20 Sep 2025 09:59:23 GMT; Domain=localhost; Path=/; HttpOnly

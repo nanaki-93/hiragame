@@ -1,6 +1,13 @@
 package com.github.nanaki_93.components.sections
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import com.github.nanaki_93.HiraganaCharStyle
+import com.github.nanaki_93.InputStyle
+import com.github.nanaki_93.components.widgets.SubmitButton
+import com.github.nanaki_93.models.GameState
+import com.github.nanaki_93.models.QuestionUi
+import com.github.nanaki_93.util.launchSafe
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
@@ -9,14 +16,9 @@ import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.forms.TextInput
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
-import com.github.nanaki_93.HiraganaCharStyle
-import com.github.nanaki_93.InputStyle
-import com.github.nanaki_93.components.widgets.SubmitButton
-import com.github.nanaki_93.models.GameState
-import com.github.nanaki_93.models.QuestionUi
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.web.css.*
-import org.jetbrains.compose.web.dom.RadioGroup
+import org.jetbrains.compose.web.css.cssRem
+import org.jetbrains.compose.web.css.px
+import org.jetbrains.compose.web.css.rgba
 
 @Composable
 fun QuestionArea(
@@ -54,14 +56,14 @@ fun QuestionArea(
                 .onKeyDown { keyboardEvent ->
                     if (keyboardEvent.key == "Enter" && !isAnswering) {
                         keyboardEvent.preventDefault()
-                        coroutineScope.launch { onSubmit() }
+                        coroutineScope.launchSafe{ onSubmit() }
                     }
                 },
             placeholder = "Type romanization here..."
         )
 
         SubmitButton(
-            onClick = { coroutineScope.launch { onSubmit() } },
+            onClick = { coroutineScope.launchSafe { onSubmit() } },
             isAnswering = isAnswering,
             userInput = userInput
         )

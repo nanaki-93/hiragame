@@ -1,12 +1,9 @@
 package com.github.nanaki_93.service
 
-import com.github.nanaki_93.models.ACCESS_TOKEN
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.Jws
-import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Value
@@ -31,11 +28,9 @@ class JWTService {
     }
 
 
-    fun generateAccessToken(userId: String, name: String): String =
-        generateToken(userId, name, jwtExpiration)
+    fun generateAccessToken(userId: String, name: String): String = generateToken(userId, name, jwtExpiration)
 
-    fun generateRefreshToken(userId: String, name: String): String =
-        generateToken(userId, name, refreshExpiration)
+    fun generateRefreshToken(userId: String, name: String): String = generateToken(userId, name, refreshExpiration)
 
     private fun generateToken(userId: String, username: String, expiration: Long): String =
         Jwts.builder()
@@ -46,18 +41,11 @@ class JWTService {
             .signWith(key)
             .compact()
 
-    fun extractUserId(token: String): String =
-        extractClaim(token) { claims -> claims.subject }
-
-    fun extractUsername(token: String): String =
-        extractClaim(token) { claims -> claims.get("username", String::class.java) }
-
-    fun extractExpiration(token: String): Date =
-        extractClaim(token) { claims -> claims.expiration }
+    fun extractUserId(token: String): String = extractClaim(token) { claims -> claims.subject }
+    fun extractUsername(token: String): String = extractClaim(token) { claims -> claims.get("username", String::class.java) }
+    fun extractExpiration(token: String): Date = extractClaim(token) { claims -> claims.expiration }
 
     fun <T> extractClaim(token: String, claimsResolver: (Claims) -> T): T = claimsResolver(extractAllClaims(token))
-
-
     private fun extractAllClaims(token: String): Claims = Jwts.parser()
         .verifyWith(key)
         .build()
@@ -65,10 +53,20 @@ class JWTService {
         .payload
 
     private fun extractJwt(token: String): Jws<Claims> = Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
-    fun isTokenExpired(token: String): Boolean = extractExpiration(token).before(Date())
 
-    //TODO manage exipration exception for manage refresh token in the frontend
-    fun validateToken(token: String, username: String): Boolean = (extractUsername(token) == username && !isTokenExpired(token))
+    fun isTokenExpired(token: String): Boolean {
+        val jwt = extractJwt(token)
+        if (extractExpiration(token).before(Date())) {
+            throw ExpiredJwtException(jwt.header, jwt.payload, "Token expired")
+        }
+        return false
+    }
+
+    fun validateToken(token: String, username: String): Boolean = try {
+        (extractUsername(token) == username && !isTokenExpired(token))
+    } catch (_: Exception) {
+        false
+    }
 
     fun validateToken(token: String): Boolean = try {
         !isTokenExpired(token)
@@ -77,9 +75,9 @@ class JWTService {
     }
 
 
-    fun extractJwtFromRequest(request: HttpServletRequest): String? {
+    fun extractTokenFromRequest(request: HttpServletRequest, type: String): String? {
         // First, try to get JWT from cookie
-        request.cookies?.find { it.name == ACCESS_TOKEN }?.value?.let { return it }
+        request.cookies?.find { it.name == type }?.value?.let { return it }
 
         // Fallback to Authorization header (for backward compatibility or API clients)
         val authHeader = request.getHeader("Authorization")
