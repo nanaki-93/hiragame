@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JavaScriptLibraryMappings">
+    <excludedPredefinedLibrary name="hiragame/build/js/node_modules" />
+    <excludedPredefinedLibrary name="hiragame/build/js/packages/hiragame-shared-test/node_modules" />
+    <excludedPredefinedLibrary name="hiragame/build/js/packages/hiragame-test/node_modules" />
+    <excludedPredefinedLibrary name="hiragame/build/js/packages/hiragame/node_modules" />
+  </component>
+</project>

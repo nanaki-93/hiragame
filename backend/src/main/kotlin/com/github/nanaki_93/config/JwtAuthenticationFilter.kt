@@ -1,5 +1,6 @@
 package com.github.nanaki_93.config
 
+import com.github.nanaki_93.models.ACCESS_TOKEN
 import com.github.nanaki_93.service.JWTService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -10,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import kotlin.io.writer
+
 
 @Component
 class JwtAuthenticationFilter(
@@ -25,7 +26,12 @@ class JwtAuthenticationFilter(
         filterChain: FilterChain
     ) {
         try {
-            val jwt = jwtService.extractJwtFromRequest(request)
+            if (request.servletPath.startsWith("/api/auth")) {
+                filterChain.doFilter(request, response)
+                return
+            }
+
+            val jwt = jwtService.extractTokenFromRequest(request, ACCESS_TOKEN)
 
             if (jwt == null) {
                 filterChain.doFilter(request, response)
@@ -35,17 +41,12 @@ class JwtAuthenticationFilter(
             if (SecurityContextHolder.getContext().authentication == null) {
                 authenticateUser(request, jwt)
             }
-            filterChain.doFilter(request, response)
-        } catch (e: io.jsonwebtoken.ExpiredJwtException) {
-            response.status = HttpServletResponse.SC_UNAUTHORIZED // 401
-        } catch (e: io.jsonwebtoken.JwtException) {
-            response.status = HttpServletResponse.SC_UNAUTHORIZED // 401
-        } catch (e: IllegalArgumentException) {
-            response.status = HttpServletResponse.SC_UNAUTHORIZED // 401
+        } catch (e: Exception) {
+            logger.warn("JWT authentication failed", e)
         }
+
         filterChain.doFilter(request, response)
     }
-
 
 
     private fun authenticateUser(request: HttpServletRequest, jwt: String) {

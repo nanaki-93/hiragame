@@ -5,6 +5,7 @@ import com.github.nanaki_93.models.LoginRegisterRequest
 import com.github.nanaki_93.repository.JpUser
 import com.github.nanaki_93.repository.UserRepository
 import com.github.nanaki_93.util.toUUID
+import io.jsonwebtoken.MalformedJwtException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -52,8 +53,9 @@ class AuthService(
 
     fun refreshToken(refreshToken: String): AuthResponse {
         return try {
+            println("refreshToken called")
             if (!jwtService.validateToken(refreshToken)) {
-                throw Exception("Invalid refresh token")
+                throw MalformedJwtException("Invalid refresh token")
             }
 
             val userId = jwtService.extractUserId(refreshToken)

@@ -4,7 +4,10 @@ import androidx.compose.runtime.*
 import com.github.nanaki_93.CardStyle
 import com.github.nanaki_93.GameContainerStyle
 import com.github.nanaki_93.service.AuthService
-import com.varabyte.kobweb.compose.css.*
+import com.github.nanaki_93.util.launchSafe
+import com.varabyte.kobweb.compose.css.FontWeight
+import com.varabyte.kobweb.compose.css.TextAlign
+import com.varabyte.kobweb.compose.css.TextDecorationLine
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
@@ -18,8 +21,11 @@ import com.varabyte.kobweb.silk.components.forms.Button
 import com.varabyte.kobweb.silk.components.forms.TextInput
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.web.css.*
+import io.ktor.http.*
+import org.jetbrains.compose.web.css.LineStyle
+import org.jetbrains.compose.web.css.cssRem
+import org.jetbrains.compose.web.css.px
+import org.jetbrains.compose.web.css.rgba
 
 @Page("/login")
 @Composable
@@ -28,9 +34,14 @@ fun LoginPage() {
 
     // Check if already logged in
     LaunchedEffect(Unit) {
-        if (authService.isAuthenticated()) {
-            kotlinx.browser.window.location.href = "/hiragame"
+        try {
+            if (authService.isAuthenticated()) {
+                kotlinx.browser.window.location.href = "/hiragame"
+            }
+        }catch (e: Exception) {
+            println("Failed to check authentication: ${e.message}")
         }
+
     }
 
     var name by remember { mutableStateOf("") }
@@ -51,7 +62,10 @@ fun LoginPage() {
         errorMessage = ""
 
         try {
-            authService.login(name, password)
+            if( authService.login(name, password) != HttpStatusCode.OK) {
+                errorMessage = "Invalid credentials"
+                return
+            }
             kotlinx.browser.window.location.href = "/hiragame"
         } catch (e: Exception) {
             errorMessage = "Network error: ${e.message}"
@@ -145,7 +159,7 @@ fun LoginPage() {
 
                 Button(
                     onClick = {
-                        coroutineScope.launch {
+                        coroutineScope.launchSafe {
                             if (isLogin) handleLogin() else handleRegister()
                         }
                     },
@@ -175,7 +189,6 @@ fun LoginPage() {
                     Button(
                         onClick = {
                             isLogin = !isLogin
-                            errorMessage = ""
                         },
                         modifier = Modifier
                             .backgroundColor(Colors.Transparent)

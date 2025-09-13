@@ -9,6 +9,7 @@ import com.github.nanaki_93.components.widgets.auth.LogoutButton
 import com.github.nanaki_93.models.*
 import com.github.nanaki_93.service.AuthService
 import com.github.nanaki_93.service.GameService
+import com.github.nanaki_93.util.launchSafe
 import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
@@ -21,13 +22,13 @@ import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.web.css.*
 
 
 @Page
 @Composable
 fun HomePage() {
+
 
     var userId by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -142,9 +143,9 @@ fun HomePage() {
                 horizontalArrangement = Arrangement.Center
             ) {
                 LogoutButton {
-                    coroutineScope.launch {
+                    coroutineScope.launchSafe {
                         authService.logout()
-                        kotlinx.browser.window.location.href = "hiragame/login"
+                        kotlinx.browser.window.location.href = "/hiragame/login"
                     }
                 }
                 // Title
@@ -170,7 +171,7 @@ fun HomePage() {
                 state = gameState,
                 currentMode = selectedGameMode,
                 onModeSelected = { mode ->
-                    coroutineScope.launch { selectGameMode(mode) }
+                    coroutineScope.launchSafe { selectGameMode(mode) }
                 }
             )
 
@@ -179,7 +180,7 @@ fun HomePage() {
                 availableLevels = availableLevels,
                 currentLevel = selectedLevel,
                 onLevelSelected = { level ->
-                    coroutineScope.launch { selectLevel(level) }
+                    coroutineScope.launchSafe { selectLevel(level) }
                 }
             )
 
@@ -190,7 +191,7 @@ fun HomePage() {
                 userInput = userInput,
                 isAnswering = isAnswering,
                 onInputChange = { userInput = it },
-                onSubmit = { coroutineScope.launch { submitAnswer() } },
+                onSubmit = { coroutineScope.launchSafe { submitAnswer() } },
             )
 
             Feedback(state = gameState, gameStateUi = gameStateUi)
