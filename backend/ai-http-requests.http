@@ -1,21 +1,30 @@
-### GET request to example server
-GET http://localhost:8080/api/ai/words?
-    topic=food&
-    level=5&
-    nQuestions=20
+
+
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "nanaki",
+  "password": "nanaki"
+}
 
 ###
+POST http://localhost:8080/api/next-question
+Content-Type: application/json
+Cookie: access_token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2N2Q1ZmJiZC01YTE2LTQwMzAtOTYzZS1hMDY0OWFhOTJjM2YiLCJ1c2VybmFtZSI6Im5hbmFraSIsImlhdCI6MTc1NzcxNzE2MSwiZXhwIjoxNzU3NzE3MTYyfQ.uYY1QtAzrcOsFDCv5z1pNE8iwTie-gfbLMX357O2ntZBHbWn-JPXB6XYUxpIEhd4_cyRdnIbRfvhjMqVjKdOWA; Max-Age=604800; Expires=Fri, 19 Sep 2025 22:46:01 GMT; Domain=localhost; Path=/; HttpOnly
 
-GET http://localhost:8080/api/ai/sentences?
-    topic=sport&
-    level=4&
-    nQuestions=5
+{
+  "gameMode": "SIGN",
+  "level": "N5",
+  "userId": "67d5fbbd-5a16-4030-963e-a0649aa92c3f"
+}
+
 
 ###
-POST http://localhost:8080/api/ai/batch-generate?
-    totalQuestions={{$random.integer(100)}}&
-    batchSize={{$random.integer(100)}}&
-    delayMs={{$random.integer(100)}}
+POST http://localhost:8080/api/get-game-state
+Content-Type: application/json
+Cookie: access_token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2N2Q1ZmJiZC01YTE2LTQwMzAtOTYzZS1hMDY0OWFhOTJjM2YiLCJ1c2VybmFtZSI6Im5hbmFraSIsImlhdCI6MTc1NzcxNzE2MSwiZXhwIjoxNzU3NzE3MTYyfQ.uYY1QtAzrcOsFDCv5z1pNE8iwTie-gfbLMX357O2ntZBHbWn-JPXB6XYUxpIEhd4_cyRdnIbRfvhjMqVjKdOWA; Max-Age=604800; Expires=Fri, 19 Sep 2025 22:46:01 GMT; Domain=localhost; Path=/; HttpOnly
+
 
 ###
 
@@ -26,4 +35,3 @@ Content-Type: application/json
   "username": "nanaki",
   "password": "nanaki"
 }
-

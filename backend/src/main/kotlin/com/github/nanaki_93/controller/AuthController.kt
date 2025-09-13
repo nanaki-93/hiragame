@@ -14,11 +14,15 @@ import jakarta.servlet.http.HttpServletResponse
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatusCode
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.net.http.HttpResponse
 
 
 @RestController
@@ -66,29 +70,28 @@ class AuthController(private val authService: AuthService, private val jwtServic
     }
 
     @GetMapping("/me")
-    fun me(httpReq: HttpServletRequest): UserData {
+    fun me(httpReq: HttpServletRequest): ResponseEntity<UserData> {
 
-        jwtService.extractJwtFromRequest(httpReq).let {
+        jwtService.extractJwtFromRequest(httpReq)?.let {
 
-            if (it == null) {
-                logger.info("Invalid JWT")
-                throw Exception("Invalid JWT")
-            }
             val username = jwtService.extractUsername(it)
-            if (jwtService.validateToken(it, username)) {
-                val user = authService.getUserByUsername(username) ?: throw Exception("User not found")
+            if (jwtService.validateToken(it)) {
+                val user = authService.getUserByUsername(username) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
                 logger.info("User data retrieved: $user")
-                return UserData(user.id.toString(), user.username)
+                return ResponseEntity.ok(UserData(user.id.toString(), user.username))
             }
-
-            logger.info("Invalid JWT")
-            throw Exception("Invalid JWT")
         }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
     }
 
+    //todo fix this method
     @GetMapping("/is-authenticated")
-    fun isAuthenticated(httpReq: HttpServletRequest): Boolean =
-        jwtService.extractJwtFromRequest(httpReq).let { it != null && jwtService.validateToken(it) }
+    fun isAuthenticated(httpReq: HttpServletRequest): ResponseEntity<Boolean> =
+        runCatching {
+            jwtService.extractJwtFromRequest(httpReq)
+                .let { it != null && jwtService.validateToken(it) }.let { ResponseEntity.ok(it) }
+        }.getOrDefault(ResponseEntity.ok(false))
+
 
     private fun addCookie(httpRes: HttpServletResponse, jwt: String = "", cookieName: String) {
         httpRes.addCookie(Cookie(cookieName, jwt).apply {

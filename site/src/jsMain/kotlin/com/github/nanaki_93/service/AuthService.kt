@@ -4,12 +4,15 @@ import com.github.nanaki_93.models.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.js.Js
+import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import kotlin.text.get
 
 
 class AuthService {
@@ -53,15 +56,29 @@ class AuthService {
         val response = client.get("${baseUrl}/refresh-token")
         return response.body<String>()
     }
+
     suspend fun isAuthenticated(): Boolean {
-        // Make a call to a protected endpoint to check if user is authenticated
-        val response = client.get("${baseUrl}/is-authenticated")
-        return response.body<Boolean>()
+        return authenticatedRequest(
+            refreshToken = { refreshToken() }
+        ) {
+            // Make a call to a protected endpoint to check if user is authenticated
+            val response = client.get("${baseUrl}/is-authenticated")
+            if (response.status != HttpStatusCode.OK) {
+                false
+            } else {
+                response.body<Boolean>()
+            }
+        }
+
     }
 
     suspend fun getCurrentUser(): UserData {
-        val response = client.get("${baseUrl}/me")
-        return response.body<UserData>()
+        return authenticatedRequest(
+            refreshToken = { refreshToken() }
+        ) {
+            val response = client.get("$baseUrl/me")
+            response.body<UserData>()
+        }
     }
 
     suspend fun logout() {

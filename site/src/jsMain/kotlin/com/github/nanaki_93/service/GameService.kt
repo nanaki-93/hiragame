@@ -7,6 +7,7 @@ import io.ktor.client.engine.js.Js
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.AcceptAllCookiesStorage
 import io.ktor.client.plugins.cookies.HttpCookies
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
@@ -15,7 +16,7 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-class GameService {
+class GameService(private val authService: AuthService) {
     private val client = HttpClient(Js) {
 
         install(HttpCookies) {
@@ -38,10 +39,18 @@ class GameService {
     suspend fun selectGameMode(req: LevelListRequest): List<Level> = post("/select-game-mode", req).body()
     suspend fun getGameState(userId: String): GameStateUi = post("/get-game-state", userId).body()
 
-    private suspend fun post(uri: String, reqBody: Any): HttpResponse = client.post("${baseUrl}${uri}") {
-        contentType(ContentType.Application.Json)
-        setBody(reqBody)
+    private suspend fun post(uri: String, reqBody: Any): HttpResponse {
+        return authenticatedRequest(
+            refreshToken = { authService.refreshToken() }
+        ) {
+            client.post("${baseUrl}${uri}") {
+                contentType(ContentType.Application.Json)
+                setBody(reqBody)
+            }
+        }
     }
+
+
 
 
 
