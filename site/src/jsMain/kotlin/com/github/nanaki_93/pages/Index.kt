@@ -1,28 +1,26 @@
 package com.github.nanaki_93.pages
 
 import androidx.compose.runtime.*
-import com.github.nanaki_93.CardStyle
-import com.github.nanaki_93.GameContainerStyle
 import com.github.nanaki_93.components.sections.QuestionArea
+import com.github.nanaki_93.components.styles.CardStyle
+import com.github.nanaki_93.components.styles.GameContainerStyle
+import com.github.nanaki_93.components.styles.HomePageTitleStyle
 import com.github.nanaki_93.components.widgets.*
 import com.github.nanaki_93.components.widgets.auth.LogoutButton
 import com.github.nanaki_93.models.*
 import com.github.nanaki_93.service.AuthService
 import com.github.nanaki_93.service.GameService
+import com.github.nanaki_93.service.SessionManager
 import com.github.nanaki_93.util.launchSafe
-import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
-import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
-import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.web.css.*
+import org.jetbrains.compose.web.css.cssRem
 
 
 @Page
@@ -47,9 +45,15 @@ fun HomePage() {
     var isAnswering by remember { mutableStateOf(false) }
     var selectedLevel by remember { mutableStateOf(null as Level?) }
     var selectedGameMode by remember { mutableStateOf(null as GameMode?) }
+    var showAlert by remember { mutableStateOf(false) }
+
 
     val coroutineScope = rememberCoroutineScope()
 
+
+    SessionManager.onSessionExpired = {
+        showAlert = true
+    }
     suspend fun submitAnswer() {
         if (isAnswering) return
 
@@ -131,17 +135,12 @@ fun HomePage() {
 
     Box(GameContainerStyle.toModifier()) {
         Column(
-            CardStyle.toModifier(),
+            modifier = CardStyle.toModifier(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(1.cssRem)
         ) {
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .gap(0.5.cssRem),
-                horizontalArrangement = Arrangement.Center
-            ) {
+            CenterRow {
                 LogoutButton {
                     coroutineScope.launchSafe {
                         authService.logout()
@@ -151,12 +150,10 @@ fun HomePage() {
                 // Title
                 SpanText(
                     "ひらがな Master - $username",
-                    Modifier
-                        .fontSize(2.5.cssRem)
-                        .fontWeight(FontWeight.Bold)
-                        .textShadow(2.px, 2.px, 4.px, rgba(0, 0, 0, 0.3))
+                    HomePageTitleStyle.toModifier()
                 )
             }
+
 
             Spinner(isVisible = gameState == GameState.LOADING)
 
@@ -196,6 +193,18 @@ fun HomePage() {
 
             Feedback(state = gameState, gameStateUi = gameStateUi)
 
+        }
+        if (showAlert) {
+            SessionExpiredAlert(
+                message = "Your session has expired.",
+                onClose = {
+                    coroutineScope.launchSafe {
+                        authService.logout()
+                        kotlinx.browser.window.location.href = "/hiragame/login"
+                        showAlert = false
+                    }
+                }
+            )
         }
     }
 }

@@ -1,40 +1,29 @@
 package com.github.nanaki_93.components.widgets
 
 import androidx.compose.runtime.*
-import com.varabyte.kobweb.compose.foundation.layout.Arrangement
-import com.varabyte.kobweb.compose.foundation.layout.Column
-import com.varabyte.kobweb.compose.foundation.layout.Row
-import com.varabyte.kobweb.compose.ui.Alignment
-import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.*
-import com.varabyte.kobweb.silk.components.text.SpanText
-import com.varabyte.kobweb.silk.style.toModifier
-import com.github.nanaki_93.StatItemStyle
+import com.github.nanaki_93.components.styles.*
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.GameState
-
 import com.github.nanaki_93.models.GameStatisticsUi
 import com.github.nanaki_93.models.Level
-import com.varabyte.kobweb.compose.css.FontWeight
-
-import org.jetbrains.compose.web.css.*
+import com.varabyte.kobweb.compose.foundation.layout.Column
+import com.varabyte.kobweb.compose.ui.Alignment
+import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.modifiers.flex
+import com.varabyte.kobweb.silk.components.text.SpanText
+import com.varabyte.kobweb.silk.style.toModifier
 
 @Composable
 fun GameStats(state: GameState, gameMode: GameMode?, level: Level?, statsUi: GameStatisticsUi) {
     if (state == GameState.LOADING) return
-    Row(
-        Modifier.fillMaxWidth().flexWrap(FlexWrap.Wrap),
-        horizontalArrangement = Arrangement.spacedBy(0.5.cssRem)
-    ) {
-        StatItem("GameMode", gameMode?.displayName?:"N/A")
-        StatItem("Level", level?.displayName?:"N/A")
+
+    SpacedRow {
+        StatItem("GameMode", gameMode?.displayName ?: "N/A")
+        StatItem("Level", level?.displayName ?: "N/A")
         StatItem("Score", "${statsUi.score}")
     }
 
-    Row(
-        Modifier.fillMaxWidth().flexWrap(FlexWrap.Wrap),
-        horizontalArrangement = Arrangement.spacedBy(0.5.cssRem)
-    ) {
+    SpacedRow {
         StatItem("Correct Answers", "${statsUi.correctAnswers}")
         StatItem("Total Attempts", "${statsUi.totalAnswered}")
         StatItem("Streak", "${statsUi.streak}")
@@ -47,7 +36,7 @@ private fun StatItem(label: String, value: String) {
         Modifier.flex(1).then(StatItemStyle.toModifier()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SpanText(label, Modifier.fontSize(0.8.cssRem).opacity(0.8))
-        SpanText(value, Modifier.fontSize(1.2.cssRem).fontWeight(FontWeight.Bold))
+        SpanText(label, StatLabelStyle.toModifier())
+        SpanText(value, StatValueStyle.toModifier())
     }
 }

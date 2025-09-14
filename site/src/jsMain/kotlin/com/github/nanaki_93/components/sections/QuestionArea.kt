@@ -2,8 +2,7 @@ package com.github.nanaki_93.components.sections
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import com.github.nanaki_93.HiraganaCharStyle
-import com.github.nanaki_93.InputStyle
+import com.github.nanaki_93.components.styles.*
 import com.github.nanaki_93.components.widgets.SubmitButton
 import com.github.nanaki_93.models.GameState
 import com.github.nanaki_93.models.QuestionUi
@@ -11,14 +10,10 @@ import com.github.nanaki_93.util.launchSafe
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
-import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.*
+import com.varabyte.kobweb.compose.ui.modifiers.onKeyDown
 import com.varabyte.kobweb.silk.components.forms.TextInput
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
-import org.jetbrains.compose.web.css.cssRem
-import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.css.rgba
 
 @Composable
 fun QuestionArea(
@@ -31,22 +26,17 @@ fun QuestionArea(
 ) {
     if (state != GameState.PLAYING && state != GameState.SHOWING_FEEDBACK) return
     val coroutineScope = rememberCoroutineScope()
+
     Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(2.cssRem)
-            .background(rgba(255, 255, 255, 0.1))
-            .borderRadius(15.px)
-            .minHeight(200.px),
+        QuestionAreaContainerStyle.toModifier(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
         SpanText(currentQuestion.japanese, HiraganaCharStyle.toModifier())
 
         SpanText(
             "What is the romanization?",
-            Modifier.fontSize(1.2.cssRem).opacity(0.9).margin(1.cssRem, 0.px)
+            QuestionPromptStyle.toModifier()
         )
 
         TextInput(
@@ -56,7 +46,7 @@ fun QuestionArea(
                 .onKeyDown { keyboardEvent ->
                     if (keyboardEvent.key == "Enter" && !isAnswering) {
                         keyboardEvent.preventDefault()
-                        coroutineScope.launchSafe{ onSubmit() }
+                        coroutineScope.launchSafe { onSubmit() }
                     }
                 },
             placeholder = "Type romanization here..."
@@ -67,6 +57,5 @@ fun QuestionArea(
             isAnswering = isAnswering,
             userInput = userInput
         )
-
     }
 }
