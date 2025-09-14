@@ -1,7 +1,32 @@
 package com.github.nanaki_93.service
 
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.js.Js
 import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.cookies.AcceptAllCookiesStorage
+import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
+
+
+object HttpClientProvider {
+    val client: HttpClient by lazy {
+        HttpClient(Js) {
+            install(HttpCookies) {
+                storage = AcceptAllCookiesStorage()
+            }
+
+            install(ContentNegotiation) {
+                json(Json { ignoreUnknownKeys = true })
+            }
+            engine {
+                configureRequest { credentials = "include" }
+            }
+        }
+    }
+}
 
 class SessionExpiredException(message: String) : Exception(message)
 
@@ -38,3 +63,12 @@ suspend inline fun <T> handleSessionExpiration(crossinline block: suspend () -> 
         null
     }
 }
+
+
+object SessionManager {
+    var onSessionExpired: (() -> Unit)? = null
+    fun handleSessionExpired() {
+        onSessionExpired?.invoke()
+    }
+}
+

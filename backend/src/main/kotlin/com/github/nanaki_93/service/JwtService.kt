@@ -17,11 +17,11 @@ class JWTService {
     @Value($$"${jwt.secret:your-super-secret-key-here-make-it-long-and-random-at-least-256-bits}")
     private lateinit var secretKey: String
 
-    @Value($$"${jwt.expiration:86400000}")
-    private var jwtExpiration: Long = 86400000 // 24 hours
+    @Value($$"${jwt.expiration:1440}")
+    private var jwtExpiration: Long = 1440 // 24 hours
 
-    @Value($$"${jwt.refresh.expiration:604800000}")
-    private var refreshExpiration: Long = 604800000 // 7 days
+    @Value($$"${jwt.refresh.expiration:7200}")
+    private var refreshExpiration: Long = 7200 // 5 days
 
     private val key: SecretKey by lazy {
         Keys.hmacShaKeyFor(secretKey.toByteArray())
@@ -32,12 +32,13 @@ class JWTService {
 
     fun generateRefreshToken(userId: String, name: String): String = generateToken(userId, name, refreshExpiration)
 
+//    expiration is in minutes so from minute to millisecond is 60 * 1000
     private fun generateToken(userId: String, username: String, expiration: Long): String =
         Jwts.builder()
             .subject(userId)
             .claim("username", username)
             .issuedAt(Date())
-            .expiration(Date(Date().time + expiration))
+            .expiration(Date(Date().time + expiration*1000*60))
             .signWith(key)
             .compact()
 
