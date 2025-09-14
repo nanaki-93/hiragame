@@ -16,19 +16,7 @@ import kotlinx.serialization.json.Json
 
 
 class AuthService {
-    private val client = HttpClient(Js) {
-
-        install(HttpCookies) {
-            storage = AcceptAllCookiesStorage()
-        }
-        install(ContentNegotiation) {
-            json(Json { ignoreUnknownKeys = true })
-        }
-        engine {
-            configureRequest { credentials = "include" }
-        }
-
-    }
+    private val client = HttpClientProvider.client
 
     private val baseUrl = "http://localhost:8080/api/auth"
 

@@ -45,7 +45,6 @@ kotlin {
                 implementation(libs.kobweb.silk)
                 implementation(libs.kobwebx.markdown)
                 implementation(libs.silk.icons.fa)
-
                 // Shared models/logic
                 implementation(project(":shared"))
                 // Ktor client for JS
