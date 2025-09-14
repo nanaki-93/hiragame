@@ -19,16 +19,18 @@ class AuthService(
 
     fun register(request: LoginRegisterRequest): AuthResponse {
         return try {
-            // Check if user already exists
+            // todo use the proper exception
             if (userRepository.existsByUsername(request.username)) {
                 throw Exception("User already exists with this email")
             }
 
             // Create new user
-            val hashedPassword = passwordEncoder.encode(request.password)
-            val user = JpUser(username = request.username, password = hashedPassword)
 
-            val savedUser = userRepository.save(user)
+            val savedUser = userRepository.save(
+                JpUser(
+                    username = request.username,
+                    password = passwordEncoder.encode(request.password))
+            )
 
             gameService.initGame(savedUser.id)
             toAuthResponse(savedUser)
@@ -40,6 +42,7 @@ class AuthService(
     fun login(request: LoginRegisterRequest): AuthResponse {
         return try {
 
+            //todo use the proper exception
             val user = userRepository.findByUsername(request.username).orElse(null) ?: throw Exception("Invalid credentials")
             if (!passwordEncoder.matches(request.password, user.password)) {
                 throw Exception("Invalid credentials")
@@ -53,7 +56,6 @@ class AuthService(
 
     fun refreshToken(refreshToken: String): AuthResponse {
         return try {
-            println("refreshToken called")
             if (!jwtService.validateToken(refreshToken)) {
                 throw MalformedJwtException("Invalid refresh token")
             }
@@ -77,7 +79,6 @@ class AuthService(
             refreshToken = refreshToken,
             userId = user.id.toString(),
             username = user.username
-
         )
     }
 

@@ -4,6 +4,7 @@ package com.github.nanaki_93.service
 object SessionManager {
     var onSessionExpired: (() -> Unit)? = null
 
+    //todo fix the popup
     fun handleSessionExpired() {
         // Show popup
         kotlinx.browser.window.alert("Your session has expired. You will be redirected to the login page.")

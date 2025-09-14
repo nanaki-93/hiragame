@@ -13,22 +13,12 @@ import io.ktor.http.*
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
+import org.w3c.workers.Client
+
 
 class GameService(private val authService: AuthService) {
-    private val client = HttpClient(Js) {
 
-        install(HttpCookies) {
-            storage = AcceptAllCookiesStorage()
-        }
-
-        install(ContentNegotiation) {
-            json(Json { ignoreUnknownKeys = true })
-        }
-        engine {
-            configureRequest { credentials = "include" }
-        }
-
-    }
+    private val client = HttpClientProvider.client
 
     private val baseUrl: String = "http://localhost:8080/api" // TODO: externalize
 
@@ -43,13 +33,14 @@ class GameService(private val authService: AuthService) {
                 setBody(user)
             }
             println("processAnswer: ${response.status}")
-            if (response.status == Unauthorized){
-                throw ClientRequestException(response ,"isAuthenticated: ${response.status}")
+            if (response.status == Unauthorized) {
+                throw ClientRequestException(response, "isAuthenticated: ${response.status}")
             }
 
             response.body()
         }
     }
+
     suspend fun getNextQuestion(selectRequest: SelectRequest): QuestionUi {
 
         return authenticatedRequest(
@@ -61,8 +52,8 @@ class GameService(private val authService: AuthService) {
                 setBody(selectRequest)
             }
             println("getNextQuestion: ${response.status}")
-            if (response.status == Unauthorized){
-                throw ClientRequestException(response ,"isAuthenticated: ${response.status}")
+            if (response.status == Unauthorized) {
+                throw ClientRequestException(response, "isAuthenticated: ${response.status}")
             }
 
             response.body()
@@ -70,7 +61,7 @@ class GameService(private val authService: AuthService) {
     }
 
 
-    suspend fun selectGameMode(req: LevelListRequest): List<Level>  {
+    suspend fun selectGameMode(req: LevelListRequest): List<Level> {
 
         return authenticatedRequest(
             name = "selectGameMode",
@@ -81,13 +72,14 @@ class GameService(private val authService: AuthService) {
                 setBody(req)
             }
             println("selectGameMode: ${response.status}")
-            if (response.status == Unauthorized){
-                throw ClientRequestException(response ,"isAuthenticated: ${response.status}")
+            if (response.status == Unauthorized) {
+                throw ClientRequestException(response, "isAuthenticated: ${response.status}")
             }
 
             response.body()
         }
     }
+
     suspend fun getGameState(userId: String): GameStateUi {
 
         return authenticatedRequest(
@@ -99,8 +91,8 @@ class GameService(private val authService: AuthService) {
                 setBody(userId)
             }
             println("getGameState: ${response.status}")
-            if (response.status == Unauthorized){
-                throw ClientRequestException(response ,"isAuthenticated: ${response.status}")
+            if (response.status == Unauthorized) {
+                throw ClientRequestException(response, "isAuthenticated: ${response.status}")
             }
             response.body()
         }
@@ -117,9 +109,6 @@ class GameService(private val authService: AuthService) {
             }
         }
     }
-
-
-
 
 
 }

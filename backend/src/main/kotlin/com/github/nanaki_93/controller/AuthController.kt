@@ -31,36 +31,31 @@ class AuthController(private val authService: AuthService, private val jwtServic
 
     companion object {
         private val logger: Logger = LoggerFactory.getLogger(AuthController::class.java)
-
     }
 
     @PostMapping("/login")
-    fun login(@RequestBody loginRegisterRequest: LoginRegisterRequest, httpRes: HttpServletResponse): ResponseEntity<String?> =
-        authService.login(loginRegisterRequest).also {
-            addTokensCookies(httpRes, it)
-        }.let {
-            ResponseEntity.ok("Login successful")
-        }
-
+    fun login(
+        @RequestBody loginRegisterRequest: LoginRegisterRequest,
+        httpRes: HttpServletResponse
+    ): ResponseEntity<String?> =
+        authService.login(loginRegisterRequest)
+            .handleAuthResponse(httpRes, "Login Successsful")
 
     @PostMapping("/register")
-    fun register(@RequestBody registerRequest: LoginRegisterRequest, httpRes: HttpServletResponse): ResponseEntity<String?> =
-        authService.register(registerRequest).also {
-            addTokensCookies(httpRes, it)
-        }.let {
-            ResponseEntity.ok("User registered successfully")
-        }
+    fun register(
+        @RequestBody registerRequest: LoginRegisterRequest,
+        httpRes: HttpServletResponse
+    ): ResponseEntity<String?> =
+        authService.register(registerRequest)
+            .handleAuthResponse(httpRes, "User registered successfully")
 
 
     @GetMapping("/refresh-token")
-    fun refreshToken(httpReq: HttpServletRequest, httpRes: HttpServletResponse) :ResponseEntity<String?> =
+    fun refreshToken(httpReq: HttpServletRequest, httpRes: HttpServletResponse): ResponseEntity<String?> =
         authService.refreshToken(
             jwtService.extractTokenFromRequest(httpReq, REFRESH_TOKEN) ?: ""
-        ).also {
-            addTokensCookies(httpRes, it)
-        }.let {
-            ResponseEntity.ok("Token refreshed successfully")
-        }
+        )
+            .handleAuthResponse(httpRes, "Token refreshed successfully")
 
 
     @GetMapping("/logout")
@@ -76,7 +71,8 @@ class AuthController(private val authService: AuthService, private val jwtServic
 
             val username = jwtService.extractUsername(it)
             if (jwtService.validateToken(it)) {
-                val user = authService.getUserByUsername(username) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
+                val user = authService.getUserByUsername(username) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .build()
                 logger.info("User data retrieved: $user")
                 return ResponseEntity.ok(UserData(user.id.toString(), user.username))
             }
@@ -86,11 +82,10 @@ class AuthController(private val authService: AuthService, private val jwtServic
 
 
     @GetMapping("/is-authenticated")
-    fun isAuthenticated(httpReq: HttpServletRequest): ResponseEntity<Boolean> {
-        val token = jwtService.extractTokenFromRequest(httpReq, ACCESS_TOKEN)
-        val isValid = token != null && jwtService.validateToken(token)
-        return ResponseEntity.ok(isValid)
-    }
+    fun isAuthenticated(httpReq: HttpServletRequest): ResponseEntity<Boolean> =
+        jwtService.extractTokenFromRequest(httpReq, ACCESS_TOKEN).let {
+            it != null && jwtService.validateToken(it)
+        }.let { ResponseEntity.ok(it) }
 
 
     private fun addTokensCookies(httpRes: HttpServletResponse, authResponse: AuthResponse) {
@@ -106,6 +101,17 @@ class AuthController(private val authService: AuthService, private val jwtServic
             secure = false
             domain = "localhost"
         })
+    }
+
+    private fun AuthResponse.handleAuthResponse(
+        httpRes: HttpServletResponse,
+        message: String
+    ): ResponseEntity<String?> {
+        return this.also {
+            addTokensCookies(httpRes, it)
+        }.let {
+            ResponseEntity.ok(message)
+        }
     }
 
 }

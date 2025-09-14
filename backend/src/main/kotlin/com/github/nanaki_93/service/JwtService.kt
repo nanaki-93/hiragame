@@ -62,6 +62,7 @@ class JWTService {
         return false
     }
 
+    //todo check if it can be remover
     fun validateToken(token: String, username: String): Boolean = try {
         (extractUsername(token) == username && !isTokenExpired(token))
     } catch (_: Exception) {
