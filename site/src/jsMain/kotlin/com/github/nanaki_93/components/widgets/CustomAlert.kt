@@ -20,25 +20,25 @@ fun CustomAlert(
 ) {
     if (!isVisible) return
 
-    Box(AlertOverlayStyle.toModifier()) {
+    Box(CustomAlertStyles.Overlay.toModifier()) {
         CenterColumn(1.5.cssRem) {
-            AlertDialogStyle.toModifier()
+            CustomAlertStyles.Dialog.toModifier()
 
-            SpanText(title, AlertTitleStyle.toModifier())
-            SpanText(message, AlertMessageStyle.toModifier())
+            SpanText(title, CustomAlertStyles.Title.toModifier())
+            SpanText(message, CustomAlertStyles.Message.toModifier())
 
             if (onCancel != null) {
                 ButtonRow {
                     Button(
                         onClick = { onCancel() },
-                        modifier = AlertCancelButtonStyle.toModifier()
+                        modifier = CustomAlertStyles.CancelButton.toModifier()
                     ) {
                         SpanText(cancelText)
                     }
 
                     Button(
                         onClick = { onConfirm() },
-                        modifier = AlertConfirmButtonStyle.toModifier()
+                        modifier = CustomAlertStyles.ConfirmButton.toModifier()
                     ) {
                         SpanText(confirmText)
                     }
@@ -47,7 +47,7 @@ fun CustomAlert(
                 CenteredButtonRow {
                     Button(
                         onClick = { onConfirm() },
-                        modifier = AlertConfirmButtonStyle.toModifier()
+                        modifier = CustomAlertStyles.ConfirmButton.toModifier()
                     ) {
                         SpanText(confirmText)
                     }

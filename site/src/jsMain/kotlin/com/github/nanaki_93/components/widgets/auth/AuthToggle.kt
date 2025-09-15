@@ -1,9 +1,8 @@
 package com.github.nanaki_93.components.widgets.auth
 
 import androidx.compose.runtime.Composable
-import com.github.nanaki_93.components.styles.AuthToggleButtonStyle
-import com.github.nanaki_93.components.styles.AuthToggleContainerStyle
-import com.github.nanaki_93.components.styles.AuthToggleTextStyle
+import com.github.nanaki_93.components.styles.AuthStyles
+
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
@@ -17,17 +16,17 @@ fun AuthToggle(
     onToggle: () -> Unit
 ) {
     Row(
-        AuthToggleContainerStyle.toModifier(),
+        AuthStyles.ToggleContainer.toModifier(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         SpanText(
             if (isLogin) "Don't have an account? " else "Already have an account? ",
-            AuthToggleTextStyle.toModifier()
+            AuthStyles.ToggleText.toModifier()
         )
         Button(
             onClick = { onToggle() },
-            modifier = AuthToggleButtonStyle.toModifier()
+            modifier = AuthStyles.ToggleButton.toModifier()
         ) {
             SpanText(if (isLogin) "Register" else "Login")
         }

@@ -1,4 +1,3 @@
-
 package com.github.nanaki_93.components.widgets
 
 import androidx.compose.runtime.*
@@ -17,21 +16,21 @@ fun GameModeSelector(
 ) {
     if (state == GameState.LOADING) return SpanText(
         "Game mode selection will appear shortly...",
-        GameModeLoadingTextStyle.toModifier()
+        GameModeStyles.LoadingText.toModifier()
     )
     if (state != GameState.MODE_SELECTION) return
 
-    SpanText("Select a game mode to continue:", GameModeSelectorTitleStyle.toModifier())
+    SpanText("Select a game mode to continue:", GameModeStyles.SelectorTitle.toModifier())
     CenterRow {
         GameMode.entries.forEach { mode ->
             Button(
                 onClick = { onModeSelected(mode) },
-                modifier = GameModeButtonStyle.toModifier()
-                    .then(getGameModeButtonBackground(currentMode == mode, currentMode))
+                modifier = GameModeStyles.Button.toModifier()
+                    .then(GameModeStyles.getButtonBackground(currentMode == mode))
             ) {
                 SpanText(
                     mode.displayName,
-                    LevelButtonTextStyle.toModifier()
+                    CommonStyles.ButtonText.toModifier()
                 )
             }
         }

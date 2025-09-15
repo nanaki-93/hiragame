@@ -17,14 +17,14 @@ fun LevelSelector(
 ) {
     if (state != GameState.LEVEL_SELECTION) return
 
-    SpanText("Select your level:", LevelSelectorTitleStyle.toModifier())
+    SpanText("Select your level:", LevelSelectorStyles.SelectorTitle.toModifier())
     CenterRow {
         for (level in availableLevels) {
             Button(
                 onClick = { onLevelSelected(level) },
-                modifier = LevelButton.toModifier().then(levelButtonBackground(currentLevel == level))
+                modifier = LevelSelectorStyles.Button.toModifier().then(LevelSelectorStyles.getBackground(currentLevel == level))
             ) {
-                SpanText("Lv${level.displayName}", LevelButtonTextStyle.toModifier())
+                SpanText("Lv${level.displayName}", CommonStyles.ButtonText.toModifier())
             }
         }
     }

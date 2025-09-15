@@ -2,9 +2,7 @@ package com.github.nanaki_93.pages
 
 import androidx.compose.runtime.*
 import com.github.nanaki_93.components.sections.QuestionArea
-import com.github.nanaki_93.components.styles.CardStyle
-import com.github.nanaki_93.components.styles.GameContainerStyle
-import com.github.nanaki_93.components.styles.HomePageTitleStyle
+import com.github.nanaki_93.components.styles.CommonStyles
 import com.github.nanaki_93.components.widgets.*
 import com.github.nanaki_93.components.widgets.auth.LogoutButton
 import com.github.nanaki_93.models.*
@@ -133,78 +131,78 @@ fun HomePage() {
     if (userId.isEmpty()) return
 
 
-    Box(GameContainerStyle.toModifier()) {
-        Column(
-            modifier = CardStyle.toModifier(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(1.cssRem)
-        ) {
+    Box(CommonStyles.GameContainer.toModifier()) {
+            Column(
+                modifier = CommonStyles.Card.toModifier(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(1.cssRem)
+            ) {
 
-            CenterRow {
-                LogoutButton {
-                    coroutineScope.launchSafe {
-                        authService.logout()
-                        kotlinx.browser.window.location.href = "/hiragame/login"
+                CenterRow {
+                    LogoutButton {
+                        coroutineScope.launchSafe {
+                            authService.logout()
+                            kotlinx.browser.window.location.href = "/hiragame/login"
+                        }
                     }
+                    // Title
+                    SpanText(
+                        "ひらがな Master - $username",
+                        CommonStyles.HomePageTitle.toModifier()
+                    )
                 }
-                // Title
-                SpanText(
-                    "ひらがな Master - $username",
-                    HomePageTitleStyle.toModifier()
+
+
+                Spinner(isVisible = gameState == GameState.LOADING)
+
+                GameStats(
+                    state = gameState,
+                    gameMode = selectedGameMode,
+                    level = selectedLevel,
+                    statsUi = gameStateUi.stats
+                )
+
+                GameModeSelector(
+                    state = gameState,
+                    currentMode = selectedGameMode,
+                    onModeSelected = { mode ->
+                        coroutineScope.launchSafe { selectGameMode(mode) }
+                    }
+                )
+
+                LevelSelector(
+                    state = gameState,
+                    availableLevels = availableLevels,
+                    currentLevel = selectedLevel,
+                    onLevelSelected = { level ->
+                        coroutineScope.launchSafe { selectLevel(level) }
+                    }
+                )
+
+
+                QuestionArea(
+                    state = gameState,
+                    currentQuestion = currentQuestion,
+                    userInput = userInput,
+                    isAnswering = isAnswering,
+                    onInputChange = { userInput = it },
+                    onSubmit = { coroutineScope.launchSafe { submitAnswer() } },
+                )
+
+                Feedback(state = gameState, gameStateUi = gameStateUi)
+
+            }
+            if (showAlert) {
+                SessionExpiredAlert(
+                    message = "Your session has expired.",
+                    onClose = {
+                        coroutineScope.launchSafe {
+                            authService.logout()
+                            kotlinx.browser.window.location.href = "/hiragame/login"
+                            showAlert = false
+                        }
+                    }
                 )
             }
-
-
-            Spinner(isVisible = gameState == GameState.LOADING)
-
-            GameStats(
-                state = gameState,
-                gameMode = selectedGameMode,
-                level = selectedLevel,
-                statsUi = gameStateUi.stats
-            )
-
-            GameModeSelector(
-                state = gameState,
-                currentMode = selectedGameMode,
-                onModeSelected = { mode ->
-                    coroutineScope.launchSafe { selectGameMode(mode) }
-                }
-            )
-
-            LevelSelector(
-                state = gameState,
-                availableLevels = availableLevels,
-                currentLevel = selectedLevel,
-                onLevelSelected = { level ->
-                    coroutineScope.launchSafe { selectLevel(level) }
-                }
-            )
-
-
-            QuestionArea(
-                state = gameState,
-                currentQuestion = currentQuestion,
-                userInput = userInput,
-                isAnswering = isAnswering,
-                onInputChange = { userInput = it },
-                onSubmit = { coroutineScope.launchSafe { submitAnswer() } },
-            )
-
-            Feedback(state = gameState, gameStateUi = gameStateUi)
-
-        }
-        if (showAlert) {
-            SessionExpiredAlert(
-                message = "Your session has expired.",
-                onClose = {
-                    coroutineScope.launchSafe {
-                        authService.logout()
-                        kotlinx.browser.window.location.href = "/hiragame/login"
-                        showAlert = false
-                    }
-                }
-            )
-        }
     }
 }
