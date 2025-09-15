@@ -28,23 +28,23 @@ fun QuestionArea(
     val coroutineScope = rememberCoroutineScope()
 
     Column(
-        QuestionAreaContainerStyle.toModifier(),
+        QuestionAreaStyles.AreaContainer.toModifier(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        SpanText(currentQuestion.japanese, HiraganaCharStyle.toModifier())
+        SpanText(currentQuestion.japanese, QuestionAreaStyles.Question.toModifier())
 
         SpanText(
             "What is the romanization?",
-            QuestionPromptStyle.toModifier()
+            QuestionAreaStyles.Prompt.toModifier()
         )
 
         TextInput(
             text = userInput,
             onTextChange = onInputChange,
-            modifier = InputStyle.toModifier()
+            modifier = QuestionAreaStyles.Input.toModifier()
                 .onKeyDown { keyboardEvent ->
-                    if (keyboardEvent.key == "Enter" && !isAnswering) {
+                    if (keyboardEvent.key == "Enter" && !isAnswering && userInput.isNotEmpty()) {
                         keyboardEvent.preventDefault()
                         coroutineScope.launchSafe { onSubmit() }
                     }

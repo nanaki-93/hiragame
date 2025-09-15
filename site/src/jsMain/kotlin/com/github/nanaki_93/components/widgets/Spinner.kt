@@ -2,15 +2,13 @@
 package com.github.nanaki_93.components.widgets
 
 import androidx.compose.runtime.*
-import com.github.nanaki_93.components.styles.SpinnerCenteredContainerStyle
-import com.github.nanaki_93.components.styles.SpinnerKeyframes
-import com.varabyte.kobweb.compose.css.AnimationIterationCount
+import com.github.nanaki_93.components.styles.SpinnerStyles
+
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.compose.ui.toAttrs
-import com.varabyte.kobweb.silk.style.animation.toAnimation
 import com.varabyte.kobweb.silk.style.toModifier
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Div
@@ -44,23 +42,16 @@ fun Spinner(
 ) {
     if (!isVisible) return
 
-    val spinnerModifier = modifier
+    val spinnerModifier = SpinnerStyles.BaseStyle.toModifier().then(modifier
         .width(size.size)
         .height(size.size)
         .border(size.borderWidth, LineStyle.Solid, rgba(0, 0, 0, 0.1))
         .borderTop(size.borderWidth, LineStyle.Solid, color.color)
-        .borderRadius(50.percent)
-        .animation(
-            SpinnerKeyframes.toAnimation(
-                duration = 1.s,
-                iterationCount = AnimationIterationCount.Infinite,
-                timingFunction = AnimationTimingFunction.Linear
-            )
-        )
+    )
 
     if (centered) {
         Box(
-            modifier = SpinnerCenteredContainerStyle.toModifier(),
+            modifier = SpinnerStyles.CenteredContainer.toModifier(),
             contentAlignment = Alignment.Center
         ) {
             Div(attrs = spinnerModifier.toAttrs())

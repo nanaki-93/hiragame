@@ -33,10 +33,10 @@ fun GameStats(state: GameState, gameMode: GameMode?, level: Level?, statsUi: Gam
 @Composable
 private fun StatItem(label: String, value: String) {
     Column(
-        Modifier.flex(1).then(StatItemStyle.toModifier()),
+        Modifier.flex(1).then(GameStatsStyles.Item.toModifier()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SpanText(label, StatLabelStyle.toModifier())
-        SpanText(value, StatValueStyle.toModifier())
+        SpanText(label, GameStatsStyles.Label.toModifier())
+        SpanText(value, GameStatsStyles.Value.toModifier())
     }
 }

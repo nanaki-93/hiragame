@@ -1,8 +1,7 @@
 package com.github.nanaki_93.components.widgets.auth
 
 import androidx.compose.runtime.Composable
-import com.github.nanaki_93.components.styles.AuthHeaderSubtitleStyle
-import com.github.nanaki_93.components.styles.AuthHeaderTitleStyle
+import com.github.nanaki_93.components.styles.AuthStyles
 import com.github.nanaki_93.components.widgets.CenterColumn
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
@@ -13,12 +12,12 @@ fun AuthHeader(isLogin: Boolean) {
     CenterColumn(1.cssRem) {
         SpanText(
             "ひらがな Master",
-            AuthHeaderTitleStyle.toModifier()
+            AuthStyles.HeaderTitle.toModifier()
         )
 
         SpanText(
             if (isLogin) "Welcome Back!" else "Create Account",
-            AuthHeaderSubtitleStyle.toModifier()
+            AuthStyles.HeaderSubtitle.toModifier()
         )
     }
 }

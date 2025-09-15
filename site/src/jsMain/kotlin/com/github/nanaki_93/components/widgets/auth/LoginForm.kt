@@ -22,7 +22,7 @@ fun LoginForm(
     onSubmit: () -> Unit
 ) {
     SpacedColumn(1.cssRem) {
-        AuthFormStyle.toModifier()
+        AuthStyles.Form.toModifier()
 
         InputForm(name, "Name", onNameChange)
         InputForm(password, "Password", onPasswordChange, true)
@@ -30,14 +30,14 @@ fun LoginForm(
         if (errorMessage.isNotEmpty()) {
             SpanText(
                 "\u26A0\uFE0F  $errorMessage", // ⚠️ icon
-                modifier = AuthErrorStyle
+                modifier = AuthStyles.Error
                     .toModifier()
             )
         }
 
         Button(
             onClick = { onSubmit() },
-            modifier = AuthSubmitButtonStyle.toModifier(),
+            modifier = AuthStyles.SubmitButton.toModifier(),
             enabled = !isLoading
         ) {
             SpanText(
@@ -60,6 +60,6 @@ fun InputForm(
         placeholder = inputPlaceholder,
         password = isPassword,
         autoComplete = if (isPassword) AutoComplete.currentPassword else AutoComplete.username,
-        modifier = AuthInputStyle.toModifier()
+        modifier = AuthStyles.Input.toModifier()
     )
 }
