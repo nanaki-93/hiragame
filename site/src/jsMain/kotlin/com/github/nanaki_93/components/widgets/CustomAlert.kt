@@ -3,8 +3,6 @@ package com.github.nanaki_93.components.widgets
 import androidx.compose.runtime.Composable
 import com.github.nanaki_93.components.styles.*
 import com.varabyte.kobweb.compose.foundation.layout.Box
-import com.varabyte.kobweb.silk.components.forms.Button
-import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
 import org.jetbrains.compose.web.css.cssRem
 
@@ -24,35 +22,17 @@ fun CustomAlert(
         CenterColumn(1.5.cssRem) {
             CustomAlertStyles.Dialog.toModifier()
 
-            SpanText(title, CustomAlertStyles.Title.toModifier())
-            SpanText(message, CustomAlertStyles.Message.toModifier())
+            TitleText(title)
+            BaseText(message, CustomAlertStyles.Message.toModifier())
+            CenteredButtonRow {
 
-            if (onCancel != null) {
-                ButtonRow {
-                    Button(
-                        onClick = { onCancel() },
-                        modifier = CustomAlertStyles.CancelButton.toModifier()
-                    ) {
-                        SpanText(cancelText)
-                    }
+                if (onCancel != null) {
+                    ResetButton(text = cancelText, onClick = { onCancel() })
+                }
 
-                    Button(
-                        onClick = { onConfirm() },
-                        modifier = CustomAlertStyles.ConfirmButton.toModifier()
-                    ) {
-                        SpanText(confirmText)
-                    }
-                }
-            } else {
-                CenteredButtonRow {
-                    Button(
-                        onClick = { onConfirm() },
-                        modifier = CustomAlertStyles.ConfirmButton.toModifier()
-                    ) {
-                        SpanText(confirmText)
-                    }
-                }
+                ActionButton(text = confirmText, onClick = { onConfirm() })
             }
+
         }
     }
 }

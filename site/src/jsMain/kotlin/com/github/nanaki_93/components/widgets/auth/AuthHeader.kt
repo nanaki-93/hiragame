@@ -1,23 +1,16 @@
 package com.github.nanaki_93.components.widgets.auth
 
 import androidx.compose.runtime.Composable
-import com.github.nanaki_93.components.styles.AuthStyles
 import com.github.nanaki_93.components.widgets.CenterColumn
-import com.varabyte.kobweb.silk.components.text.SpanText
-import com.varabyte.kobweb.silk.style.toModifier
+import com.github.nanaki_93.components.widgets.SubTitleText
+import com.github.nanaki_93.components.widgets.TitleText
+
 import org.jetbrains.compose.web.css.cssRem
 
 @Composable
 fun AuthHeader(isLogin: Boolean) {
     CenterColumn(1.cssRem) {
-        SpanText(
-            "ひらがな Master",
-            AuthStyles.HeaderTitle.toModifier()
-        )
-
-        SpanText(
-            if (isLogin) "Welcome Back!" else "Create Account",
-            AuthStyles.HeaderSubtitle.toModifier()
-        )
+        TitleText("ひらがな Master")
+        SubTitleText(if (isLogin) "Welcome Back!" else "Create Account")
     }
 }
