@@ -1,17 +1,14 @@
-package com.github.nanaki_93.components.widgets
+package com.github.nanaki_93.components.sections
 
-import androidx.compose.runtime.*
-import com.github.nanaki_93.components.styles.*
+import androidx.compose.runtime.Composable
+import com.github.nanaki_93.components.widgets.ItemColumn
+import com.github.nanaki_93.components.widgets.LabelText
+import com.github.nanaki_93.components.widgets.SpacedRow
+import com.github.nanaki_93.components.widgets.ValueText
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.GameState
 import com.github.nanaki_93.models.GameStatisticsUi
 import com.github.nanaki_93.models.Level
-import com.varabyte.kobweb.compose.foundation.layout.Column
-import com.varabyte.kobweb.compose.ui.Alignment
-import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.flex
-import com.varabyte.kobweb.silk.components.text.SpanText
-import com.varabyte.kobweb.silk.style.toModifier
 
 @Composable
 fun GameStats(state: GameState, gameMode: GameMode?, level: Level?, statsUi: GameStatisticsUi) {
@@ -32,11 +29,8 @@ fun GameStats(state: GameState, gameMode: GameMode?, level: Level?, statsUi: Gam
 
 @Composable
 private fun StatItem(label: String, value: String) {
-    Column(
-        Modifier.flex(1).then(GameStatsStyles.Item.toModifier()),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        SpanText(label, GameStatsStyles.Label.toModifier())
-        SpanText(value, GameStatsStyles.Value.toModifier())
+    ItemColumn {
+        LabelText(label)
+        ValueText(value)
     }
 }

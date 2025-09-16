@@ -3,15 +3,14 @@ package com.github.nanaki_93.components.sections
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import com.github.nanaki_93.components.styles.*
-import com.github.nanaki_93.components.widgets.SubmitButton
+import com.github.nanaki_93.components.widgets.ActionButton
+import com.github.nanaki_93.components.widgets.SearchableTextInput
 import com.github.nanaki_93.models.GameState
 import com.github.nanaki_93.models.QuestionUi
 import com.github.nanaki_93.util.launchSafe
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
-import com.varabyte.kobweb.compose.ui.modifiers.onKeyDown
-import com.varabyte.kobweb.silk.components.forms.TextInput
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
 
@@ -24,7 +23,7 @@ fun QuestionArea(
     onInputChange: (String) -> Unit,
     onSubmit: suspend () -> Unit,
 ) {
-    if (state != GameState.PLAYING && state != GameState.SHOWING_FEEDBACK) return
+    if (state != GameState.PLAYING ) return
     val coroutineScope = rememberCoroutineScope()
 
     Column(
@@ -32,30 +31,24 @@ fun QuestionArea(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
         SpanText(currentQuestion.japanese, QuestionAreaStyles.Question.toModifier())
-
-        SpanText(
-            "What is the romanization?",
-            QuestionAreaStyles.Prompt.toModifier()
-        )
-
-        TextInput(
+        SpanText("What is the romanization?", QuestionAreaStyles.Prompt.toModifier())
+        SearchableTextInput(
             text = userInput,
             onTextChange = onInputChange,
-            modifier = QuestionAreaStyles.Input.toModifier()
-                .onKeyDown { keyboardEvent ->
-                    if (keyboardEvent.key == "Enter" && !isAnswering && userInput.isNotEmpty()) {
-                        keyboardEvent.preventDefault()
-                        coroutineScope.launchSafe { onSubmit() }
-                    }
-                },
+            onEnterPressed = { coroutineScope.launchSafe { onSubmit() } },
             placeholder = "Type romanization here..."
         )
 
-        SubmitButton(
+
+
+        ActionButton(
+            text = "Submit",
+            isLoading = isAnswering,
+            loadingText = "Checking...",
             onClick = { coroutineScope.launchSafe { onSubmit() } },
-            isAnswering = isAnswering,
-            userInput = userInput
+            enabled = userInput.isNotEmpty() && !isAnswering
         )
     }
 }

@@ -2,12 +2,10 @@ package com.github.nanaki_93.components.widgets.auth
 
 import androidx.compose.runtime.*
 import com.github.nanaki_93.components.styles.*
+import com.github.nanaki_93.components.widgets.ActionButton
+import com.github.nanaki_93.components.widgets.FormField
 import com.github.nanaki_93.components.widgets.SpacedColumn
-import com.varabyte.kobweb.silk.components.forms.Button
-import com.varabyte.kobweb.silk.components.forms.TextInput
-import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
-import org.jetbrains.compose.web.attributes.AutoComplete
 import org.jetbrains.compose.web.css.cssRem
 
 @Composable
@@ -24,42 +22,14 @@ fun LoginForm(
     SpacedColumn(1.cssRem) {
         AuthStyles.Form.toModifier()
 
-        InputForm(name, "Name", onNameChange)
-        InputForm(password, "Password", onPasswordChange, true)
+        FormField(name,onNameChange,"Name","Name")
+        FormField(password, onPasswordChange,"Password", "Password", true,errorMessage)
 
-        if (errorMessage.isNotEmpty()) {
-            SpanText(
-                "\u26A0\uFE0F  $errorMessage", // ⚠️ icon
-                modifier = AuthStyles.Error
-                    .toModifier()
-            )
-        }
-
-        Button(
+        ActionButton(
+            text = if (isLogin) "Login" else "Register",
             onClick = { onSubmit() },
-            modifier = AuthStyles.SubmitButton.toModifier(),
-            enabled = !isLoading
-        ) {
-            SpanText(
-                if (isLoading) "Loading..." else if (isLogin) "Login" else "Register"
-            )
-        }
+            isLoading = isLoading,
+            enabled = !isLoading,
+        )
     }
-}
-
-@Composable
-fun InputForm(
-    inputVal: String,
-    inputPlaceholder: String = "",
-    onInputChange: (String) -> Unit,
-    isPassword: Boolean = false,
-) {
-    TextInput(
-        text = inputVal,
-        onTextChange = onInputChange,
-        placeholder = inputPlaceholder,
-        password = isPassword,
-        autoComplete = if (isPassword) AutoComplete.currentPassword else AutoComplete.username,
-        modifier = AuthStyles.Input.toModifier()
-    )
 }

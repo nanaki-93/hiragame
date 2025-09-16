@@ -1,10 +1,12 @@
 package com.github.nanaki_93.pages
 
 import androidx.compose.runtime.*
+import com.github.nanaki_93.components.sections.Feedback
+import com.github.nanaki_93.components.sections.GameModeSelector
+import com.github.nanaki_93.components.sections.LevelSelector
 import com.github.nanaki_93.components.sections.QuestionArea
 import com.github.nanaki_93.components.styles.CommonStyles
 import com.github.nanaki_93.components.widgets.*
-import com.github.nanaki_93.components.widgets.auth.LogoutButton
 import com.github.nanaki_93.models.*
 import com.github.nanaki_93.service.AuthService
 import com.github.nanaki_93.service.GameService
@@ -15,7 +17,6 @@ import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.core.Page
-import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.web.css.cssRem
@@ -133,77 +134,76 @@ fun HomePage() {
 
 
     Box(CommonStyles.GameContainer.toModifier()) {
-            Column(
-                modifier = CommonStyles.Card.toModifier(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(1.cssRem)
-            ) {
+        Column(
+            modifier = CommonStyles.Card.toModifier(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(1.cssRem)
+        ) {
 
-                CenterRow {
-                    LogoutButton {
+            CenterRow {
+                StyledButton(
+                    text = "Logout",
+                    onClick = {
                         coroutineScope.launchSafe {
                             authService.logout()
                             kotlinx.browser.window.location.href = "/hiragame/login"
                         }
-                    }
-                    // Title
-                    SpanText(
-                        "ひらがな Master - $username",
-                        CommonStyles.HomePageTitle.toModifier()
-                    )
+                    },
+                )
+
+                TitleText("ひらがな Master - $username")
+            }
+
+
+            Spinner(isVisible = gameState == GameState.LOADING)
+
+            _root_ide_package_.com.github.nanaki_93.components.sections.GameStats(
+                state = gameState,
+                gameMode = selectedGameMode,
+                level = selectedLevel,
+                statsUi = gameStateUi.stats
+            )
+
+            GameModeSelector(
+                state = gameState,
+                onModeSelected = { mode ->
+                    coroutineScope.launchSafe { selectGameMode(mode) }
                 }
+            )
+
+            LevelSelector(
+                state = gameState,
+                availableLevels = availableLevels,
+                onLevelSelected = { level ->
+                    coroutineScope.launchSafe { selectLevel(level) }
+                }
+            )
 
 
-                Spinner(isVisible = gameState == GameState.LOADING)
 
-                GameStats(
-                    state = gameState,
-                    gameMode = selectedGameMode,
-                    level = selectedLevel,
-                    statsUi = gameStateUi.stats
-                )
+            QuestionArea(
+                state = gameState,
+                currentQuestion = currentQuestion,
+                userInput = userInput,
+                isAnswering = isAnswering,
+                onInputChange = { userInput = it },
+                onSubmit = { coroutineScope.launchSafe { submitAnswer() } },
+            )
 
-                GameModeSelector(
-                    state = gameState,
-                    currentMode = selectedGameMode,
-                    onModeSelected = { mode ->
-                        coroutineScope.launchSafe { selectGameMode(mode) }
+            Feedback(state = gameState, gameStateUi = gameStateUi)
+
+        }
+        if (showAlert) {
+            SessionExpiredAlert(
+                message = "Your session has expired.",
+                onClose = {
+                    coroutineScope.launchSafe {
+                        authService.logout()
+                        kotlinx.browser.window.location.href = "/hiragame/login"
+                        showAlert = false
                     }
-                )
-
-                LevelSelector(
-                    state = gameState,
-                    availableLevels = availableLevels,
-                    currentLevel = selectedLevel,
-                    onLevelSelected = { level ->
-                        coroutineScope.launchSafe { selectLevel(level) }
-                    }
-                )
-
-
-                QuestionArea(
-                    state = gameState,
-                    currentQuestion = currentQuestion,
-                    userInput = userInput,
-                    isAnswering = isAnswering,
-                    onInputChange = { userInput = it },
-                    onSubmit = { coroutineScope.launchSafe { submitAnswer() } },
-                )
-
-                Feedback(state = gameState, gameStateUi = gameStateUi)
-
-            }
-            if (showAlert) {
-                SessionExpiredAlert(
-                    message = "Your session has expired.",
-                    onClose = {
-                        coroutineScope.launchSafe {
-                            authService.logout()
-                            kotlinx.browser.window.location.href = "/hiragame/login"
-                            showAlert = false
-                        }
-                    }
-                )
-            }
+                }
+            )
+        }
     }
 }

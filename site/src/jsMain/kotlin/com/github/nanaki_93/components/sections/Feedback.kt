@@ -1,7 +1,10 @@
-package com.github.nanaki_93.components.widgets
+package com.github.nanaki_93.components.sections
 
 import androidx.compose.runtime.Composable
 import com.github.nanaki_93.components.styles.FeedbackStyles
+import com.github.nanaki_93.components.widgets.CenterRow
+import com.github.nanaki_93.components.widgets.Spinner
+import com.github.nanaki_93.components.widgets.SpinnerSize
 import com.github.nanaki_93.models.GameState
 import com.github.nanaki_93.models.GameStateUi
 import com.varabyte.kobweb.compose.ui.modifiers.color
@@ -12,11 +15,9 @@ import com.varabyte.kobweb.silk.style.toModifier
 fun Feedback(state: GameState, gameStateUi: GameStateUi) {
     if (state != GameState.SHOWING_FEEDBACK) return
 
+
     CenterRow {
-        SpanText("Feedback:", FeedbackStyles.Title.toModifier())
-    }
-    CenterRow {
-        Spinner(isVisible = state == GameState.SHOWING_FEEDBACK)
+        Spinner(isVisible = state == GameState.SHOWING_FEEDBACK, size = SpinnerSize.Large)
     }
     CenterRow {
         SpanText(
