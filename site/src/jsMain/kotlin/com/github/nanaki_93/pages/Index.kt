@@ -50,6 +50,7 @@ fun HomePage() {
 
 
     SessionManager.onSessionExpired = {
+        println("Session expired")
         showAlert = true
     }
     suspend fun submitAnswer() {
