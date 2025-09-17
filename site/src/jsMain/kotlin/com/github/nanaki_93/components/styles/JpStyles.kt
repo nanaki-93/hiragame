@@ -95,10 +95,6 @@ object AuthStyles {
             .fontWeight(FontWeight.Bold)
     }
 
-    val Form = CssStyle.base {
-        Modifier.fillMaxWidth()
-    }
-
 
     val Input = CssStyle.base {
         Modifier
