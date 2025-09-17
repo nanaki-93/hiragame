@@ -25,7 +25,7 @@ fun CenterRow(content: @Composable () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().gap(0.5.cssRem),
         horizontalArrangement = Arrangement.Center
-    ){
+    ) {
         content()
     }
 }
@@ -59,6 +59,7 @@ fun SpacedColumn(
     content: @Composable () -> Unit
 ) {
     Column(
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing)
     ) {
         content()
@@ -126,13 +127,14 @@ fun StyledButton(
     textStyle: Modifier = CommonStyles.ButtonText.toModifier()
 ) {
     Button(
-        onClick = {onClick()},
+        onClick = { onClick() },
         modifier = style,
         enabled = enabled
     ) {
         SpanText(text, textStyle)
     }
 }
+
 @Composable
 fun ResetButton(
     text: String,
@@ -142,7 +144,7 @@ fun ResetButton(
     textStyle: Modifier = CommonStyles.ButtonText.toModifier()
 ) {
     Button(
-        onClick = {onClick()},
+        onClick = { onClick() },
         modifier = style,
         enabled = enabled
     ) {
@@ -160,7 +162,7 @@ fun ActionButton(
     modifier: Modifier = CommonStyles.Button.toModifier()
 ) {
     Button(
-        onClick = {onClick()},
+        onClick = { onClick() },
         modifier = modifier,
         enabled = enabled && !isLoading
     ) {
@@ -200,6 +202,7 @@ fun LabelText(
 ) {
     SpanText(text, modifier)
 }
+
 @Composable
 fun ValueText(
     text: String,

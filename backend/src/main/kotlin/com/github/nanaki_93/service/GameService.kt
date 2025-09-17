@@ -1,6 +1,5 @@
 package com.github.nanaki_93.service
 
-import com.github.nanaki_93.dto.ai.toModel
 import com.github.nanaki_93.dto.game.toModel
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.SelectRequest

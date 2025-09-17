@@ -19,8 +19,7 @@ fun LoginForm(
     onPasswordChange: (String) -> Unit,
     onSubmit: () -> Unit
 ) {
-    SpacedColumn(1.cssRem) {
-        AuthStyles.Form.toModifier()
+    SpacedColumn(1.cssRem,) {
 
         FormField(name,onNameChange,"Name","Name")
         FormField(password, onPasswordChange,"Password", "Password", true,errorMessage)
