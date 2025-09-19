@@ -1,11 +1,7 @@
 package com.github.nanaki_93.pages
 
 import androidx.compose.runtime.*
-import com.github.nanaki_93.components.sections.Feedback
-import com.github.nanaki_93.components.sections.GameModeSelector
-import com.github.nanaki_93.components.sections.LevelSelector
-import com.github.nanaki_93.components.sections.QuestionArea
-import com.github.nanaki_93.components.styles.CommonStyles
+import com.github.nanaki_93.components.styles.Styles
 import com.github.nanaki_93.components.widgets.*
 import com.github.nanaki_93.models.*
 import com.github.nanaki_93.service.AuthService
@@ -133,9 +129,9 @@ fun HomePage() {
     if (userId.isEmpty()) return
 
 
-    Box(CommonStyles.GameContainer.toModifier()) {
+    Box(Styles.GameContainer.toModifier()) {
         Column(
-            modifier = CommonStyles.Card.toModifier(),
+            modifier = Styles.Card.toModifier(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(1.cssRem)
         ) {
@@ -157,40 +153,94 @@ fun HomePage() {
 
             Spinner(isVisible = gameState == GameState.LOADING)
 
-            _root_ide_package_.com.github.nanaki_93.components.sections.GameStats(
-                state = gameState,
-                gameMode = selectedGameMode,
-                level = selectedLevel,
-                statsUi = gameStateUi.stats
-            )
 
-            GameModeSelector(
-                state = gameState,
-                onModeSelected = { mode ->
-                    coroutineScope.launchSafe { selectGameMode(mode) }
+            if (gameState != GameState.LOADING) {
+
+                SpacedRow {
+                    StatItem("GameMode", selectedGameMode?.displayName ?: "N/A")
+                    StatItem("Level", selectedLevel?.displayName ?: "N/A")
+                    StatItem("Score", "${gameStateUi.stats.score}")
                 }
-            )
 
-            LevelSelector(
-                state = gameState,
-                availableLevels = availableLevels,
-                onLevelSelected = { level ->
-                    coroutineScope.launchSafe { selectLevel(level) }
+                SpacedRow {
+                    StatItem("Correct Answers", "${gameStateUi.stats.correctAnswers}")
+                    StatItem("Total Attempts", "${gameStateUi.stats.totalAnswered}")
+                    StatItem("Streak", "${gameStateUi.stats.streak}")
                 }
-            )
+            }
+
+            if (gameState == GameState.LOADING) {
+                LoadingText("Game mode selection will appear shortly...")
+            }
+
+            // Only show selector when in mode selection state
+            if (gameState == GameState.MODE_SELECTION) {
+
+                TitleText("Select a game mode to continue:")
+                CenterRow {
+                    GameMode.entries.forEach { mode ->
+                        ActionButton(
+                            text = mode.displayName,
+                            onClick = { coroutineScope.launchSafe { selectGameMode(mode) }},
+                            isSmall = true // Use smaller buttons for better layout
+                        )
+                    }
+                }
+            }
 
 
 
-            QuestionArea(
-                state = gameState,
-                currentQuestion = currentQuestion,
-                userInput = userInput,
-                isAnswering = isAnswering,
-                onInputChange = { userInput = it },
-                onSubmit = { coroutineScope.launchSafe { submitAnswer() } },
-            )
+            if (gameState == GameState.LEVEL_SELECTION) {
 
-            Feedback(state = gameState, gameStateUi = gameStateUi)
+                TitleText("Select your level:")
+                CenterRow {
+                    for (level in availableLevels) {
+                        ActionButton(
+                            text = "Lv-${level.displayName}",
+                            onClick = {
+                                coroutineScope.launchSafe { selectLevel(level) }
+                            },
+                        )
+                    }
+                }
+            }
+
+
+            if (gameState == GameState.PLAYING ) {
+
+                CenterColumn(
+                    0.cssRem,
+                    Styles.QuestionCard.toModifier(),
+                ) {
+
+                    QuestionText(currentQuestion.japanese)
+                    PromptText("What is the romanization?")
+                    SearchableTextInput(
+                        text = userInput,
+                        onTextChange = { userInput = it },
+                        onEnterPressed = { coroutineScope.launchSafe { submitAnswer() } },
+                        placeholder = "Type romanization here..."
+                    )
+
+                    ActionButton(
+                        text = "Submit",
+                        isLoading = isAnswering,
+                        loadingText = "Checking...",
+                        onClick = { coroutineScope.launchSafe { submitAnswer() } },
+                        enabled = userInput.isNotEmpty() && !isAnswering
+                    )
+                }
+            }
+
+            if (gameState == GameState.SHOWING_FEEDBACK) {
+
+                CenterRow {
+                    Spinner(isVisible = gameState == GameState.SHOWING_FEEDBACK, size = SpinnerSize.Large)
+                }
+                CenterRow {
+                    FeedbackText(gameStateUi.feedback, gameStateUi.isCorrect)
+                }
+            }
 
         }
         if (showAlert) {

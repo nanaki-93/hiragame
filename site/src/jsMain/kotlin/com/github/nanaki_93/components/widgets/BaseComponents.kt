@@ -7,6 +7,7 @@ import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.flex
 import com.varabyte.kobweb.compose.ui.modifiers.gap
@@ -25,9 +26,7 @@ fun CenterRow(content: @Composable () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().gap(0.5.cssRem),
         horizontalArrangement = Arrangement.Center
-    ) {
-        content()
-    }
+    ) { content() }
 }
 
 @Composable
@@ -35,22 +34,20 @@ fun SpacedRow(content: @Composable () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(0.5.cssRem)
-    ) {
-        content()
-    }
+    ) { content() }
 }
 
 @Composable
 fun CenterColumn(
     spacing: CSSLengthOrPercentageValue = 1.cssRem,
+    modifier: Modifier? = null,
     content: @Composable () -> Unit
 ) {
     Column(
+        modifier = modifier?:Modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(spacing),
-    ) {
-        content()
-    }
+    ) { content() }
 }
 
 @Composable
@@ -61,9 +58,7 @@ fun SpacedColumn(
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(spacing)
-    ) {
-        content()
-    }
+    ) { content() }
 }
 
 @Composable
@@ -72,11 +67,9 @@ fun ItemColumn(
     content: @Composable () -> Unit
 ) {
     Column(
-        Modifier.flex(flexValue).then(GameStatsStyles.Item.toModifier()),
+        Modifier.flex(flexValue).then(Styles.StatItem.toModifier()),
         horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        content()
-    }
+    ) { content() }
 }
 
 @Composable
@@ -85,9 +78,7 @@ fun ButtonRow(content: @Composable () -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
-    ) {
-        content()
-    }
+    ) { content() }
 }
 
 @Composable
@@ -96,18 +87,16 @@ fun CenteredButtonRow(content: @Composable () -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
-    ) {
-        content()
-    }
+    ) { content() }
 }
 
-// Button Components
+// Button Components - Simplified with clear naming
 @Composable
 fun BaseButton(
     text: String,
     onClick: () -> Unit,
     enabled: Boolean = true,
-    modifier: Modifier = CommonStyles.Button.toModifier()
+    modifier: Modifier = Styles.ButtonPrimary.toModifier()
 ) {
     Button(
         onClick = { onClick() },
@@ -123,15 +112,15 @@ fun StyledButton(
     text: String,
     onClick: () -> Unit,
     enabled: Boolean = true,
-    style: Modifier = CommonStyles.Button.toModifier(),
-    textStyle: Modifier = CommonStyles.ButtonText.toModifier()
+    isPrimary: Boolean = true
 ) {
+    val style = if (isPrimary) Styles.ButtonPrimary else Styles.ButtonSecondary
     Button(
         onClick = { onClick() },
-        modifier = style,
+        modifier = style.toModifier(),
         enabled = enabled
     ) {
-        SpanText(text, textStyle)
+        SpanText(text)
     }
 }
 
@@ -139,16 +128,14 @@ fun StyledButton(
 fun ResetButton(
     text: String,
     onClick: () -> Unit,
-    enabled: Boolean = true,
-    style: Modifier = CustomAlertStyles.CancelButton.toModifier(),
-    textStyle: Modifier = CommonStyles.ButtonText.toModifier()
+    enabled: Boolean = true
 ) {
     Button(
         onClick = { onClick() },
-        modifier = style,
+        modifier = Styles.ButtonSecondary.toModifier(),
         enabled = enabled
     ) {
-        SpanText(text, textStyle)
+        SpanText(text)
     }
 }
 
@@ -159,80 +146,82 @@ fun ActionButton(
     onClick: () -> Unit,
     isLoading: Boolean = false,
     enabled: Boolean = true,
-    modifier: Modifier = CommonStyles.Button.toModifier()
+    isSmall: Boolean = false
 ) {
+    val style = if (isSmall) Styles.ButtonSmall else Styles.ButtonPrimary
     Button(
         onClick = { onClick() },
-        modifier = modifier,
+        modifier = style.toModifier(),
         enabled = enabled && !isLoading
     ) {
         SpanText(if (isLoading) loadingText else text)
     }
 }
 
-// Text Components
+// Text Components - Simplified and consistent
 @Composable
-fun BaseText(
-    text: String,
-    modifier: Modifier = Modifier
-) {
+fun BaseText(text: String, modifier: Modifier = Modifier) {
     SpanText(text, modifier)
 }
 
 @Composable
-fun TitleText(
-    text: String,
-    modifier: Modifier = CommonStyles.HomePageTitle.toModifier()
-) {
-    SpanText(text, modifier)
+fun TitleText(text: String) {
+    SpanText(text, Styles.Title.toModifier())
 }
 
 @Composable
-fun SubTitleText(
-    text: String,
-    modifier: Modifier = AuthStyles.HeaderSubtitle.toModifier()
-) {
-    SpanText(text, modifier)
+fun SubTitleText(text: String) {
+    SpanText(text, Styles.Subtitle.toModifier())
 }
 
 @Composable
-fun LabelText(
-    text: String,
-    modifier: Modifier = GameStatsStyles.Label.toModifier()
-) {
-    SpanText(text, modifier)
+fun LabelText(text: String) {
+    SpanText(text, Styles.Label.toModifier())
 }
 
 @Composable
-fun ValueText(
-    text: String,
-    modifier: Modifier = GameStatsStyles.Value.toModifier()
-) {
-    SpanText(text, modifier)
+fun ValueText(text: String) {
+    SpanText(text, Styles.Value.toModifier())
 }
 
 @Composable
-fun ErrorText(
-    text: String,
-    modifier: Modifier = AuthStyles.Error.toModifier()
-) {
-    SpanText("⚠️  $text", modifier)
+fun ErrorText(text: String) {
+    SpanText("⚠️  $text", Styles.Error.toModifier())
 }
 
-// Input Components
+@Composable
+fun PromptText(text: String) {
+    SpanText(text, Styles.Prompt.toModifier())
+}
+
+@Composable
+fun QuestionText(text: String) {
+    SpanText(text, Styles.Question.toModifier())
+}
+@Composable
+fun LoadingText(text: String) {
+    SpanText(text,Styles.LoadingText.toModifier())
+}
+@Composable
+fun FeedbackText(text: String,isCorrect : Boolean?) {
+    SpanText(text,Styles.FeedbackMessage.toModifier().color(StyleHelpers.getFeedbackColor(isCorrect)))
+}
+
+// Input Components - Simplified
 @Composable
 fun BaseTextInput(
     text: String,
     onTextChange: (String) -> Unit,
     placeholder: String = "",
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    isLarge: Boolean = false
 ) {
+    val style = if (isLarge) Styles.InputLarge else Styles.Input
     TextInput(
         text = text,
         onTextChange = onTextChange,
         placeholder = placeholder,
-        modifier = modifier,
+        modifier = style.toModifier(),
         enabled = enabled
     )
 }
@@ -242,7 +231,6 @@ fun StyledTextInput(
     text: String,
     onTextChange: (String) -> Unit,
     placeholder: String = "",
-    modifier: Modifier = AuthStyles.Input.toModifier(),
     password: Boolean = false,
     autoComplete: AutoComplete? = null,
     enabled: Boolean = true
@@ -253,7 +241,7 @@ fun StyledTextInput(
         placeholder = placeholder,
         password = password,
         autoComplete = autoComplete,
-        modifier = modifier,
+        modifier = Styles.Input.toModifier(),
         enabled = enabled
     )
 }
@@ -264,14 +252,13 @@ fun SearchableTextInput(
     onTextChange: (String) -> Unit,
     placeholder: String = "",
     onEnterPressed: () -> Unit = {},
-    modifier: Modifier = QuestionAreaStyles.Input.toModifier(),
     enabled: Boolean = true
 ) {
     TextInput(
         text = text,
         onTextChange = onTextChange,
         placeholder = placeholder,
-        modifier = modifier.onKeyDown { keyboardEvent ->
+        modifier = Styles.InputLarge.toModifier().onKeyDown { keyboardEvent ->
             if (keyboardEvent.key == "Enter" && enabled && text.isNotEmpty()) {
                 keyboardEvent.preventDefault()
                 onEnterPressed()
@@ -281,7 +268,7 @@ fun SearchableTextInput(
     )
 }
 
-// Form Components
+// Form Components - Simplified
 @Composable
 fun FormField(
     value: String,
@@ -289,8 +276,7 @@ fun FormField(
     label: String = "",
     placeholder: String = "",
     isPassword: Boolean = false,
-    errorMessage: String = "",
-    modifier: Modifier = AuthStyles.Input.toModifier()
+    errorMessage: String = ""
 ) {
     if (label.isNotEmpty()) {
         LabelText(label)
@@ -301,11 +287,18 @@ fun FormField(
         onTextChange = onValueChange,
         placeholder = placeholder,
         password = isPassword,
-        autoComplete = if (isPassword) AutoComplete.currentPassword else AutoComplete.username,
-        modifier = modifier
+        autoComplete = if (isPassword) AutoComplete.currentPassword else AutoComplete.username
     )
 
     if (errorMessage.isNotEmpty()) {
         ErrorText(errorMessage)
+    }
+}
+
+@Composable
+fun StatItem(label: String, value: String) {
+    ItemColumn {
+        LabelText(label)
+        ValueText(value)
     }
 }
