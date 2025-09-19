@@ -6,7 +6,6 @@ import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
-import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
 import org.jetbrains.compose.web.css.cssRem
@@ -41,18 +40,16 @@ fun CustomAlert(
             CenteredButtonRow {
                 // Cancel button (if provided)
                 onCancel?.let { cancelAction ->
-                    StyledButton(
+                    SecondaryButton(
                         text = cancelText,
                         onClick = cancelAction,
-                        isPrimary = false
                     )
                 }
 
                 // Confirm button
-                StyledButton(
+                PrimaryButton(
                     text = confirmText,
                     onClick = onConfirm,
-                    isPrimary = true
                 )
             }
         }
@@ -67,42 +64,6 @@ fun SessionExpiredAlert(
     CustomAlert(
         isVisible = true,
         title = "Session Expired",
-        message = message,
-        onConfirm = onClose,
-        confirmText = "OK",
-        onCancel = null
-    )
-}
-
-@Composable
-fun ConfirmationAlert(
-    title: String = "Confirm Action",
-    message: String,
-    onConfirm: () -> Unit,
-    onCancel: () -> Unit,
-    confirmText: String = "Confirm",
-    cancelText: String = "Cancel"
-) {
-    CustomAlert(
-        isVisible = true,
-        title = title,
-        message = message,
-        onConfirm = onConfirm,
-        onCancel = onCancel,
-        confirmText = confirmText,
-        cancelText = cancelText
-    )
-}
-
-@Composable
-fun ErrorAlert(
-    message: String,
-    onClose: () -> Unit,
-    title: String = "Error"
-) {
-    CustomAlert(
-        isVisible = true,
-        title = title,
         message = message,
         onConfirm = onClose,
         confirmText = "OK",
