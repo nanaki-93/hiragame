@@ -12,6 +12,8 @@ import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
+import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.style.toModifier
 import kotlinx.coroutines.delay
@@ -136,19 +138,27 @@ fun HomePage() {
             verticalArrangement = Arrangement.spacedBy(1.cssRem)
         ) {
 
-            CenterRow {
-                StyledButton(
-                    text = "Logout",
-                    onClick = {
-                        coroutineScope.launchSafe {
-                            authService.logout()
-                            kotlinx.browser.window.location.href = "/hiragame/login"
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(modifier = Modifier.align(Alignment.CenterStart)) {
+                    PrimaryButton(
+                        text = "Logout",
+                        onClick = {
+                            coroutineScope.launchSafe {
+                                authService.logout()
+                                kotlinx.browser.window.location.href = "/hiragame/login"
+                            }
                         }
-                    },
-                )
+                    )
+                }
+                Column(modifier = Modifier.align(Alignment.Center)) {
 
-                TitleText("ひらがな Master - $username")
+                    TitleText("ひらがな Master - $username")
+                }
             }
+
 
 
             Spinner(isVisible = gameState == GameState.LOADING)
@@ -176,13 +186,12 @@ fun HomePage() {
             // Only show selector when in mode selection state
             if (gameState == GameState.MODE_SELECTION) {
 
-                TitleText("Select a game mode to continue:")
+                SubTitleText("Select a game mode to continue:")
                 CenterRow {
                     GameMode.entries.forEach { mode ->
                         ActionButton(
                             text = mode.displayName,
-                            onClick = { coroutineScope.launchSafe { selectGameMode(mode) }},
-                            isSmall = true // Use smaller buttons for better layout
+                            onClick = { coroutineScope.launchSafe { selectGameMode(mode) } },
                         )
                     }
                 }
@@ -192,10 +201,10 @@ fun HomePage() {
 
             if (gameState == GameState.LEVEL_SELECTION) {
 
-                TitleText("Select your level:")
+                SubTitleText("Select your level:")
                 CenterRow {
                     for (level in availableLevels) {
-                        ActionButton(
+                        SecondaryButton(
                             text = "Lv-${level.displayName}",
                             onClick = {
                                 coroutineScope.launchSafe { selectLevel(level) }
@@ -206,7 +215,7 @@ fun HomePage() {
             }
 
 
-            if (gameState == GameState.PLAYING ) {
+            if (gameState == GameState.PLAYING) {
 
                 CenterColumn(
                     0.cssRem,
@@ -225,7 +234,6 @@ fun HomePage() {
                     ActionButton(
                         text = "Submit",
                         isLoading = isAnswering,
-                        loadingText = "Checking...",
                         onClick = { coroutineScope.launchSafe { submitAnswer() } },
                         enabled = userInput.isNotEmpty() && !isAnswering
                     )
@@ -234,11 +242,16 @@ fun HomePage() {
 
             if (gameState == GameState.SHOWING_FEEDBACK) {
 
-                CenterRow {
-                    Spinner(isVisible = gameState == GameState.SHOWING_FEEDBACK, size = SpinnerSize.Large)
-                }
-                CenterRow {
-                    FeedbackText(gameStateUi.feedback, gameStateUi.isCorrect)
+                CenterColumn(
+                    0.cssRem,
+                    Styles.QuestionCard.toModifier(),
+                ) {
+                    CenterRow {
+                        Spinner(isVisible = gameState == GameState.SHOWING_FEEDBACK, size = SpinnerSize.Large)
+                    }
+                    CenterRow {
+                        FeedbackText(gameStateUi.feedback, gameStateUi.isCorrect)
+                    }
                 }
             }
 

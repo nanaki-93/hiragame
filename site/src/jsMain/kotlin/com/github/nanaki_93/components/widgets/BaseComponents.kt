@@ -25,7 +25,8 @@ import org.jetbrains.compose.web.css.cssRem
 fun CenterRow(content: @Composable () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().gap(0.5.cssRem),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) { content() }
 }
 
@@ -72,14 +73,6 @@ fun ItemColumn(
     ) { content() }
 }
 
-@Composable
-fun ButtonRow(content: @Composable () -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) { content() }
-}
 
 @Composable
 fun CenteredButtonRow(content: @Composable () -> Unit) {
@@ -96,7 +89,7 @@ fun BaseButton(
     text: String,
     onClick: () -> Unit,
     enabled: Boolean = true,
-    modifier: Modifier = Styles.ButtonPrimary.toModifier()
+    modifier: Modifier = Styles.ButtonLink.toModifier()
 ) {
     Button(
         onClick = { onClick() },
@@ -106,18 +99,15 @@ fun BaseButton(
         SpanText(text)
     }
 }
-
 @Composable
-fun StyledButton(
+fun PrimaryButton(
     text: String,
     onClick: () -> Unit,
-    enabled: Boolean = true,
-    isPrimary: Boolean = true
+    enabled: Boolean = true
 ) {
-    val style = if (isPrimary) Styles.ButtonPrimary else Styles.ButtonSecondary
     Button(
-        onClick = { onClick() },
-        modifier = style.toModifier(),
+        onClick = {onClick()},
+        modifier = Styles.ButtonPrimary.toModifier(),
         enabled = enabled
     ) {
         SpanText(text)
@@ -125,13 +115,13 @@ fun StyledButton(
 }
 
 @Composable
-fun ResetButton(
+fun SecondaryButton(
     text: String,
     onClick: () -> Unit,
     enabled: Boolean = true
 ) {
     Button(
-        onClick = { onClick() },
+        onClick ={onClick()},
         modifier = Styles.ButtonSecondary.toModifier(),
         enabled = enabled
     ) {
@@ -139,22 +129,24 @@ fun ResetButton(
     }
 }
 
+// Simplified Action Button
 @Composable
 fun ActionButton(
     text: String,
-    loadingText: String = "Loading...",
     onClick: () -> Unit,
     isLoading: Boolean = false,
-    enabled: Boolean = true,
-    isSmall: Boolean = false
+    enabled: Boolean = true
 ) {
-    val style = if (isSmall) Styles.ButtonSmall else Styles.ButtonPrimary
     Button(
-        onClick = { onClick() },
-        modifier = style.toModifier(),
+        onClick = {onClick()},
+        modifier = Styles.ButtonPrimary.toModifier(),
         enabled = enabled && !isLoading
     ) {
-        SpanText(if (isLoading) loadingText else text)
+        if (isLoading) {
+            LoadingSpinner(size = SpinnerSize.Small, color = SpinnerColor.White)
+        } else {
+            SpanText(text)
+        }
     }
 }
 

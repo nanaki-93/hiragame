@@ -2,27 +2,19 @@ package com.github.nanaki_93.pages
 
 import androidx.compose.runtime.*
 import com.github.nanaki_93.components.styles.Styles
-import com.github.nanaki_93.components.widgets.ActionButton
-import com.github.nanaki_93.components.widgets.CenterColumn
-import com.github.nanaki_93.components.widgets.CenterRow
-import com.github.nanaki_93.components.widgets.FormField
-import com.github.nanaki_93.components.widgets.SessionExpiredAlert
-import com.github.nanaki_93.components.widgets.SpacedColumn
-import com.github.nanaki_93.components.widgets.SubTitleText
-import com.github.nanaki_93.components.widgets.TitleText
+import com.github.nanaki_93.components.widgets.*
 import com.github.nanaki_93.service.AuthService
 import com.github.nanaki_93.service.SessionManager
 import com.github.nanaki_93.util.launchSafe
+import com.varabyte.kobweb.compose.css.AlignItems
+import com.varabyte.kobweb.compose.css.JustifyContent
 import com.varabyte.kobweb.compose.foundation.layout.Box
-import com.varabyte.kobweb.compose.ui.modifiers.padding
-import com.varabyte.kobweb.compose.ui.modifiers.width
+import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.core.Page
-import com.varabyte.kobweb.silk.components.forms.Button
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
 import io.ktor.http.*
-import org.jetbrains.compose.web.css.cssRem
-import org.jetbrains.compose.web.css.px
+import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Form
 
 @Page("/login")
@@ -108,12 +100,19 @@ fun LoginPage() {
         )
     }
 
-    Box(Styles.GameContainer.toModifier()) {
+    Box(
+        Styles.GameContainer.toModifier()
+            .display(DisplayStyle.Flex)
+            .alignItems(AlignItems.Center)
+            .justifyContent(JustifyContent.Center)
+            .minHeight(100.vh)
+    ) {
         CenterColumn(
-            1.5.cssRem,
+            spacing = 1.5.cssRem,
             modifier = Styles.Card.toModifier()
                 .width(400.px)
-                .padding(2.cssRem),
+                .padding(2.cssRem)
+                .boxShadow(0.px, 8.px, 32.px, color = rgba(0, 0, 0, 0.10))
         ) {
             CenterColumn(1.cssRem) {
                 TitleText("ひらがな Master")
@@ -152,17 +151,16 @@ fun LoginPage() {
                 }
             }
 
+
             CenterRow {
                 SpanText(
                     if (isLogin) "Don't have an account? " else "Already have an account? ",
                     Styles.ToggleText.toModifier()
                 )
-                Button(
+                BaseButton(
                     onClick = { isLogin = !isLogin },
-                    modifier = Styles.ButtonLink.toModifier()
-                ) {
-                    SpanText(if (isLogin) "Register" else "Login")
-                }
+                    text = if (isLogin) "Register" else "Login"
+                )
             }
 
         }
