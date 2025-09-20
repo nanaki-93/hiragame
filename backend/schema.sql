@@ -7,6 +7,8 @@ CREATE TABLE if not exists jp_user
     id         uuid PRIMARY KEY   DEFAULT uuid_generate_v4(),
     username   text      NOT NULL UNIQUE,
     password   text      NOT NULL,
+    refresh_token text,
+    expires_at timestamp,
     created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

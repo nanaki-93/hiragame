@@ -28,7 +28,13 @@ class JpUser(
 
     @UpdateTimestamp
     @Column(name = "updated_at")
-    val updatedAt: LocalDateTime = LocalDateTime.now()
+    val updatedAt: LocalDateTime = LocalDateTime.now(),
+
+    @Column(name = "refresh_token")
+    val refreshToken: String? = null,
+
+    @Column(name = "expires_at")
+    val expiresAt: LocalDateTime? = null
 )
 
 
@@ -36,6 +42,27 @@ class JpUser(
 interface UserRepository : JpaRepository<JpUser, UUID> {
     fun findByUsername(username: String): Optional<JpUser>
     fun existsByUsername(username: String): Boolean
+    fun findByRefreshToken(refreshToken: String): JpUser?
+}
+
+fun JpUser.copy(
+    id: UUID? = this.id,
+    username: String? = this.username,
+    password: String? = this.password,
+    createdAt: LocalDateTime? = this.createdAt,
+    updatedAt: LocalDateTime? = this.updatedAt,
+    refreshToken: String? = this.refreshToken,
+    expiresAt: LocalDateTime? = this.expiresAt
+): JpUser {
+    return JpUser(
+        id = id ?: this.id,
+        username = username ?: this.username,
+        password = password ?: this.password,
+        createdAt = createdAt ?: this.createdAt,
+        updatedAt = updatedAt ?: this.updatedAt,
+        refreshToken = refreshToken ?: this.refreshToken,
+        expiresAt = expiresAt ?: this.expiresAt
+    )
 }
 
 fun JpUser.ToUserDetail() = User.builder()
