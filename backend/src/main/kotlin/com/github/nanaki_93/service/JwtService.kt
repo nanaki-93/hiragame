@@ -6,6 +6,8 @@ import io.jsonwebtoken.Jws
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.HttpServletRequest
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.*
@@ -13,7 +15,9 @@ import javax.crypto.SecretKey
 
 @Service
 class JWTService {
-
+    companion object {
+        private val logger: Logger = LoggerFactory.getLogger(JWTService::class.java)
+    }
     @Value($$"${jwt.secret:your-super-secret-key-here-make-it-long-and-random-at-least-256-bits}")
     private lateinit var secretKey: String
 
@@ -58,6 +62,7 @@ class JWTService {
     fun isTokenExpired(token: String): Boolean {
         val jwt = extractJwt(token)
         if (extractExpiration(token).before(Date())) {
+            logger.error("Token expired: $token")
             throw ExpiredJwtException(jwt.header, jwt.payload, "Token expired")
         }
         return false

@@ -69,9 +69,10 @@ object Base {
         .color(Colors.Text)
         .outline(0.px) // Remove default outline
 
-    fun text(size: CSSLengthValue = 1.cssRem, weight: FontWeight = FontWeight.Normal) = Modifier
+    fun text(size: CSSLengthValue = 1.cssRem, weight: FontWeight = FontWeight.Normal,style: FontStyle = FontStyle.Normal) = Modifier
         .fontSize(size)
         .fontWeight(weight)
+        .fontStyle(style)
         .color(Colors.Text)
 
     fun headingText() = Modifier.fontFamily("'Zen Old Mincho', serif", "Noto Sans Japanese", "sans-serif").fontWeight(FontWeight.Bold)
@@ -94,48 +95,27 @@ object Styles {
     val Question = CssStyle.base { Base.text(4.cssRem, FontWeight.Bold).margin(1.cssRem, 0.px).textShadow(3.px, 3.px, 6.px, rgba(0, 0, 0, 0.1)) }
     val Prompt = CssStyle.base { Base.text(1.2.cssRem).color(Colors.TextSubtle).margin(1.cssRem, 0.px) }
     val Label = CssStyle.base { Base.text(0.8.cssRem).color(Colors.TextSubtle) }
+    val TitleLabel = CssStyle.base { Base.text(size = 1.2.cssRem).color(Colors.TextSubtle) }
+    val TitleValue = CssStyle.base { Base.text(size = 1.2.cssRem, weight = FontWeight.Bold) }
+    val NoValue = CssStyle.base { Base.text(1.2.cssRem).color(Colors.Text) }
+
     val Value = CssStyle.base { Base.text(1.2.cssRem, FontWeight.Bold) }
     val Error = CssStyle.base { Base.text(0.9.cssRem, FontWeight.Bold).textAlign(TextAlign.Center).backgroundColor(Colors.Error).color(Color.white).borderRadius(8.px).padding(0.5.cssRem).boxShadow(0.px, 2.px, 8.px, color =  rgba(0, 0, 0, 0.08)) }
-    val ButtonPrimary = CssStyle.base {
-        Base.button()
-            .backgroundColor(Colors.Primary)
-            .color(Color.white)
-            .boxShadow(0.px, 4.px, 15.px, color = rgba(0, 0, 0, 0.2))
-    }
-
-    val ButtonSecondary = CssStyle.base {
-        Base.button()
-            .backgroundColor(Color.transparent)
-            .color(Colors.Text)
-            .border(2.px, LineStyle.Solid, Colors.Border) // A solid border to define it
-    }
-
-    val ButtonSmall = CssStyle.base {
-        Base.button()
-            .padding(0.5.cssRem, 0.8.cssRem)
-            .fontSize(0.9.cssRem)
-            .minWidth(80.px)
-    }
+    val ButtonPrimary = CssStyle.base { Base.button().backgroundColor(Colors.Primary).color(Color.white).boxShadow(0.px, 4.px, 15.px, color = rgba(0, 0, 0, 0.2)) }
+    val ButtonSecondary = CssStyle.base { Base.button().backgroundColor(Color.transparent).color(Colors.Text).border(2.px, LineStyle.Solid, Colors.Border)  }
+    val ButtonSmall = CssStyle.base { Base.button().padding(0.5.cssRem, 0.8.cssRem).fontSize(0.9.cssRem).minWidth(80.px) }
     val ButtonLink = CssStyle.base { Modifier.backgroundColor(Color.transparent).color(Colors.Primary).textDecorationLine(TextDecorationLine.Underline).fontSize(0.9.cssRem).cursor(Cursor.Pointer) }
     val Input = CssStyle.base { Base.input().fillMaxWidth() }
 
-    val InputSimple = CssStyle.base {
-        Base.input()
-            .border(1.px, LineStyle.Solid, Colors.Border)
-            .boxShadow(0.px, 2.px, 5.px, color = rgba(0, 0, 0, 0.05))
-            .transition(Transition.of("border-color", 0.2.s))
-            .then(Modifier.onClick { Modifier.border(1.px,LineStyle.Solid, Colors.Primary) })
-    }
+    val InputSimple = CssStyle.base { Base.input().border(1.px, LineStyle.Solid, Colors.Border).boxShadow(0.px, 2.px, 5.px, color = rgba(0, 0, 0, 0.05)).transition(Transition.of("border-color", 0.2.s)).then(Modifier.onClick { Modifier.border(1.px,LineStyle.Solid, Colors.Primary) }) }
     val InputLarge = CssStyle.base { Base.input().fontSize(1.2.cssRem).textAlign(TextAlign.Center).width(100.percent).margin(1.cssRem, 0.px).border(2.px, LineStyle.Solid, Colors.Border).borderRadius(10.px) }
     val FeedbackMessage = CssStyle.base { Base.text(1.1.cssRem, FontWeight.Bold).margin(1.cssRem, 0.px) }
-    val ModalOverlay = CssStyle.base { Modifier.position(Position.Fixed).top(0.px).left(0.px).width(100.vw).height(100.vh).backgroundColor(rgba(0, 0, 0, 0.4)).zIndex(1000).display(DisplayStyle.Flex).alignItems(
-        AlignItems.Center).justifyContent(JustifyContent.Center) }
+    val ModalOverlay = CssStyle.base { Modifier.position(Position.Fixed).top(0.px).left(0.px).width(100.vw).height(100.vh).backgroundColor(rgba(0, 0, 0, 0.4)).zIndex(1000).display(DisplayStyle.Flex).alignItems(AlignItems.Center).justifyContent(JustifyContent.Center) }
     val ModalDialog = CssStyle.base { Base.card().minWidth(300.px).maxWidth(400.px).boxShadow(0.px, 4.px, 16.px, color = rgba(0, 0, 0, 0.2)) }
     val LoadingText = CssStyle.base { Base.text(0.9.cssRem).color(Colors.TextSubtle).opacity(0.7) }
     val ToggleText = CssStyle.base { Base.text(0.9.cssRem).color(Colors.Text).opacity(0.8) }
     val SpinnerKeyframes = Keyframes { 0.percent { Modifier.rotate(0.deg) }; 100.percent { Modifier.rotate(360.deg) } }
-    val Spinner = CssStyle.base { Modifier.borderRadius(50.percent).animation(SpinnerKeyframes.toAnimation(duration = 1.s, iterationCount = AnimationIterationCount.Infinite, timingFunction = AnimationTimingFunction.Linear)
-    ) }
+    val Spinner = CssStyle.base { Modifier.borderRadius(50.percent).animation(SpinnerKeyframes.toAnimation(duration = 1.s, iterationCount = AnimationIterationCount.Infinite, timingFunction = AnimationTimingFunction.Linear)) }
 }
 
 object StyleHelpers {

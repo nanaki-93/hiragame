@@ -11,6 +11,7 @@ import com.github.nanaki_93.util.launchSafe
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
+import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
@@ -34,7 +35,7 @@ fun HomePage() {
 
     var gameState by remember { mutableStateOf(GameState.LOADING) }
     var gameStateUi by remember { mutableStateOf(GameStateUi(userId = userId, stats = GameStatisticsUi())) }
-    var currentQuestion by remember { mutableStateOf(QuestionUi()) }
+    var currentQuestion by remember { mutableStateOf(QuestionDto()) }
     var availableLevels by remember { mutableStateOf(listOf<Level>()) }
 
 
@@ -59,15 +60,7 @@ fun HomePage() {
         gameState = GameState.SHOWING_FEEDBACK
 
         val userQuestionDto = UserQuestionDto(
-            userQuestionId = currentQuestion.id ?: "",
-            japanese = currentQuestion.japanese,
-            romanization = currentQuestion.romanization,
-            translation = currentQuestion.translation,
-            topic = currentQuestion.topic,
-            level = selectedLevel!!,
-            gameMode = selectedGameMode!!,
-            hasKatakana = currentQuestion.hasKatakana,
-            hasKanji = currentQuestion.hasKanji,
+            questionId = currentQuestion.id ?: "",
             userInput = userInput,
             userId = userId
         )
@@ -138,43 +131,44 @@ fun HomePage() {
             verticalArrangement = Arrangement.spacedBy(1.cssRem)
         ) {
 
-            Box(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(modifier = Modifier.align(Alignment.CenterStart)) {
-                    PrimaryButton(
-                        text = "Logout",
-                        onClick = {
-                            coroutineScope.launchSafe {
-                                authService.logout()
-                                kotlinx.browser.window.location.href = "/hiragame/login"
-                            }
+                horizontalArrangement = Arrangement.End,
+
+                ) {
+                BaseButton(
+                    text = "Logout",
+                    onClick = {
+                        coroutineScope.launchSafe {
+                            authService.logout()
+                            kotlinx.browser.window.location.href = "/hiragame/login"
                         }
-                    )
-                }
-                Column(modifier = Modifier.align(Alignment.Center)) {
-
-                    TitleText("ひらがな Master - $username")
-                }
+                    }
+                )
             }
-
+            CenterRow {
+                TitleText("ひらがな Master - $username")
+            }
 
 
             Spinner(isVisible = gameState == GameState.LOADING)
 
 
+
+
+            if (selectedGameMode != null) {
+                ModeItemRow("Game Mode:", selectedGameMode?.displayName)
+            }
+            if (selectedLevel != null) {
+                ModeItemRow("Level:", selectedLevel?.displayName)
+            }
+
+
             if (gameState != GameState.LOADING) {
 
                 SpacedRow {
-                    StatItem("GameMode", selectedGameMode?.displayName ?: "N/A")
-                    StatItem("Level", selectedLevel?.displayName ?: "N/A")
-                    StatItem("Score", "${gameStateUi.stats.score}")
-                }
-
-                SpacedRow {
-                    StatItem("Correct Answers", "${gameStateUi.stats.correctAnswers}")
-                    StatItem("Total Attempts", "${gameStateUi.stats.totalAnswered}")
+                    StatItem("Correct ", "${gameStateUi.stats.correctAnswers}")
+                    StatItem("Attempts", "${gameStateUi.stats.totalAnswered}")
                     StatItem("Streak", "${gameStateUi.stats.streak}")
                 }
             }
@@ -183,13 +177,14 @@ fun HomePage() {
                 LoadingText("Game mode selection will appear shortly...")
             }
 
+
             // Only show selector when in mode selection state
             if (gameState == GameState.MODE_SELECTION) {
 
                 SubTitleText("Select a game mode to continue:")
                 CenterRow {
                     GameMode.entries.forEach { mode ->
-                        ActionButton(
+                        PrimaryButton(
                             text = mode.displayName,
                             onClick = { coroutineScope.launchSafe { selectGameMode(mode) } },
                         )
@@ -204,7 +199,7 @@ fun HomePage() {
                 SubTitleText("Select your level:")
                 CenterRow {
                     for (level in availableLevels) {
-                        SecondaryButton(
+                        PrimaryButton(
                             text = "Lv-${level.displayName}",
                             onClick = {
                                 coroutineScope.launchSafe { selectLevel(level) }

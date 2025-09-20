@@ -6,6 +6,8 @@ import com.github.nanaki_93.repository.JpUser
 import com.github.nanaki_93.repository.UserRepository
 import com.github.nanaki_93.util.toUUID
 import io.jsonwebtoken.MalformedJwtException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -16,6 +18,9 @@ class AuthService(
     private val jwtService: JWTService,
     private val gameService: GameService,
 ) {
+    companion object {
+        private val logger: Logger = LoggerFactory.getLogger(AuthService::class.java)
+    }
 
     fun register(request: LoginRegisterRequest): AuthResponse {
         return try {
@@ -57,6 +62,7 @@ class AuthService(
     fun refreshToken(refreshToken: String): AuthResponse {
         return try {
             if (!jwtService.validateToken(refreshToken)) {
+                logger.error("Invalid refresh token: $refreshToken" )
                 throw MalformedJwtException("Invalid refresh token")
             }
 

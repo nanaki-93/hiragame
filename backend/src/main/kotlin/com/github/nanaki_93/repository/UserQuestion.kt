@@ -63,6 +63,7 @@ interface UserAnsweredQuestionRepository : JpaRepository<UserAnsweredQuestion, U
     fun findRandomBySelect(@Param("select") select: SelectRequest): UUID?
 
 
+    fun findByUserIdAndQuestionId(userId: UUID, questionId: UUID): Optional<UserAnsweredQuestion>
 
     // Find all questions a user has not answered in a specific game mode
     @Query("SELECT uaq FROM UserAnsweredQuestion uaq WHERE uaq.userId = :userId AND uaq.gameMode = :gameMode AND uaq.isCorrect = false and uaq.level= :level")
