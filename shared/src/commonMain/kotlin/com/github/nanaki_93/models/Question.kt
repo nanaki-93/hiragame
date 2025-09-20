@@ -5,26 +5,16 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserQuestionDto(
-    val userQuestionId: String,
-    val japanese: String,
-    val romanization: String,
-    val translation: String? = null,
-    val topic: String = "",
-    val level: Level = Level.N5,
-    val gameMode: GameMode = GameMode.SIGN,
-    val hasKatakana: Boolean = false,
-    val hasKanji: Boolean = false,
+    val questionId: String,
     val userInput: String? = null,
     val userId: String,
 )
 
 
 @Serializable
-data class QuestionUi(
+data class QuestionDto(
     val id: String? = null,
     val japanese: String ="",
-    val romanization: String ="",
-    val translation: String ="",
     val topic: String = "",
     val level: Level = Level.N5,
     val gameMode: GameMode = GameMode.SIGN,

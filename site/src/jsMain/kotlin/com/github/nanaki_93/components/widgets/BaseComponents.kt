@@ -73,6 +73,17 @@ fun ItemColumn(
     ) { content() }
 }
 
+@Composable
+fun ModeColumn(
+    flexValue: Int = 1,
+    content: @Composable () -> Unit
+) {
+    Column(
+        Modifier.flex(flexValue).then(Styles.StatItem.toModifier()),
+        horizontalAlignment = Alignment.Start
+    ) { content() }
+}
+
 
 @Composable
 fun CenteredButtonRow(content: @Composable () -> Unit) {
@@ -167,13 +178,27 @@ fun SubTitleText(text: String) {
 }
 
 @Composable
+fun TitleLabelText(text: String) {
+    SpanText(text, Styles.TitleLabel.toModifier())
+}
+@Composable
+fun TitleValueText(text: String?) {
+    SpanText(text?:"", Styles.TitleValue.toModifier())
+}
+
+@Composable
 fun LabelText(text: String) {
     SpanText(text, Styles.Label.toModifier())
 }
 
 @Composable
-fun ValueText(text: String) {
-    SpanText(text, Styles.Value.toModifier())
+fun ValueText(text: String?) {
+    if (text == null) {
+        SpanText("N/A", Styles.NoValue.toModifier())
+    }else{
+        SpanText(text, Styles.Value.toModifier())
+    }
+
 }
 
 @Composable
@@ -288,9 +313,26 @@ fun FormField(
 }
 
 @Composable
-fun StatItem(label: String, value: String) {
+fun StatItem(label: String, value: String?) {
     ItemColumn {
         LabelText(label)
         ValueText(value)
     }
 }
+
+@Composable
+fun ModeItemRow(label: String, value: String?) {
+    SpacedRow {
+        ModeItem(label, value)
+    }
+}
+@Composable
+fun ModeItem(label: String, value: String?) {
+    ModeColumn (2){
+        SpacedRow {
+            TitleLabelText(label)
+            TitleValueText(value)
+        }
+    }
+}
+

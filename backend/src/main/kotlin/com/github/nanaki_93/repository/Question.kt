@@ -1,10 +1,9 @@
 package com.github.nanaki_93.repository
 
 
-import com.github.nanaki_93.dto.ai.QuestionDto
 import com.github.nanaki_93.models.GameMode
 import com.github.nanaki_93.models.Level
-import com.github.nanaki_93.models.QuestionUi
+import com.github.nanaki_93.models.QuestionDto
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
@@ -56,28 +55,13 @@ interface QuestionRepository : JpaRepository<Question, UUID> {
 
 }
 
-fun Question.toUi(): QuestionUi = QuestionUi(
+fun Question.toUi(): QuestionDto = QuestionDto(
     id = id.toString(),
     japanese = japanese,
-    romanization = romanization,
-    translation = translation,
     topic = topic,
     level = level,
     gameMode = gameMode,
     createdAt = createdAt.toString(),
     hasKatakana = hasKatakana,
     hasKanji = hasKanji
-)
-
-fun Question.toDto() = QuestionDto(
-    id = id,
-    japanese = japanese,
-    romanization = romanization,
-    translation = translation,
-    topic = topic,
-    level = level,
-    gameMode = gameMode,
-    createdAt = createdAt,
-    hasKatakana = hasKatakana,
-    hasKanji = hasKanji,
 )

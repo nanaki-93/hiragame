@@ -1,19 +1,12 @@
 package com.github.nanaki_93.service
 
 import com.github.nanaki_93.models.*
-import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.js.*
 import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
-import io.ktor.serialization.kotlinx.json.*
-import kotlinx.serialization.json.Json
-import org.w3c.workers.Client
 
 
 class GameService(private val authService: AuthService) {
@@ -22,7 +15,7 @@ class GameService(private val authService: AuthService) {
 
     private val baseUrl: String = "http://localhost:8080/api" // TODO: externalize
 
-    suspend fun processAnswer(user: UserQuestionDto): GameStateUi {
+    suspend fun processAnswer(answer: UserQuestionDto): GameStateUi {
 
         return authenticatedRequest(
             name = "processAnswer",
@@ -30,7 +23,7 @@ class GameService(private val authService: AuthService) {
         ) {
             val response = client.post("${baseUrl}/process-answer") {
                 contentType(ContentType.Application.Json)
-                setBody(user)
+                setBody(answer)
             }
             println("processAnswer: ${response.status}")
             if (response.status == Unauthorized) {
@@ -41,7 +34,7 @@ class GameService(private val authService: AuthService) {
         }
     }
 
-    suspend fun getNextQuestion(selectRequest: SelectRequest): QuestionUi {
+    suspend fun getNextQuestion(selectRequest: SelectRequest): QuestionDto {
 
         return authenticatedRequest(
             name = "getNextQuestion",
@@ -51,11 +44,9 @@ class GameService(private val authService: AuthService) {
                 contentType(ContentType.Application.Json)
                 setBody(selectRequest)
             }
-            println("getNextQuestion: ${response.status}")
             if (response.status == Unauthorized) {
                 throw ClientRequestException(response, "isAuthenticated: ${response.status}")
             }
-
             response.body()
         }
     }

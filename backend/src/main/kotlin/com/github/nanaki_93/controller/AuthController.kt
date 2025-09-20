@@ -29,9 +29,6 @@ import org.springframework.web.bind.annotation.RestController
 class AuthController(private val authService: AuthService, private val jwtService: JWTService) {
 
 
-    companion object {
-        private val logger: Logger = LoggerFactory.getLogger(AuthController::class.java)
-    }
 
     @PostMapping("/login")
     fun login(
@@ -71,9 +68,7 @@ class AuthController(private val authService: AuthService, private val jwtServic
 
             val username = jwtService.extractUsername(it)
             if (jwtService.validateToken(it)) {
-                val user = authService.getUserByUsername(username) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .build()
-                logger.info("User data retrieved: $user")
+                val user = authService.getUserByUsername(username) ?: return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
                 return ResponseEntity.ok(UserData(user.id.toString(), user.username))
             }
         }

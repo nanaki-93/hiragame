@@ -69,17 +69,18 @@ class GameService(
 //        return questions.map { QuestionRequest(it.japanese, it.romanization, it.translation) }
 //    }
 
-    fun processAnswer(question: UserQuestionDto): GameStateUi {
+    fun processAnswer(answer: UserQuestionDto): GameStateUi {
 
-        val currentState = userGameStateRepo.findByUserId(question.userId.toUUID()) ?: throw RuntimeException("Game State not found")
+        val currentState = userGameStateRepo.findByUserId(answer.userId.toUUID()) ?: throw RuntimeException("Game State not found")
+        val question = questionRepo.findById(answer.questionId.toUUID()).orElseThrow { RuntimeException("Question not found") }
 
-        if (question.userInput.equals(question.romanization, ignoreCase = true)) {
+        if (answer.userInput.equals(question.romanization, ignoreCase = true)) {
 
-            userQuestionRepo.findById(question.userQuestionId.toUUID()).ifPresent { userQuestion ->
+            userQuestionRepo.findByUserIdAndQuestionId(answer.userId.toUUID(),answer.questionId.toUUID()).ifPresent { userQuestion ->
                 userQuestionRepo.save(userQuestion.toDto().copy(isCorrect = true, answeredAt = now()).toModel())
             }
 
-            val currLevelState = levelRepo.findByUserIdAndLevelAndGameMode(question.userId.toUUID(), question.level, question.gameMode)
+            val currLevelState = levelRepo.findByUserIdAndLevelAndGameMode(answer.userId.toUUID(), question.level, question.gameMode)
             //todo fix NextLevelCap
             if ((currLevelState.correctCount + 1) == 100) {
                 levelRepo.save(currLevelState.toDto().copy(isAvailable = false, isCompleted = true, correctCount = 100).toModel())
@@ -119,7 +120,7 @@ class GameService(
 
 
         } else {
-            userQuestionRepo.findById(question.userQuestionId.toUUID()).ifPresent { uq ->
+            userQuestionRepo.findById(answer.questionId.toUUID()).ifPresent { uq ->
                 userQuestionRepo.save(uq.toDto().copy(isCorrect = false, answeredAt = now(), attemps = uq.attemps?.inc()).toModel())
             }
 
