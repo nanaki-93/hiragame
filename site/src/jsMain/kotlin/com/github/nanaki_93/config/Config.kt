@@ -15,7 +15,7 @@ object ConfigLoader {
     suspend fun loadConfig(): AppConfig {
         if (_config == null) {
             try {
-                val response = window.fetch("config.json").await()
+                val response = window.fetch("/hiragame/config.json").await()
                 val configText = response.text().await()
                 _config = Json.decodeFromString<AppConfig>(configText)
                 println("Config loaded")
