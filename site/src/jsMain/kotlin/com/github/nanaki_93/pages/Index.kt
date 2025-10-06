@@ -1,8 +1,11 @@
 package com.github.nanaki_93.pages
 
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import com.github.nanaki_93.components.styles.Styles
 import com.github.nanaki_93.components.widgets.*
+import com.github.nanaki_93.config.ConfigLoader
 import com.github.nanaki_93.models.*
 import com.github.nanaki_93.service.AuthService
 import com.github.nanaki_93.service.GameService
@@ -25,13 +28,18 @@ import org.jetbrains.compose.web.css.cssRem
 @Composable
 fun HomePage() {
 
+    var appConfig by remember { mutableStateOf(ConfigLoader.getDefaultConfig()) }
+    var isConfigLoaded by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        appConfig = ConfigLoader.loadConfig()
+        isConfigLoaded = true
+    }
     var userId by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
 
-
-    val authService = remember { AuthService() }
-    val gameService = remember { GameService(authService) }
+    val authService = remember(appConfig) { AuthService(appConfig) }
+    val gameService = remember(appConfig) { GameService(appConfig,authService) }
 
     var gameState by remember { mutableStateOf(GameState.LOADING) }
     var gameStateUi by remember { mutableStateOf(GameStateUi(userId = userId, stats = GameStatisticsUi())) }
@@ -93,7 +101,9 @@ fun HomePage() {
     }
 
     // Single LaunchedEffect for initialization
-    LaunchedEffect(Unit) {
+    LaunchedEffect(isConfigLoaded) {
+        if (!isConfigLoaded) return@LaunchedEffect
+
         // Step 1: Check JWT authentication
         if (!authService.isAuthenticated()) {
             kotlinx.browser.window.location.href = "/hiragame/login"

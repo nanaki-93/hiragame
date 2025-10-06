@@ -18,6 +18,7 @@ class JWTService {
     companion object {
         private val logger: Logger = LoggerFactory.getLogger(JWTService::class.java)
     }
+
     @Value($$"${jwt.secret:your-super-secret-key-here-make-it-long-and-random-at-least-256-bits}")
     private lateinit var secretKey: String
 
@@ -28,7 +29,7 @@ class JWTService {
     private var refreshExpiration: Long = 7200 // 5 days
 
     private val key: SecretKey by lazy {
-        Keys.hmacShaKeyFor(secretKey.toByteArray())
+        Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey))
     }
 
 
@@ -36,15 +37,17 @@ class JWTService {
 
     fun generateRefreshToken(userId: String, name: String): String = generateToken(userId, name, refreshExpiration)
 
-//    expiration is in minutes so from minute to millisecond is 60 * 1000
-    private fun generateToken(userId: String, username: String, expiration: Long): String =
-        Jwts.builder()
+    //    expiration is in minutes so from minute to millisecond is 60 * 1000
+    private fun generateToken(userId: String, username: String, expiration: Long): String {
+       return Jwts.builder()
             .subject(userId)
             .claim("username", username)
             .issuedAt(Date())
-            .expiration(Date(Date().time + expiration*1000*60))
+            .expiration(Date(Date().time + expiration * 1000 * 60))
             .signWith(key)
             .compact()
+
+    }
 
     fun extractUserId(token: String): String = extractClaim(token) { claims -> claims.subject }
     fun extractUsername(token: String): String = extractClaim(token) { claims -> claims.get("username", String::class.java) }

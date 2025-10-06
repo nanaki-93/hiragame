@@ -12,6 +12,7 @@ import com.github.nanaki_93.models.nextLevel
 import com.github.nanaki_93.repository.Question
 import com.github.nanaki_93.repository.QuestionRepository
 import com.github.nanaki_93.repository.UserAnsweredQuestion
+import com.github.nanaki_93.repository.UserAnsweredQuestionBulkRepository
 import com.github.nanaki_93.repository.UserAnsweredQuestionRepository
 import com.github.nanaki_93.repository.UserGameState
 import com.github.nanaki_93.repository.UserGameStateRepository
@@ -20,19 +21,23 @@ import com.github.nanaki_93.repository.UserLevel
 import com.github.nanaki_93.repository.UserLevelRepository
 import com.github.nanaki_93.repository.toDto
 import com.github.nanaki_93.util.toUUID
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime.now
 import java.util.Arrays
 import java.util.UUID
+import kotlin.math.log
 
 @Service
 class GameService(
     private val levelRepo: UserLevelRepository,
     private val userQuestionRepo: UserAnsweredQuestionRepository,
     private val userGameStateRepo: UserGameStateRepository,
-    private val questionRepo: QuestionRepository
+    private val questionRepo: QuestionRepository,
+    private val bulkRepository: UserAnsweredQuestionBulkRepository
 ) {
 
+    private val logger = LoggerFactory.getLogger(GameService::class.java)
     fun nextQuestion(selectReq: SelectRequest): Question? =
         userQuestionRepo.findRandomBySelect(selectReq)?.let {
             questionRepo.findById(it)
@@ -151,7 +156,9 @@ class GameService(
     }
 
     fun initGame(userId: UUID) {
+        logger.info("Starting initQuestions")
         initQuestions(userId)
+        logger.info("Finished initLevel")
         initLevel(userId)
     }
 
@@ -167,7 +174,10 @@ class GameService(
                     gameMode = question.gameMode,
                     level = question.level
                 )
-            }.let { userQuestionRepo.saveAll(it) }
+            }.let {
+                logger.info("Questions found : ${it.size}")
+                bulkRepository.bulkInsert(it)
+            }
     }
 
     private fun initLevel(userId: UUID) {
@@ -184,7 +194,10 @@ class GameService(
             }
         }.flatMap { it }
             .toList()
-            .let { levelRepo.saveAll(it) }
+            .let {
+                logger.info("Level found: ${it.size}")
+                levelRepo.saveAll(it)
+            }
     }
 
     private fun generateFeedback(isCorrect: Boolean, streak: Int, correctAnswer: String): String {

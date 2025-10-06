@@ -9,11 +9,11 @@ import io.ktor.http.*
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 
 
-class GameService(private val authService: AuthService) {
+class GameService(appConfig: AppConfig, private val authService: AuthService) {
 
     private val client = HttpClientProvider.client
 
-    private val baseUrl: String = "http://localhost:8080/api" // TODO: externalize
+    private val baseUrl: String = appConfig.apiUrl
 
     suspend fun processAnswer(answer: UserQuestionDto): GameStateUi {
 

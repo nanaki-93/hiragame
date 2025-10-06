@@ -1,24 +1,20 @@
 package com.github.nanaki_93.service
 
+import com.github.nanaki_93.models.AppConfig
 import com.github.nanaki_93.models.LoginRegisterRequest
 import com.github.nanaki_93.models.UserData
-import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.js.*
 import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.cookies.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.HttpStatusCode.Companion.Unauthorized
-import io.ktor.serialization.kotlinx.json.*
-import kotlinx.serialization.json.Json
 
 
-class AuthService {
+class AuthService(appConfig: AppConfig) {
     private val client = HttpClientProvider.client
 
-    private val baseUrl = "http://localhost:8080/api/auth"
+
+    private val baseUrl = appConfig.apiUrl+"/auth"
 
     suspend fun login(name: String, password: String): HttpStatusCode {
 

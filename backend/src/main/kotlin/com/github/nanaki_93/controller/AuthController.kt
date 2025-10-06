@@ -8,6 +8,8 @@ import com.github.nanaki_93.models.REFRESH_TOKEN
 import com.github.nanaki_93.models.UserData
 import com.github.nanaki_93.service.AuthService
 import com.github.nanaki_93.service.JWTService
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.Jws
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -91,13 +93,14 @@ class AuthController(private val authService: AuthService, private val jwtServic
     }
 
     private fun addCookie(httpRes: HttpServletResponse, jwt: String = "", cookieName: String) {
-        httpRes.addCookie(Cookie(cookieName, jwt).apply {
+        val cookie =Cookie(cookieName, jwt).apply {
             isHttpOnly = true
             path = "/"
             maxAge = 7 * 24 * 60 * 60  // 7 days in seconds
-            secure = false
-            domain = "localhost"
-        })
+            secure = true
+        }
+        val cookieHeader = "${cookie.name}=${cookie.value}; Path=${cookie.path}; Max-Age=${cookie.maxAge}; HttpOnly; Secure; SameSite=None"
+        httpRes.addHeader("Set-Cookie", cookieHeader)
     }
 
     private fun AuthResponse.handleAuthResponse(

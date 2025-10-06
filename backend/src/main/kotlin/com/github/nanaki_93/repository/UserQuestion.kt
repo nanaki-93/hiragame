@@ -8,9 +8,13 @@ import jakarta.persistence.*
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.collections.addAll
+import kotlin.compareTo
+import kotlin.text.append
 
 @Entity
 @Table(name = "user_answered_question")
@@ -103,3 +107,33 @@ fun UserAnsweredQuestion.toDto() = UserAnsweredQuestionDto(
     gameMode = gameMode,
     level = level,
 )
+
+
+
+@Repository
+class UserAnsweredQuestionBulkRepository(private val jdbcTemplate: JdbcTemplate) {
+    fun bulkInsert(questions: List<UserAnsweredQuestion>) {
+        if (questions.isEmpty()) return
+
+        val sql = StringBuilder("INSERT INTO user_answered_question (user_id, question_id, is_correct, attemps, answered_at, game_mode, level) VALUES ")
+        val params = mutableListOf<Any>()
+
+        questions.forEachIndexed { i, q ->
+            if (i > 0) sql.append(",")
+            sql.append("(?, ?, ?, ?, ?, ?, ?)")
+            params.addAll(
+                listOf(
+                    q.userId as Any,
+                    q.questionId as Any,
+                    q.isCorrect as Any,
+                    q.attemps as Any,
+                    q.answeredAt as Any,
+                    q.gameMode.name as Any,
+                    q.level.name as Any
+                )
+            )
+        }
+
+        jdbcTemplate.update(sql.toString(), *params.toTypedArray())
+    }
+}
