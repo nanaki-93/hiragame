@@ -60,8 +60,6 @@ kotlin {
     }
 }
 
-// ... existing configurations ...
-
 // Task to reorganize build output
         tasks.register<Copy>("reorganizeOutput") {
             dependsOn("jsBrowserDistribution")  // Add this dependency
@@ -70,16 +68,15 @@ kotlin {
             val publicDir = layout.buildDirectory.dir("dist/js/productionExecutable/public")
 
 
-            // Copy JS files to public/hiragame/
             from(productionDir) {
                 include("**/*.js")
                 include("**/*.js.map")
-                include("config.json")
+                include("config.prod.json")
+                rename("config.prod.json", "config.json")
                 exclude("public/**")
                 into("hiragame")
             }
 
-            // Copy static assets to public root
             from(productionDir) {
                 include("*.html")
                 include("*.ico")
@@ -89,6 +86,14 @@ kotlin {
             }
 
             into(publicDir)
+
+            doLast {
+                productionDir.get().asFile.listFiles()?.forEach { file ->
+                    if (file.name != "public") {
+                        file.deleteRecursively()
+                    }
+                }
+            }
         }
 
 tasks.named("build") {
