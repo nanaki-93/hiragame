@@ -1,0 +1,10 @@
+
+{
+  "apiUrl": "http://localhost:8080/api",
+  "appName": "Hiragame",
+  "debugMode": true,
+  "theme": {
+    "primaryColor": "#007bff",
+    "darkMode": true
+  }
+}

@@ -125,7 +125,7 @@ fun LoginPage() {
                 .boxShadow(0.px, 8.px, 32.px, color = rgba(0, 0, 0, 0.10))
         ) {
             CenterColumn(1.cssRem) {
-                TitleText("ひらがな Master")
+                TitleText("ひらがな Login")
                 SubTitleText(if (isLogin) "Welcome Back!" else "Create Account")
             }
 

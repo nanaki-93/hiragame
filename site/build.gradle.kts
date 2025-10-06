@@ -1,6 +1,6 @@
 import com.varabyte.kobweb.gradle.application.util.configAsKobwebApplication
 import kotlinx.html.meta
-import org.gradle.internal.impldep.bsh.commands.dir
+import org.gradle.kotlin.dsl.kotlin
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -58,4 +58,39 @@ kotlin {
             }
         }
     }
+}
+
+// ... existing configurations ...
+
+// Task to reorganize build output
+        tasks.register<Copy>("reorganizeOutput") {
+            dependsOn("jsBrowserDistribution")  // Add this dependency
+
+            val productionDir = layout.buildDirectory.dir("dist/js/productionExecutable")
+            val publicDir = layout.buildDirectory.dir("dist/js/productionExecutable/public")
+
+
+            // Copy JS files to public/hiragame/
+            from(productionDir) {
+                include("**/*.js")
+                include("**/*.js.map")
+                include("config.json")
+                exclude("public/**")
+                into("hiragame")
+            }
+
+            // Copy static assets to public root
+            from(productionDir) {
+                include("*.html")
+                include("*.ico")
+                include("*.png")
+                include("*.svg")
+                exclude("public/**")
+            }
+
+            into(publicDir)
+        }
+
+tasks.named("build") {
+    finalizedBy("reorganizeOutput")
 }
