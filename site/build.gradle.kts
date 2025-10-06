@@ -1,5 +1,6 @@
 import com.varabyte.kobweb.gradle.application.util.configAsKobwebApplication
 import kotlinx.html.meta
+import org.gradle.internal.impldep.bsh.commands.dir
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -28,15 +29,17 @@ kobweb {
                 meta(name = "keywords", content = "hiragana, japanese, learning, game, education")
             }
         }
+
     }
 }
 
 kotlin {
     configAsKobwebApplication("hiragame")
 
+    js {
+        browser()
+    }
     sourceSets {
-
-
         val jsMain by getting {
             dependencies {
                 implementation(libs.compose.runtime)

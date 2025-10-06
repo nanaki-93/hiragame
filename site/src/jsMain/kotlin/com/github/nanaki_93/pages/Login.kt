@@ -1,8 +1,10 @@
 package com.github.nanaki_93.pages
 
 import androidx.compose.runtime.*
+import androidx.compose.runtime.setValue
 import com.github.nanaki_93.components.styles.Styles
 import com.github.nanaki_93.components.widgets.*
+import com.github.nanaki_93.config.ConfigLoader
 import com.github.nanaki_93.service.AuthService
 import com.github.nanaki_93.service.SessionManager
 import com.github.nanaki_93.util.launchSafe
@@ -20,10 +22,18 @@ import org.jetbrains.compose.web.dom.Form
 @Page("/login")
 @Composable
 fun LoginPage() {
-    val authService = remember { AuthService() }
+    var appConfig by remember { mutableStateOf(ConfigLoader.getDefaultConfig()) }
+    var isConfigLoaded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        appConfig = ConfigLoader.loadConfig()
+        isConfigLoaded = true
+    }
+    val authService = remember(appConfig) { AuthService(appConfig) }
 
     // Check if already logged in
-    LaunchedEffect(Unit) {
+    LaunchedEffect(isConfigLoaded) {
+        if (!isConfigLoaded) return@LaunchedEffect
         try {
             if (authService.isAuthenticated()) {
                 kotlinx.browser.window.location.href = "/hiragame"

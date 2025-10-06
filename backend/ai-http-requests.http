@@ -40,4 +40,13 @@ Content-Type: application/json
 ###
 GET http://localhost:8080/api/auth/is-authenticated
 Content-Type: application/json
-Cookie: access_token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI2N2Q1ZmJiZC01YTE2LTQwMzAtOTYzZS1hMDY0OWFhOTJjM2YiLCJ1c2VybmFtZSI6Im5hbmFraSIsImlhdCI6MTc1Nzc1NzU2MywiZXhwIjoxNzU3NzU3NTczfQ.OPkXiJJTlrpirK94Gp-Q10ues4h70ZooA0yeex66nm7WSGdOVdLElAoll-Bmk7oWLnc-Q95WWO3UrFhV_NJ-9w; Max-Age=604800; Expires=Sat, 20 Sep 2025 09:59:23 GMT; Domain=localhost; Path=/; HttpOnly
+Cookie: access_token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJmZjU5MWE4Zi01NTk1LTRhZTctODk0Ny1kYTAzNDQ5YWU2YmEiLCJ1c2VybmFtZSI6Im5hbmFraTIiLCJpYXQiOjE3NTg1NzI5ODAsImV4cCI6MTc1ODU3Mzg4MH0.VIkSvHomKi0pV2wMmdCubZudNwV_B2DDro6U8yJ03ee9IL4Mnuy9S1D60LPRDouRGkh6M9EGhIM5PgOdaYhLyA; Max-Age=604800; Expires=Sat, 20 Sep 2025 09:59:23 GMT; Domain=localhost; Path=/; HttpOnly
+
+###
+GET http://localhost:8080/api/auth/hiragame-up
+Content-Type: application/json
+
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmZjU5MWE4Zi01NTk1LTRhZTctODk0Ny1kYTAzNDQ5YWU2YmEiLCJ1c2VybmFtZSI6Im5hbmFraTIiLCJpYXQiOjE3NTg1NzQxODUsImV4cCI6MTc1ODU3NTA4NX0.OY8yN0aShV9u9fQINFWDOacYbYlzI2fLe8uii7MaI6o
+
+###
+GET http://localhost:8080/api/auth/generate-token
