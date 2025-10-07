@@ -46,13 +46,13 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:${{ github.sha }} .
-          docker push us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:${{ github.sha }}
+          docker build -t us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:latest .
+          docker push us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:latest
 
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy hiragame \
-            --image=us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:${{ github.sha }} \
+            --image=us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:latest \
             --min-instances=0 \
             --set-env-vars=DB_USERNAME=supabase-db-user:latest,FRONTEND_ORIGIN_ALLOWED=https://hiragame.web.app \
             --set-secrets=DB_URL=supabase-db-url:latest,DB_PASSWORD=supabase-db-password:latest \
