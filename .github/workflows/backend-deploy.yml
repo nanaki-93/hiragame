@@ -1,0 +1,62 @@
+name: Deploy Backend to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - 'shared/**'
+      - 'Dockerfile'
+      - '.github/workflows/backend-deploy.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Build backend
+        run: ./gradlew backend:build
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker us-east1-docker.pkg.dev
+
+      - name: Build and Push Docker image
+        run: |
+          docker build -t us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/${{ secrets.GCP_PROJECT_ID }}:${{ github.sha }} .
+          docker push us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/${{ secrets.GCP_PROJECT_ID }}:${{ github.sha }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud beta run deploy hiragame \
+            --image=us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/${{ secrets.GCP_PROJECT_ID }}:${{ github.sha }} \
+            --min-instances=0 \
+            --set-env-vars=DB_USERNAME=supabase-db-user:latest \
+            --set-env-vars=FRONTEND_ORIGIN_ALLOWED=https://hiragame.web.app \
+            --set-secrets=DB_URL=supabase-db-url:latest,DB_PASSWORD=supabase-db-password:latest \
+            --region=europe-west1 \
+            --project=${{ secrets.GCP_PROJECT_ID }} \
+            && gcloud run services update-traffic hiragame --to-latest --region=europe-west1 --project=${{ secrets.GCP_PROJECT_ID }}
