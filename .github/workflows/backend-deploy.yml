@@ -46,17 +46,20 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/${{ secrets.GCP_PROJECT_ID }}:latest .
-          docker push us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/${{ secrets.GCP_PROJECT_ID }}:latest
+          docker build -t us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:latest .
+          docker push us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:latest
 
       - name: Deploy to Cloud Run
         run: |
           gcloud beta run deploy hiragame \
-            --image=us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/${{ secrets.GCP_PROJECT_ID }}:latest \
+            --image=us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:latest \
             --min-instances=0 \
             --set-env-vars=DB_USERNAME=supabase-db-user:latest \
             --set-env-vars=FRONTEND_ORIGIN_ALLOWED=https://hiragame.web.app \
             --set-secrets=DB_URL=supabase-db-url:latest,DB_PASSWORD=supabase-db-password:latest \
             --region=europe-west1 \
-            --project=${{ secrets.GCP_PROJECT_ID }} \
-            && gcloud run services update-traffic hiragame --to-latest --region=europe-west1 --project=${{ secrets.GCP_PROJECT_ID }}
+            --project=hiragame \
+            && gcloud run services update-traffic hiragame --to-latest --region=europe-west1 --project=hiragame
+          
+          
+          
