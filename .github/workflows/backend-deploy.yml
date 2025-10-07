@@ -39,7 +39,7 @@ jobs:
           gcloud run deploy hiragame \
             --image=us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:${{ github.sha }} \
             --min-instances=0 \
-            --update-env-vars=DB_USERNAME=supabase-db-user \
+            --update-env-vars=DB_USERNAME=postgres \
             --update-env-vars=FRONTEND_ORIGIN_ALLOWED=https://hiragame.web.app \
             --update-secrets=DB_URL=supabase-db-url:latest \
             --update-secrets=DB_PASSWORD=supabase-db-password:latest \
