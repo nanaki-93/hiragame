@@ -18,21 +18,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
-
-      - name: Build backend
-        run: ./gradlew backend:build
-
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -54,12 +39,10 @@ jobs:
           gcloud run deploy hiragame \
             --image=us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:latest \
             --min-instances=0 \
+            --set-env-vars=DB_USERNAME=postgres \
             --set-env-vars=FRONTEND_ORIGIN_ALLOWED=https://hiragame.web.app \
-            --set-secrets=DB_USERNAME=supabase-db-user:latest,DB_URL=supabase-db-url:latest,DB_PASSWORD=supabase-db-password:latest \
+            --set-secrets=DB_URL=supabase-db-url:latest,DB_PASSWORD=supabase-db-password:latest \
             --region=europe-west1 \
             --project=hiragame \
             --quiet \
             && gcloud run services update-traffic hiragame --to-latest --region=europe-west1 --project=hiragame --quiet
-              
-          
-          
