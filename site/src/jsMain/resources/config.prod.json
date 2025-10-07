@@ -1,0 +1,10 @@
+
+{
+  "apiUrl": "https://hiragame-414392531810.europe-west1.run.app/api",
+  "appName": "Hiragame Prod",
+  "debugMode": true,
+  "theme": {
+    "primaryColor": "#007bff",
+    "darkMode": true
+  }
+}
