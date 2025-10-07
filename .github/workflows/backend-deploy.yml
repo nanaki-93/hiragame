@@ -31,13 +31,13 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:latest .
-          docker push us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:latest
+          docker build -t us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:${{ github.sha }} .
+          docker push us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:${{ github.sha }}
 
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy hiragame \
-            --image=us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:latest \
+            --image=us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:${{ github.sha }} \
             --min-instances=0 \
             --set-env-vars=DB_USERNAME=postgres \
             --set-env-vars=FRONTEND_ORIGIN_ALLOWED=https://hiragame.web.app \
