@@ -46,8 +46,8 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:latest .
-          docker push us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:latest
+          docker build -t us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:${{ github.sha }} .
+          docker push us-east1-docker.pkg.dev/hiragame/nanaki-repo/nanaki93/hiragame:${{ github.sha }}
 
       - name: Deploy to Cloud Run
         run: |
