@@ -43,6 +43,10 @@ jobs:
             --update-env-vars=FRONTEND_ORIGIN_ALLOWED=https://hiragame.web.app \
             --update-secrets=DB_URL=supabase-db-url:latest \
             --update-secrets=DB_PASSWORD=supabase-db-password:latest \
+            --update-secrets=JWT_TOKEN=JWT_TOKEN:latest \
+            --update-secrets=SPRING_USER_NAME=SPRING_USER_NAME:latest \
+            --update-secrets=SPRING_USER_PASSWORD=SPRING_USER_PASSWORD:latest \
+            --update-secrets=SPRING_USER_ROLES=SPRING_USER_ROLES:latest \
             --region=europe-west1 \
             --project=hiragame \
             --port=8080 \
