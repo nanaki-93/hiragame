@@ -82,7 +82,7 @@ class GameService(
         if (answer.userInput.equals(question.romanization, ignoreCase = true)) {
 
             userQuestionRepo.findByUserIdAndQuestionId(answer.userId.toUUID(),answer.questionId.toUUID()).ifPresent { userQuestion ->
-                userQuestionRepo.save(userQuestion.toDto().copy(isCorrect = true, answeredAt = now()).toModel())
+                userQuestionRepo.save(userQuestion.toDto().copy(isCorrect = true, answeredAt = now(), lastAttemptedAt = now()).toModel())
             }
 
             val currLevelState = levelRepo.findByUserIdAndLevelAndGameMode(answer.userId.toUUID(), question.level, question.gameMode)
@@ -126,7 +126,7 @@ class GameService(
 
         } else {
             userQuestionRepo.findById(answer.questionId.toUUID()).ifPresent { uq ->
-                userQuestionRepo.save(uq.toDto().copy(isCorrect = false, answeredAt = now(), attemps = uq.attemps?.inc()).toModel())
+                userQuestionRepo.save(uq.toDto().copy(isCorrect = false, answeredAt = now(), attemps = uq.attemps?.inc(), lastAttemptedAt = now()).toModel())
             }
 
             val gameState = userGameStateRepo.save(
