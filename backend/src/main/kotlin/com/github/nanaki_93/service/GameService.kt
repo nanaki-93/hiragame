@@ -171,6 +171,7 @@ class GameService(
                     isCorrect = false,
                     attemps = 0,
                     answeredAt = now(),
+                    lastAttemptedAt = now(),
                     gameMode = question.gameMode,
                     level = question.level
                 )
