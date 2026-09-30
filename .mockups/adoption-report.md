@@ -1,8 +1,8 @@
 # F00 Adoption Report
 
-**Generated:** 2026-09-30 (Step 1.1 inventory; Step 1.2 presentation contracts; Steps 1.3–1.4 static validation tooling).
+**Generated:** 2026-09-30 (Step 1.1 inventory; Step 1.2 presentation contracts; Steps 1.3–1.4 static validation tooling; Step 2.1 palette/type explorations).
 
-**Status:** In progress; approvals pending. Read-only validator and tests exist; no HTML mocks or shared CSS exist yet.
+**Status:** In progress; approvals pending. Read-only validator/tests and draft palette/type HTML previews exist. No locked tokens, shared component CSS, screens or flows exist. Stop before Step 2.2 pending named palette/type selection.
 
 **Scan boundary:** Existing frontend pages, widgets, styles, shell, and services specified by `.pi/PLAN.md`; module/hosting boundaries inspected read-only.
 
@@ -203,17 +203,17 @@ Accessibility contract for every proposed surface: semantic landmarks/headings, 
 
 ## 4. Generated artifacts and planned coverage
 
-**Existing:** this report, linked from [root PLAN F00](../PLAN.md#f00--learning-experience-specification-and-mockups), plus [validator](../tools/validate_mockups.py) and [temporary-tree tests](../tools/test_validate_mockups.py).
+**Existing:** this report, linked from [root PLAN F00](../PLAN.md#f00--learning-experience-specification-and-mockups), plus [validator](../tools/validate_mockups.py), [temporary-tree tests](../tools/test_validate_mockups.py), [palette explorations](design-system/palette.html) and [typography explorations](design-system/typography.html).
 
-**Uncreated:** every HTML/CSS path listed below. Code-formatted planned paths are not working links. No project fixture or mirror has rendered; test-only HTML trees are temporary tooling fixtures. Future coverage rows must be promoted to real index/page/fragment links only after creation and validation.
+**Uncreated:** all other HTML/CSS paths below. Code-formatted planned paths are not working links. Palette/type previews rendered in Step 2.1 (§6.2); no learning fixture or mirror has rendered. Future coverage rows must be promoted to real index/page/fragment links only after creation and validation.
 
 ### Planned artifacts
 
-Paths are relative to `.mockups/` unless explicitly rooted at `tools/`. All rows except A-08: **planned, uncreated; approval/validation pending**.
+Paths are relative to `.mockups/` unless explicitly rooted at `tools/`. A-01 and A-08 exist; all other rows are **planned, uncreated; approval/validation pending**.
 
 | ID | Artifact | Planned path | Implementation owner |
 |---|---|---|---|
-| A-01 | Three palette / two type directions | `design-system/palette.html`, `design-system/typography.html` | Step 2.1 |
+| A-01 | Three palette / two type directions, draft; rendered/static-validated, selection pending | [palette](design-system/palette.html), [typography](design-system/typography.html) | Step 2.1; §6.2 evidence |
 | A-02 | Selected light/dark semantic tokens | `design-system/tokens.css` | Step 2.2, human selection prerequisite |
 | A-03 | Shared primitives / all applicable states | `design-system/components.html`, `design-system/components.css` | Steps 2.3–2.5 |
 | A-04 | Four Home layouts + comparison | `screens/f00-home/index.html`, `option-1.html`, `option-2.html`, `option-3.html`, `option-4.html` in that directory | Step 2.6 |
@@ -419,7 +419,7 @@ No mirror opt-out has been provided; no current accessibility exclusion has been
 | V-04 | `git diff --name-status`; `git ls-files --others --exclude-standard`; compare production and non-F00 PLAN baseline | PASS 2026-09-30: tracked diff only pre-existing IDE change; untracked report, root PLAN and pre-existing `.pi/` reviewed. Python SHA-256 comparison of 68 reference/IDE files against `/tmp/hiragame-f00-step11-baseline.json` unchanged; root PLAN before F00/after F01 and all unchecked counts unchanged | Step 1.1 and final integration |
 | V-05 | `python3 -m unittest discover -s tools -p 'test_validate_mockups.py'`; read-only temporary-tree coverage | PASS Step 1.4 escalation repair: 51 tests, including valid complete trees, each stage's missing artifacts, undefined/nested/inline tokens, dependencies (including image-set string candidates), script patterns, shared links, disconnected fixtures, coverage/mirrors, CLI errors, and unchanged bytes/mtime on success/failure | Steps 1.3–1.4 onward |
 | V-06 | Staged `python3 tools/validate_mockups.py .mockups --stage <stage>`; complete artifact/link/token/dependency/reachability validation | PASS Step 1.4: `python3 tools/validate_mockups.py .mockups --stage inventory` (report-only project tree); complete-stage success is tested only on temporary trees, not claimed for uncreated project mocks | Steps 1.3–1.4 onward, 5.1 |
-| V-07 | Palette/type contrast ratios and Japanese/light-dark previews; later focus/control pairings | Not measured; browsers/options unreviewed; record numeric pairs/results here when available | Steps 2.1–2.5, 5.1 |
+| V-07 | Palette/type contrast ratios and Japanese/light-dark previews; later focus/control pairings | PASS Step 2.1 exploration check: Chrome 154.0.8037.92, both previews/all themes inspected at 1320×1000 CSS px; 144 contrast rows independently recomputed, zero mismatches, six explicitly rejected tertiary-text failures. §6.2 has paths/results; selected-token/component evidence remains pending | Steps 2.1–2.5, 5.1 |
 | V-08 | Keyboard traversal, associated labels, semantic headings/landmarks, Japanese lang/ruby, persistent textual feedback/announcements | Not tested; record actual browser and per-page observations here | Steps 2.3 onward, 5.1 |
 | V-09 | Dialog open, Tab/Shift+Tab containment, safe initial focus, Escape/cancel/confirm, restoration and unchanged cancel | Not tested; record per-dialog results here | Steps 2.5, 4.2–4.3, 5.1 |
 | V-10 | Actual Japanese IME composition / Enter / duplicate submit and rating guards | Not tested; record browser/IME and transition observations here | Steps 3.3, 3.5–3.6, 5.1 |
@@ -439,7 +439,7 @@ Initial Step 1.4 execution rechecked applicable root/ancestor/target instruction
 
 Step 1.4 escalation repair read `task-4-attempt-1-execute.stdout.md`, `task-4-attempt-1-review.stdout.md`, `task-4-attempt-2-feedback.md`, and `task-4-review-checklist.md` under `.pi/workflows/2026-09-30T17-59-08-200Z-ropQPn/`. Both failed reviews repeat the same finding: remote quoted images in `image-set()` / `-webkit-image-set()` bypassed the CSS scanner, which skipped strings except `@import`/`url()` arguments. The original 48 tests omitted this syntax. New regressions reproduced the bypass before repair (49 failing subcases; `/tmp/hiragame-task4-image-set-red.log`). Function/candidate tracking now routes these string images through existing URL checks, without treating `type()` descriptors, nested-function strings, comments or ordinary content strings as assets. Added file/inline/attribute coverage for standard/prefixed/case/escaped names, initial/later candidates, escaped/scheme-relative URLs, missing/local/data images, nested images and CLI failures. An intermediate run caught an incorrect test expectation for inline HTML line numbers (16 assertion failures); corrected to the actual source line. Final required commands reran successfully: `python3 -m unittest discover -s tools -p 'test_validate_mockups.py'` (**51 tests, OK**), `python3 tools/validate_mockups.py .mockups --stage inventory` (**static checks passed**), and `git diff --check` (**no whitespace errors**). Applicable instructions were rechecked and remained absent. Only the three Step 1.4 targets were edited; unrelated IDE/workflow changes were preserved. This resolves the sole cumulative review finding; no later-task artifacts or approvals are claimed.
 
-Later browser checks are pending, **not** failed checks or passing attestations. Static validation will not prove accessibility, language quality or browser interaction. Evidence will record exact artifact paths and actual results; approvals remain separate.
+Journey/component browser checks remain pending, **not** failed checks or passing attestations. Step 2.1 preview evidence is recorded in §6.2. Static validation does not prove accessibility, language quality or browser interaction; approvals remain separate.
 
 ### 6.1 Static validator contract and limitations (Step 1.4)
 
@@ -452,6 +452,40 @@ Run `python3 tools/validate_mockups.py .mockups --stage <stage>`; omission of `-
 - **Fixtures:** Require lowercase kebab-case `data-fixture`, the same element's matching `id`, valid C-01–C-56/M-01–M-11 `data-coverage`, and no duplicate IDs/fixtures within a document. Home options can reuse IDs across documents. Require a **direct real local anchor link to each fixture fragment** from the same directory's index (components showcase indexes itself). A page-only link, selector/button/script value, unrelated index or indirect navigation path is insufficient under §4's one-click convention. Complete checks the specific (document, fixture, coverage) allocations, not just counts or IDs found anywhere. These checks prove authored inventory/discoverability only; they cannot prove hidden panels actually become visible, controls work, recovery is safe, or fixture contents satisfy the behavioral specification.
 
 Tooling uses only the Python standard library, reads artifacts without writing them, reports file/line-specific errors and exits nonzero on failures. Temporary test trees are created/removed outside the project; no visual options, locked tokens, production runtime, persisted learner state or approvals were introduced by this task.
+
+### 6.2 Step 2.1 visual explorations and evidence
+
+Rechecked first incomplete task against runner Step 2.1 and the complete task-5 review checklist (no previous findings). No interrupted preview work existed. Applicable ancestor/root/target AGENTS.md and target CLAUDE.md files remain absent; installer authorization was not supplied. Loaded palette/principles skills and token-vocabulary, preview-pages, aesthetic-poles, shared-chrome, UX-laws and cross-discipline references. System-only fonts override the skill's optional hosted-font suggestion under SPEC isolation rules. Production theme/README and the existing audit informed these proposals; unattended execution did not choose a user aesthetic.
+
+**Review entries (working relative links):**
+
+- [Palette P01 — Field Notes](design-system/palette.html#palette-01): warm amber/cream, reflective study notebook.
+- [Palette P02 — Workshop Signal](design-system/palette.html#palette-02): teal/mineral, precise engineering cues.
+- [Palette P03 — Phrase Press](design-system/palette.html#palette-03): violet/lilac, expressive editorial voice.
+- [Typography T01 — Conversation UI](design-system/typography.html#type-01): Japanese-capable system sans, 18px body/1.85 leading, compact 13–38px scale.
+- [Typography T02 — Reading Desk](design-system/typography.html#type-02): local serif/Mincho stack, 20px body/2.0 leading, spacious 14–48px scale; sans UI labels and monospace code.
+
+Direct review URLs: `file:///Users/marcoandreose/DEV/lab/hiragame/.mockups/design-system/palette.html` and `file:///Users/marcoandreose/DEV/lab/hiragame/.mockups/design-system/typography.html`. Optional static-server URLs after running `python3 -m http.server 8765 --bind 127.0.0.1 --directory .mockups`: `http://127.0.0.1:8765/design-system/palette.html` and `http://127.0.0.1:8765/design-system/typography.html`. That server command was not required/run in Step 2.1; direct-file previews were validated instead.
+
+Every palette has twenty proposed semantic swatches in **each** theme, card/link/code/button/error/control compositions, Japanese paragraphs, authored ruby and mixed technical identifiers. Native details expose the full swatches and measured tables without script. Typography shows identical Japanese/English copy in both themes, seven scale sizes, four weight samples and explicit fallback stacks. Its neutral comparison canvas is not a palette selection.
+
+**Contrast evidence:** [formula and recompute control](design-system/palette.html#method). Opaque sRGB luminance uses the 0.04045 transfer threshold and weighted channels; (lighter L + 0.05)/(darker L + 0.05). Each of 144 static rows includes foreground/background hex, higher-precision ratio data, displayed ratio, threshold and explicit PASS/FAIL. Thresholds: ordinary text/button labels/errors 4.5:1; large text/applicable focus/control indicators 3:1. Measures cover canvas/card/input body and secondary text, button default/hover, inverse surfaces, accent/link/hover, error/status and focus/strong input boundaries. Four-pixel focus offset means the ring is compared against the surrounding surface; decorative card borders are not treated as control boundaries.
+
+Browser JavaScript recomputation returned **144 rows; 6 below threshold; 0 precomputed mismatches**. The other 138 measured pairs pass their listed thresholds. Deliberately rejected tertiary-text candidates on canvas: P01 light **2.48:1**, dark **3.86:1**; P02 light **2.25:1**, dark **4.41:1**; P03 light **2.62:1**, dark **4.02:1** (all below 4.5:1). These failures are shown as readable warnings plus actual failing samples, not hidden or described as compliant. They are not a brand constraint or permission to use low-contrast enabled text; Step 2.2 must replace/restrict them before locking. Neutral typography canvas ratios: light primary **14.10:1**, secondary **6.77:1**; dark primary **14.80:1**, secondary **9.74:1**. No full WCAG-conformance claim.
+
+**Actual commands/results:**
+
+- `python3 -m unittest discover -s tools -p 'test_validate_mockups.py'` — **51 tests, OK**.
+- `python3 tools/validate_mockups.py .mockups --stage visual-options` — **static checks passed** after fixing an initial undefined `--swatch` in the typography preview's common inline style context. A local default now resolves the variable; no validator weakening or tooling edit.
+- `git diff --check` — passed; new HTML additionally checked with `git diff --no-index --check /dev/null <path>`.
+- `open .mockups/design-system/palette.html`; `open .mockups/design-system/typography.html` — both exited 0 (OS launch only, not an observation claim).
+- `'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --no-first-run --user-data-dir=/tmp/hiragame-step21-chrome --remote-debugging-port=9223` — launched isolated Chrome **154.0.8037.92**; `node /tmp/hiragame-step21-browser.mjs` used native WebSocket/CDP, no packages installed. Direct-file loading at **1320×1000 CSS px**, device scale 1.
+- Browser check verified six palette and four typography panes with intended computed light/dark colors/font stacks and seven authored ruby segments each; no desktop document horizontal overflow. All six preview actions produced page-local feedback; first button focused with a 3px outline. This is not full keyboard traversal or dialog evidence.
+- Captured and **visually inspected** `/tmp/hiragame-step21-evidence/palette-01-light-dark.png`, `palette-02-light-dark.png`, `palette-03-light-dark.png`, `type-01-light-dark.png`, `type-02-light-dark.png`: both themes visible side by side; paragraphs/ruby/technical identifiers fit; sans versus serif reading texture and heading/body hierarchy are meaningfully distinct; body text blocks have even visual density with no clipped readings. Browser results: `/tmp/hiragame-step21-evidence/browser-results.json`. Temporary browser script, generator and captures are execution evidence, not required repository artifacts.
+
+Checks for mobile/200% zoom, actual IME, screen readers, network/storage panels, components/dialogs and connected journeys remain their later-task obligations; no attestation or user approval was supplied. Palette/type exploration does not satisfy them.
+
+**Pending P-03 questions:** choose P01/P02/P03 or specify an exact hybrid; choose T01/T02 or specify which body/heading/UI stacks to combine. Provide reviewer/date, theme preference, density and conditions. Confirm fallback comfort on the reviewer's device. No direction is marked selected, no `tokens.css` exists, and no subsequent task is implemented. F00 remains in progress.
 
 ## 7. Approval ledger
 
@@ -477,4 +511,4 @@ All findings remain open; no production remediation was performed. Later-feature
 - **Important:** F-501 (quiz framing), F-601–603 (blank/error/session coupling), F-701 (timed feedback) → F00 journey/recovery fixtures; production **F02/F06/F07/F09**, auth/service retirement **F13**.
 - **Nit:** F-201 (overlapping wrappers) → simplify shared vocabulary; production **F11**.
 
-Step 1.2 defines presentation/fixture contracts against SPEC 3.1–3.3, with all coverage states allocated to a planned owner/index/fragment and Japanese examples pending review. Steps 1.3–1.4 implement the isolated read-only validator and tests; inventory-stage validation passes without requiring future mocks. Next planned implementation is Step 2.1: palette and typography explorations, stopping before token locking without explicit selection. No palette, components, screens, flows, serialization/storage runtime, convention installation or approval has been created.
+Step 1.2 defines presentation/fixture contracts against SPEC 3.1–3.3, with all coverage states allocated to a planned owner/index/fragment and Japanese examples pending review. Steps 1.3–1.4 implement the isolated read-only validator/tests. Step 2.1 creates and validates three palette/two typography explorations (§6.2). **Stop here pending P-03 human palette/type selection before Step 2.2 token locking.** No locked tokens, components, screens, flows, serialization/storage runtime, convention installation or approval has been created.
