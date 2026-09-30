@@ -1,8 +1,8 @@
 # F00 Adoption Report
 
-**Generated:** 2026-09-30 (Step 1.1 inventory; Step 1.2 presentation contracts; Steps 1.3–1.4 static validation tooling; Step 2.1 palette/type explorations).
+**Generated:** 2026-09-30 (Step 1.1 inventory; Step 1.2 presentation contracts; Steps 1.3–1.4 static validation tooling; Step 2.1 palette/type explorations; Step 2.2 selected semantic tokens).
 
-**Status:** In progress; approvals pending. Read-only validator/tests and draft palette/type HTML previews exist. No locked tokens, shared component CSS, screens or flows exist. Stop before Step 2.2 pending named palette/type selection.
+**Status:** In progress; later approvals pending. Read-only validator/tests, retained palette/type explorations and locked P03/T02 semantic tokens exist. Palette/type selection is user-verified via task-6 attestation (§6.3). No shared components, screens or flows exist; no later task implemented.
 
 **Scan boundary:** Existing frontend pages, widgets, styles, shell, and services specified by `.pi/PLAN.md`; module/hosting boundaries inspected read-only.
 
@@ -203,18 +203,18 @@ Accessibility contract for every proposed surface: semantic landmarks/headings, 
 
 ## 4. Generated artifacts and planned coverage
 
-**Existing:** this report, linked from [root PLAN F00](../PLAN.md#f00--learning-experience-specification-and-mockups), plus [validator](../tools/validate_mockups.py), [temporary-tree tests](../tools/test_validate_mockups.py), [palette explorations](design-system/palette.html) and [typography explorations](design-system/typography.html).
+**Existing:** this report, linked from [root PLAN F00](../PLAN.md#f00--learning-experience-specification-and-mockups), plus [validator](../tools/validate_mockups.py), [temporary-tree tests](../tools/test_validate_mockups.py), [palette explorations](design-system/palette.html) and [typography explorations](design-system/typography.html), plus [locked P03/T02 tokens](design-system/tokens.css).
 
 **Uncreated:** all other HTML/CSS paths below. Code-formatted planned paths are not working links. Palette/type previews rendered in Step 2.1 (§6.2); no learning fixture or mirror has rendered. Future coverage rows must be promoted to real index/page/fragment links only after creation and validation.
 
 ### Planned artifacts
 
-Paths are relative to `.mockups/` unless explicitly rooted at `tools/`. A-01 and A-08 exist; all other rows are **planned, uncreated; approval/validation pending**.
+Paths are relative to `.mockups/` unless explicitly rooted at `tools/`. A-01, A-02 and A-08 exist; all other rows are **planned, uncreated; approval/validation pending**.
 
 | ID | Artifact | Planned path | Implementation owner |
 |---|---|---|---|
-| A-01 | Three palette / two type directions, draft; rendered/static-validated, selection pending | [palette](design-system/palette.html), [typography](design-system/typography.html) | Step 2.1; §6.2 evidence |
-| A-02 | Selected light/dark semantic tokens | `design-system/tokens.css` | Step 2.2, human selection prerequisite |
+| A-01 | Three palette / two type directions retained; P03/T02 selected, static-validated | [palette](design-system/palette.html), [typography](design-system/typography.html) | Step 2.1; §6.2 evidence |
+| A-02 | Locked P03/T02 light/dark semantic tokens | [tokens.css](design-system/tokens.css) | Step 2.2; §6.3 selection/validation evidence |
 | A-03 | Shared primitives / all applicable states | `design-system/components.html`, `design-system/components.css` | Steps 2.3–2.5 |
 | A-04 | Four Home layouts + comparison | `screens/f00-home/index.html`, `option-1.html`, `option-2.html`, `option-3.html`, `option-4.html` in that directory | Step 2.6 |
 | A-05 | Hub index + four peers | `flows/learning-hub/index.html`, `01-home.html`, `02-topics.html`, `03-review.html`, `04-settings.html` in that directory | Steps 3.1–3.3, 3.7, 4.3 |
@@ -487,15 +487,35 @@ Checks for mobile/200% zoom, actual IME, screen readers, network/storage panels,
 
 **Pending P-03 questions:** choose P01/P02/P03 or specify an exact hybrid; choose T01/T02 or specify which body/heading/UI stacks to combine. Provide reviewer/date, theme preference, density and conditions. Confirm fallback comfort on the reviewer's device. No direction is marked selected, no `tokens.css` exists, and no subsequent task is implemented. F00 remains in progress.
 
+### 6.3 Step 2.2 selection, token lock and validation
+
+**Prerequisite / human evidence:** project user selected **T02 — Reading Desk** and **P03 — Phrase Press**. Exact statement: “T02 for the typography, P03 — Phrase Press for the palette”. Runner recorded this at **2026-09-30T23:10:40.640Z** for task 6 / source HEAD `81637daf628f56cb483ab7658013dfa706468640` in `.pi/workflows/2026-09-30T17-59-08-200Z-ropQPn/manual-attestation-task-6.json`. Reviewer attribution is the **project user**; no personal name, additional conditions, trimming permission, component/journey approval or language review was supplied. Selection is **user-verified**, not an agent-performed manual observation. Both selected artifact comments and the tokens header record this provenance.
+
+Rechecked the first incomplete task (2.2), cumulative task-6 checklist (no previous findings), working tree and applicable ancestor/root/target instructions; no AGENTS.md found. No interrupted token work existed. Loaded palette/principles and token vocabulary, token template and preview references. Only the four Step 2.2 target files changed. Pre-existing IDE, workflow and Python-cache files remain untouched. No convention installation, production changes, staging or commit performed in this execution step.
+
+**Locked contract:** [tokens.css](design-system/tokens.css), [palette reference](design-system/palette.html#selection), [typography reference](design-system/typography.html#selection). All three palettes and both typography explorations remain intact as history. The new reference panes consume shared tokens directly. Twenty colors per theme match P03 exactly except the previously **rejected** tertiary candidates (`#a68eb7` / `#887098`), which are replaced by the chosen secondary colors (`#655077` / `#d1b9e4`) for readable tertiary text. This fulfills the pre-existing contrast correction requirement, not a new palette direction. T02 preserves serif/Mincho body and headings, sans controls, monospace identifiers, 14/16/20/24/28/36/48px scale, 400/500/600/700 weights, 1.25/2.0/2.1 leading and zero added Japanese tracking. Fonts are system/local fallback stacks only; actual face availability remains device-dependent.
+
+Theme mechanism is explicit `[data-theme="light"]` / `[data-theme="dark"]` on root or preview subtree, **light default**, with no persistence or OS-following rule. Spacing uses 4/8/12/16/24/32/48/64px; radii 4/8/16/full. Visible focus tokens specify a 3px solid ring, 4px offset and selected theme focus color. This file defines the vocabulary only; shared component rules and full keyboard evidence belong to later tasks. Decorative border colors are not control boundaries: use border-strong for controls. Accent-muted backgrounds use primary text, not inverse text.
+
+**Actual validation commands/results:**
+
+- `python3 -m unittest discover -s tools -p 'test_validate_mockups.py'` — **51 tests, OK**.
+- `python3 tools/validate_mockups.py .mockups --stage tokens` — **static checks passed**, including all existing references/custom properties and required token artifact.
+- `python3 /tmp/hiragame-task6-verify.py` — **passed**; standard-library HTML/CSS extraction independently compares all 20 colors in each theme to P03 (only documented tertiary correction allowed), T02 body/leading/scale and all three font stacks. Reproduced all **144** historical contrast ratios within `1e-8`; selected P03 retains **46 passing** rows and **2 rejected historical tertiary** rows, neither candidate locked.
+- The same script recalculated **86 locked pairings** (43 per theme): primary/secondary/tertiary/link/link-hover/status text on all three surfaces; inverse text on accent/hover/inverse; primary on muted accent; focus/strong boundary/button fill/hover on all three surfaces. **All pass**: ordinary-text minima light **5.19:1**, dark **6.73:1** (≥4.5); applicable UI/focus minima light **3.39:1**, dark **4.64:1** (≥3). Tertiary canvas/card/input ratios: light **6.33 / 6.91 / 5.57:1**, dark **9.82 / 8.68 / 7.40:1**. Formula is the sRGB method in §6.2. Focus uses an offset ring on the surrounding surface, not an unsupported ring-on-accent pairing. No blanket accessibility claim.
+- `git diff --check` and `git diff --no-index --check /dev/null .mockups/design-system/tokens.css` — **passed**. `git diff --name-status` / `git ls-files --others --exclude-standard` reviewed: only the four target artifacts added/edited by this task; unrelated IDE/workflow/cache state preserved.
+
+Script evidence is `/tmp/hiragame-task6-verify.py` (execution artifact, not a new repository tool); its calculations use the current on-disk tokens and authored preview rows. No new browser/manual observation is claimed for Step 2.2; selected values are compared programmatically. Step 2.1 browser/capture evidence remains historical (§6.2), not evidence that the new reference panes were visually inspected. User attestation satisfies selection only. Required Step 2.2 automated checks ran; responsive, component, dialog, IME and journey checks remain later-task obligations.
+
 ## 7. Approval ledger
 
-No named approval or attestation was supplied. Every row is pending with reviewer/date/conditions **not supplied**; draft status or automated success cannot fill these fields.
+P-03 selection was supplied by the project user via runner attestation (§6.3). Other gates remain pending; automated success cannot fill human approval fields.
 
 | Gate | Exact decision/artifact required | Current status / workflow boundary |
 |---|---|---|
 | P-01 Convention installation | Explicit authorization for root AGENTS.md (or compatibility target) | Pending; leave absent; not a prerequisite to this authorized audit |
 | P-02 Adoption mode | Human MIRROR/REIMAGINE selection; REIMAGINE recommendation above | No human selection; do not represent recommendation as approval |
-| P-03 Palette + typography | Named reviewer/date/exact option(s)/conditions in report + selected artifact comments | Pending; Step 2.1 exploration allowed, stop before token locking Step 2.2 |
+| P-03 Palette + typography | Reviewer/date/exact option(s)/conditions in report + selected artifact comments | User-verified selection: project user, 2026-09-30T23:10:40.640Z, P03 Phrase Press / T02 Reading Desk, no conditions supplied; tokens locked, §6.3 |
 | P-04 Shared components | Exact showcase/CSS including dialogs, named reviewer/date/conditions | Pending; stop before Home composition Step 2.6 |
 | P-05 Home option or hybrid | Exact option/layout/conditions, named reviewer/date | Pending; stop before connected hub Step 3.1 |
 | P-06 Learning loop + connected journey | Exact palette/type/components/Home/flows/indexes and conditions, named reviewer/date | Pending; F00 cannot be complete until supplied and verified in Step 5.2 |
@@ -511,4 +531,4 @@ All findings remain open; no production remediation was performed. Later-feature
 - **Important:** F-501 (quiz framing), F-601–603 (blank/error/session coupling), F-701 (timed feedback) → F00 journey/recovery fixtures; production **F02/F06/F07/F09**, auth/service retirement **F13**.
 - **Nit:** F-201 (overlapping wrappers) → simplify shared vocabulary; production **F11**.
 
-Step 1.2 defines presentation/fixture contracts against SPEC 3.1–3.3, with all coverage states allocated to a planned owner/index/fragment and Japanese examples pending review. Steps 1.3–1.4 implement the isolated read-only validator/tests. Step 2.1 creates and validates three palette/two typography explorations (§6.2). **Stop here pending P-03 human palette/type selection before Step 2.2 token locking.** No locked tokens, components, screens, flows, serialization/storage runtime, convention installation or approval has been created.
+Step 1.2 defines presentation/fixture contracts against SPEC 3.1–3.3, with all coverage states allocated to a planned owner/index/fragment and Japanese examples pending review. Steps 1.3–1.4 implement the isolated read-only validator/tests. Step 2.1 creates and validates three palette/two typography explorations (§6.2). Step 2.2 locks user-selected P03/T02 tokens with measured contrast (§6.3). Next planned work is the shared-component showcase (Step 2.3), not implemented here. No components, screens, flows, serialization/storage runtime, convention installation or later approval has been created.
