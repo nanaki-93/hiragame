@@ -1,6 +1,6 @@
 # F00 Adoption Report
 
-**Generated:** 2026-09-30 (Step 1.1, inventory only).
+**Generated:** 2026-09-30 (Step 1.1 inventory; Step 1.2 presentation contracts added).
 
 **Status:** In progress; approvals pending. No HTML mocks or validator exist yet.
 
@@ -41,8 +41,8 @@ Source paths in the inventory/primitives tables are relative to `site/src/jsMain
 |---|---|---|---|
 | F-001 | Current authenticated quiz | Login/register → Home → mode → level → repeated answer/feedback; logout/session expiry → Login (`pages/Index.kt:108–110`, `:148–155`, `:192–262`; `pages/Login.kt:59–98`) | Source inventory only; not the target lesson loop |
 | F-002 | Proposed learning hub | Home, Topics/Learn, Review, Settings/Backup as peers | Spec-required; `.mockups/flows/learning-hub/index.html` planned, uncreated |
-| F-003 | Proposed focused workplace lesson | Six stages with previous/next, legitimate revisits and exit/resume (hybrid) | Spec-required; `.mockups/flows/workplace-lesson/index.html` planned, uncreated; detailed contract deferred to Step 1.2 |
-| F-004 | Proposed backup/restore | Sample choice → preview → confirm → result with cancel/return | Spec-required; `.mockups/flows/backup-restore/index.html` planned, uncreated; detailed replacement contract deferred to Step 1.2 |
+| F-003 | Proposed focused workplace lesson | Six stages with previous/next, legitimate revisits and exit/resume (hybrid) | Spec-required; `.mockups/flows/workplace-lesson/index.html` planned, uncreated; presentation contract in §3.1 below |
+| F-004 | Proposed backup/restore | Sample choice → preview → confirm → result with cancel/return | Spec-required; `.mockups/flows/backup-restore/index.html` planned, uncreated; replacement contract in §3.1 below |
 
 ### Design-system fragments and primitive decisions
 
@@ -123,12 +123,83 @@ All findings are open. Stable finding IDs follow the adoption template; they wil
 ## 3. Decisions and deferrals
 
 - **Recommendation, not approval:** REIMAGINE, because account/API-driven romanization and mode/level setup must become a local workplace-learning structure. Retain Kotlin/Kobweb and useful card/button/layout ideas rather than rewriting the framework. MIRROR would document the old flow but is insufficient for the new brief; no human mode selection supplied.
-- **Pipeline:** inventory → presentation contracts → validation tooling → three palette/two type directions → explicit selection → tokens → shared components → explicit approval → four Home layouts → explicit selection → connected flows → evidence → journey approval. This task produces only the inventory/ledger, not later deliverables.
+- **Pipeline:** inventory → presentation contracts → validation tooling → three palette/two type directions → explicit selection → tokens → shared components → explicit approval → four Home layouts → explicit selection → connected flows → evidence → journey approval. Steps 1.1–1.2 produce the inventory/ledger and conceptual contracts only, not visual or runtime deliverables.
 - **Motion omission:** no separate `motion.html`/`motion.css` planned. Calm static interaction is sufficient; current timing/scrolling defects are addressed by removal and reduced-motion-aware styling, not by inventing a kinetic system. Revisit only if an identified interaction justifies a separately approved motion task.
 - **Required target surfaces:** Home, Topics, all six lesson stages, Review, Settings and backup/restore; coverage ledger below. Auth screens are explicitly skipped for target mocks by product scope, but remain audited. No core accessibility mirror opt-out exists.
 - **Deferred/out of scope:** F01 schemas, real save/import/reset/cache runtime, backend retirement, full five-lesson curriculum, optional AI/recording/authoring/curriculum expansion O01–O04, automatic proficiency/speaking scores, cloud/accounts/analytics. Design examples cannot count as reviewed production curricula.
 - **Optional refusals artifact:** not generated; product non-goals are already explicit in root PLAN. No strategy/diegetic prototype pass.
-- **Pending Step 1.2:** detailed lesson/session/support/availability presentation fields, scenario wording, deterministic fixture IDs/markers and index-link conventions. Coverage below allocates requirements only, not F01 serialization contracts.
+- **Step 1.2 draft contracts:** §3.1 defines lesson/session/support/availability presentation information and one scenario; §4 defines deterministic fixture names, markers and index entry points. These are proposed design contracts, not human approval or F01 serialization contracts.
+
+### 3.1 Learning and safety presentation contracts
+
+#### Navigation and next action (C-01–C-05, C-19)
+
+Permanent destinations are **Home**, **Topics/Learn**, **Review**, and **Settings/Backup**. Each hub peer exposes the same application navigation with only its active state changed. Lessons are focused sessions, never a fifth permanent tab. Backup is a short sequence launched from Settings. Mock-review chrome (option comparison, fixture selector, index return) is separately labeled **Simulated mock review**, not mixed into learner navigation.
+
+Proposed Home priority, still subject to P-05/P-06 approval:
+
+1. Continue an **available unfinished lesson with a valid checkpoint**, even when reviews are due. Show its goal and stage.
+2. Otherwise start due reviews when due count is positive.
+3. Otherwise start the recommended beginner-friendly clarification lesson when available.
+
+Exactly one primary next action is emphasized in every Home fixture; peer destinations are secondary. C-02 includes both unfinished lesson and due reviews to prove precedence; C-03 has due reviews and a recommendation but no available unfinished lesson. An unavailable lesson/checkpoint is not silently discarded or offered as a broken Continue action: explain recovery and keep the record preserved (C-20–C-21). When none of the three learning actions is possible, emphasize one recovery action (retry/reconnect or Topics) rather than inventing content. No accounts, forced mode/level selection, waits, arbitrary JLPT unlocking or inferred proficiency.
+
+Topics shows five **illustrative** situations from root PLAN F06: introductions/engineering experience; clarification/confirmation; daily update/blocker; bug/reproduction; code review/suggestion. Cards show goal, recommended difficulty/prerequisite guidance, approximate duration and not-started/unfinished/completed state. Only clarification has a connected design scenario; other cards explicitly say content is not yet mocked rather than pretending five curricula exist. Difficulty guides, never locks.
+
+#### Conceptual information, not storage models
+
+These names describe what reviewers need to see. They prescribe no JSON keys, Kotlin types, version envelope, numeric limits, migration, storage keys or persistence API. Fixture IDs identify mock presentations, not finalized production content IDs.
+
+| Presentation | Information shown / invariant | Future owner and coverage |
+|---|---|---|
+| Lesson summary | Stable lesson identity; situation/title; communication goal; recommended difficulty/prerequisite guidance; estimated duration; not-started/unfinished/completed status; checkpoint label and whether it resolves to available content | F01/F06 content, F03 progress; C-01–C-05, C-18–C-21 |
+| Lesson session | Lesson identity; stage label/position (1–6); current task; available revisit/exit targets; selected constrained answer or transient free response; unrevealed/revealed hint/example; idle/submitted feedback; one-time advancement guard; completion separate from phrase confidence | F02/F07/F08; C-09–C-21 |
+| Learning supports | Independently visible reading/furigana, translation and romaji; authored readings/translations/romanization for each example; associated control labels and exposed on/off state | F03 preference, F11 rendering; C-10, C-55 |
+| Review | Due count; bounded session position; phrase identity; recall prompt and workplace context; concealed/revealed answer including reading/meaning; eligible rating; last Again/Hard/Good outcome; remaining items, complete/no-due alternative | F09; C-22–C-26 |
+| Backup | Embedded sample identity; backup date; displayed app/save version labels; preferences/progress/review summary; validation outcome; current-state export offer; replacement warning; confirmation/cancel state; unchanged-existing/replaced result | F04; C-40–C-50 |
+| Availability | Content ready/loading/empty/error/missing and checkpoint valid/missing; local-save saved/memory-only-denied/memory-only-quota/corrupt-preserved/unsupported-preserved/tab-conflict; offline-assets cached/uncached and connection needed; optional audio missing/unavailable/error | F03/F10/F12; C-06–C-08, C-20–C-21, C-27–C-39 |
+
+Local-save, offline-asset, content and audio statuses are separate, textual indicators, never one generic “offline/saved” badge. A cached lesson may still have memory-only progress; saved progress does not prove lesson/audio assets are cached. A conflict pauses simulated saving until an explicit reload/pause choice. Corrupt, unsupported or unavailable records stay preserved until an explicitly confirmed recovery action. Every degraded state offers retry, text fallback, alternate available content, back or exit as appropriate. These are fixture presentations only: F00 neither saves nor installs offline support.
+
+#### One clarification/confirmation scenario across six stages
+
+**Design examples — pending human Japanese language review (P-07).** Situation: a new engineer is discussing asynchronous processing with a colleague, asks for repetition, then confirms the explanation instead of pretending to understand. Goal: politely ask again and paraphrase an interpretation for confirmation. Proposed duration: about 5 minutes; beginner-supported, not an official JLPT classification.
+
+| Turn | Japanese design example | Authored reading / English meaning |
+|---|---|---|
+| Engineer asks again | すみません、もう一度説明していただけますか。 | すみません、もういちどせつめいしていただけますか。 / Excuse me, could you explain that once more? |
+| Colleague explains | この処理は非同期で実行されます。結果はあとで確認できます。 | このしょりはひどうきでじっこうされます。けっかはあとでかくにんできます。 / This process runs asynchronously. You can check the result later. |
+| Engineer checks interpretation | つまり、この処理は非同期で実行されるということですね。 | つまり、このしょりはひどうきでじっこうされるということですね。 / So, this means the process runs asynchronously, right? |
+| Colleague confirms | はい、そのとおりです。 | はい、そのとおりです。 / Yes, that's right. |
+
+Author ruby segments explicitly: 一度→いちど, 説明→せつめい, 処理→しょり, 非同期→ひどうき, 実行→じっこう, 結果→けっか, 確認→かくにん. Do not infer kanji readings automatically. Example romaji aids: “Sumimasen, mō ichido setsumei shite itadakemasu ka.” and “Tsumari, kono shori wa hidōki de jikkō sareru to iu koto desu ne.” Readings, translation, romaji, register and explanation all remain unapproved examples; no audio recording or language-quality certification is implied.
+
+| Stage / planned page in `flows/workplace-lesson/` | Task and explicit transition | Coverage / implementation owner |
+|---|---|---|
+| Situation / `01-situation.html` | Show speakers, goal, context and support availability; Start → Dialogue | C-09 / 3.4 |
+| Dialogue / `02-dialogue.html` | Read the four-turn transcript; supports independent; optional audio never required; Next → Understanding | C-10, C-27–C-29, C-32 / 3.4, 3.7 |
+| Understanding / `03-understanding.html` | Choose why the engineer says “ということですね”: confirm an interpretation, not claim certainty or demand faster processing. Submit → persistent explanation; explicit Next → Guided Practice | C-11 / 3.4 |
+| Guided Practice / `04-guided-practice.html` | Choose an authored polite request for another explanation; constrained correct/incorrect results explain intent, reading and meaning. Retry clears only the current attempt, reveal shows an example, skip is labeled as skipped (not correct); explicit Next → Role-play | C-12–C-14 / 3.5 |
+| Role-play / `05-role-play.html` | Prompt: ask for repetition and confirm asynchronous processing in your own words. Empty response prompts input without a grade; hints/example may be revealed. Learner self-assesses “I conveyed both intentions” or “I want more practice”; restart/exit available; explicit Finish → Summary | C-15–C-17 / 3.6 |
+| Summary / `06-summary.html` | Show goal practised, useful phrases, skipped/practised tasks and self-assessment; primary Review handoff with revisit secondary. “Lesson completed” means the session ended, **not phrase mastery, speaking ability or job readiness** | C-18 / 3.6 |
+
+Guided correctness applies only to authored constrained choices; free Japanese is **never exact-match graded**, scored for speaking or declared uniquely correct. Examples are possible responses, not the only acceptable Japanese. No timer advances a stage or clears feedback. Submission/rating/finish/confirmation accepts one transition per action; retry/restart is an explicit new attempt. Any text submission ignores Enter during composition (`isComposing`, tracked composition lifecycle and applicable legacy 229 guard), including role-play.
+
+Each lesson stage has a visible **Leave lesson** path back to Home/Topics and a named stage heading. Previous/next and legitimate revisits use lesson-local navigation; changing stage deliberately focuses its heading without unexpected scroll. Leaving explains that free text is page-local and not carried across pages; an explicit link opens the predetermined Home unfinished fixture, whose Continue link opens the named guided-stage resume fixture. C-19 also links a Topics resume fixture. Resumption demonstrates an embedded checkpoint, not saved input or live progress; reopening a document resets its transient state. Completed lessons may be revisited without claiming to reset phrase reviews. Missing content goes to preserved-progress/alternate-content recovery; a removed checkpoint offers the valid Situation stage with an explanation, not a crash or silent overwrite.
+
+Beginner defaults in the proposed lesson: readings/furigana **on**, translation **on**, optional romaji **off**, with all three independently changeable. Labels explain each aid; toggling one never silently toggles the others. Japanese uses `lang="ja"` and authored `<ruby>/<rt>`; readable transcript, visible labels and explicit status text persist without audio. C-10 indexes all eight support combinations for review, not a production preference store.
+
+#### Review and backup/reset outcomes
+
+Review reveals an answer only on explicit Reveal. Before reveal, Again/Hard/Good cannot rate. After reveal, **Again** = not recalled, **Hard** = recalled with effort, **Good** = recalled comfortably, all learner-reported confidence for this item, not certified mastery. One rating advances once in the bounded embedded sequence; no scheduling formula or saved due-date is implemented. Announce meaningful feedback and focus the next prompt deliberately. Session complete and no-due both offer a learning alternative (C-22–C-26).
+
+Backup explains browser/device/origin-local state, lack of automatic sync, and manual export/restore portability. Sample choices are embedded and visibly simulated, with fixed display date/version/summary; no file input, upload, real download or storage read. Preview offers simulated export of current state before a **replacement, never merge** warning. Restore includes preferences, lesson progress and review state, not content/audio/cache assets. Malformed/oversized/incompatible fixtures stop before replacement; size/version rules are future F04 contracts, not invented here. Unsafe-looking sample strings render only through text nodes/textContent.
+
+Confirm replacement is separate from preview and defaults focus to the safe cancel action; Escape/cancel returns without changing the simulated snapshot. Repeated confirmation cannot apply twice. F04's intended safety order is validate/preview → explicit confirm → persist validated replacement → activate only on success. F00 depicts success or failed persistence without executing that order against storage: failure preserves the existing snapshot with retry/back/cancel, success shows the sample replacement and a return to learning. Unknown/unavailable content IDs are described as preserved for future availability, not silently removed. Cross-page result links carry named fixtures, never learner data.
+
+Progress reset and full reset have **separate** warnings and confirmation dialogs (C-51–C-53). Proposed progress reset clears lesson/checkpoint/completion and review outcomes while retaining preferences; full learner reset also restores preference defaults. Neither clears offline assets. Offline asset clearing is explained as a different action, not implemented. Both cancellation and failed destructive actions leave the existing simulated snapshot unchanged.
+
+Accessibility contract for every proposed surface: semantic landmarks/headings, associated labels and error descriptions, meaningful control names, visible keyboard focus/logical order, textual feedback plus useful announcements, safe dialog initial focus/containment/Escape/restoration. Feedback persists until explicit advancement, not color alone. Shared selected tokens/components precede composition; light/dark AA targets are 4.5:1 ordinary text, 3:1 large text/applicable controls/focus. 320/375 CSS-pixel, desktop, 200% zoom, long Japanese/ruby/technical identifiers and reduced-motion checks remain actual-browser obligations (V-07–V-12), not documentation passes. Mirrors M-01–M-11 cover every core surface; screen-reader-oriented drafts are not claimed as actual assistive-technology output.
 
 ## 4. Generated artifacts and planned coverage
 
@@ -154,7 +225,7 @@ Paths are relative to `.mockups/` unless explicitly rooted at `tools/`. All rows
 
 ### Required surface/state ledger
 
-All entries are **planned, uncreated / not tested**. Review entry names map to A-04–A-07 indexes above; each future index must expose its fixtures, including recovery alternatives. Owning page paths below are relative to `.mockups/`. Detailed fixture identifiers are deliberately pending Step 1.2.
+All entries are **planned, uncreated / not tested**. Review entry names map to A-04–A-07 indexes above; each future index must expose its fixtures, including recovery alternatives. Owning page paths below are relative to `.mockups/`. Deterministic fixture identifiers and literal planned entry targets are allocated in the registry below; implementation and production owners remain in this ledger.
 
 | Coverage ID | Required surface/state(s) | Planned containing page(s) | Review entry / step owner | Later production owner |
 |---|---|---|---|---|
@@ -215,6 +286,107 @@ All entries are **planned, uncreated / not tested**. Review entry names map to A
 | C-55 | Support toggles/transcript/ruby/stage/feedback/review/backup summary states | `design-system/components.html` | Showcase / 2.4 | F11 |
 | C-56 | Dialog safe focus, containment, Escape/cancel, restoration, duplicate guard / unchanged cancel | `design-system/components.html` | Showcase / 2.5 | F11/F04 |
 
+### Deterministic fixture registry and index-link convention
+
+All targets below are **planned, uncreated**, displayed as code rather than broken Markdown links. Coverage IDs C-01–C-56 and their step/production owners above remain authoritative. Registry entry aliases resolve to these review indexes and containing directories:
+
+- **H:** `flows/learning-hub/index.html` → sibling hub page.
+- **L:** `flows/workplace-lesson/index.html` → sibling lesson page.
+- **B:** `flows/backup-restore/index.html` → sibling backup page.
+- **D:** `design-system/components.html` → same-document showcase anchor list (the showcase is its own review index).
+- **O:** `screens/f00-home/index.html` → each `option-1.html` through `option-4.html`.
+
+For each row, the future index contains one real `<a href="page.html#fixture-id">` for **each** named fixture (D uses `#fixture-id`). The target contains a statically authored element with `id="fixture-id"`, `data-fixture="fixture-id"` and `data-coverage="C-NN"`; space-separated coverage IDs are permitted for shared targets. IDs are lowercase kebab-case, unique within a document, stable on re-sync. The tuple (document path, fixture ID) is the key; Home option documents intentionally reuse the three Home priority IDs for comparisons. Never count a fixture name only present in script, an option value, a button click handler or an index link as coverage.
+
+The index labels scenario, simulated state and recovery action. A direct fragment visit must expose that state deterministically: prefer static visible state panels, or use the fragment to select a pre-authored panel with a documented no-JS fallback. Marker/anchor and index-link reachability remain parseable **without JavaScript execution**; direct links cannot all land on an unchanged default view. Visible selectors say “Simulated fixture”; no random values, real network, waits or time-of-day-dependent due counts. Interactions change only page-local state. Each future screen/flow page links both shared stylesheets; page layout may be inline, primitives may not be duplicated. No runtime assets are remote.
+
+When an artifact exists and local-reference validation passes, promote its code-formatted allocation to an actual report link to the index and each page/fragment; leave future allocations explicitly uncreated. Every child fixture remains one click from its owning index, and hub/lesson/backup indexes cross-link each other when the corresponding artifacts exist. Partial journeys link only created stages; unfinished continuation is labeled draft. Do not create dangling future hrefs or claim an unrendered fixture passed.
+
+| Coverage | Review entry / containing page | Deterministic fixture IDs (each becomes its own fragment link) |
+|---|---|---|
+| C-01 | H `01-home.html`; O each option | `home-first-visit` |
+| C-02 | H `01-home.html`; O each option | `home-resume-priority` |
+| C-03 | H `01-home.html`; O each option | `home-due-review-priority` |
+| C-04 | Same H/O pages | The three IDs above each also carry C-04; inspect exactly one primary next action |
+| C-05 | H `02-topics.html` | `topics-catalog`, `topics-not-started`, `topics-resumable`, `topics-completed` |
+| C-06 | H `02-topics.html` | `catalog-empty` |
+| C-07 | H `02-topics.html` | `catalog-loading` |
+| C-08 | H `02-topics.html` | `catalog-load-failure`, `catalog-retry-ready`, `catalog-back` |
+| C-09 | L `01-situation.html` | `lesson-situation` |
+| C-10 | L `02-dialogue.html` | `lesson-dialogue`, `dialogue-support-000`, `dialogue-support-001`, `dialogue-support-010`, `dialogue-support-011`, `dialogue-support-100`, `dialogue-support-101`, `dialogue-support-110`, `dialogue-support-111` (bits: reading, translation, romaji; 1 = on) |
+| C-11 | L `03-understanding.html` | `understanding-choice`, `understanding-correct`, `understanding-incorrect` |
+| C-12 | L `04-guided-practice.html` | `guided-correct` |
+| C-13 | L `04-guided-practice.html` | `guided-incorrect` |
+| C-14 | L `04-guided-practice.html` | `guided-retry`, `guided-revealed`, `guided-skipped`, `guided-persistent-feedback` |
+| C-15 | L `05-role-play.html` | `role-play-response`, `role-play-empty` |
+| C-16 | L `05-role-play.html` | `role-play-hint`, `role-play-example`, `role-play-self-assessment` |
+| C-17 | L `05-role-play.html` | `role-play-restarted`, `role-play-exit` |
+| C-18 | L `06-summary.html` | `lesson-completed`, `summary-review-handoff`, `summary-revisit` |
+| C-19 | L all six stage pages | Each stage's main ID also carries C-19 (`lesson-situation`, `lesson-dialogue`, `understanding-choice`, `guided-retry`, `role-play-response`, `lesson-completed`); `lesson-leave` on `04-guided-practice.html`, `lesson-resumed` on that page |
+| C-19 | H `01-home.html`, `02-topics.html` | `home-unfinished-after-leave` on Home; `topics-resumable` on Topics also carries C-19; both link to L `04-guided-practice.html#lesson-resumed` |
+| C-20 | L `01-situation.html`; H `02-topics.html` | `lesson-content-missing` on Situation; `topics-content-missing` on Topics |
+| C-21 | L `01-situation.html` | `checkpoint-missing`, `checkpoint-recovered` |
+| C-22 | H `03-review.html` | `review-due` |
+| C-23 | H `03-review.html` | `review-concealed`, `review-revealed` |
+| C-24 | H `03-review.html` | `review-rating-blocked`, `review-rated-again`, `review-rated-hard`, `review-rated-good`, `review-duplicate-guard` |
+| C-25 | H `03-review.html` | `review-session-complete` |
+| C-26 | H `03-review.html` | `review-no-due` |
+| C-27 | L `02-dialogue.html` | `audio-missing` |
+| C-28 | L `02-dialogue.html` | `audio-unavailable`, `audio-text-only` |
+| C-29 | L `02-dialogue.html` | `audio-error`, `audio-retry-text` |
+| C-30 | H `01-home.html`; L `01-situation.html` | `offline-cached-home` on Home; `offline-cached-lesson` on Situation |
+| C-31 | H `02-topics.html` | `offline-content-uncached` |
+| C-32 | L `02-dialogue.html` | `offline-audio-uncached` |
+| C-33 | H `01-home.html` | `offline-first-visit-uncached` |
+| C-34 | H `04-settings.html` | `save-local-success` |
+| C-35 | H `04-settings.html` | `save-denied-memory-only` |
+| C-36 | H `04-settings.html` | `save-quota-memory-only` |
+| C-37 | H `04-settings.html` | `save-corrupt-preserved` |
+| C-38 | H `04-settings.html` | `save-unsupported-preserved` |
+| C-39 | H `04-settings.html` | `save-tab-conflict`, `save-conflict-paused`, `save-conflict-reloaded` |
+| C-40 | H `04-settings.html`; B `01-backup.html` | `settings-local-portability` on Settings; `backup-local-portability` on Backup |
+| C-41 | B `01-backup.html` | `backup-sample-choice`, `backup-export-simulated` |
+| C-42 | B `02-preview.html` | `restore-preview`, `restore-export-current-simulated` |
+| C-43 | B `02-preview.html` | `restore-canceled-unchanged` |
+| C-44 | B `02-preview.html` | `restore-confirmation`, `restore-confirm-once` |
+| C-45 | B `01-backup.html` | `restore-malformed` |
+| C-46 | B `01-backup.html` | `restore-oversized` |
+| C-47 | B `01-backup.html` | `restore-incompatible` |
+| C-48 | B `02-preview.html` | `restore-unsafe-string-as-text` |
+| C-49 | B `03-result.html` | `restore-persistence-failed-preserved`, `restore-retry`, `restore-back`, `restore-cancel` |
+| C-50 | B `03-result.html` | `restore-success` |
+| C-51 | H `04-settings.html` | `reset-progress-confirmation`, `reset-progress-canceled`, `reset-progress-success`, `reset-progress-duplicate-guard` |
+| C-52 | H `04-settings.html` | `reset-full-confirmation`, `reset-full-canceled`, `reset-full-success`, `reset-full-duplicate-guard` |
+| C-53 | H `04-settings.html` | `offline-assets-separate` |
+| C-54 | D `components.html` | `component-default`, `component-hover`, `component-focus`, `component-disabled`, `component-invalid`, `component-busy`, `component-labels`, `component-navigation`, `component-cards`, `component-status`, `component-empty`, `component-error` |
+| C-55 | D `components.html` | `component-supports`, `component-transcript-ruby`, `component-stage-indicator`, `component-guided-feedback`, `component-review-concealed`, `component-review-revealed`, `component-review-ratings`, `component-backup-summary` |
+| C-56 | D `components.html` | `component-dialog-open`, `component-dialog-canceled`, `component-dialog-confirmed`, `component-dialog-duplicate-guard` (keyboard containment/Escape/restoration are behavior checks at these anchors) |
+
+For C-54 every introduced primitive must showcase every applicable state, not just one representative button. Use a containing state group with the listed marker and child semantic controls for buttons/fields/navigation/cards/status as appropriate; `data-coverage` describes inventory, not proof of hover/focus or dialog behavior. Mirrors use `id`/`data-fixture="mirror-m-NN"`, `data-coverage="M-NN"` with the concrete paths in §5; their owning screen index links the fragment directly, and the allocated hub/lesson/backup index links the mirror index (Home uses its existing comparison index). Mirror findings and actual browser evidence are recorded separately.
+
+### SPEC 3.1–3.3 comparison (Step 1.2 document verification)
+
+Compared the conceptual contracts and **every C-01–C-56 row** with `.pi/SPEC.md` §§3.1–3.3 and the cumulative task-2 checklist. This checks planned coverage, not rendered behavior or fulfilled approvals.
+
+| SPEC requirement | Contract / allocated coverage | Comparison result |
+|---|---|---|
+| 3.1 A inventory, source findings, decisions and links | §§1–2; A-01–A-09, C-01–C-56; preserved source/browser distinction | Covered by prior inventory; planned links remain uncreated |
+| 3.1 B visual pipeline, three palettes/two types, shared CSS, component states, approvals | §3 pipeline; A-01–A-04; C-54–C-56; P-03–P-05; V-07 | Allocated, not implemented/selected; calm motion omission retained |
+| 3.1 C four destinations, focused session, Home precedence, five topic cards, coherent six-stage scenario | §3.1 navigation/scenario; C-01–C-05, C-09–C-21 | Covered conceptually; one primary action, no locks, completion distinct from mastery |
+| 3.1 C guided vs open role-play, pending Japanese review | §3.1 stage/turn tables; C-11–C-18; P-07 | Covered; constrained feedback only, free response self-assessed |
+| 3.1 D standalone vanilla mocks, simulated deterministic states, text-only sample rendering, duplicate/IME guards | §3.1 behavior/safety; registry marker/link convention; C-14–C-17, C-24, C-41–C-56; V-10/V-15 | Allocated without runtime implementation; static coverage markers are not behavior evidence |
+| 3.1 E named approvals, unattended boundary, opt-in instructions | §7 P-01–P-07 | All still pending; no approval or installer authorization fabricated |
+| 3.2 Home/catalog first/resume/due/empty/loading/failure | C-01–C-08; Home priority and registry | Every state has owner/index/fragment allocation; retry/back retained |
+| 3.2 Lesson/role-play outcomes, leave/resume, missing content/checkpoint | C-09–C-21; six-stage table and registry | Every state allocated; persistent explanations and safe exits required |
+| 3.2 Review concealed/revealed/ratings/complete/no-due | C-22–C-26; §3.1 review outcome meanings | Every state allocated; bounded sequence, no scheduling/mastery claim |
+| 3.2 Audio and offline | C-27–C-33; separate availability information | Every state allocated; transcript/text-only completion, no autoplay/cache installation |
+| 3.2 Saving | C-34–C-39; separate save status and preserved-state semantics | Every state allocated, including distinct denial/quota and pause/reload |
+| 3.2 Restore/reset and manually reviewable busy/recovery | C-07–C-08, C-40–C-56; replacement/reset contracts | Every state allocated; cancel/failure preserves existing state, cache clearing separate |
+| 3.3 independent beginner aids, semantic Japanese/labels/focus/dialogs, persistent announcements | C-10–C-19, C-23–C-24, C-54–C-56; §3.1 accessibility | Contract covered; keyboard/IME/assistive behavior still V-08–V-10 obligations |
+| 3.3 responsive/zoom/long text/AA, each core mirror, portability/completion distinction | §3.1 accessibility/safety; M-01–M-11; V-07/V-11/V-12; C-18, C-40 | Allocated to 4.4–4.5 and later validation; no measurements or mirror findings claimed |
+
+No serialization schema, production route, storage/cache adapter, upload, language approval or visual artifact is introduced in Step 1.2. Validator implementation belongs to Steps 1.3–1.4; the registry is its future input contract, not a claim that tooling already exists.
+
 ## 5. Whose Default? mirror coverage
 
 The current source favors an authenticated connected user, short romanization responses, visual feedback and fixed-width cards. Risks exclude disconnected learners, IME users, screen-reader users and learners enlarging long Japanese text. These are source-derived inclusion risks (F-301–306, F-401, F-601, F-701–703), **not findings from rendered mirrors**.
@@ -256,8 +428,12 @@ No mirror opt-out has been provided; no current accessibility exclusion has been
 | V-13 | Walk every indexed fixture + mirror, retry/skip/reveal/exit/resume/reset and restore recovery | Not run: pages uncreated; evidence will cite index + fixture targets | Each interactive slice, 4.5, 5.1 |
 | V-14 | Static server via `python3 -m http.server 8765 --bind 127.0.0.1 --directory .mockups`; hub URL; direct `open .mockups/flows/learning-hub/index.html` | Not run: pages uncreated; record actual browser + both entry modes | Step 5.1 |
 | V-15 | Network/storage panels: no remote assets/app requests/uploads/learner-storage/service workers | Not tested; no mock runtime exists; static tooling alone cannot prove all JS behavior | Steps 3.7, 5.1 |
+| V-16 | SPEC 3.1–3.3 document comparison; `python3 /tmp/hiragame-f00-step12-check.py` | PASS 2026-09-30: explicit comparison table in §4; structural checks cover 56 ledger IDs, 57 registry rows (C-19 has lesson + hub entries), owners/entry allocations, eight independent support combinations and 11 mirror allocations. No prior task-2 review findings | Step 1.2 |
+| V-17 | `git diff --check`; `git diff --name-status`; `git ls-files --others --exclude-standard`; non-target SHA-256 comparison in V-16 script | PASS 2026-09-30: no whitespace errors; only report changed by this step. All 100 non-target baseline files unchanged (including root PLAN, production, IDE and `.pi/PLAN.md`/SPEC/ANALYSIS); pre-existing IDE diff and workflow files preserved | Step 1.2 |
 
 Step 1.1 validation used `python3 - <<'PY'` heredocs to resolve every backticked file/range (including inherited shorthand paths), print source boundary lines, and compare SHA-256 values plus PLAN sections with the pre-edit baseline. Direct source reads confirmed the cited observations; range resolution alone does not prove a claim. The first draft check found three out-of-range citation endpoints, subsequently corrected; the first baseline comparison had an ad-hoc assertion syntax error, corrected before its successful rerun. The additional no-index whitespace check caught Markdown hard-break trailing spaces; removed before the successful rerun. No failing check remains. The baseline is temporary execution evidence, not a required mock artifact.
+
+Step 1.2 validation additionally used a Python stdin heredoc, then the same structural assertions in `/tmp/hiragame-f00-step12-check.py`, against this report and `/tmp/hiragame-f00-step12-baseline.json`. Temporary check/baseline paths are execution evidence, not repository deliverables or the future validator. The SPEC comparison is a manual document review; structural assertions prove allocations, not the quality of Japanese or interactive behavior.
 
 Later checks are pending, **not** failed checks or passing attestations. Static validation will not prove accessibility, language quality or browser interaction. Evidence will record exact artifact paths and actual results; approvals remain separate.
 
@@ -285,4 +461,4 @@ All findings remain open; no production remediation was performed. Later-feature
 - **Important:** F-501 (quiz framing), F-601–603 (blank/error/session coupling), F-701 (timed feedback) → F00 journey/recovery fixtures; production **F02/F06/F07/F09**, auth/service retirement **F13**.
 - **Nit:** F-201 (overlapping wrappers) → simplify shared vocabulary; production **F11**.
 
-Next authorized task is Step 1.2: define presentation/fixture contracts against SPEC 3.1–3.3 without introducing serialization or runtime implementations. No palette, components, screens, flows, validator, convention installation or approval is created by Step 1.1.
+Step 1.2 defines presentation/fixture contracts against SPEC 3.1–3.3, with all coverage states allocated to a planned owner/index/fragment and Japanese examples pending review. Next planned implementation is Step 1.3: read-only metadata/local-reference validation. No palette, components, screens, flows, validator, serialization/storage runtime, convention installation or approval is created by Steps 1.1–1.2.
