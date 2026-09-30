@@ -98,7 +98,7 @@ Build tests and accessibility into each feature rather than deferring them to th
 
 **Depends on:** none; develop alongside the initial F01 contracts.
 
-**Status:** In progress; approvals pending. The source-only inventory and coverage ledger are recorded in [the F00 adoption report](.mockups/adoption-report.md). Visual mocks, browser/contrast evidence, and named design/language approvals remain pending; no F00 acceptance criterion is marked complete.
+**Status:** In progress; approvals pending. Inventory, contracts and validation evidence are recorded in [the F00 adoption report](.mockups/adoption-report.md). Draft [three palette directions](.mockups/design-system/palette.html) and [two typography directions](.mockups/design-system/typography.html) have passed visual-options static validation and Chrome light/dark inspection; [Step 2.1 evidence](.mockups/adoption-report.md#62-step-21-visual-explorations-and-evidence) records 144 reproducible contrast pairings and six explicitly rejected low-contrast tertiary-text candidates. Named palette/type selection is pending: stop before token locking. Components, screens, connected journeys and design/language approvals remain pending; no F00 acceptance criterion is marked complete.
 
 ### Implementation tasks
 
