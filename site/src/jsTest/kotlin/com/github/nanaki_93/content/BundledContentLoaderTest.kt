@@ -1,5 +1,12 @@
 package com.github.nanaki_93.content
 
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -7,6 +14,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BundledContentLoaderTest {
     private val review = """{"status":"reviewed","reviewerType":"agent","reviewDate":"2026-10-01","reviewNote":"seed.md","provenance":"Original","rights":"publishable","rightsBasis":"Original"}"""
     private val choice = """{"type":"choice","id":"question-1","prompt":"Which?","options":[{"id":"yes","label":"Yes"},{"id":"no","label":"No"}],"correctOptionId":"yes","explanation":"Yes."}"""
@@ -198,6 +206,132 @@ class BundledContentLoaderTest {
         val missing = Fake(mapOf("catalog.json" to catalog(both), practicePath to practice()))
         assertTrue(failure(missing, lessonPath).message!!.contains("unable to read"))
         assertEquals(listOf("catalog.json", practicePath, lessonPath), missing.reads)
+    }
+
+    @Test fun browserSourceOnlyAddressesOwnedStaticPathsAndRejectsHttpBeforeDecoding() = runTest {
+        val urls = mutableListOf<String>()
+        val source = BrowserContentTextSource(object : ContentHttpTransport {
+            override suspend fun get(url: String): ContentHttpResponse {
+                urls += url
+                return ContentHttpResponse(404, false, "<html>login</html>")
+            }
+        })
+        for (path in listOf("/other.json", "../escape.json", "https://elsewhere/x.json",
+            "practice/%2e%2e/x.json", "x.json?api=1", "x\\\\y.json")) {
+            assertFailsWith<IllegalArgumentException> { source.readText(path) }
+        }
+        assertTrue(urls.isEmpty())
+        val error = assertFailsWith<BundledContentException> { BundledContentLoader(source).load() }
+        assertEquals("catalog.json", error.affectedPath)
+        assertTrue(error.message!!.contains("HTTP 404"))
+        assertTrue(!error.message!!.contains("login"))
+        assertEquals(listOf("/hiragame/content/catalog.json"), urls)
+        assertFailsWith<ContentHttpException> { source.readText("practice/nested/one.json") }
+        assertEquals("/hiragame/content/practice/nested/one.json", urls.last())
+    }
+
+    @Test fun laterHttpFailureIdentifiesPathAndDoesNotPublishPartialContent() = runTest {
+        val urls = mutableListOf<String>()
+        val source = BrowserContentTextSource(object : ContentHttpTransport {
+            override suspend fun get(url: String): ContentHttpResponse {
+                urls += url
+                return if (url.endsWith(lessonPath)) ContentHttpResponse(503, false, "untrusted body")
+                    else ContentHttpResponse(200, true, fake().files.getValue(url.removePrefix("/hiragame/content/")))
+            }
+        })
+        val error = assertFailsWith<BundledContentException> { BundledContentLoader(source).load() }
+        assertEquals(lessonPath, error.affectedPath)
+        assertTrue(error.message!!.contains("HTTP 503"))
+        assertTrue(!error.message!!.contains("untrusted body"))
+        assertEquals(listOf("catalog.json", practicePath, lessonPath).map { "/hiragame/content/$it" }, urls)
+    }
+
+    @Test fun individualReadTimesOutAndCancelsItsTransport() = runTest {
+        val reads = mutableListOf<String>()
+        val cancelled = mutableListOf<String>()
+        val source = BrowserContentTextSource(object : ContentHttpTransport {
+            override suspend fun get(url: String): ContentHttpResponse {
+                val path = url.removePrefix("/hiragame/content/")
+                reads += url
+                if (path == lessonPath) {
+                    try { awaitCancellation() } finally { cancelled += url }
+                }
+                return ContentHttpResponse(200, true, fake().files.getValue(path))
+            }
+        })
+        val pending = async { assertFailsWith<BundledContentException> { BundledContentLoader(source).load() } }
+        runCurrent()
+        assertEquals(listOf("catalog.json", practicePath, lessonPath).map { "/hiragame/content/$it" }, reads)
+        advanceTimeBy(10_000)
+        runCurrent()
+        val error = pending.await()
+        assertEquals(lessonPath, error.affectedPath)
+        assertTrue(error.message!!.contains("10 seconds"))
+        assertEquals(listOf("/hiragame/content/$lessonPath"), cancelled)
+    }
+
+    @Test fun wholeLoadDeadlineCancelsLaterReadWithoutPublishingReady() = runTest {
+        val thirdPath = "practice/nested/two.json"
+        val manifest = catalog(both + "," + entry("second", "practice", thirdPath))
+        val documents = fake().files + ("catalog.json" to manifest) +
+            (thirdPath to practice(id = "second", exercises = choice.replace("question-1", "question-2")))
+        val reads = mutableListOf<String>()
+        val cancelled = mutableListOf<String>()
+        val source = object : ContentTextSource {
+            override suspend fun readText(relativePath: String): String {
+                reads += relativePath
+                try {
+                    delay(9_000)
+                    return documents.getValue(relativePath)
+                } finally {
+                    // Only the fourth read is interrupted by the 30-second deadline.
+                    if (relativePath == thirdPath) cancelled += relativePath
+                }
+            }
+        }
+        val pending = async { assertFailsWith<BundledContentException> { BundledContentLoader(source).load() } }
+        advanceTimeBy(30_000)
+        runCurrent()
+        val error = pending.await()
+        assertEquals(thirdPath, error.affectedPath)
+        assertTrue(error.message!!.contains("30 seconds"))
+        assertEquals(listOf("catalog.json", practicePath, lessonPath, thirdPath), reads)
+        assertEquals(listOf(thirdPath), cancelled)
+    }
+
+    @Test fun callerCancellationIsPropagatedAndCancelsTheRead() = runTest {
+        var cancelled = false
+        val source = BrowserContentTextSource(object : ContentHttpTransport {
+            override suspend fun get(url: String): ContentHttpResponse = try {
+                assertEquals("/hiragame/content/catalog.json", url)
+                awaitCancellation()
+            } finally { cancelled = true }
+        })
+        val pending = async { BundledContentLoader(source).load() }
+        runCurrent()
+        pending.cancel()
+        assertFailsWith<CancellationException> { pending.await() }
+        assertTrue(cancelled)
+    }
+
+    @Test fun browserFetchAbortsWhenReadIsCancelledWithoutWindowOrDom() = runTest {
+        val runtime: dynamic = js("globalThis")
+        val previousFetch: dynamic = runtime.fetch
+        val previousController: dynamic = runtime.AbortController
+        try {
+            runtime.AbortController = js("(function() { this.signal = {aborted: false}; this.abort = function() { this.signal.aborted = true; }; })")
+            runtime.fetch = js("(function(url, options) { globalThis.__f02Signal = options.signal; return new Promise(function() {}); })")
+            val pending = async { BrowserContentTextSource().readText("catalog.json") }
+            runCurrent()
+            assertTrue(runtime.__f02Signal != null)
+            pending.cancel()
+            assertFailsWith<CancellationException> { pending.await() }
+            assertEquals(true, runtime.__f02Signal.aborted as Boolean)
+        } finally {
+            runtime.fetch = previousFetch
+            runtime.AbortController = previousController
+            js("delete globalThis.__f02Signal")
+        }
     }
 
     @Test fun emptyCasesAreDistinctFromMalformedContent() = runTest {

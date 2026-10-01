@@ -1,6 +1,7 @@
 package com.github.nanaki_93.content
 
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.withTimeoutOrNull
 
 /** Paths are relative to the owned content root, never URLs. Transport policy belongs to the source. */
 interface ContentTextSource {
@@ -26,7 +27,17 @@ class BundledContentException(val affectedPath: String, message: String, cause: 
 
 class BundledContentLoader(private val source: ContentTextSource) {
     suspend fun load(): CatalogLoad {
-        val catalog = decode("catalog.json", read("catalog.json"), ContentCodec::decodeCatalog)
+        var currentPath = "catalog.json"
+        return withTimeoutOrNull(30_000L) {
+            loadValidated { path ->
+                currentPath = path
+                read(path)
+            }
+        } ?: throw BundledContentException(currentPath, "bundled content load timed out after 30 seconds")
+    }
+
+    private suspend fun loadValidated(readAsset: suspend (String) -> String): CatalogLoad {
+        val catalog = decode("catalog.json", readAsset("catalog.json"), ContentCodec::decodeCatalog)
         if (catalog.entries.isEmpty()) return CatalogLoad.Empty(EmptyContentReason.EMPTY_CATALOG)
 
         val topicIds = catalog.topics.map { it.id }.toSet()
@@ -45,7 +56,7 @@ class BundledContentLoader(private val source: ContentTextSource) {
         val seenPhrases = mutableSetOf<String>()
         val seenReviewItems = mutableSetOf<String>()
         for (entry in catalog.entries) {
-            val text = read(entry.path)
+            val text = readAsset(entry.path)
             when (entry.kind) {
                 DocumentKind.PRACTICE -> {
                     val doc = decode(entry.path, text, ContentCodec::decodePracticeSet)
@@ -93,9 +104,14 @@ class BundledContentLoader(private val source: ContentTextSource) {
     }
 
     private suspend fun read(path: String): String = try {
-        source.readText(path)
+        withTimeoutOrNull(10_000L) { source.readText(path) }
+            ?: throw BundledContentException(path, "bundled content read timed out after 10 seconds")
+    } catch (e: BundledContentException) {
+        throw e
     } catch (e: CancellationException) {
         throw e
+    } catch (e: ContentHttpException) {
+        throw BundledContentException(path, "HTTP ${e.status} while reading bundled content", e)
     } catch (e: Exception) {
         throw BundledContentException(path, "unable to read bundled content", e)
     }
