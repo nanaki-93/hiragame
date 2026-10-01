@@ -2,15 +2,28 @@
 
 **Generated:** 2026-09-30 (Step 1.1 inventory; Step 1.2 presentation contracts; Steps 1.3–1.4 static validation tooling; Step 2.1 palette/type explorations; Step 2.2 selected semantic tokens). **Reconciled:** 2026-10-01 (earlier selected-token baseline §6.4; current status Step 1.1 §6.9). **Extended:** 2026-10-01 (earlier Steps 2.1–2.3 basic/learning/dialog components and Step 3.1 Home compositions; §§6.5–6.8).
 
-**Status (current Step 1.1 reconciliation):** In progress; downstream approvals pending. Inventory, contracts, coverage allocations, read-only validator/tests, retained explorations and locked **P03 — Phrase Press / T02 — Reading Desk** tokens exist. The project user's recorded selection is retained; the original task-6 attestation JSON is absent, with read-only corroboration from its `.json.bak` (§6.3). Basic shared components and their C-54 state showcase exist (§6.5); reusable learning primitives, independent support controls and C-55 fixtures now exist (§6.6). Safe C-56 confirmation dialogs now exist and are browser-validated (§6.7). Four Home alternatives and their comparison now exist (§6.8). P-04 component acceptance is recorded; connected flows and persona mirrors remain uncreated. P-05/P-06 and Japanese review P-07 remain pending; no F00 completion claimed.
+**Current status — P-05 decision (2026-10-01):** F00 remains in progress. The agent selected **Option 1 — Quiet desk** for P-05 (§6.11); P03 — Phrase Press / T02 — Reading Desk and accepted P-04 components are unchanged. Four Home alternatives remain available. Connected flows and static mirrors remain uncreated; P-06 integration and P-07 copy review are outstanding. No missing artifact is marked complete.
 
-**Chronology:** Original step numbers and dated evidence below describe earlier workflows. Superseded inventory/selection statements are historical, not instructions to restart completed work. §6.4 is a dated selected-token baseline, §§6.5–6.8 record subsequent component/Home work, and §6.9 records this current reconciliation. Stable coverage IDs and approval fields are retained.
+**Authority and chronology:** Root `PLAN.md`'s **Autonomous execution and verification policy**, current `.pi/SPEC.md`/`.pi/PLAN.md`, and §§0, 7–8 below govern future execution. Sections **1 through 6.9 are retained historical inventory, contracts and evidence**: any demand there to stop for P-05/P-06/P-07, obtain human approval, or perform manual/browser/accessibility/keyboard checks is superseded. Historical commands/results remain history, not tasks to rerun or new passes. Stable artifact/fixture paths and product/safety contracts remain applicable unless revised by the current spec. §6.10 records this policy revision.
 
 **Scan boundary:** Existing frontend pages, widgets, styles, shell, and services specified by `.pi/PLAN.md`; module/hosting boundaries inspected read-only.
 
 **Mode recommended:** REIMAGINE; not a recorded human selection.
 
 **Stack:** Kotlin/Compose for Web, Kobweb routing, Silk styles/components, Ktor JS HTTP services; Gradle modules `site`, `shared`, `backend`.
+
+## 0. Current autonomous continuation contract
+
+The project user explicitly requested agents to refactor automatically using the already-decided style, without manual checks, accessibility/native keyboard tests, or tests interacting with a running app. This new delegation removes the old workflow blocker; it does not retroactively convert generic attestations into exact layout choices.
+
+- Preserve P03/T02 tokens, accepted components and four alternatives. Agents choose an existing Home option or compatible hybrid at the first incomplete task and record rationale/agent attribution as P-05. No additional user selection or component-refinement approval.
+- Complete the hub, lesson, backup/reset and registered static mirror artifacts. P-06 is agent integration review against product contracts and non-interactive checks, not human journey approval.
+- P-07 is agent copy review with sources and uncertainty. Do not claim human/native-speaker certification; mock examples are not automatically reviewed production lessons. Human certification is optional, not a workflow gate.
+- Run static CLI validation, validator unit tests and source review. Later runtime work also uses builds, Node/domain tests and isolated adapters with fakes. Do not launch servers, apps, mocks or browsers for tests.
+- Exclude manual walkthroughs, browser/headless/CDP/E2E interaction, screenshots, visual/viewport/zoom/device checks, accessibility/contrast/screen-reader audits, native keyboard/focus/Tab/Escape/IME tests and live network/storage/offline inspections. These are out of scope, not unresolved requirements or passes. V-07–V-15 interactive obligations below are historical only; their past observations remain attributed as originally recorded.
+- Retain semantic/native markup, responsive wrapping, input safeguards, accepted focus/dialog behavior, no-audio paths, safe text rendering and nondestructive state transitions. Test exclusions do not remove existing functionality.
+- M-01–M-11 remain static fixture/markup/link artifacts to preserve the existing validator contract. Their old screen-reader-oriented filenames do not require accessibility testing or extra audit deliverables. Findings are source-derived intent/limitations, not observed persona behavior.
+- No validator weakening, fabricated approvals, automatic completion or edits to historical `.pi/workflows/` state. Replan/resume with current docs if a worker cached old gates. Unrelated changes and external/data safety boundaries remain protected.
 
 ## 1. Inventory
 
@@ -209,18 +222,18 @@ Accessibility contract for every proposed surface: semantic landmarks/headings, 
 
 **Existing:** this report, linked from [root PLAN F00](../PLAN.md#f00--learning-experience-specification-and-mockups), plus [validator](../tools/validate_mockups.py), [temporary-tree tests](../tools/test_validate_mockups.py), [palette explorations](design-system/palette.html) and [typography explorations](design-system/typography.html), plus [locked P03/T02 tokens](design-system/tokens.css), [basic/learning/dialog component showcase](design-system/components.html) and [shared component CSS](design-system/components.css).
 
-**Uncreated:** the connected hub, lesson and backup/restore flows, and all eleven persona mirrors. Four Home options and their comparison exist (§6.8); their C-01–C-04 priority fixtures are not yet connected hub fixtures. Dialog fixtures are implemented and validated in §6.7. Code-formatted future flow/mirror paths are not working links. Palette/type previews rendered in the earlier Step 2.1 (§6.2); basic and learning component fixtures rendered in the earlier Steps 2.1–2.2 (§§6.5–6.6). No mirror has rendered. Future coverage rows must be promoted to real links only after creation and validation.
+**Uncreated:** the connected hub, lesson and backup/restore flows, and all eleven static mirrors. Four Home options and their comparison exist (§6.8); Option 1 is selected for the future hub (§6.11), but their C-01–C-04 priority fixtures are not yet connected hub fixtures. Dialog fixtures are implemented and validated in §6.7. Code-formatted future flow/mirror paths are not working links. Palette/type previews rendered in the earlier Step 2.1 (§6.2); basic and learning component fixtures rendered in the earlier Steps 2.1–2.2 (§§6.5–6.6). No mirror has rendered. Future coverage rows must be promoted to real links only after creation and validation.
 
 ### Planned artifacts
 
-Paths are relative to `.mockups/` unless explicitly rooted at `tools/`. A-01, A-02 and A-08 exist; A-03 has basic/learning/dialog slices validated (§§6.5–6.7), with P-04 acceptance recorded (§6.8). A-04 now exists and is validated, with P-05 selection pending. All other rows are **planned, uncreated; approval/validation pending**.
+Paths are relative to `.mockups/` unless explicitly rooted at `tools/`. A-01, A-02 and A-08 exist; A-03 has basic/learning/dialog slices validated (§§6.5–6.7), with P-04 acceptance recorded (§6.8). A-04 now exists and is validated, with the agent's P-05 selection recorded in §6.11. A-05–A-07 and A-09 remain **planned, uncreated; validation pending**.
 
 | ID | Artifact | Planned path | Implementation owner |
 |---|---|---|---|
 | A-01 | Three palette / two type directions retained; P03/T02 selected, static-validated | [palette](design-system/palette.html), [typography](design-system/typography.html) | Step 2.1; §6.2 evidence |
 | A-02 | Locked P03/T02 light/dark semantic tokens | [tokens.css](design-system/tokens.css) | Step 2.2; §6.3 selection/validation evidence |
 | A-03 | Basic, learning and safe dialog primitives / applicable states exist; P-04 accepted, §6.8 | [showcase](design-system/components.html), [CSS](design-system/components.css) | Earlier Steps 2.1–2.3; evidence §§6.5–6.7 |
-| A-04 | Four Home layouts + comparison exist; P-05 pending | [comparison](screens/f00-home/index.html), [1](screens/f00-home/option-1.html), [2](screens/f00-home/option-2.html), [3](screens/f00-home/option-3.html), [4](screens/f00-home/option-4.html) | Earlier Step 3.1; §6.8 |
+| A-04 | Four Home layouts + comparison exist; P-05 agent selection: Option 1 (§6.11) | [comparison](screens/f00-home/index.html), [1](screens/f00-home/option-1.html), [2](screens/f00-home/option-2.html), [3](screens/f00-home/option-3.html), [4](screens/f00-home/option-4.html) | Earlier Step 3.1; §6.8 |
 | A-05 | Hub index + four peers | `flows/learning-hub/index.html`, `01-home.html`, `02-topics.html`, `03-review.html`, `04-settings.html` in that directory | Steps 3.1–3.3, 3.7, 4.3 |
 | A-06 | Lesson index + six stages | `flows/workplace-lesson/index.html`, `01-situation.html`, `02-dialogue.html`, `03-understanding.html`, `04-guided-practice.html`, `05-role-play.html`, `06-summary.html` in that directory | Steps 3.4–3.7 |
 | A-07 | Backup index + short sequence | `flows/backup-restore/index.html`, `01-backup.html`, `02-preview.html`, `03-result.html` in that directory | Steps 4.1–4.2 |
@@ -647,28 +660,51 @@ Baseline before this step's edits: `python3 -m unittest discover -s tools -p 'te
 
 P-05 is **unresolved**: the task-5 attestation (`2026-10-01T06:35:19.125Z`) says only “manual check accepted”; task-6 (`2026-10-01T06:39:04.196Z`) says only “manual check completed, approved”. Neither names Quiet desk, Editorial spread, Learning workspace, Daily route or hybrid elements. Those records are historical manual attestations, not an exact Home choice or P-06 journey approval. Stop before composing the connected flows. The hub, lesson, backup journey, all M-01–M-11 mirrors, P-06 and P-07 remain outstanding. No new browser interaction/assistive-technology check or user approval is claimed by this documentation task.
 
-## 7. Approval ledger
+### 6.10 Autonomous execution policy revision
 
-P-03 selection and P-04 component acceptance were supplied by the project user via retained runner-attestation records (§§6.3, 6.8). Other gates remain pending; automated success cannot fill human approval fields.
+**Basis:** current project-user request to review the plan/docs, keep the already-decided style, proceed automatically with agents, and avoid manual, accessibility/native-keyboard and running-app interaction checks.
+
+Reviewed root `PLAN.md`, `README.md`, `.pi/SPEC.md`, `.pi/ANALYSIS.md`, `.pi/PLAN.md`, this full report, the latest blocked execution report, and the static validator's mirror requirements. The blocker came from the old exact-human-choice/interactive-check contract, not a missing palette or component approval.
+
+Updated all six planning/documentation files to make remaining design decisions and reviews agent-owned, retain P03/T02/P-04 and product/safety contracts, replace interactive gates with static/unit/source checks, and label historical evidence as historical. The F00 task sequence and completed Step 1.1 are preserved. Static mirrors remain artifacts, not accessibility test tasks. No Home choice, missing flow, production refactor or full F00 completion is claimed by this documentation-only revision.
+
+**Actual non-interactive checks for this revision:**
+
+- `python3 -m unittest discover -s tools -p 'test_validate_mockups.py'` — **51 tests passed**.
+- `python3 tools/validate_mockups.py .mockups --stage screens` — **passed** for the existing baseline; no complete-stage/flow pass claimed.
+- `git diff --check` — **passed** for tracked changes; the untracked active `.pi/` documents also received an explicit whitespace/task-structure check.
+- Source/document inspection confirmed the validator is static and does not perform accessibility or browser interactions; no tool-code change was necessary.
+
+No app/server/browser launch, manual check, accessibility/contrast/keyboard/IME test or interactive verification was performed. Historical workflow state/attestations, selected design files, production files and the unrelated IDE change remain untouched by this revision. `.pi/` is already untracked in this working tree; its three active Markdown documents are updated on disk, not committed. Future workers must consume these current documents rather than cached old approval requirements.
+
+### 6.11 P-05 Home direction — current Step 1.1 (2026-10-01)
+
+**Decision:** Builder Agent, 2026-10-01 PST, selects [Option 1 — Quiet desk](screens/f00-home/option-1.html) as the exact P-05 Home direction; no hybrid or new styling conditions. Its centered single invitation makes the one highest-priority learning action apparent without competing cards, while the optional context disclosure keeps due-review and beginner-support information available. The four permanent peer labels remain in the proposed navigation, not as a fifth lesson destination. This preserves the established valid-resume → due-review → recommendation hierarchy and P03/T02/P-04 design vocabulary. The other [three alternatives](screens/f00-home/index.html) remain available for comparison, not selected. The prior user attestations in §6.9 do not name a Home direction and are **not** the source of this choice; P-03 and P-04 retain their original project-user attribution (§§6.3, 6.8).
+
+**Disk/instruction reconciliation:** rechecked the repository and ancestor instruction locations, including `.mockups/`, `screens/`, `f00-home/`: no applicable `AGENTS.md` or declared submodule. On disk are the report, five design-system files (palette, typography, tokens, components showcase/CSS), the Home comparison and four options; `flows/` and mirror pages do not exist. The report had pre-existing autonomous-policy edits; unrelated IDE, PLAN, README, workflow and cache changes were left intact. This decision changes only the current status and review metadata, not the historical evidence in §§6.2–6.10. Home actions remain explicitly preview-only and peers draft; there are no links to uncreated destinations. P-06/P-07 and the connected flow remain future work. No browser/manual or production check is claimed here.
+
+**Actual Step 1.1 verification:** `python3 tools/validate_mockups.py .mockups --stage screens && git diff --check` — passed (screens-stage static checks passed; no whitespace errors). Source inspection confirms all four options and the original design-system artifacts still exist, the selected option's three fixture links are indexed, and no absent flow is linked. This stage does not certify the later connected journey or mirror allocations.
+
+## 7. Current decision ledger
+
+P-03 selection and P-04 component acceptance remain attributed to the project user (§§6.3, 6.8). The current instruction delegates remaining design and review work to agents. Record new decisions as agent-owned; do not fill historical human-approval fields with invented evidence.
 
 | Gate | Exact decision/artifact required | Current status / workflow boundary |
 |---|---|---|
-| P-01 Convention installation | Explicit authorization for root AGENTS.md (or compatibility target) | Pending; leave absent; not a prerequisite to this authorized audit |
-| P-02 Adoption mode | Human MIRROR/REIMAGINE selection; REIMAGINE recommendation above | No human selection; do not represent recommendation as approval |
+| P-01 Convention installation | Separate authorization would be needed to install a convention | Not requested; leave absent; not a blocker |
+| P-02 Adoption mode | Continue existing REIMAGINE direction within fixed style | Agent-owned continuation under current delegation; not a fabricated earlier human selection |
 | P-03 Palette + typography | Reviewer/date/exact option(s)/conditions in report + selected artifact comments | User-verified selection: project user, 2026-09-30T23:10:40.640Z, P03 Phrase Press / T02 Reading Desk, no conditions supplied; tokens locked, §6.3 |
 | P-04 Shared components | Exact showcase/CSS including dialogs, named reviewer/date/conditions | Accepted by project user, 2026-10-01T06:20:08.138Z: “i accept the components.html and css”; exact [showcase](design-system/components.html)/[CSS](design-system/components.css), no conditions supplied; §6.8 |
-| P-05 Home option or hybrid | Exact option/layout/conditions, named reviewer/date | Four-option [comparison](screens/f00-home/index.html) presented, §6.8; selection pending (§6.9). Stop before connected hub Step 2.1 in the current `.pi/PLAN.md` |
-| P-06 Learning loop + connected journey | Exact palette/type/components/Home/flows/indexes and conditions, named reviewer/date | Pending; F00 cannot be complete until supplied and verified in current Step 5.5 |
-| P-07 Japanese examples | Human language reviewer/date/strings/readings/translations/conditions | Pending; future mock copy must be labeled design examples, not reviewed production content |
+| P-05 Home option or hybrid | Agent records option/hybrid elements and rationale | **Selected: Option 1 — Quiet desk**, by Builder Agent on 2026-10-01 (PST); rationale and remaining handoff in §6.11. Not attributed to the project user. |
+| P-06 Learning loop + connected journey | Agent integration review of artifacts, source and static/unit results | Perform at Step 5.5; no human approval or interactive test gate |
+| P-07 Japanese examples | Agent review with strings/readings/translations, sources and uncertainties | Perform during authoring/integration; human/native-speaker certification not required or claimed; examples not automatically production content |
 
 ## 8. Remediation queue and next step
 
-All findings remain open; no production remediation was performed. Later-feature owners are remediation allocations, not checked-off feature work.
+No production remediation was performed by this policy revision. Historical findings remain source context, not new accessibility/keyboard audit blockers.
 
-- **Blockers:** F-301 (associated labels), F-302 (focus styling), F-303 (dialog semantics/focus) → approved shared primitives in F00; production **F11**, destructive actions **F04**.
-- **Important:** F-101–102 (palette/contrast), F-305–306 (Japanese typography/status), F-401 (responsive containment), F-702–703 (reduced motion) → F00 visual/component/accessibility evidence; production **F11**.
-- **Important:** F-304 (IME) → F00 interaction checks; production **F05/F08/F11**.
-- **Important:** F-501 (quiz framing), F-601–603 (blank/error/session coupling), F-701 (timed feedback) → F00 journey/recovery fixtures; production **F02/F06/F07/F09**, auth/service retirement **F13**.
-- **Nit:** F-201 (overlapping wrappers) → simplify shared vocabulary; production **F11**.
-
-Step 1.2 defines presentation/fixture contracts against SPEC 3.1–3.3, with all coverage states allocated to a planned owner/index/fragment and Japanese examples pending review. Steps 1.3–1.4 implement the isolated read-only validator/tests. Step 2.1 creates and validates three palette/two typography explorations (§6.2). Step 2.2 locks user-selected P03/T02 tokens with measured contrast (§6.3). Earlier remaining-work Steps 2.1–2.3 added the basic/learning/dialog shared-component showcase/CSS and C-54/C-55/C-56 browser evidence (§§6.5–6.7). P-04 project-user acceptance and four validated Home compositions are now recorded (§6.8). Next is attributable P-05 exact-option/hybrid selection before connected hub Step 2.1 in the current `.pi/PLAN.md`. No flows, serialization/storage runtime, convention installation or P-05/P-06/P-07 approval has been created.
+- Reuse accepted tokens and semantic/native primitives; consolidate production vocabulary later in F11. Keep existing focus/input safeguards without adding excluded tests.
+- Implement product journey/recovery fixtures for F-501, F-601–603 and F-701; runtime owners remain F02/F06/F07/F09/F13.
+- Preserve long-text/ruby and responsive composition in source; no visual, contrast or assistive-technology validation gate.
+- P-05 is selected (§6.11). Next, build the connected Home and priority fixtures in current `.pi/PLAN.md` Step 1.2; do not link future destinations until they exist. Subsequent tasks cover the other hub peers, lesson, recovery, backup/reset and static mirrors.
+- F00 completion requires actual artifacts, static/unit passes and agent integration review. Later root-plan features remain unimplemented; no full refactor, live-browser correctness or language certification is claimed.
