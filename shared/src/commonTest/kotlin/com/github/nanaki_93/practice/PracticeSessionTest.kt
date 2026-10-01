@@ -192,6 +192,165 @@ class PracticeSessionTest {
         }
     }
 
+    @Test fun retryReplacesOneSlotWithoutGrowingThePlanOrSummary() {
+        var state = startSession(30, set(2))
+        val originalPlan = state.plan
+        repeat(5) { attempt ->
+            val feedback = reduce(state, PracticeCommand.Submit(30, state.revision, PracticeAnswer.Choice("no")))
+            assertEquals(SessionView.Feedback(0), feedback.view)
+            assertEquals(OutcomeCounts(incorrect = 1), feedback.counts)
+            assertSame(feedback, reduce(feedback, PracticeCommand.Retry(30, state.revision)))
+            state = reduce(feedback, PracticeCommand.Retry(30, feedback.revision))
+            assertEquals(SessionView.Prompt(0), state.view)
+            assertEquals(OutcomeCounts(), state.counts)
+            assertEquals(listOf(null, null), state.outcomes)
+            assertEquals(originalPlan, state.plan)
+            assertEquals(2, state.outcomes.size, "attempt $attempt appended a slot")
+            assertSame(state, reduce(state, PracticeCommand.Retry(30, feedback.revision)))
+        }
+        state = reduce(state, PracticeCommand.Submit(30, state.revision, PracticeAnswer.Choice("yes")))
+        assertEquals(OutcomeCounts(correct = 1), state.counts)
+        assertEquals(1, state.counts.completed)
+        assertEquals(originalPlan, state.plan)
+        val next = reduce(state, PracticeCommand.Continue(30, state.revision))
+        assertEquals(SessionView.Prompt(1), next.view)
+        assertSame(next, reduce(next, PracticeCommand.Retry(30, next.revision)))
+    }
+
+    @Test fun reviewFromPromptAndFeedbackIsReadOnlyAndReturnsToTheSameFrontier() {
+        var state = startSession(31, set(3))
+        state = reduce(state, PracticeCommand.Skip(31, state.revision))
+        state = reduce(state, PracticeCommand.Continue(31, state.revision))
+        state = reduce(state, PracticeCommand.Reveal(31, state.revision))
+        state = reduce(state, PracticeCommand.Continue(31, state.revision))
+        val frontier = state
+        val review = reduce(state, PracticeCommand.Previous(31, state.revision))
+        assertEquals(SessionView.Review(1, SessionView.Prompt(2)), review.view)
+        val earlier = reduce(review, PracticeCommand.Previous(31, review.revision))
+        assertEquals(SessionView.Review(0, SessionView.Prompt(2)), earlier.view)
+        assertSame(earlier, reduce(earlier, PracticeCommand.Previous(31, earlier.revision)))
+        for (command in listOf(
+            PracticeCommand.Submit(31, earlier.revision, PracticeAnswer.Choice("yes")),
+            PracticeCommand.Skip(31, earlier.revision), PracticeCommand.Reveal(31, earlier.revision),
+            PracticeCommand.Retry(31, earlier.revision), PracticeCommand.Continue(31, earlier.revision),
+        )) assertSame(earlier, reduce(earlier, command))
+        val forward = reduce(earlier, PracticeCommand.Next(31, earlier.revision))
+        assertEquals(SessionView.Review(1, SessionView.Prompt(2)), forward.view)
+        val back = reduce(forward, PracticeCommand.Next(31, forward.revision))
+        assertEquals(frontier.view, back.view)
+        assertEquals(frontier.outcomes, back.outcomes)
+        assertEquals(OutcomeCounts(skipped = 1, revealed = 1), back.counts)
+        assertSame(back, reduce(back, PracticeCommand.Next(31, forward.revision)))
+
+        val feedback = reduce(back, PracticeCommand.Submit(31, back.revision, PracticeAnswer.Choice("no")))
+        val history = reduce(feedback, PracticeCommand.Previous(31, feedback.revision))
+        assertEquals(SessionView.Review(1, feedback.view), history.view)
+        val returned = reduce(history, PracticeCommand.Return(31, history.revision))
+        assertEquals(feedback.view, returned.view)
+        assertEquals(feedback.outcomes, returned.outcomes)
+        assertSame(returned, reduce(returned, PracticeCommand.Return(31, history.revision)))
+        val again = reduce(returned, PracticeCommand.Previous(31, returned.revision))
+        assertEquals(feedback.view, reduce(again, PracticeCommand.Next(31, again.revision)).view)
+    }
+
+    @Test fun completionReviewNeverReopensTheSession() {
+        var state = startSession(32, set(2))
+        repeat(2) {
+            state = reduce(state, PracticeCommand.Submit(32, state.revision, PracticeAnswer.Choice("yes")))
+            state = reduce(state, PracticeCommand.Continue(32, state.revision))
+        }
+        assertEquals(SessionView.Complete, state.view)
+        val review = reduce(state, PracticeCommand.Previous(32, state.revision))
+        assertEquals(SessionView.Review(1, SessionView.Complete), review.view)
+        assertTrue(review.isComplete)
+        val previous = reduce(review, PracticeCommand.Previous(32, review.revision))
+        assertEquals(SessionView.Review(0, SessionView.Complete), previous.view)
+        assertTrue(previous.isComplete)
+        assertSame(previous, reduce(previous, PracticeCommand.Submit(32, previous.revision, PracticeAnswer.Choice("no"))))
+        val returned = reduce(previous, PracticeCommand.Return(32, previous.revision))
+        assertEquals(SessionView.Complete, returned.view)
+        assertTrue(returned.isComplete)
+        assertEquals(OutcomeCounts(correct = 2), returned.counts)
+        val last = reduce(returned, PracticeCommand.Previous(32, returned.revision))
+        assertEquals(SessionView.Complete, reduce(last, PracticeCommand.Next(32, last.revision)).view)
+        val restarted = reduce(last, PracticeCommand.Restart(32, last.revision, 33))
+        assertEquals(SessionView.Prompt(0), restarted.view)
+        assertTrue(!restarted.isComplete)
+        assertEquals(OutcomeCounts(), restarted.counts)
+        assertSame(restarted, reduce(restarted, PracticeCommand.Return(32, last.revision)))
+    }
+
+    @Test fun restartAndLeaveGuardIdentityAndRevisionAcrossLifetimes() {
+        var state = startSession(40, set(2))
+        val oldSubmit = PracticeCommand.Submit(40, 0, PracticeAnswer.Choice("yes"))
+        state = reduce(state, oldSubmit)
+        val oldContinue = PracticeCommand.Continue(40, state.revision)
+        assertSame(state, reduce(state, PracticeCommand.Restart(40, 0, 41)))
+        assertSame(state, reduce(state, PracticeCommand.Restart(40, state.revision, 40)))
+        val restart = PracticeCommand.Restart(40, state.revision, 41)
+        val restarted = reduce(state, restart)
+        assertEquals(41, restarted.id)
+        assertEquals(0, restarted.revision)
+        assertEquals(SessionView.Prompt(0), restarted.view)
+        assertEquals(OutcomeCounts(), restarted.counts)
+        assertEquals(listOf(null, null), restarted.outcomes)
+        assertEquals(state.plan, restarted.plan)
+        for (command in listOf(oldSubmit, oldContinue, restart, PracticeCommand.Leave(40, state.revision))) {
+            assertSame(restarted, reduce(restarted, command))
+        }
+        val left = reduce(restarted, PracticeCommand.Leave(41, 0))
+        assertEquals(SessionView.Left, left.view)
+        assertEquals(1, left.revision)
+        for (command in listOf(
+            PracticeCommand.Submit(41, 1, PracticeAnswer.Choice("yes")), PracticeCommand.Skip(41, 1),
+            PracticeCommand.Restart(41, 1, 42), PracticeCommand.Leave(41, 1),
+            PracticeCommand.Previous(41, 1), PracticeCommand.Return(41, 1),
+        )) assertSame(left, reduce(left, command))
+    }
+
+    @Test fun retryFinalFeedbackStillRequiresASecondExplicitContinue() {
+        var state = startSession(60, set(1))
+        state = reduce(state, PracticeCommand.Reveal(60, state.revision))
+        val oldContinue = PracticeCommand.Continue(60, state.revision)
+        state = reduce(state, PracticeCommand.Retry(60, state.revision))
+        assertEquals(OutcomeCounts(), state.counts)
+        assertSame(state, reduce(state, oldContinue))
+        state = reduce(state, PracticeCommand.Submit(60, state.revision, PracticeAnswer.Choice("no")))
+        assertEquals(OutcomeCounts(incorrect = 1), state.counts)
+        assertEquals(SessionView.Feedback(0), state.view)
+        assertTrue(!state.isComplete)
+        state = reduce(state, PracticeCommand.Continue(60, state.revision))
+        assertEquals(SessionView.Complete, state.view)
+        assertEquals(1, state.counts.completed)
+        val left = reduce(state, PracticeCommand.Leave(60, state.revision))
+        assertEquals(SessionView.Left, left.view)
+        assertSame(left, reduce(left, PracticeCommand.Previous(60, left.revision)))
+    }
+
+    @Test fun summariesDistinguishAllFiveKinds() {
+        val production = ProductionExercise("produce", "Write", listOf(JapaneseText("はい", "はい", translation = "Yes")), listOf("Polite"))
+        val source = set(5).copy(exercises = set(4).exercises + production)
+        var state = startSession(50, source)
+        val commands: List<(PracticeSession) -> PracticeCommand> = listOf(
+            { PracticeCommand.Submit(50, it.revision, PracticeAnswer.Choice("yes")) },
+            { PracticeCommand.Submit(50, it.revision, PracticeAnswer.Choice("no")) },
+            { PracticeCommand.Skip(50, it.revision) },
+            { PracticeCommand.Reveal(50, it.revision) },
+            { PracticeCommand.Submit(50, it.revision, PracticeAnswer.SelfAssessment("はい", Assessment.MET_CRITERIA)) },
+        )
+        for (command in commands) {
+            state = reduce(state, command(state))
+            state = reduce(state, PracticeCommand.Continue(50, state.revision))
+        }
+        assertEquals(SessionView.Complete, state.view)
+        assertEquals(OutcomeCounts(1, 1, 1, 1, 1), state.counts)
+        assertEquals(5, state.counts.completed)
+        assertIs<PracticeOutcome.SelfAssessed>(state.outcomes.last())
+        val history = reduce(state, PracticeCommand.Previous(50, state.revision))
+        assertEquals(state.counts, history.counts)
+        assertEquals(state.outcomes, history.outcomes)
+    }
+
     @Test fun wrongSessionAndStaleRevisionsCannotResolveOrSkipAnotherItem() {
         val initial = startSession(100, set(2))
         assertSame(initial, reduce(initial, PracticeCommand.Skip(101, 0)))

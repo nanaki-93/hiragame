@@ -36,7 +36,10 @@ data class OutcomeCounts(
 sealed interface SessionView {
     data class Prompt(val index: Int, val validation: InvalidReason? = null) : SessionView
     data class Feedback(val index: Int) : SessionView
+    /** A resolved item; returnTo is the unchanged active frontier or completion. */
+    data class Review(val index: Int, val returnTo: SessionView) : SessionView
     data object Complete : SessionView
+    data object Left : SessionView
 }
 
 /** An expected identity and revision are captured with each UI action, not read at dispatch time. */
@@ -48,6 +51,13 @@ sealed interface PracticeCommand {
     data class Skip(override val sessionId: Long, override val revision: Long) : PracticeCommand
     data class Reveal(override val sessionId: Long, override val revision: Long) : PracticeCommand
     data class Continue(override val sessionId: Long, override val revision: Long) : PracticeCommand
+    data class Retry(override val sessionId: Long, override val revision: Long) : PracticeCommand
+    data class Previous(override val sessionId: Long, override val revision: Long) : PracticeCommand
+    data class Next(override val sessionId: Long, override val revision: Long) : PracticeCommand
+    data class Return(override val sessionId: Long, override val revision: Long) : PracticeCommand
+    /** IDs must increase across restarts, so no callback from any prior session can match. */
+    data class Restart(override val sessionId: Long, override val revision: Long, val newSessionId: Long) : PracticeCommand
+    data class Leave(override val sessionId: Long, override val revision: Long) : PracticeCommand
 }
 
 /** Snapshots copy their collections so a caller cannot modify an active plan or outcome slots. */
@@ -60,6 +70,8 @@ class PracticeSession private constructor(
 ) {
     val plan: List<PlannedExercise> get() = orderedPlan.map { it.copy(exercise = it.exercise.snapshot()) }
     val outcomes: List<PracticeOutcome?> get() = slots.map { it?.snapshot() }
+    val isComplete: Boolean get() = view == SessionView.Complete ||
+        (view is SessionView.Review && view.returnTo == SessionView.Complete)
     val counts: OutcomeCounts get() {
         var counts = OutcomeCounts()
         for (outcome in slots) counts = when (outcome) {
@@ -74,7 +86,11 @@ class PracticeSession private constructor(
     }
 
     internal fun transition(command: PracticeCommand): PracticeSession {
-        if (command.sessionId != id || command.revision != revision) return this
+        if (command.sessionId != id || command.revision != revision || view == SessionView.Left) return this
+        if (command is PracticeCommand.Leave) return updated(view = SessionView.Left)
+        if (command is PracticeCommand.Restart) return if (command.newSessionId > id) {
+            PracticeSession(command.newSessionId, 0, orderedPlan, List(orderedPlan.size) { null }, SessionView.Prompt(0))
+        } else this
         return when (val current = view) {
             is SessionView.Prompt -> when (command) {
                 is PracticeCommand.Submit -> when (val result = evaluate(orderedPlan[current.index].exercise, command.answer)) {
@@ -89,13 +105,41 @@ class PracticeSession private constructor(
                 }
                 is PracticeCommand.Skip -> resolve(current.index, PracticeOutcome.Skipped(authoredFeedback(orderedPlan[current.index].exercise)))
                 is PracticeCommand.Reveal -> resolve(current.index, PracticeOutcome.Revealed(authoredFeedback(orderedPlan[current.index].exercise)))
-                is PracticeCommand.Continue -> this
+                is PracticeCommand.Previous -> if (current.index > 0) review(current.index - 1, current) else this
+                else -> this
             }
-            is SessionView.Feedback -> if (command is PracticeCommand.Continue) {
-                updated(view = if (current.index + 1 == orderedPlan.size) SessionView.Complete else SessionView.Prompt(current.index + 1))
-            } else this
-            SessionView.Complete -> this
+            is SessionView.Feedback -> when (command) {
+                is PracticeCommand.Continue -> updated(view = if (current.index + 1 == orderedPlan.size) SessionView.Complete else SessionView.Prompt(current.index + 1))
+                is PracticeCommand.Retry -> updated(
+                    slots = slots.toMutableList().also { it[current.index] = null },
+                    view = SessionView.Prompt(current.index),
+                )
+                is PracticeCommand.Previous -> if (current.index > 0) review(current.index - 1, current) else this
+                else -> this
+            }
+            is SessionView.Review -> when (command) {
+                is PracticeCommand.Previous -> if (current.index > 0) review(current.index - 1, current.returnTo) else this
+                is PracticeCommand.Next -> {
+                    val frontier = when (val target = current.returnTo) {
+                        is SessionView.Prompt -> target.index
+                        is SessionView.Feedback -> target.index
+                        SessionView.Complete -> orderedPlan.size
+                        else -> error("Review must return to a frontier")
+                    }
+                    if (current.index + 1 < frontier) review(current.index + 1, current.returnTo)
+                    else updated(view = current.returnTo)
+                }
+                is PracticeCommand.Return -> updated(view = current.returnTo)
+                else -> this
+            }
+            SessionView.Complete -> if (command is PracticeCommand.Previous) review(orderedPlan.lastIndex, SessionView.Complete) else this
+            SessionView.Left -> this
         }
+    }
+
+    private fun review(index: Int, returnTo: SessionView): PracticeSession {
+        check(slots[index] != null) { "Cannot review an unresolved item" }
+        return updated(view = SessionView.Review(index, returnTo))
     }
 
     private fun resolve(index: Int, outcome: PracticeOutcome): PracticeSession {
