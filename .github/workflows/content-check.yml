@@ -39,6 +39,15 @@ jobs:
       - name: Validate reviewed canonical content
         run: python3 tools/validate_content.py site/src/jsMain/resources/public/content --review-root content-source/review-notes
 
-      # shared/build.gradle.kts configures Kotlin/Gradle-managed Node; no browser or backend is needed.
-      - name: Test shared content on Node
-        run: ./gradlew :shared:jsNodeTest
+      - name: Test local runtime tooling
+        run: python3 -m unittest discover -s tools -p 'test_*runtime*.py'
+
+      # Kotlin/Gradle manages Node for both modules; no browser or backend is needed.
+      - name: Test shared and site on Node
+        run: ./gradlew :shared:jsNodeTest :site:jsNodeTest
+
+      - name: Assemble production hosting tree
+        run: ./gradlew :site:reorganizeOutput
+
+      - name: Validate local runtime artifact
+        run: python3 tools/validate_local_runtime.py --artifact-root site/build/dist/js/productionExecutable/public
