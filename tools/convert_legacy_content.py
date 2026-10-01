@@ -18,6 +18,55 @@ ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]*\Z", re.ASCII)
 OUTPUT_FILE = "drafts.json"
 REPO = Path(__file__).resolve().parent.parent
 
+# Audit reference: modern core gojuon (including を/ん), voiced/semi-voiced
+# single signs, and conventional yoon groups. Historical signs are separate;
+# small kana, sokuon and loanword combinations are outside this core matrix.
+KANA_CORE = {
+    "base": "あいうえお かきくけこ さしすせそ たちつてと なにぬねの はひふへほ まみむめも やゆよ らりるれろ わを ん".replace(" ", ""),
+    "voiced": "がぎぐげご ざじずぜぞ だぢづでど ばびぶべぼ".replace(" ", ""),
+    "semiVoiced": "ぱぴぷぺぽ",
+    "contracted": tuple(start + end for start in "きしちにひみりぎじびぴ" for end in "ゃゅょ"),
+}
+HISTORICAL = "ゐゑ"
+
+
+def audit_signs(rows):
+    """Classify *all* (1-based record number, ten-field row) SIGN records.
+
+    Romanizations are compared as source claims, not normalized pronunciations.
+    A shared reading does not imply a duplicate surface.
+    """
+    categories = {name: [] for name in (*KANA_CORE, "historical", "other")}
+    categories["katakana"] = []
+    surfaces = {}
+    readings = {}
+    for number, cells in rows:
+        if cells[6] != "SIGN":
+            continue
+        ident, surface, reading = cells[:3]
+        ref = {"row": number, "id": ident, "surface": surface, "romanization": reading}
+        script = "katakana" if surface and all(
+            "\u30a1" <= char <= "\u30fa" for char in surface) else "hiragana"
+        if script == "katakana":
+            categories["katakana"].append(ref)
+        base_surface = "".join(chr(ord(char) - 96) for char in surface) if script == "katakana" else surface
+        group = next((name for name, signs in KANA_CORE.items() if base_surface in signs),
+                     "historical" if base_surface in HISTORICAL else "other")
+        categories[group].append(ref)
+        surfaces.setdefault(surface, []).append(ref)
+        readings.setdefault(reading, []).append(ref)
+    observed = set(surfaces)
+    return {
+        "categories": categories,
+        "missing": {name: [sign for sign in signs if sign not in observed]
+                    for name, signs in KANA_CORE.items()},
+        "missingKatakana": {name: ["".join(chr(ord(char) + 96) for char in sign) for sign in signs
+                                    if "".join(chr(ord(char) + 96) for char in sign) not in observed]
+                             for name, signs in KANA_CORE.items()},
+        "duplicateSurfaces": {key: refs for key, refs in surfaces.items() if len(refs) > 1},
+        "sharedRomanizations": {key: refs for key, refs in readings.items() if len(refs) > 1},
+    }
+
 
 class ConversionError(Exception):
     pass
