@@ -1,15 +1,15 @@
 /*
- * Hiragame F00 component library — basic + learning slices, proposed (P-04 pending).
+ * Hiragame F00 component library — basic + learning + dialog slices, proposed (P-04 pending).
  * Generated: 2026-10-01. Depends on: tokens.css, linked first.
  * Aesthetic decisions: flat editorial surfaces, soft token corners,
  * generous spacing; control hit targets use the 48px spacing token.
  * Common components: Actions: btn; Forms: field/input/select/textarea/choice;
  * Surfaces: card; Feedback: alert/empty-state; Navigation: nav-bar;
- * Data display/Overlays/Indicators: none in this slice.
+ * Data display/Indicators: none. Overlays: confirmation (native modal dialog).
  * Project-unique components: learning-card (goal/checkpoint); support-controls /
  * transcript (authored reading aids); stage-track (session position);
  * guided-feedback (persistent explanation); review-card (reveal/self-rating);
- * backup-summary (sample provenance and replacement scope). Dialogs deferred.
+ * backup-summary (sample provenance and replacement scope).
  * Every color/font/spacing comes from selected P03/T02 tokens. No motion.
  * data-state mirrors are reviewer-only snapshots of real pseudo-classes.
  */
@@ -92,6 +92,13 @@ a.nav-bar__item:is(:hover, [data-state="hover"]) { background: var(--color-bg-te
 a.nav-bar__item:is(:active, [data-state="active"]) { background: var(--color-accent-muted); }
 .nav-bar__item[aria-current] { background: var(--color-accent-muted); color: var(--color-text-primary); font-weight: var(--font-weight-bold); text-decoration-thickness: var(--space-1); }
 .nav-bar__item[aria-disabled="true"] { background: var(--color-bg-tertiary); color: var(--color-text-secondary); border-style: dashed; }
+
+/* Overlays: native showModal supplies inert background; no animation or wait. */
+.confirmation { width: calc(100% - var(--space-8)); max-width: calc(var(--font-size-base) * 28); max-height: calc(100dvh - var(--space-8)); margin: auto; padding: var(--space-6); overflow: auto; border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); background: var(--color-bg-secondary); color: var(--color-text-primary); font: var(--font-size-base)/var(--line-height-base) var(--font-body); overflow-wrap: anywhere; }
+.confirmation::backdrop { background: var(--color-bg-inverse); opacity: 0.65; } /* Backdrop only; never dims dialog text or controls. */
+.confirmation__title { margin-top: 0; }
+.confirmation__actions { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-6); padding: var(--space-2); }
+.confirmation__actions > * { max-width: 100%; }
 
 /* Learning composites: common actions/choices/alerts retain their state rules. */
 .learning-card { display: flex; flex-direction: column; gap: var(--space-3); }
