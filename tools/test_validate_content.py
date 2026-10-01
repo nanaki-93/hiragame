@@ -27,14 +27,17 @@ class ContentValidationTests(unittest.TestCase):
     def run_cli(self, expected):
         before = {p.relative_to(self.root): p.read_bytes() for p in self.root.rglob('*') if p.is_file()}
         proc = subprocess.run([sys.executable, str(CLI), str(self.root), '--review-root', str(self.review)],
-                              capture_output=True, text=True, cwd=ROOT)
+                              capture_output=True, text=True, cwd=ROOT, timeout=10)
         self.assertEqual(proc.returncode, expected, proc.stderr)
         after = {p.relative_to(self.root): p.read_bytes() for p in self.root.rglob('*') if p.is_file()}
         self.assertEqual(before, after, 'validator changed content')
         return proc.stderr
 
     def catalog(self, entries=None):
-        data = {'formatVersion': 1, 'contentVersion': 1, 'topics': [], 'entries': entries or []}
+        topics = sorted({entry['topicId'] for entry in (entries or [])})
+        data = {'formatVersion': 1, 'contentVersion': 1,
+                'topics': [{'id': topic, 'title': 'Topic', 'description': 'Description'} for topic in topics],
+                'entries': entries or []}
         self.put('catalog.json', data)
         return data
 
@@ -184,8 +187,11 @@ class ContentValidationTests(unittest.TestCase):
         self.put('practice/one.json', practice)
         self.put('lessons/one.json', lesson)
         self.assertIn('duplicate catalog-wide exercises ID', self.run_cli(1))
-        lesson['exercises'][0]['id'] = 'lesson_choice'
-        lesson['exercises'][1]['id'] = 'lesson_completion'
+        lesson['exercises'][0]['id'] = 'lesson_ex_choice'
+        lesson['exercises'][1]['id'] = 'lesson_ex_completion'
+        for node in lesson['conversationGraph']['nodes']:
+            if 'exerciseId' in node:
+                node['exerciseId'] = 'lesson_' + node['exerciseId']
         self.put('lessons/one.json', lesson)
         self.run_cli(0)
         for filename in ('practice-incompatible.json', 'practice-unknown-type.json'):
@@ -194,6 +200,83 @@ class ContentValidationTests(unittest.TestCase):
                 error = self.run_cli(1)
                 self.assertIn('practice/one.json:', error)
                 self.assertIn('exercises', error)
+
+    def test_reference_and_graph_negative_fixtures(self):
+        """Each patch is a focused, named regression fixture against valid baseline documents."""
+        cases = json.loads((FIXTURES / 'reference-negative.json').read_text())
+        for case in cases:
+            with self.subTest(case=case['name']):
+                catalog = json.loads((FIXTURES / 'catalog-valid.json').read_text())
+                practice = json.loads((FIXTURES / 'practice-valid.json').read_text())
+                lesson = json.loads((FIXTURES / 'lesson-valid.json').read_text())
+                lesson['exercises'][0]['id'] = 'lesson_ex_choice'
+                lesson['exercises'][1]['id'] = 'lesson_ex_completion'
+                for node in lesson['conversationGraph']['nodes']:
+                    if 'exerciseId' in node:
+                        node['exerciseId'] = 'lesson_' + node['exerciseId']
+                documents = {'catalog': catalog, 'practice': practice, 'lesson': lesson}
+                target = documents[case['document']]
+                for part in case['path'][:-1]:
+                    target = target[part]
+                target[case['path'][-1]] = case['value']
+                self.put('catalog.json', catalog)
+                self.put('practice/one.json', practice)
+                self.put('lessons/one.json', lesson)
+                self.assertIn(case['expected'], self.run_cli(1))
+
+    def test_valid_local_targets_and_order_independent_prerequisites(self):
+        catalog = json.loads((FIXTURES / 'catalog-valid.json').read_text())
+        practice = json.loads((FIXTURES / 'practice-valid.json').read_text())
+        lesson = json.loads((FIXTURES / 'lesson-valid.json').read_text())
+        lesson['exercises'][0]['id'] = 'lesson_ex_choice'
+        lesson['exercises'][1]['id'] = 'lesson_ex_completion'
+        for node in lesson['conversationGraph']['nodes']:
+            if 'exerciseId' in node:
+                node['exerciseId'] = 'lesson_' + node['exerciseId']
+        lesson['dialogue']['speakers'].append({'id': 'learner', 'name': 'You', 'role': 'Learner'})
+        lesson['phrases'] = [{'id': 'phrase_1', 'text': lesson['dialogue']['turns'][0]['text'],
+                              'usage': 'At work', 'register': 'polite', 'sourceTurnId': 'turn_1'}]
+        lesson['reviewItems'] = [{'id': 'review_1', 'targetKind': 'phrase', 'targetId': 'phrase_1',
+                                  'skill': 'Check', 'direction': 'meaning-to-phrase'},
+                                 {'id': 'review_2', 'targetKind': 'exercise', 'targetId': 'lesson_ex_choice',
+                                  'skill': 'Choose', 'direction': 'context-to-choice'}]
+        other = copy.deepcopy(lesson)
+        other['id'] = 'lesson_2'
+        other['exercises'] = []
+        other['phrases'] = []
+        other['reviewItems'] = []
+        other['conversationGraph'] = None
+        other['prerequisiteLessonIds'] = ['lesson_1']
+        catalog['entries'].insert(0, {'id': 'lesson_2', 'kind': 'lesson', 'topicId': 'topic_1',
+                                       'path': 'lessons/two.json'})
+        self.put('catalog.json', catalog)
+        self.put('practice/one.json', practice)
+        self.put('lessons/one.json', lesson)
+        self.put('lessons/two.json', other)
+        self.run_cli(0)
+        other['prerequisiteLessonIds'] = ['practice_1']
+        self.put('lessons/two.json', other)
+        self.assertIn('unknown bundled lesson prerequisite', self.run_cli(1))
+        other['prerequisiteLessonIds'] = ['lesson_1']
+        lesson['prerequisiteLessonIds'] = ['lesson_2']
+        self.put('lessons/two.json', other)
+        self.put('lessons/one.json', lesson)
+        self.assertIn('prerequisite cycle', self.run_cli(1))
+
+    def test_long_graph_is_bounded_and_does_not_recurse(self):
+        lesson = json.loads((FIXTURES / 'lesson-valid.json').read_text())
+        prompt_text = lesson['dialogue']['turns'][0]['text']
+        nodes = [{'id': f'node_{i}', 'type': 'prompt', 'speakerId': 'colleague',
+                  'text': prompt_text, 'nextNodeId': f'node_{i + 1}'} for i in range(1100)]
+        nodes.append({'id': 'node_1100', 'type': 'terminal', 'message': 'Done'})
+        lesson['conversationGraph'] = {'entryNodeId': 'node_0', 'nodes': nodes}
+        self.catalog([{'id': 'lesson_1', 'kind': 'lesson', 'topicId': 'topic_1',
+                       'path': 'lessons/one.json'}])
+        self.put('lessons/one.json', lesson)
+        self.run_cli(0)
+        nodes[-2]['nextNodeId'] = 'node_0'
+        self.put('lessons/one.json', lesson)
+        self.assertIn('conversation graph cycle', self.run_cli(1))
 
     def test_missing_roots_are_io_errors(self):
         (self.root / 'catalog.json').write_text('{}')
