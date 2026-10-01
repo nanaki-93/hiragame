@@ -6,6 +6,10 @@ import com.github.nanaki_93.content.CatalogLoad
 import com.github.nanaki_93.content.ContentTextSource
 import com.github.nanaki_93.content.EmptyContentReason
 import com.github.nanaki_93.content.ContentHttpException
+import com.github.nanaki_93.content.CompletionExercise
+import com.github.nanaki_93.content.JapaneseText
+import com.github.nanaki_93.content.ProductionExercise
+import com.github.nanaki_93.pages.promptAnswer
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
@@ -80,6 +84,61 @@ class LocalPracticeCoordinatorTest {
         assertEquals(SessionView.Complete, assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!.view)
     }
 
+    @Test fun promptControlsMapToTypedCoordinatorSubmissionsWithoutConsumingInvalidAnswers() = runTest {
+        val content = seed().content
+        val original = content.practiceSets.getValue("practice-kana-a-i")
+        val fill = JapaneseText("ます", "ます", translation = "polite ending")
+        val completed = JapaneseText("読みます", "よみます", translation = "read")
+        val set = original.copy(exercises = original.exercises + listOf(
+            CompletionExercise("fill-ending", "Complete the sentence", "読み{blank}", listOf(fill), completed, "Polite ending"),
+            ProductionExercise("write-response", "Write a reply", listOf(completed), listOf("Use a polite ending")),
+        ))
+        val coordinator = LocalPracticeCoordinator(this, { CatalogLoad.Ready(content.copy(practiceSets = mapOf(set.id to set))) })
+        coordinator.load()
+        runCurrent()
+        coordinator.start(set.id)
+        fun session() = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
+        fun submit(choice: String? = null, draft: String = "", rating: Assessment? = null, revealed: Boolean = false) {
+            val current = session()
+            val exercise = current.plan[(current.view as SessionView.Prompt).index].exercise
+            val answer = promptAnswer(exercise, choice, draft, rating, revealed) ?: return
+            coordinator.dispatch(PracticeCommand.Submit(current.id, current.revision, answer))
+        }
+        fun continueSession() {
+            val current = session()
+            coordinator.dispatch(PracticeCommand.Continue(current.id, current.revision))
+        }
+        submit()
+        assertEquals(SessionView.Prompt(0, InvalidReason.BLANK_INPUT), session().view)
+        assertEquals(0, session().counts.completed)
+        submit(choice = "option-kana-a")
+        assertEquals(1, session().counts.correct)
+        continueSession()
+        submit(draft = "  ")
+        assertEquals(SessionView.Prompt(1, InvalidReason.BLANK_INPUT), session().view)
+        assertEquals(1, session().counts.completed)
+        submit(draft = " i ")
+        assertEquals(2, session().counts.correct)
+        continueSession()
+        submit(draft = "読みます") // whole sentence is not the authored fill
+        assertEquals(1, session().counts.incorrect)
+        continueSession()
+        val production = session().plan[3].exercise
+        assertNull(promptAnswer(production, null, "読みます", Assessment.NEEDS_PRACTICE, exampleRevealed = false))
+        submit(draft = "読みます", rating = Assessment.NEEDS_PRACTICE) // cannot submit before reveal, even with a rating
+        assertEquals(SessionView.Prompt(3), session().view)
+        assertEquals(3, session().counts.completed)
+        submit(draft = "読みます", revealed = true) // example visible, but no rating yet
+        assertEquals(SessionView.Prompt(3), session().view)
+        submit(draft = " ", rating = Assessment.NEEDS_PRACTICE, revealed = true)
+        assertEquals(SessionView.Prompt(3, InvalidReason.BLANK_INPUT), session().view)
+        assertEquals(3, session().counts.completed)
+        submit(draft = " 読みます ", rating = Assessment.NEEDS_PRACTICE, revealed = true)
+        assertEquals(1, session().counts.selfAssessed)
+        assertEquals(0, session().counts.revealed) // showing an example is not a graded or resolved outcome
+        assertEquals(SessionView.Feedback(3), session().view)
+    }
+
     @Test fun launcherStartsSelectedReviewedSetWithoutIdentityAndReloadClearsSession() = runTest {
         val seed = seed().content
         val original = seed.practiceSets.getValue("practice-kana-a-i")
@@ -128,6 +187,24 @@ class LocalPracticeCoordinatorTest {
             "userId", "login", "GameMode", "LevelListRequest", "GameStatistics", "delay(", "launchSafe")) {
             assertTrue(obsolete !in home, "Home still contains $obsolete")
         }
+        for (required in listOf("PracticePrompt(session, view)", "promptAnswer(exercise, selectedChoice, draft, assessment, exampleRevealed)",
+            "PracticeCommand.Submit(session.id, session.revision, answer)", "InputType.Radio", "InputType.Text",
+            "TextArea(value = draft", "Legend {", "Label(attrs", "Input(type =", "attr(\"lang\", \"ja\")",
+            "TagElement<HTMLElement>(\"ruby\"", "TagElement<HTMLElement>(\"rt\"", "remember(session.id, exercise.id)")) {
+            assertTrue(required in home, "Home missing native prompt feature $required")
+        }
+        val productionUi = home.substringAfter("is ProductionExercise -> {", "").substringBefore("    val validation = view.validation")
+        assertTrue("if (!exampleRevealed)" in productionUi && "Reveal example and criteria" in productionUi)
+        assertTrue("if (exercise !is ProductionExercise || exampleRevealed)" in home)
+        assertTrue("if (exampleRevealed) assessment?.let" in home)
+        assertTrue(productionUi.indexOf("Reveal example and criteria") < productionUi.indexOf("Your self-assessment"))
+        assertTrue("P { JapanesePassage(example) }" in productionUi, "Authored example must be shown as Japanese text")
+        for (unsafe in listOf("innerHTML", "unsafeHTML", "SearchableTextInput", "onKeyDown", "localStorage")) {
+            assertTrue(unsafe !in home, "Home prompt contains unsafe or legacy behavior: $unsafe")
+        }
+        val styles = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/components/styles/JpStyles.kt"), "utf8") as String
+        val practiceStyles = styles.substringAfter("registerStyleBase(\".practice-answer\")").substringBefore("registerStyleBase(\".practice-choice\")")
+        assertTrue(".outline(" !in practiceStyles, "Native practice fields must retain a visible focus outline")
     }
 
     @Test fun failedLoadCanRetryAndEmptyCanReload() = runTest {
