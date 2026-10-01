@@ -1,0 +1,19 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 1,
+  "topics": [
+    {
+      "id": "kana-foundations",
+      "title": "First kana sounds",
+      "description": "A small text-only introduction to two hiragana signs and their sounds."
+    }
+  ],
+  "entries": [
+    {
+      "id": "practice-kana-a-i",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/kana-a-i.json"
+    }
+  ]
+}

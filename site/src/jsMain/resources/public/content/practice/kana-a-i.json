@@ -1,0 +1,75 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 1,
+  "id": "practice-kana-a-i",
+  "topicId": "kana-foundations",
+  "title": "Hear it in your head: あ and い",
+  "description": "Match two hiragana signs with their basic sounds. Read the signs aloud if useful; no audio is needed.",
+  "reviewItems": [
+    {
+      "id": "review-kana-a-choice",
+      "targetKind": "exercise",
+      "targetId": "exercise-kana-a-choice",
+      "skill": "Recognize the hiragana sign for the basic /a/ sound",
+      "direction": "sound-to-sign"
+    },
+    {
+      "id": "review-kana-i-reading",
+      "targetKind": "exercise",
+      "targetId": "exercise-kana-i-reading",
+      "skill": "Recall the basic reading of い in romaji",
+      "direction": "sign-to-romaji"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-01",
+    "reviewNote": "f01-seed.md",
+    "provenance": "Independently authored for F01; no legacy CSV or F00 mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-written prompts, descriptions and explanations; individual kana signs and basic sound correspondences are linguistic facts, not copied source material. No third-party text or audio included."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-kana-a-choice",
+      "prompt": "Which hiragana sign represents the basic /a/ sound?",
+      "options": [
+        {
+          "id": "option-kana-a",
+          "text": {
+            "surface": "あ",
+            "reading": "あ",
+            "gloss": "Hiragana sign for the basic /a/ sound."
+          }
+        },
+        {
+          "id": "option-kana-i",
+          "text": {
+            "surface": "い",
+            "reading": "い",
+            "gloss": "Hiragana sign for the basic /i/ sound."
+          }
+        }
+      ],
+      "correctOptionId": "option-kana-a",
+      "explanation": "あ represents the basic /a/ sound; い represents the basic /i/ sound."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kana-i-reading",
+      "prompt": "Write the basic reading of this hiragana sign in romaji (lowercase).",
+      "stimulus": {
+        "surface": "い",
+        "reading": "い",
+        "gloss": "Hiragana sign for the basic /i/ sound."
+      },
+      "answerRepresentation": "romaji",
+      "acceptedAnswers": [
+        { "type": "romaji", "text": "i" }
+      ],
+      "explanation": "The basic reading of い is い, written i in romaji here."
+    }
+  ]
+}
