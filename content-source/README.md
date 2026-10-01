@@ -2,6 +2,14 @@
 
 This directory holds authoring material, not a runtime loader or learner saves. The canonical public JSON tree will be added under `site/src/jsMain/resources/public/content/` in later F01 steps. The current contracts are in `shared/src/commonMain/kotlin/com/github/nanaki_93/content/ContentModels.kt`. Exercise variants and graph data are now defined in `ExerciseGraph.kt`; strict codec, filesystem validation, and promotion are subsequent steps. Do not treat an unvalidated document as publishable.
 
+## Preserved legacy source and topic routing
+
+`legacy/question.csv` is a byte-for-byte preservation copy of `backend/migration/question.csv`. Do not edit either file during conversion. See `review-notes/legacy-inventory.md` for the source SHA-256, parser-derived record/mode and topic-label counts, every observed label, aliases, and known uncertainty. The headerless CSV has ten fields: ID, Japanese, romanization, translation, topic, level, mode, timestamp, katakana flag, kanji flag. Parse with Python `csv.reader` and `newline=""`; commas and quotes may occur within fields.
+
+`topic-map.json` has `formatVersion: 1` and an exact-match `labels` object: **each raw CSV topic label → one stable routing topic ID**. Require an explicit mapping for any new label; never silently slug/fold an unknown label. Multiple raw labels may point to the same ID only when deliberately declared as aliases. Check alias collisions by grouping labels by ID: the current shared-ID groups differ only in casing (`casefold()` equality); any future semantic merge must be inspected and documented rather than produced by automatic normalization. Do not change an existing ID merely because display text changes. The raw `N5` topic on `SIGN` rows maps specifically to provisional `kana-signs`, **not** to a level-based curriculum topic. The level column remains distinct and does not select a topic.
+
+This map is draft routing, not reviewed content or a rights decision. `legacy-*` IDs and the `kana-signs` ID do not automatically create canonical catalog topics; promotion requires independent content and rights review. No legacy romanization, reading, translation, or character flags have been approved by this preservation step. Conversion and full kana audit follow in later F01 steps.
+
 ## Identity and versions
 
 Wire names are explicitly annotated with `@SerialName`; JSON keys use camelCase. `formatVersion` is required and currently exactly `1`; `contentVersion` is a required positive integer. Catalog and documents must share both versions (cross-document validation will check that). These are **content** versions, not the future learner save `schemaVersion` (F03). Difficulty is advisory, never a proficiency certification or unlock rule.
