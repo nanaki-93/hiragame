@@ -1,0 +1,1 @@
+{"formatVersion":1,"contentVersion":2147483648,"topics":[{"id":"topic_1","title":"Kana","description":"Foundations"}],"entries":[{"id":"practice_1","kind":"practice","topicId":"topic_1","path":"practice/one.json"},{"id":"lesson_1","kind":"lesson","topicId":"topic_1","path":"lessons/one.json"}]}
