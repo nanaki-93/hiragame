@@ -1,12 +1,15 @@
 /*
- * Hiragame F00 component library — basic slice, proposed (P-04 pending).
+ * Hiragame F00 component library — basic + learning slices, proposed (P-04 pending).
  * Generated: 2026-10-01. Depends on: tokens.css, linked first.
  * Aesthetic decisions: flat editorial surfaces, soft token corners,
  * generous spacing; control hit targets use the 48px spacing token.
  * Common components: Actions: btn; Forms: field/input/select/textarea/choice;
  * Surfaces: card; Feedback: alert/empty-state; Navigation: nav-bar;
  * Data display/Overlays/Indicators: none in this slice.
- * Project-unique components: deferred to Step 2.2 (learning primitives).
+ * Project-unique components: learning-card (goal/checkpoint); support-controls /
+ * transcript (authored reading aids); stage-track (session position);
+ * guided-feedback (persistent explanation); review-card (reveal/self-rating);
+ * backup-summary (sample provenance and replacement scope). Dialogs deferred.
  * Every color/font/spacing comes from selected P03/T02 tokens. No motion.
  * data-state mirrors are reviewer-only snapshots of real pseudo-classes.
  */
@@ -89,3 +92,46 @@ a.nav-bar__item:is(:hover, [data-state="hover"]) { background: var(--color-bg-te
 a.nav-bar__item:is(:active, [data-state="active"]) { background: var(--color-accent-muted); }
 .nav-bar__item[aria-current] { background: var(--color-accent-muted); color: var(--color-text-primary); font-weight: var(--font-weight-bold); text-decoration-thickness: var(--space-1); }
 .nav-bar__item[aria-disabled="true"] { background: var(--color-bg-tertiary); color: var(--color-text-secondary); border-style: dashed; }
+
+/* Learning composites: common actions/choices/alerts retain their state rules. */
+.learning-card { display: flex; flex-direction: column; gap: var(--space-3); }
+.learning-card h3, .learning-card p { margin: 0; }
+.learning-card__meta, .learning-card__state { font: var(--font-size-sm)/var(--line-height-base) var(--font-ui); color: var(--color-text-secondary); }
+.learning-card__state { font-weight: var(--font-weight-semibold); color: var(--color-text-primary); }
+.learning-card--resumable { border-color: var(--color-border-strong); }
+.learning-card--completed .learning-card__state { color: var(--color-success); }
+.learning-card--unavailable { border-style: dashed; }
+.learning-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.learning-actions > * { max-width: 100%; }
+.learning-note { font: var(--font-size-sm)/var(--line-height-base) var(--font-ui); color: var(--color-text-secondary); overflow-wrap: anywhere; }
+.learning-id { font: var(--font-size-xs)/var(--line-height-base) var(--font-mono); overflow-wrap: anywhere; }
+
+.support-controls { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.support-controls .choice { flex: 1 1 auto; }
+.transcript { padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-bg-secondary); overflow-wrap: anywhere; min-width: 0; }
+.transcript__row + .transcript__row { border-top: 1px solid var(--color-border); margin-top: var(--space-4); padding-top: var(--space-4); }
+.transcript__speaker { margin: 0; font: var(--font-weight-semibold) var(--font-size-sm)/var(--line-height-base) var(--font-ui); color: var(--color-text-secondary); }
+.transcript__ja { margin-block: var(--space-3); font: var(--font-size-base)/var(--line-height-loose) var(--font-body); letter-spacing: var(--letter-spacing-body); }
+.transcript ruby { ruby-position: over; }
+.transcript rt { font: var(--font-size-xs)/var(--line-height-tight) var(--font-body); }
+.transcript__translation, .transcript__romaji { margin-block: var(--space-3); font: var(--font-size-sm)/var(--line-height-base) var(--font-ui); color: var(--color-text-secondary); }
+
+.stage-track { display: flex; flex-wrap: wrap; gap: var(--space-3); margin: 0; padding: 0; list-style: none; font: var(--font-size-sm)/var(--line-height-base) var(--font-ui); }
+.stage-track__step { flex: 1 1 auto; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-bg-secondary); color: var(--color-text-secondary); }
+.stage-track__step[aria-current="step"] { border-color: var(--color-border-strong); background: var(--color-accent-muted); color: var(--color-text-primary); font-weight: var(--font-weight-semibold); }
+.stage-track__step--done { color: var(--color-success); }
+
+.guided-feedback { margin-top: var(--space-4); }
+.guided-feedback__example { font: var(--font-size-base)/var(--line-height-loose) var(--font-body); }
+.review-card { padding: var(--space-6); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-secondary); overflow-wrap: anywhere; }
+.review-card__prompt { margin-top: 0; }
+.review-card__answer { margin-block: var(--space-4); }
+.review-card__ratings { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+.backup-summary { padding: var(--space-6); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-bg-secondary); overflow-wrap: anywhere; }
+.backup-summary__title { margin-top: 0; }
+.backup-summary__facts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--space-2) var(--space-4); font: var(--font-size-sm)/var(--line-height-base) var(--font-ui); }
+.backup-summary__facts dt { font-weight: var(--font-weight-semibold); }
+.backup-summary__facts dd { margin: 0; }
+.backup-summary[aria-busy="true"] { border-style: dashed; }
+.backup-summary--invalid { border-color: var(--color-danger); }
