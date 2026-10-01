@@ -140,20 +140,22 @@ Build non-interactive tests into each feature rather than deferring them to the 
 
 **Depends on:** none; contracts inform all other features.
 
+**Status:** F01 complete at the canonical-source/contract scope. Agent integration verification on 2026-10-01 is recorded in [F01 validation evidence](content-source/review-notes/f01-validation.md): CSV bytes matched; 39 Python tests, converter unchanged-output check, canonical validation, shared Node tests and JVM/site/backend compilation passed. This does not establish deployed asset packaging, runtime loading, browser behavior, learner persistence or human certification.
+
 ### Implementation tasks
 
-- [ ] Define serializable catalog, topic, lesson, dialogue, phrase, and exercise models in `shared/`.
-- [ ] Give lessons, turns, exercises, and review items stable IDs. Content edits must not regenerate IDs or erase progress.
-- [ ] Keep `contentVersion` separate from the learner save's `schemaVersion`.
-- [ ] A lesson must describe its situation, communication goal, recommended difficulty, prerequisites, dialogue speakers/turns, target phrases, grammar notes, exercises, and role-play objective.
-- [ ] Support Japanese text, reading/furigana segments, translation, register/context notes, accepted answers, and optional audio references. Do not rely on automatic kanji-reading inference.
-- [ ] Represent exercise types explicitly: recognition/choice, reading, constrained completion, and self-assessed production. Keep the first schema small and validate type-specific requirements.
-- [ ] Preserve the existing CSV under `content-source/legacy/` before backend removal. Use a lightweight conversion tool to produce drafts, retaining legacy question IDs where entries are reused.
-- [ ] Review the kana inventory for omissions, duplicates, and incorrect readings. Review any reused words/sentences for naturalness, reading, translation, and classification.
-- [ ] Normalize topic names into stable topic IDs; the existing free-text topic labels are not a reliable catalog.
-- [ ] Track review status, sources, and redistribution/audio permissions. Unreviewed AI-generated material must not silently enter the shipped catalog.
-- [ ] Add a content-validation CLI and CI check: required fields, unique IDs, answer validity, referenced lessons/phrases/audio, legal branch transitions, and unreachable conversation nodes.
-- [ ] Ship only the reviewed subset. Keep drafts and source CSV out of the production bundle.
+- [x] Define serializable catalog, topic, lesson, dialogue, phrase, and exercise models in `shared/`.
+- [x] Give lessons, turns, exercises, and review items stable IDs. Content edits must not regenerate IDs or erase progress.
+- [x] Keep `contentVersion` separate from the learner save's `schemaVersion`.
+- [x] A lesson must describe its situation, communication goal, recommended difficulty, prerequisites, dialogue speakers/turns, target phrases, grammar notes, exercises, and role-play objective.
+- [x] Support Japanese text, reading/furigana segments, translation, register/context notes, accepted answers, and optional audio references. Do not rely on automatic kanji-reading inference.
+- [x] Represent exercise types explicitly: recognition/choice, reading, constrained completion, and self-assessed production. Keep the first schema small and validate type-specific requirements.
+- [x] Preserve the existing CSV under `content-source/legacy/` before backend removal. Use a lightweight conversion tool to produce drafts, retaining legacy question IDs where entries are reused.
+- [x] Review the kana inventory for omissions, duplicates, and incorrect readings. Review any reused words/sentences for naturalness, reading, translation, and classification.
+- [x] Normalize topic names into stable topic IDs; the existing free-text topic labels are not a reliable catalog.
+- [x] Track review status, sources, and redistribution/audio permissions. Unreviewed AI-generated material must not silently enter the shipped catalog.
+- [x] Add a content-validation CLI and CI check: required fields, unique IDs, answer validity, referenced lessons/phrases/audio, legal branch transitions, and unreachable conversation nodes.
+- [x] Ship only the reviewed subset. Keep drafts and source CSV out of the production bundle.
 
 ### Acceptance criteria
 
