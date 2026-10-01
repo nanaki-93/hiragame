@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>F00 · Clarification lesson summary</title>
+<link rel="stylesheet" href="../../design-system/tokens.css"><link rel="stylesheet" href="../../design-system/components.css">
+<style>
+.review-strip { padding: var(--space-3) var(--space-4); background: var(--color-bg-inverse); color: var(--color-text-inverse); font: var(--font-size-sm)/var(--line-height-base) var(--font-ui); }
+.review-strip a { color: var(--color-text-inverse); }
+.review-links, .stage-links { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.review-links { padding: var(--space-4); border-bottom: 1px solid var(--color-border); }
+.shell { max-width: 850px; margin: auto; padding: var(--space-6); min-width: 0; }
+.stage-links { justify-content: space-between; margin-block: var(--space-4); }
+.scenario { margin-block: var(--space-6); }
+@media (max-width: 700px) { .shell { padding: var(--space-4); } }
+</style></head>
+<body><header class="review-strip"><strong>Simulated mock review · Summary</strong> · <a href="index.html">Lesson navigator</a></header>
+<aside class="review-links" aria-label="Summary reviewer scenarios"><span>Predefined snapshots, not learner actions:</span><a href="#lesson-completed">Completed</a><a href="#summary-review-handoff">Review handoff</a><a href="#summary-revisit">Revisit</a></aside>
+<main class="shell"><header><p class="learning-id">HIRAGAME / WORKPLACE JAPANESE</p><h1>Summary · clarification and confirmation</h1><nav class="stage-links" aria-label="Lesson navigation"><a href="05-role-play.html#role-play-response">← Role-play</a><span>Stage 6 of 6 · Summary</span><a href="../learning-hub/03-review.html#review-due">Next: Review →</a></nav><ol class="stage-track" aria-label="Lesson stages"><li class="stage-track__step stage-track__step--done"><a href="01-situation.html#lesson-situation">1 · Situation · revisit</a></li><li class="stage-track__step stage-track__step--done"><a href="02-dialogue.html#lesson-dialogue">2 · Dialogue · revisit</a></li><li class="stage-track__step--done stage-track__step"><a href="03-understanding.html#understanding-choice">3 · Understanding · revisit</a></li><li class="stage-track__step"><a href="04-guided-practice.html#guided-choice">4 · Guided Practice · revisit</a></li><li class="stage-track__step"><a href="05-role-play.html#role-play-response">5 · Role-play · revisit</a></li><li class="stage-track__step" aria-current="step">6 · Summary</li></ol><p><a href="../learning-hub/01-home.html">Leave lesson → Home</a> · <a href="../learning-hub/02-topics.html#topics-catalog">Leave lesson → Topics</a></p></header>
+<p class="learning-note">Agent-authored design example, not approved curriculum. This is an illustrative path: Understanding was practised, Guided Practice was skipped, and Role-play was composed and self-reflected. Earlier page-local actions do not cross documents; this page cannot detect what you actually did. The navigation links carry only fixture identities, never answers. Finishing is simulated in this document only; no completion or review due date is saved. Without JavaScript, all snapshots stay readable and Finish is disabled. Unknown fragments show the summary entry.</p>
+<!-- Static fixtures are independently readable without script. JavaScript selects one; a reviewer fragment never triggers Finish. -->
+<section class="scenario" id="lesson-completed" data-fixture="lesson-completed" data-coverage="C-18 C-19"><div class="card"><h2 tabindex="-1">Completion example · goal practised, not mastered</h2><p>After hearing that a process runs asynchronously, practise restating what you heard and asking a colleague to confirm. <span lang="ja">つまり、この<ruby>処理<rt>しょり</rt></ruby>は<ruby>非同期<rt>ひどうき</rt></ruby>で<ruby>実行<rt>じっこう</rt></ruby>されるということですね。</span> (“So this process runs asynchronously, right?”)</p><h3>Illustrative activity, not an inferred record</h3><ul><li>Practised in this example: read the Dialogue, chose an interpretation in Understanding, and composed and reflected on a possible Role-play response.</li><li>Skipped in this example: Guided Practice's repeat request. <a href="04-guided-practice.html#guided-choice">Revisit that practice</a> whenever you wish; a revealed example or skip does not count as correct.</li></ul><p>Useful phrases: <span lang="ja">つまり</span> (“in other words”), <span lang="ja">ということですね</span> (“so that means …, right?”), and <span lang="ja">すみません、もう<ruby>一度<rt>いちど</rt></ruby><ruby>説明<rt>せつめい</rt></ruby>していただけますか。</span> (“Could you explain that once more?”). These are examples, not a unique script.</p><p class="learning-note">This static completion fixture can be opened directly by a reviewer without finishing. Finish marks only a new page-local illustrative attempt as finished; it cannot infer earlier choices and does not establish mastery, fluency, speaking ability or job readiness.</p><div class="learning-actions"><button class="btn btn-primary" id="finish-lesson" type="button" disabled>Finish this example</button><a href="#summary-revisit">Revisit lesson stages</a><a href="../learning-hub/01-home.html">Leave → Home</a></div><p id="finish-status" role="status" aria-live="polite">Not finished in this page-local attempt.</p><noscript><p class="alert">JavaScript is off: Finish is unavailable. You can read the <a href="#summary-review-handoff">static Review handoff example</a> or <a href="../learning-hub/03-review.html#review-due">open Review</a> directly; neither records completion.</p></noscript></div></section>
+<section class="scenario" id="summary-review-handoff" data-fixture="summary-review-handoff" data-coverage="C-18"><div class="alert alert--success"><h2 tabindex="-1">Finished example · choose what comes next</h2><p id="handoff-status">Reviewer snapshot: this panel can be viewed without finishing. The illustrative attempt shows some work practised and Guided Practice skipped; no completion is saved.</p><p>Review has a bounded three-phrase, self-rated example. Answers remain hidden until Reveal. Opening it does not schedule phrases or copy any lesson response.</p><div class="learning-actions"><a class="btn btn-primary" href="../learning-hub/03-review.html#review-due">Start example Review →</a><a href="#summary-revisit">Revisit stages</a><a href="../learning-hub/01-home.html">Exit → Home</a></div></div></section>
+<section class="scenario" id="summary-revisit" data-fixture="summary-revisit" data-coverage="C-18"><div class="card"><h2 tabindex="-1">Revisit a stage · no grade attached</h2><p>Choose a stage to try again. Revisiting starts at its authored entry; it does not carry your answers or change a finished attempt in this document.</p><nav class="learning-actions" aria-label="Revisit stages"><a href="01-situation.html#lesson-situation">Situation</a><a href="02-dialogue.html#lesson-dialogue">Dialogue</a><a href="03-understanding.html#understanding-choice">Understanding</a><a href="04-guided-practice.html#guided-choice">Guided Practice · skipped example</a><a href="05-role-play.html#role-play-response">Role-play</a></nav><p><a href="#lesson-completed">Back to Summary</a> · <a href="../learning-hub/01-home.html">Leave → Home</a></p></div></section>
+</main><footer class="shell"><a href="index.html">Lesson reviewer map</a> · <a href="../learning-hub/01-home.html">Exit to Home</a></footer>
+<script>
+const panels = [...document.querySelectorAll('main [data-fixture]')];
+const finish = document.getElementById('finish-lesson');
+let finished = false;
+function showScenario() {
+  const panel = panels.find(item => '#' + item.id === location.hash) || panels[0];
+  for (const item of panels) item.hidden = item !== panel;
+  for (const link of document.querySelectorAll('.review-links a')) {
+    if (link.hash === '#' + panel.id) link.setAttribute('aria-current', 'true');
+    else link.removeAttribute('aria-current');
+  }
+}
+finish.disabled = false;
+finish.addEventListener('click', () => {
+  if (finished) return;
+  finished = true; // synchronous guard: repeated activation cannot apply twice
+  finish.disabled = true;
+  finish.textContent = 'Finished for this attempt';
+  document.getElementById('finish-status').textContent = 'Finished once in this page only. Choose Review or revisit; no progress was saved.';
+  document.getElementById('handoff-status').textContent = 'Finished once in this page-local illustrative attempt. Guided Practice is still shown as skipped; no completion is saved.';
+  location.hash = 'summary-review-handoff';
+  showScenario();
+  document.querySelector('#summary-review-handoff h2').focus();
+});
+window.addEventListener('hashchange', showScenario);
+showScenario();
+</script></body></html>
