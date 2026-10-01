@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>F00 Home · low-bandwidth static mirror</title>
+<link rel="stylesheet" href="../../design-system/tokens.css"><link rel="stylesheet" href="../../design-system/components.css">
+<style>
+.shell { max-width: 760px; margin: auto; padding: var(--space-6); }
+.actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+@media (max-width: 600px) { .shell { padding: var(--space-4); } }
+</style></head>
+<body><header class="shell"><p class="learning-id">F00 / M-01 · STATIC MIRROR</p><h1>Home when lesson text is not cached</h1><p class="learning-note">Low-bandwidth example: text, local styles and local links only. This page does not check connectivity, fetch assets, save progress or assume a cached checkpoint.</p><nav aria-label="Mock review"><a href="index.html">Home comparison and mirror index</a> · <a href="../../flows/learning-hub/index.html">Hub navigator</a></nav></header>
+<main class="shell"><section id="mirror-m-01" data-fixture="mirror-m-01" data-coverage="M-01" aria-labelledby="fallback-title"><div class="alert alert--warning"><h2 id="fallback-title">Requested lesson unavailable offline</h2><p>First visit example: clarification lesson content is not cached on this device. There is no available Start or Continue action. Reconnect and retry when the content is available; this static page makes no request and does not remove any progress.</p><p>Content availability is separate from saved progress, optional audio and downloaded offline assets. No due review is offered when its content is unavailable.</p></div><h3>Choose a safe next step</h3><div class="actions"><a class="btn btn-primary" href="../../flows/learning-hub/01-home.html#offline-first-visit-uncached">Read recovery choices</a><a class="btn" href="../../flows/learning-hub/02-topics.html#topics-catalog">Browse topic descriptions</a></div><p class="learning-note">The catalog describes illustrative goals; it does not promise another cached lesson. If lesson text is cached, inspect the <a href="../../flows/learning-hub/01-home.html#offline-cached-home">separate cached-content example</a>. These links select predefined fixtures, not live network outcomes.</p></section></main>
+<footer class="shell"><p class="learning-note">Static fallback remains readable without JavaScript, images or audio. This is a design example, not an offline or bandwidth test.</p></footer></body></html>

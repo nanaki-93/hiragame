@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>F00 Settings · static save-state presentation</title>
+<link rel="stylesheet" href="../../design-system/tokens.css"><link rel="stylesheet" href="../../design-system/components.css">
+<style>
+.shell { max-width: 780px; margin: auto; padding: var(--space-6); }
+.states { display: grid; gap: var(--space-4); }
+@media (max-width: 600px) { .shell { padding: var(--space-4); } }
+</style></head>
+<body><header class="shell"><p class="learning-id">F00 / M-10 · STATIC MIRROR</p><h1>Settings · saving is paused</h1><p class="learning-note">Static presentation example, not a screen-reader transcript, assistive-technology test or accessibility evidence. No real settings or learner data are read or written.</p><nav aria-label="Mock review"><a href="index.html">Settings mirror index</a> · <a href="../../flows/learning-hub/index.html">Hub navigator</a></nav></header>
+<main class="shell"><section id="mirror-m-10" data-fixture="mirror-m-10" data-coverage="M-10" aria-labelledby="conflict-title"><div class="states"><div class="alert alert--warning"><h2 id="conflict-title">Another tab changed the local snapshot · simulated</h2><p>This tab's view may be stale. Saving is paused rather than overwriting or blindly merging the newer snapshot. Unsaved changes in this view may be lost on reload.</p><p>Choose a recovery example: <a href="../../flows/learning-hub/04-settings.html#save-conflict-paused">keep this view without saving</a> or <a href="../../flows/learning-hub/04-settings.html#save-conflict-reloaded">inspect the explicitly reloaded alternative</a>. These links only select authored panels, not actual cross-tab data.</p></div><article class="card"><h3>Other statuses stay separate</h3><p>Lesson text may still be available even when saving is paused. Optional audio may be unavailable even when lesson text is cached. Clearing offline assets is not part of save recovery, backup or either reset.</p><p><a href="../../flows/learning-hub/04-settings.html#save-corrupt-preserved">Unreadable snapshot: preserve original</a> · <a href="../../flows/learning-hub/04-settings.html#offline-assets-separate">Offline assets: separate operation</a></p></article></div></section></main>
+<footer class="shell"><p class="learning-note">No simulated recovery link claims to persist, delete or replace data.</p></footer></body></html>
