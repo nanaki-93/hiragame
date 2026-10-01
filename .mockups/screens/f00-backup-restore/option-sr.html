@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F00 Backup / restore · static replacement warning</title>
+<link rel="stylesheet" href="../../design-system/tokens.css"><link rel="stylesheet" href="../../design-system/components.css">
+<style>
+.shell { max-width: 820px; margin: auto; padding: var(--space-6); min-width: 0; }
+.states { display: grid; gap: var(--space-4); }
+@media (max-width: 600px) { .shell { padding: var(--space-4); } .backup-summary__facts { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="shell"><p class="learning-id">F00 / M-11 · STATIC MIRROR</p><h1>Restore preview · replace, not merge</h1><p class="learning-note">Embedded example only. This is not a screen-reader transcript, an assistive-technology test, an accessibility audit, or evidence of a real restore or saved state. No file, browser storage, or learner data is read or changed.</p><nav aria-label="Mock review"><a href="index.html">Backup mirror index</a> · <a href="../../flows/backup-restore/index.html">Backup navigator</a></nav></header>
+<main class="shell"><section id="mirror-m-11" data-fixture="mirror-m-11" data-coverage="M-11" aria-labelledby="mirror-title">
+<h2 id="mirror-title">Example A · inspect before any replacement</h2>
+<div class="states">
+<article class="backup-summary"><h3 class="backup-summary__title">Candidate compared with current example</h3><dl class="backup-summary__facts"><dt>Sample date and versions</dt><dd>2026-09-30; app demo 0.1, save demo 1, catalog demo 1. Display labels only, not a compatibility check.</dd><dt>Current illustrative snapshot</dt><dd>Clarification unfinished; three phrases due; readings on, translation on, romaji off.</dd><dt>Candidate snapshot</dt><dd>Clarification completed; daily update unfinished at Situation (illustrative ID, no authored second lesson); one phrase due; readings on, translation off, romaji off.</dd><dt>Unknown content ID</dt><dd><code>future-situation-17</code> remains opaque in the candidate; not discarded or offered as an available lesson.</dd></dl><p>In a future app, a valid saved candidate would <strong>replace the complete learner snapshot, not merge it</strong> with the current one. Offline lesson and audio assets are separate. Preview does not activate the candidate. An export of the verified current saved state should be offered before replacement; this mock produces no export.</p></article>
+<div class="alert alert--warning"><h3>Separate confirmation required</h3><p>Validate → preview → explicitly confirm replacement → persist → activate only on success. Cancel before persistence keeps the current example. A failed persistence attempt also keeps the previous snapshot; neither branch partially activates candidate preferences or progress. No confirmation button or storage operation is implemented on this static mirror.</p><p><a href="../../flows/backup-restore/02-preview.html#restore-confirmation">Inspect the connected confirmation example</a> or <a href="../../flows/backup-restore/02-preview.html#restore-canceled-unchanged">inspect cancellation</a>. These links select authored panels only; they do not confirm or cancel a real import.</p></div>
+<article class="card"><h3>Alternative outcomes · neither executed here</h3><p><strong>Cancel:</strong> clarification remains unfinished, three phrases remain due, and preferences stay on/on/off. Candidate stays inactive. <a href="../../flows/backup-restore/02-preview.html#restore-canceled-unchanged">View the canceled example</a>.</p><p><strong>Save fails:</strong> keep the same previous snapshot; do not activate or merge example A. <a href="../../flows/backup-restore/03-result.html#restore-persistence-failed-preserved">View failure and recovery</a>.</p><p><strong>Save succeeds (hypothetical alternative):</strong> only then would example A replace the current snapshot as a unit. This is not a result observed by this page. <a href="../../flows/backup-restore/03-result.html#restore-success">View the authored success alternative</a>.</p><p class="learning-note">These are static branches, not a sequence this mirror ran. Link fragments carry fixture IDs only, never backup contents or learner responses.</p></article>
+</div></section></main>
+<footer class="shell"><a href="../../flows/learning-hub/04-settings.html#settings-local-portability">Back to connected Settings</a> · <a href="../../flows/backup-restore/01-backup.html#backup-sample-choice">Choose an embedded example</a></footer>
+</body></html>
