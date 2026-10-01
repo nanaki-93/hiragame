@@ -6,6 +6,11 @@
       "id": "kana-foundations",
       "title": "First kana sounds",
       "description": "A small text-only introduction to two hiragana signs and their sounds."
+    },
+    {
+      "id": "workplace-clarification",
+      "title": "Workplace clarification",
+      "description": "Polite ways to check a meeting time with a colleague."
     }
   ],
   "entries": [
@@ -14,6 +19,12 @@
       "kind": "practice",
       "topicId": "kana-foundations",
       "path": "practice/kana-a-i.json"
+    },
+    {
+      "id": "lesson-confirm-meeting-time",
+      "kind": "lesson",
+      "topicId": "workplace-clarification",
+      "path": "lessons/confirm-meeting-time.json"
     }
   ]
 }
