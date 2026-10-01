@@ -41,6 +41,17 @@ class ContentFixtureTest {
         assertTrue(lesson.conversationGraph != null)
     }
 
+    @Test fun completionDocumentFixturesRequireProducibleExamples() {
+        val valid = ContentCodec.decodePracticeSet(fixture("practice-completion-multiple-valid.json"))
+        val completion = valid.exercises.single() as CompletionExercise
+        assertEquals("連絡します。", completion.expectedCompletedExample.surface)
+        assertEquals("連絡", completion.acceptedAnswers[1].surface)
+        assertEquals(valid, ContentCodec.decodePracticeSet(Json.encodeToString(valid)))
+        assertFailsWith<Exception> {
+            ContentCodec.decodePracticeSet(fixture("practice-completion-impossible.json"))
+        }
+    }
+
     /** Load the checked-in public tree directly, without a test-only curriculum copy or HTTP. */
     @Test fun canonicalFoundationalPracticeDecodesAndResolves() {
         var directory: String = js("process.cwd()") as String

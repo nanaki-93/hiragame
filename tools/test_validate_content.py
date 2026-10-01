@@ -124,6 +124,20 @@ class ContentValidationTests(unittest.TestCase):
                 with self.assertRaisesRegex(validator.Invalid, rf'\.{field}: expected array'):
                     validator.validate(practice | {field: None}, validator.PRACTICE)
 
+    def test_completion_example_matches_an_authored_fill(self):
+        self.catalog([{'id': 'practice_1', 'kind': 'practice', 'topicId': 'topic_1',
+                       'path': 'practice/one.json'}])
+        self.put('practice/one.json', json.loads((FIXTURES / 'practice-completion-multiple-valid.json').read_text()))
+        self.run_cli(0)  # The example uses the second of two accepted fills.
+        self.put('practice/one.json', json.loads((FIXTURES / 'practice-completion-impossible.json').read_text()))
+        self.assertIn('.expectedCompletedExample.surface: completed example must use an accepted fill', self.run_cli(1))
+        seed = json.loads((CANONICAL / 'lessons/confirm-meeting-time.json').read_text())
+        for exercise in seed['exercises']:
+            if exercise['type'] == 'completion':
+                self.assertTrue(any(exercise['template'].replace('{blank}', answer['surface']) ==
+                                    exercise['expectedCompletedExample']['surface']
+                                    for answer in exercise['acceptedAnswers']))
+
     def test_unlisted_nested_document_and_duplicate_keys(self):
         self.catalog()
         self.put('hidden/deep/extra.json', {})

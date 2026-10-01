@@ -124,6 +124,9 @@ data class CompletionExercise(
         require(template.split("{blank}").size == 2) { "Completion template needs exactly one {blank}" }
         require(acceptedAnswers.isNotEmpty()) { "Completion needs accepted answers" }
         requireUniqueIds(acceptedAnswers.map { it.surface }, "completion answer surfaces")
+        require(acceptedAnswers.any { template.replace("{blank}", it.surface) == expectedCompletedExample.surface }) {
+            "Completed example must use an accepted fill"
+        }
         requireText(explanation, "completion explanation")
     }
 }

@@ -187,8 +187,12 @@ def local(document, location):
                          for a in ex['acceptedAnswers']]
             if len(spellings) != len(set(spellings)):
                 fail(f'{loc}.acceptedAnswers', 'duplicate accepted answer')
-        if kind == 'completion' and ex['template'].count('{blank}') != 1:
-            fail(f'{loc}.template', 'expected exactly one {blank}')
+        if kind == 'completion':
+            if ex['template'].count('{blank}') != 1:
+                fail(f'{loc}.template', 'expected exactly one {blank}')
+            if not any(ex['template'].replace('{blank}', answer['surface']) ==
+                       ex['expectedCompletedExample']['surface'] for answer in ex['acceptedAnswers']):
+                fail(f'{loc}.expectedCompletedExample.surface', 'completed example must use an accepted fill')
         if kind == 'production' and (not ex['criteria'] or not ex['exampleResponses']):
             fail(loc, 'production needs criteria and example responses')
     distinct(document['exercises'], f'{location}.exercises')
