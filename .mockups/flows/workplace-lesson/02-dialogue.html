@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>F00 · Dialogue — clarification</title>
+<link rel="stylesheet" href="../../design-system/tokens.css"><link rel="stylesheet" href="../../design-system/components.css">
+<style>
+.review-strip { padding: var(--space-3) var(--space-4); background: var(--color-bg-inverse); color: var(--color-text-inverse); font: var(--font-size-sm)/var(--line-height-base) var(--font-ui); }
+.review-strip a { color: var(--color-text-inverse); }
+.review-links, .stage-links { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.review-links { padding: var(--space-4); border-bottom: 1px solid var(--color-border); }
+.shell { max-width: 850px; margin: auto; padding: var(--space-6); min-width: 0; }
+.stage-links { justify-content: space-between; margin-block: var(--space-4); }
+.scenario { margin-block: var(--space-6); }
+.transcript__ja { overflow-wrap: anywhere; }
+@media (max-width: 700px) { .shell { padding: var(--space-4); } }
+</style></head>
+<body><header class="review-strip"><strong>Simulated mock review · Dialogue</strong> · <a href="index.html">Lesson navigator</a></header>
+<aside class="review-links" aria-label="Dialogue reviewer scenarios"><span>Predefined fixtures (not learner controls):</span><a href="#lesson-dialogue">Dialogue</a><a href="#dialogue-support-000">000</a><a href="#dialogue-support-001">001</a><a href="#dialogue-support-010">010</a><a href="#dialogue-support-011">011</a><a href="#dialogue-support-100">100</a><a href="#dialogue-support-101">101</a><a href="#dialogue-support-110">110</a><a href="#dialogue-support-111">111</a><a href="#audio-missing">Missing audio</a><a href="#audio-unavailable">Unavailable</a><a href="#audio-error">Error</a><a href="#audio-retry-text">Retry text</a><a href="#audio-text-only">Text only</a><a href="#offline-audio-uncached">Uncached audio</a></aside>
+<main class="shell"><header><p class="learning-id">HIRAGAME / WORKPLACE JAPANESE</p><h1>Dialogue · clarification and confirmation</h1><nav class="stage-links" aria-label="Lesson navigation"><a href="01-situation.html#lesson-situation">← Situation</a><span>Stage 2 of 6 · Dialogue</span><span aria-disabled="true">Next: Understanding · pending</span></nav><ol class="stage-track" aria-label="Lesson stages"><li class="stage-track__step stage-track__step--done"><a href="01-situation.html#lesson-situation">1 · Situation · revisit</a></li><li class="stage-track__step" aria-current="step">2 · Dialogue</li><li class="stage-track__step">3 · Understanding · pending</li><li class="stage-track__step">4 · Guided Practice · pending</li><li class="stage-track__step">5 · Role-play · pending</li><li class="stage-track__step">6 · Summary · pending</li></ol><p><a href="../learning-hub/01-home.html">Leave lesson → Home</a> · <a href="../learning-hub/02-topics.html#topics-catalog">Leave lesson → Topics</a></p></header>
+<p class="learning-note">Read the four turns below. These agent-authored design examples are not approved curriculum. The audio scenarios below are selected mock states: no audio loads or plays. Switching documents carries only fixture identity, not a response or saved preference. With JavaScript off, the full default transcript and all fixture descriptions remain readable; unknown fragments select Dialogue when script is available.</p>
+<!-- Fixture panels are static and readable without script. JavaScript only selects a panel and scopes three independent aids to the shared transcript. -->
+<section class="scenario" id="lesson-dialogue" data-fixture="lesson-dialogue" data-coverage="C-10 C-19"><div class="card"><h2>Read and check the interpretation</h2><p>Engineer → colleague → engineer → colleague. The engineer asks for repetition, then checks the interpretation; the colleague confirms it. Readings and translation are on, romaji off. Text is enough to continue even when optional audio is absent.</p><a href="#audio-text-only">See text-only continuation</a></div></section>
+<section class="scenario" id="dialogue-support-000" data-fixture="dialogue-support-000" data-coverage="C-10"><div class="card"><h2>000 · reading off · translation off · romaji off</h2><p lang="ja">つまり、この処理は非同期で実行されるということですね。</p><p>Only Japanese base text is shown; the full four-turn transcript below stays readable.</p></div></section>
+<section class="scenario" id="dialogue-support-001" data-fixture="dialogue-support-001" data-coverage="C-10"><div class="card"><h2>001 · reading off · translation off · romaji on</h2><p lang="ja">つまり、この処理は非同期で実行されるということですね。</p><p class="transcript__romaji" lang="ja-Latn">Tsumari, kono shori wa hidōki de jikkō sareru to iu koto desu ne.</p></div></section>
+<section class="scenario" id="dialogue-support-010" data-fixture="dialogue-support-010" data-coverage="C-10"><div class="card"><h2>010 · reading off · translation on · romaji off</h2><p lang="ja">つまり、この処理は非同期で実行されるということですね。</p><p class="transcript__translation">So, this means the process runs asynchronously, right?</p></div></section>
+<section class="scenario" id="dialogue-support-011" data-fixture="dialogue-support-011" data-coverage="C-10"><div class="card"><h2>011 · reading off · translation on · romaji on</h2><p lang="ja">つまり、この処理は非同期で実行されるということですね。</p><p class="transcript__translation">So, this means the process runs asynchronously, right?</p><p class="transcript__romaji" lang="ja-Latn">Tsumari, kono shori wa hidōki de jikkō sareru to iu koto desu ne.</p></div></section>
+<section class="scenario" id="dialogue-support-100" data-fixture="dialogue-support-100" data-coverage="C-10"><div class="card"><h2>100 · reading on · translation off · romaji off</h2><p lang="ja">つまり、この<ruby>処理<rt>しょり</rt></ruby>は<ruby>非同期<rt>ひどうき</rt></ruby>で<ruby>実行<rt>じっこう</rt></ruby>されるということですね。</p></div></section>
+<section class="scenario" id="dialogue-support-101" data-fixture="dialogue-support-101" data-coverage="C-10"><div class="card"><h2>101 · reading on · translation off · romaji on</h2><p lang="ja">つまり、この<ruby>処理<rt>しょり</rt></ruby>は<ruby>非同期<rt>ひどうき</rt></ruby>で<ruby>実行<rt>じっこう</rt></ruby>されるということですね。</p><p class="transcript__romaji" lang="ja-Latn">Tsumari, kono shori wa hidōki de jikkō sareru to iu koto desu ne.</p></div></section>
+<section class="scenario" id="dialogue-support-110" data-fixture="dialogue-support-110" data-coverage="C-10"><div class="card"><h2>110 · reading on · translation on · romaji off (default)</h2><p lang="ja">つまり、この<ruby>処理<rt>しょり</rt></ruby>は<ruby>非同期<rt>ひどうき</rt></ruby>で<ruby>実行<rt>じっこう</rt></ruby>されるということですね。</p><p class="transcript__translation">So, this means the process runs asynchronously, right?</p></div></section>
+<section class="scenario" id="dialogue-support-111" data-fixture="dialogue-support-111" data-coverage="C-10"><div class="card"><h2>111 · reading on · translation on · romaji on</h2><p lang="ja">つまり、この<ruby>処理<rt>しょり</rt></ruby>は<ruby>非同期<rt>ひどうき</rt></ruby>で<ruby>実行<rt>じっこう</rt></ruby>されるということですね。</p><p class="transcript__translation">So, this means the process runs asynchronously, right?</p><p class="transcript__romaji" lang="ja-Latn">Tsumari, kono shori wa hidōki de jikkō sareru to iu koto desu ne.</p></div></section>
+<section class="scenario" id="audio-missing" data-fixture="audio-missing" data-coverage="C-27"><div class="alert alert--warning"><h2>Audio file missing from this example</h2><p>No recording is supplied for this dialogue. The authored transcript, readings and meaning remain available below; nothing needs to be fetched or played.</p><a href="#audio-text-only">Continue with text</a> · <a href="01-situation.html#lesson-situation">Revisit Situation</a></div></section>
+<section class="scenario" id="audio-unavailable" data-fixture="audio-unavailable" data-coverage="C-28"><div class="alert alert--warning"><h2>Audio temporarily unavailable</h2><p>This selected scenario represents an unavailable optional audio service, not missing lesson content. Read all four turns and use the same text-only path without waiting for a request.</p><a href="#audio-text-only">Use text only</a> · <a href="../learning-hub/02-topics.html#topics-catalog">Back to Topics</a></div></section>
+<section class="scenario" id="audio-text-only" data-fixture="audio-text-only" data-coverage="C-28"><div class="card"><h2>Text-only continuation</h2><p>All four Japanese turns, authored readings and optional meaning/romaji are available below without playback. Reading completes the Dialogue step; audio does not gate progress.</p><p>Next: Understanding (stage 3) is pending Step 2.3. No broken Next link is offered. You can <a href="01-situation.html#lesson-situation">revisit Situation</a> or <a href="../learning-hub/01-home.html">leave to Home</a> now.</p></div></section>
+<section class="scenario" id="audio-error" data-fixture="audio-error" data-coverage="C-29"><div class="alert alert--warning"><h2>Audio could not be played</h2><p>In this simulated error state, playback did not succeed. No retry runs automatically, and no recording, network attempt or failure is produced by this page. The transcript is still usable.</p><a href="#audio-retry-text">Choose text retry path</a> · <a href="#audio-text-only">Continue without audio</a></div></section>
+<section class="scenario" id="audio-retry-text" data-fixture="audio-retry-text" data-coverage="C-29"><div class="alert"><h2>Retry selected · re-read the transcript</h2><p>This is a deliberate retry of the text path after an audio error, not a claim that audio recovered. Read the four turns below and continue without playback or a timed wait.</p><a href="#audio-text-only">Continue with text only</a> · <a href="01-situation.html#lesson-situation">Revisit goal</a></div></section>
+<section class="scenario" id="offline-audio-uncached" data-fixture="offline-audio-uncached" data-coverage="C-32"><div class="alert alert--warning"><h2>Audio not cached in this offline example</h2><p>The dialogue text is present in this selected scenario, but optional audio is not cached. This does not say whether progress was saved or whether other lesson content or offline assets are available. No download is attempted.</p><a href="#audio-text-only">Read and continue without audio</a> · <a href="../learning-hub/02-topics.html#offline-content-uncached">Compare uncached lesson content</a></div></section>
+<section aria-labelledby="supports-title"><h2 id="supports-title">Reading supports · page-local</h2><p>Use each control independently. On arrival: readings on, English translation on, romaji off. Changes do not save a preference or change the other two controls.</p><div class="support-controls" role="group" aria-label="Transcript supports"><label class="choice"><input type="checkbox" id="reading" checked> Show authored readings (furigana)</label><label class="choice"><input type="checkbox" id="translation" checked> Show English translations</label><label class="choice"><input type="checkbox" id="romaji"> Show romaji pronunciation aid</label></div><p class="learning-note" id="support-status" role="status" aria-live="polite">Reading on · translation on · romaji off. Supports change only this page.</p></section>
+<section aria-labelledby="transcript-title"><h2 id="transcript-title">Four-turn text transcript</h2><div class="transcript">
+<article class="transcript__row"><h3 class="transcript__speaker">1 · Engineer · asks for repetition</h3><p class="transcript__ja" lang="ja">すみません、もう<ruby>一度<rt>いちど</rt></ruby><ruby>説明<rt>せつめい</rt></ruby>していただけますか。</p><p class="transcript__translation" data-aid="translation">Excuse me, could you explain that once more?</p><p class="transcript__romaji" data-aid="romaji" lang="ja-Latn" hidden>Sumimasen, mō ichido setsumei shite itadakemasu ka.</p></article>
+<article class="transcript__row"><h3 class="transcript__speaker">2 · Colleague · explains the timing</h3><p class="transcript__ja" lang="ja">この<ruby>処理<rt>しょり</rt></ruby>は<ruby>非同期<rt>ひどうき</rt></ruby>で<ruby>実行<rt>じっこう</rt></ruby>されます。<ruby>結果<rt>けっか</rt></ruby>はあとで<ruby>確認<rt>かくにん</rt></ruby>できます。</p><p class="transcript__translation" data-aid="translation">This process runs asynchronously. You can check the result later.</p><p class="transcript__romaji" data-aid="romaji" lang="ja-Latn" hidden>Kono shori wa hidōki de jikkō saremasu. Kekka wa ato de kakunin dekimasu.</p></article>
+<article class="transcript__row"><h3 class="transcript__speaker">3 · Engineer · checks the interpretation</h3><p class="transcript__ja" lang="ja">つまり、この<ruby>処理<rt>しょり</rt></ruby>は<ruby>非同期<rt>ひどうき</rt></ruby>で<ruby>実行<rt>じっこう</rt></ruby>されるということですね。</p><p class="transcript__translation" data-aid="translation">So, this means the process runs asynchronously, right?</p><p class="transcript__romaji" data-aid="romaji" lang="ja-Latn" hidden>Tsumari, kono shori wa hidōki de jikkō sareru to iu koto desu ne.</p></article>
+<article class="transcript__row"><h3 class="transcript__speaker">4 · Colleague · confirms</h3><p class="transcript__ja" lang="ja">はい、そのとおりです。</p><p class="transcript__translation" data-aid="translation">Yes, that's right.</p><p class="transcript__romaji" data-aid="romaji" lang="ja-Latn" hidden>Hai, sono tōri desu.</p></article>
+</div></section>
+<p class="learning-note">No audio element, remote asset, cache read, save, or background request is used. Understanding is not yet authored; <a href="01-situation.html#lesson-situation">previous: Situation</a> remains available. With JavaScript disabled the controls do not toggle; the default transcript and the eight static support samples above still show the alternatives.</p>
+</main><footer class="shell"><a href="index.html">Lesson reviewer map</a> · <a href="../learning-hub/01-home.html">Leave lesson</a></footer>
+<script>
+const panels = [...document.querySelectorAll('main [data-fixture]')];
+const aids = ['reading', 'translation', 'romaji'];
+const controls = Object.fromEntries(aids.map(aid => [aid, document.getElementById(aid)]));
+const status = document.getElementById('support-status');
+function renderSupports() {
+  for (const rt of document.querySelectorAll('.transcript rt')) rt.hidden = !controls.reading.checked;
+  for (const aid of ['translation', 'romaji']) {
+    for (const item of document.querySelectorAll('.transcript [data-aid="' + aid + '"]')) item.hidden = !controls[aid].checked;
+  }
+  status.textContent = aids.map(aid => aid + ' ' + (controls[aid].checked ? 'on' : 'off')).join(' · ') + '. Supports change only this page.';
+}
+function showScenario() {
+  const selected = panels.find(panel => '#' + panel.id === location.hash) || panels[0];
+  for (const panel of panels) panel.hidden = panel !== selected;
+  const bits = /^dialogue-support-([01]{3})$/.exec(selected.id);
+  if (bits) aids.forEach((aid, index) => controls[aid].checked = bits[1][index] === '1');
+  else aids.forEach((aid, index) => controls[aid].checked = index < 2);
+  renderSupports();
+  for (const link of document.querySelectorAll('.review-links a')) {
+    if (link.hash === '#' + selected.id) link.setAttribute('aria-current', 'true');
+    else link.removeAttribute('aria-current');
+  }
+}
+for (const aid of aids) controls[aid].addEventListener('change', () => {
+  // While inspecting a combination snapshot, follow the new combination so its label stays truthful.
+  // On the default/audio panels, retain the learner's selected scenario and change only this aid.
+  if (/^#dialogue-support-[01]{3}$/.test(location.hash)) {
+    location.hash = 'dialogue-support-' + aids.map(name => controls[name].checked ? '1' : '0').join('');
+  }
+  renderSupports();
+});
+window.addEventListener('hashchange', showScenario);
+showScenario();
+</script></body></html>
