@@ -28,6 +28,18 @@ fun initSiteStyles(ctx: InitSilkContext) {
             .lineHeight(1.5)
     }
     ctx.theme.modifyStyleBase(HorizontalDividerStyle) { Modifier.fillMaxWidth() }
+    // Native practice fields retain the browser's visible focus outline (unlike the legacy inputs).
+    ctx.stylesheet.registerStyleBase(".practice-answer") {
+        Modifier.fillMaxWidth().padding(0.8.cssRem).border(2.px, LineStyle.Solid, Color("#cdbcdb"))
+            .borderRadius(8.px).fontSize(1.cssRem).color(Color("#2e1747"))
+            .backgroundColor(Color("#fffbff"))
+    }
+    ctx.stylesheet.registerStyleBase(".practice-choice") {
+        Modifier.display(DisplayStyle.Block).padding(0.5.cssRem).textAlign(TextAlign.Start)
+    }
+    ctx.stylesheet.registerStyleBase(".practice-japanese") {
+        Modifier.fontSize(1.2.cssRem).lineHeight(2.0)
+    }
 }
 
 object Colors {
