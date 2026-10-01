@@ -9,7 +9,7 @@ import unittest
 import uuid
 from pathlib import Path
 
-from convert_legacy_content import main
+from convert_legacy_content import KANA_CORE, audit_signs, main
 
 
 class ConverterTests(unittest.TestCase):
@@ -124,6 +124,60 @@ class ConverterTests(unittest.TestCase):
             self.assertFalse(self.output.exists())
         self.map.write_text('{"formatVersion":1,"labels":{"N5":"one","N5":"two"}}', encoding="utf-8")
         self.assertIn("duplicate key", self.run_converter()[1])
+
+    def test_sign_audit_classifies_entire_stream_and_separates_shared_readings(self):
+        def record(number, surface, reading, mode="SIGN"):
+            cells = self.row(number)
+            cells[1:3] = [surface, reading]
+            cells[6] = mode
+            return number, cells
+
+        rows = [record(1, "じ", "ji"), record(2, "ぢ", "ji"),
+                record(3, "あ", "a", "WORD"), record(4, "キャ", "kya"),
+                record(5, "きゃ", "kya"), record(6, "ゐ", "wi"),
+                record(7, "じ", "ji")]
+        audit = audit_signs(rows)
+        self.assertEqual([r["row"] for r in audit["categories"]["voiced"]], [1, 2, 7])
+        self.assertEqual([r["row"] for r in audit["categories"]["contracted"]], [4, 5])
+        self.assertEqual([r["row"] for r in audit["categories"]["katakana"]], [4])
+        self.assertEqual([r["row"] for r in audit["categories"]["historical"]], [6])
+        self.assertEqual([r["row"] for r in audit["duplicateSurfaces"]["じ"]], [1, 7])
+        self.assertNotIn("ぢ", audit["duplicateSurfaces"])
+        self.assertEqual([r["row"] for r in audit["sharedRomanizations"]["ji"]], [1, 2, 7])
+        self.assertNotIn("キャ", audit["missingKatakana"]["contracted"])
+        self.assertIn("きゅ", audit["missing"]["contracted"])
+        self.assertIn("あ", audit["missing"]["base"])
+
+    def test_sign_reference_counts_and_all_script_forms(self):
+        self.assertEqual({name: len(signs) for name, signs in KANA_CORE.items()},
+                         {"base": 46, "voiced": 20, "semiVoiced": 5, "contracted": 33})
+        rows = []
+        for signs in KANA_CORE.values():
+            for sign in signs:
+                rows.append((len(rows) + 1, self.row(len(rows) + 1)))
+                rows[-1][1][1] = sign
+        audit = audit_signs(rows)
+        self.assertTrue(all(not missing for missing in audit["missing"].values()))
+        self.assertEqual(len(audit["categories"]["other"]), 0)
+        self.assertEqual(sum(len(missing) for missing in audit["missingKatakana"].values()), 104)
+
+    def test_preserved_sign_snapshot_matches_audit(self):
+        source = Path(__file__).resolve().parent.parent / "content-source/legacy/question.csv"
+        with source.open(encoding="utf-8", newline="") as stream:
+            audit = audit_signs(enumerate(csv.reader(stream), 1))
+        categories = audit["categories"]
+        self.assertEqual({key: len(categories[key]) for key in KANA_CORE},
+                         {"base": 46, "voiced": 20, "semiVoiced": 5, "contracted": 33})
+        self.assertEqual([item["row"] for item in categories["historical"]], [1373, 1374])
+        self.assertEqual(categories["katakana"], [])
+        self.assertEqual(categories["other"], [])
+        self.assertTrue(all(not signs for signs in audit["missing"].values()))
+        self.assertEqual(sum(map(len, audit["missingKatakana"].values())), 104)
+        self.assertEqual(audit["duplicateSurfaces"], {})
+        self.assertEqual({key: [item["row"] for item in refs]
+                          for key, refs in audit["sharedRomanizations"].items()},
+                         {"ji": [1382, 1387], "zu": [1383, 1388]})
+        self.assertIn(3000, [item["row"] for item in categories["voiced"]])
 
     def test_invalid_uuid_and_csv_quotes(self):
         self.rows[0][0] = "not-uuid"
