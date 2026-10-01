@@ -7,7 +7,15 @@ on:
     paths:
       - 'site/**'
       - 'shared/**'
+      - 'tools/**'
+      - 'content-source/**'
+      - 'gradle/**'
+      - 'gradlew'
+      - 'gradle.properties'
+      - 'build.gradle.kts'
+      - 'settings.gradle.kts'
       - '.github/workflows/firebase-deploy.yml'
+      - '.github/workflows/content-check.yml'
       - 'firebase.json'
 
 jobs:
@@ -21,6 +29,11 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
@@ -29,6 +42,15 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
+
+      - name: Test content tooling and workflow gates
+        run: python3 -m unittest discover -s tools -p 'test_*content*.py'
+
+      - name: Validate reviewed canonical content
+        run: python3 tools/validate_content.py site/src/jsMain/resources/public/content --review-root content-source/review-notes
+
+      - name: Test shared content on Node
+        run: ./gradlew :shared:jsNodeTest
 
       - name: Build project
         run: ./gradlew site:build
