@@ -80,6 +80,56 @@ class LocalPracticeCoordinatorTest {
         assertEquals(SessionView.Complete, assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!.view)
     }
 
+    @Test fun launcherStartsSelectedReviewedSetWithoutIdentityAndReloadClearsSession() = runTest {
+        val seed = seed().content
+        val original = seed.practiceSets.getValue("practice-kana-a-i")
+        val additional = original.copy(id = "practice-kana-extra", title = "Another reviewed practice")
+        val content = seed.copy(practiceSets = seed.practiceSets + (additional.id to additional))
+        val coordinator = LocalPracticeCoordinator(this, { CatalogLoad.Ready(content) })
+        coordinator.load()
+        coordinator.start(original.id) // no start during loading
+        assertIs<LocalPracticeState.Loading>(coordinator.state.value)
+        runCurrent()
+        val ready = assertIs<LocalPracticeState.Ready>(coordinator.state.value)
+        assertEquals(listOf(original.id, additional.id), ready.availablePracticeSets.keys.toList())
+        coordinator.start(additional.id)
+        val session = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
+        assertEquals(additional.exercises.map { it.id }, session.plan.map { it.id })
+        coordinator.start(original.id) // cannot replace an active session
+        assertSame(session, assertIs<LocalPracticeState.Ready>(coordinator.state.value).session)
+        coordinator.dispatch(PracticeCommand.Leave(session.id, session.revision))
+        assertNull(assertIs<LocalPracticeState.Ready>(coordinator.state.value).session)
+        coordinator.start(original.id)
+        assertTrue(assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!.id > session.id)
+        coordinator.load() // a page reload starts from content, not a saved session
+        assertIs<LocalPracticeState.Loading>(coordinator.state.value)
+        runCurrent()
+        assertNull(assertIs<LocalPracticeState.Ready>(coordinator.state.value).session)
+    }
+
+    @Test fun homeWiresLocalLoadAndDisposalWithoutLegacyInitialization() {
+        val fs: dynamic = js("require('fs')")
+        val path: dynamic = js("require('path')")
+        val file = "site/src/jsMain/kotlin/com/github/nanaki_93/pages/Index.kt"
+        var root: String = js("process.cwd()") as String
+        while (!(fs.existsSync(path.resolve(root, file)) as Boolean)) {
+            val parent = path.dirname(root) as String
+            check(parent != root) { "Home source not found" }
+            root = parent
+        }
+        val home = fs.readFileSync(path.resolve(root, file), "utf8") as String
+        for (required in listOf("DisposableEffect(coordinator)", "coordinator.load()", "coordinator.dispose()",
+            "LocalPracticeState.Loading", "LocalPracticeState.Empty", "LocalPracticeState.Error",
+            "LocalPracticeState.Ready", "coordinator::retryLoad", "coordinator.start(set.id)",
+            "sets.size == 1", "set.title")) {
+            assertTrue(required in home, "Home missing $required")
+        }
+        for (obsolete in listOf("ConfigLoader", "AuthService", "GameService", "SessionManager",
+            "userId", "login", "GameMode", "LevelListRequest", "GameStatistics", "delay(", "launchSafe")) {
+            assertTrue(obsolete !in home, "Home still contains $obsolete")
+        }
+    }
+
     @Test fun failedLoadCanRetryAndEmptyCanReload() = runTest {
         val valid = seed()
         var attempts = 0
