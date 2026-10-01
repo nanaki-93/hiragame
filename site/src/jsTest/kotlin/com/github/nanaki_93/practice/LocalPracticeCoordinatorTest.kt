@@ -289,6 +289,43 @@ class LocalPracticeCoordinatorTest {
         assertTrue(".outline(" !in practiceStyles, "Native practice fields must retain a visible focus outline")
     }
 
+    @Test fun activePagesAreLocalOnlyAndLegacyConfigurationIsRetired() {
+        val fs: dynamic = js("require('fs')")
+        val path: dynamic = js("require('path')")
+        val pages = "site/src/jsMain/kotlin/com/github/nanaki_93/pages/"
+        var root: String = js("process.cwd()") as String
+        while (!(fs.existsSync(path.resolve(root, pages, "Login.kt")) as Boolean)) {
+            val parent = path.dirname(root) as String
+            check(parent != root) { "Active page sources not found" }
+            root = parent
+        }
+        val forbiddenImports = Regex("^import\\s+com\\.github\\.nanaki_93\\.(?:config|service|models|util\\.launchSafe)(?:\\.|$)")
+        for (page in listOf("Index.kt", "Login.kt")) {
+            val source = fs.readFileSync(path.resolve(root, pages, page), "utf8") as String
+            for (line in source.lines()) {
+                assertTrue(!forbiddenImports.containsMatchIn(line), "$page imports a legacy runtime dependency: $line")
+            }
+            for (legacy in listOf("ConfigLoader", "AuthService", "GameService", "SessionManager", "launchSafe",
+                "AppConfig", "GameMode", "LevelListRequest", "GameStatistics")) {
+                assertTrue(legacy !in source, "$page uses $legacy")
+            }
+        }
+        val login = fs.readFileSync(path.resolve(root, pages, "Login.kt"), "utf8") as String
+        assertTrue("@Page(\"/login\")" in login)
+        assertTrue("No account required" in login)
+        assertTrue("href = \"/hiragame/\"" in login)
+        for (legacy in listOf("window.location", "window.fetch", "LaunchedEffect", "register(", "login(", "logout(",
+            "FormField", "SessionExpiredAlert")) {
+            assertTrue(legacy !in login, "Login route still performs legacy behavior: $legacy")
+        }
+        for (resource in listOf("config.json", "config.prod.json", "public/config.json", "public/config.prod.json")) {
+            assertTrue(!(fs.existsSync(path.resolve(root, "site/src/jsMain/resources", resource)) as Boolean),
+                "Obsolete API configuration still exists: $resource")
+        }
+        assertTrue(!(fs.existsSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/config/Config.kt")) as Boolean),
+            "ConfigLoader still exists")
+    }
+
     @Test fun failedLoadCanRetryAndEmptyCanReload() = runTest {
         val valid = seed()
         var attempts = 0
