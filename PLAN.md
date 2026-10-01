@@ -170,6 +170,8 @@ Build non-interactive tests into each feature rather than deferring them to the 
 
 **Depends on:** F01.
 
+**Status:** F02 local-runtime CLI/static integration checks passed on 2026-10-01; [observed validation evidence](content-source/review-notes/f02-validation.md) records the commands, canonical artifact bytes and scope limits. This is not a browser, deployment or saved-progress result. Checklist completion remains subject to workflow review.
+
 ### Implementation tasks
 
 - [ ] Implement a bundled-content loader and a local practice engine; replace API-driven question selection and answer processing.
