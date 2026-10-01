@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>F00 · Self-rated Review</title>
+<link rel="stylesheet" href="../../design-system/tokens.css"><link rel="stylesheet" href="../../design-system/components.css">
+<style>
+.review-strip { padding: var(--space-3) var(--space-4); background: var(--color-bg-inverse); color: var(--color-text-inverse); font: var(--font-size-sm)/var(--line-height-base) var(--font-ui); }
+.review-strip a { color: var(--color-text-inverse); }
+.review-links, .learning-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.review-links { padding: var(--space-4); border-bottom: 1px solid var(--color-border); }
+.shell { max-width: 840px; margin: auto; padding: var(--space-6); }
+.scenario { margin-block: var(--space-8); }
+.review-card__answer ruby { ruby-position: over; }
+.review-card__answer rt { font-size: var(--font-size-xs); }
+@media (max-width: 700px) { .shell { padding: var(--space-4); } }
+</style></head>
+<body><header class="review-strip"><strong>Simulated mock review · Review</strong> · <a href="index.html">Hub navigator</a></header>
+<aside class="review-links" aria-label="Mock reviewer scenarios"><span>Predefined fixture snapshots (not learner controls):</span><a href="#review-due">Due session</a><a href="#review-concealed">Concealed</a><a href="#review-revealed">Revealed</a><a href="#review-rating-blocked">Rating blocked</a><a href="#review-rated-again">Again</a><a href="#review-rated-hard">Hard</a><a href="#review-rated-good">Good</a><a href="#review-duplicate-guard">Duplicate guard</a><a href="#review-session-complete">Complete</a><a href="#review-no-due">No due</a></aside>
+<main class="shell"><p class="learning-id">HIRAGAME / WORKPLACE JAPANESE</p><h1>Review</h1><nav class="nav-bar" aria-label="Learner destinations"><a class="nav-bar__item" href="01-home.html">Home</a><a class="nav-bar__item" href="02-topics.html">Topics / Learn</a><span class="nav-bar__item" aria-current="page">Review</span><span class="nav-bar__item" aria-disabled="true">Settings / Backup · pending</span></nav>
+<p class="learning-note">Three embedded clarification phrases, not a scheduler or saved due list. The “due” count is a selected example. Again means not recalled; Hard means recalled with effort; Good means recalled comfortably. These are self-reports, not grades. A rating is accepted once for each revealed item. Nothing here schedules, persists due dates, or saves answers; leaving the document resets page-local state. Fragments select illustrative snapshots, never carry learner data.</p>
+<!-- Without JavaScript all fixture sections are readable. The due section has a native disclosure fallback with disabled ratings; the revealed snapshot remains separately available. Unknown fragments select the due session. -->
+<section class="scenario" id="review-due" data-fixture="review-due" data-coverage="C-22"><h2>Three phrases ready for recall</h2><p>Simulated due session · item <span id="item-number">1</span> of 3. Think of a response before revealing. No time limit.</p><article class="review-card"><h3 class="review-card__prompt" id="live-prompt">How would you politely ask a colleague to explain once more?</h3><div class="learning-actions"><button type="button" class="btn btn-primary" id="reveal" aria-expanded="false" aria-controls="live-answer" disabled>Reveal answer</button></div><div class="review-card__answer transcript" id="live-answer" hidden><p class="transcript__ja" lang="ja" id="live-ja"></p><p class="transcript__translation" id="live-translation"></p></div><div class="review-card__ratings" role="group" aria-label="Self-reported recall" aria-describedby="rating-status"><button type="button" class="btn" data-rate="Again" disabled>Again — not recalled</button><button type="button" class="btn" data-rate="Hard" disabled>Hard — with effort</button><button type="button" class="btn" data-rate="Good" disabled>Good — comfortably</button></div><p class="learning-note" id="rating-status" role="status" aria-live="polite" aria-atomic="true">Reveal before rating. This attempt has not rated this item.</p><button type="button" class="btn" id="next" hidden>Next phrase</button></article><noscript><p class="alert">JavaScript is off. Ratings stay disabled. Use the native disclosure below or <a href="#review-revealed">inspect the revealed snapshot</a>; no attempt is recorded.</p><details><summary>Reveal first example (read-only)</summary><p lang="ja">すみません、もう<ruby>一度<rt>いちど</rt></ruby><ruby>説明<rt>せつめい</rt></ruby>していただけますか。</p><p>Excuse me, could you explain that once more?</p></details></noscript><p class="learning-note">To start a new attempt after rating, finish this bounded sequence and choose Restart. Snapshot links are reviewer navigation, not an alternate way to rate.</p></section>
+<section class="scenario" id="review-concealed" data-fixture="review-concealed" data-coverage="C-23"><article class="review-card"><h2>Concealed · recall first</h2><p>How would you politely ask a colleague to explain once more? The answer is not printed in this snapshot. Ratings are unavailable until Reveal.</p><a class="btn" href="#review-revealed">Reveal example snapshot</a><p class="learning-note">Or <a href="#review-due">enter the interactive three-item attempt</a>. Snapshot navigation does not rate an item.</p></article></section>
+<section class="scenario" id="review-revealed" data-fixture="review-revealed" data-coverage="C-23"><article class="review-card"><h2>Revealed · first example</h2><p>After an explicit Reveal, compare your recall with this possible response:</p><div class="review-card__answer transcript"><p class="transcript__ja" lang="ja">すみません、もう<ruby>一度<rt>いちど</rt></ruby><ruby>説明<rt>せつめい</rt></ruby>していただけますか。</p><p class="transcript__translation">Excuse me, could you explain that once more?</p></div><p>Self-rate by recall, not by exact wording: Again / Hard / Good. To actually rate and advance, <a href="#review-due">use the due session</a> and reveal there.</p></article></section>
+<section class="scenario" id="review-rating-blocked" data-fixture="review-rating-blocked" data-coverage="C-24"><article class="review-card"><h2>Before Reveal · rating blocked</h2><p>Recall how to ask for another explanation. The answer is concealed here; all ratings are disabled.</p><div class="review-card__ratings"><button class="btn" type="button" disabled>Again</button><button class="btn" type="button" disabled>Hard</button><button class="btn" type="button" disabled>Good</button></div><p><a href="#review-due">Start due session and reveal before rating</a>.</p></article></section>
+<section class="scenario" id="review-rated-again" data-fixture="review-rated-again" data-coverage="C-24"><article class="review-card"><h2>Again · already rated</h2><p>Example item: ask for another explanation. Answer: <span lang="ja">もう一度説明していただけますか。</span> You reported “not recalled.” That is a self-report, not an incorrect grade or scheduled retry. This item's rating is locked until an explicit new attempt.</p><p><a href="#review-due">Use the interactive sequence</a> to rate and move on.</p></article></section>
+<section class="scenario" id="review-rated-hard" data-fixture="review-rated-hard" data-coverage="C-24"><article class="review-card"><h2>Hard · already rated</h2><p>Example item: confirm the instruction. Answer: <span lang="ja">この理解で合っていますか。</span> You reported recall with effort. This is not a score or due-date adjustment. A second rating for this item cannot advance the same attempt.</p><p><a href="#review-due">Use the interactive sequence</a> to rate and move on.</p></article></section>
+<section class="scenario" id="review-rated-good" data-fixture="review-rated-good" data-coverage="C-24"><article class="review-card"><h2>Good · already rated</h2><p>Example item: ask for another explanation. Answer: <span lang="ja">もう一度説明していただけますか。</span> You reported comfortable recall, not mastery. This item stays rated once; nothing is saved or scheduled.</p><p><a href="#review-due">Use the interactive sequence</a> to rate and move on.</p></article></section>
+<section class="scenario" id="review-duplicate-guard" data-fixture="review-duplicate-guard" data-coverage="C-24"><article class="review-card"><h2>Second rating blocked</h2><p>Once one rating is selected, all three rating buttons are disabled for that item. A second click, including a rapid repeated click, cannot advance twice. The first choice stays visible until Next phrase is explicitly chosen.</p><div class="review-card__ratings"><button class="btn" type="button" disabled>Again</button><button class="btn" type="button" disabled>Hard</button><button class="btn" type="button" disabled>Good</button></div><p><a href="#review-due">Try the guarded session</a>.</p></article></section>
+<section class="scenario" id="review-session-complete" data-fixture="review-session-complete" data-coverage="C-25"><div class="alert alert--success"><h2>Session complete · three of three prompts visited</h2><p>This fixture may be opened directly as a simulated outcome. A live attempt reaches it only after revealing and rating each of the three items, then explicitly finishing. Completion says nothing about mastery, scheduling or persisted due dates.</p><div class="learning-actions"><button type="button" class="btn btn-primary" id="restart">Restart a new page-local attempt</button><a href="01-home.html">Return to Home</a></div><noscript><p>With JavaScript off, <a href="03-review.html#review-due">reload the due example</a> to begin a read-only attempt.</p></noscript></div></section>
+<section class="scenario" id="review-no-due" data-fixture="review-no-due" data-coverage="C-26"><div class="empty-state"><h2>No phrases due in this example</h2><p>This is a separate selected scenario, not the result of the three-item session. No due dates are calculated or updated. You can browse topics or explicitly start the simulated practice sequence anyway.</p><div class="learning-actions"><a class="btn" href="02-topics.html">Browse Topics</a><a href="#review-due">Practise three example phrases</a><a href="01-home.html">Back to Home</a></div></div></section>
+<!-- Authored readings for the three embedded answers; templates never display before Reveal. -->
+<template id="phrase-1"><span lang="ja">すみません、もう<ruby>一度<rt>いちど</rt></ruby><ruby>説明<rt>せつめい</rt></ruby>していただけますか。</span></template>
+<template id="phrase-2"><span lang="ja">この<ruby>理解<rt>りかい</rt></ruby>で<ruby>合<rt>あ</rt></ruby>っていますか。</span></template>
+<template id="phrase-3"><span lang="ja"><ruby>会議<rt>かいぎ</rt></ruby>の<ruby>後<rt>あと</rt></ruby>で<ruby>対応<rt>たいおう</rt></ruby>すればよいですか。</span></template>
+</main><footer class="shell"><p class="learning-note">Only local markup and page-local state. No requests, storage, scheduling, timers or review history.</p></footer>
+<script>
+// Only the due panel is interactive. Other sections are authored, read-only fixture snapshots.
+const panels = [...document.querySelectorAll('main [data-fixture]')];
+const phrases = [
+  { prompt: 'How would you politely ask a colleague to explain once more?', template: 'phrase-1', translation: 'Excuse me, could you explain that once more?' },
+  { prompt: 'How would you check that you understood correctly?', template: 'phrase-2', translation: 'Is my understanding correct?' },
+  { prompt: 'How would you ask whether the work should happen after the meeting?', template: 'phrase-3', translation: 'Should I handle it after the meeting?' }
+];
+const prompt = document.getElementById('live-prompt');
+const number = document.getElementById('item-number');
+const answer = document.getElementById('live-answer');
+const ja = document.getElementById('live-ja');
+const translation = document.getElementById('live-translation');
+const reveal = document.getElementById('reveal');
+const ratings = [...document.querySelectorAll('#review-due [data-rate]')];
+const status = document.getElementById('rating-status');
+const next = document.getElementById('next');
+let index = 0;
+let revealed = false;
+let rated = false;
+let finished = false;
+function renderItem() {
+  number.textContent = String(index + 1);
+  prompt.textContent = phrases[index].prompt;
+  ja.textContent = '';
+  translation.textContent = '';
+  answer.hidden = true;
+  reveal.disabled = false;
+  reveal.setAttribute('aria-expanded', 'false');
+  ratings.forEach(button => button.disabled = true);
+  next.hidden = true;
+  status.textContent = 'Reveal before rating. This attempt has not rated this item.';
+}
+reveal.disabled = false;
+reveal.addEventListener('click', () => {
+  if (revealed || rated || finished) return;
+  revealed = true;
+  ja.replaceChildren(document.getElementById(phrases[index].template).content.cloneNode(true));
+  translation.textContent = phrases[index].translation;
+  answer.hidden = false;
+  reveal.disabled = true;
+  reveal.setAttribute('aria-expanded', 'true');
+  ratings.forEach(button => button.disabled = false);
+  status.textContent = 'Answer revealed. Choose one self-reported recall rating.';
+});
+ratings.forEach(button => button.addEventListener('click', () => {
+  if (!revealed || rated || finished) return;
+  rated = true; // synchronous guard before any UI updates; no duplicate advance
+  ratings.forEach(choice => choice.disabled = true);
+  status.textContent = button.dataset.rate + ' reported for item ' + (index + 1) + '. Rated once; nothing scheduled or saved. Choose ' + (index === phrases.length - 1 ? 'Finish session' : 'Next phrase') + '.';
+  next.textContent = index === phrases.length - 1 ? 'Finish session' : 'Next phrase';
+  next.hidden = false;
+}));
+next.addEventListener('click', () => {
+  if (!rated || finished) return;
+  if (index === phrases.length - 1) {
+    finished = true;
+    next.hidden = true;
+    location.hash = 'review-session-complete';
+    showScenario();
+  } else {
+    index += 1;
+    revealed = false;
+    rated = false;
+    renderItem();
+  }
+});
+document.getElementById('restart').addEventListener('click', () => {
+  index = 0;
+  revealed = false;
+  rated = false;
+  finished = false;
+  renderItem();
+  location.hash = 'review-due';
+  showScenario();
+});
+function showScenario() {
+  let selected = panels.find(panel => '#' + panel.id === location.hash) || panels[0];
+  if (selected.id === 'review-due' && finished) selected = document.getElementById('review-session-complete');
+  for (const panel of panels) panel.hidden = panel !== selected;
+  for (const link of document.querySelectorAll('.review-links a')) {
+    if (link.hash === '#' + selected.id) link.setAttribute('aria-current', 'true');
+    else link.removeAttribute('aria-current');
+  }
+}
+window.addEventListener('hashchange', showScenario);
+showScenario();
+</script></body></html>
