@@ -334,6 +334,8 @@ data class Lesson(
     @SerialName("rolePlay") val rolePlay: RolePlayObjective,
     @SerialName("reviewItems") val reviewItems: List<ReviewItem>,
     @SerialName("review") val review: ReviewMetadata,
+    @SerialName("exercises") val exercises: List<Exercise>,
+    @SerialName("conversationGraph") val conversationGraph: ConversationGraph? = null,
 ) {
     init {
         requireVersion(formatVersion, contentVersion)
@@ -347,6 +349,7 @@ data class Lesson(
         requireUniqueIds(prerequisiteLessonIds, "lesson prerequisites")
         requireUniqueIds(phrases.map { it.id }, "lesson phrases")
         requireUniqueIds(grammarNotes.map { it.id }, "lesson grammar notes")
+        requireUniqueIds(exercises.map { it.id }, "lesson exercises")
         requireUniqueIds(reviewItems.map { it.id }, "lesson review items")
     }
 }
@@ -363,6 +366,7 @@ data class PracticeSet(
     @SerialName("phrases") val phrases: List<Phrase> = emptyList(),
     @SerialName("reviewItems") val reviewItems: List<ReviewItem> = emptyList(),
     @SerialName("review") val review: ReviewMetadata,
+    @SerialName("exercises") val exercises: List<Exercise>,
 ) {
     init {
         requireVersion(formatVersion, contentVersion)
@@ -371,6 +375,7 @@ data class PracticeSet(
         requireText(title, "practice title")
         requireText(description, "practice description")
         requireUniqueIds(phrases.map { it.id }, "practice phrases")
+        requireUniqueIds(exercises.map { it.id }, "practice exercises")
         requireUniqueIds(reviewItems.map { it.id }, "practice review items")
     }
 }

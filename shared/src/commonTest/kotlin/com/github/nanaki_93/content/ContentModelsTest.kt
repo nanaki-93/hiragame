@@ -80,8 +80,9 @@ class ContentModelsTest {
             listOf(phrase), listOf(GrammarNote("grammar_1", "Polite form", listOf(text))),
             RolePlayObjective("Confirm a detail", listOf("Ask a question")),
             listOf(ReviewItem("review_1", ReviewTargetKind.PHRASE, phrase.id, "reading", "Japanese to meaning")), review,
+            exercises = emptyList(),
         )
-        val practice = PracticeSet(1, 1, "practice_1", "topic_kana", "Reading", "Kana review", review = review)
+        val practice = PracticeSet(1, 1, "practice_1", "topic_kana", "Reading", "Kana review", review = review, exercises = emptyList())
         assertEquals(lesson, json.decodeFromString<Lesson>(json.encodeToString(lesson)))
         assertEquals(practice, Json.decodeFromString<PracticeSet>(Json.encodeToString(practice)))
         assertFailsWith<IllegalArgumentException> { lesson.copy(title = " ") }
