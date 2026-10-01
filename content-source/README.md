@@ -8,7 +8,7 @@ This directory holds authoring material, not a runtime loader or learner saves. 
 
 `topic-map.json` has `formatVersion: 1` and an exact-match `labels` object: **each raw CSV topic label → one stable routing topic ID**. Require an explicit mapping for any new label; never silently slug/fold an unknown label. Multiple raw labels may point to the same ID only when deliberately declared as aliases. Check alias collisions by grouping labels by ID: the current shared-ID groups differ only in casing (`casefold()` equality); any future semantic merge must be inspected and documented rather than produced by automatic normalization. Do not change an existing ID merely because display text changes. The raw `N5` topic on `SIGN` rows maps specifically to provisional `kana-signs`, **not** to a level-based curriculum topic. The level column remains distinct and does not select a topic.
 
-This map is draft routing, not reviewed content or a rights decision. `legacy-*` IDs and the `kana-signs` ID do not automatically create canonical catalog topics; promotion requires independent content and rights review. No legacy romanization, reading, translation, or character flags have been approved by this preservation step. Conversion and full kana audit follow in later F01 steps.
+This map is draft routing, not reviewed content or a rights decision. `legacy-*` IDs and the `kana-signs` ID do not automatically create canonical catalog topics; promotion requires independent content and rights review. No legacy romanization, reading, translation, or character flags have been approved by this preservation step. Conversion is available below; the full kana audit follows in step 2.2.
 
 ## Identity and versions
 
@@ -24,4 +24,18 @@ Both lessons and practice sets have an `exercises` list. Each exercise has a req
 
 A lesson may have a `conversationGraph` with an `entryNodeId` and typed `nodes`: `prompt` (declared `speakerId`, authored `text`, `nextNodeId`), `choiceInteraction` (choice `exerciseId`, option-ID `transitions` each with contextual `feedback` and `nextNodeId`), `completionInteraction` (completion `exerciseId`, `feedback`, `nextNodeId`), and `terminal` (message, no outgoing edge). The lesson owns its graph, referenced speakers, exercises, options, and node IDs; no cross-document edges are implied. Graph node and choice-option IDs are unique within their owning document; exercise IDs use the catalog-wide exercise namespace. In version 1 the graph must be reachable from its entry, acyclic, have transitions for every choice option, and lead to a terminal; repeat an interaction by authoring new nodes, not a back edge. The later cross-reference validator checks these properties and dangling edges. These types describe content, not runtime conversation behavior.
 
-In `shared` the models currently reject local invalid values in constructors and on deserialization; a strict document decoder and cross-document CLI checks arrive in later F01 steps. For the current contract compilation check run `./gradlew :shared:allMetadataJar :shared:compileKotlinJvm && git diff --check` from the repository root. Do not promote legacy drafts or F00 mock copy without fresh review.
+## Convert to unreviewed drafts (F01 step 2.1)
+
+From the repository root:
+
+```sh
+python3 tools/convert_legacy_content.py --input content-source/legacy/question.csv --topic-map content-source/topic-map.json --output content-source/drafts/legacy
+python3 -m unittest discover -s tools -p 'test_convert_legacy_content.py'
+cmp backend/migration/question.csv content-source/legacy/question.csv
+```
+
+The checked-in `drafts/legacy/drafts.json` contains 4,946 records in CSV order. Each record keeps the exact parsed ten source field strings, including its unchanged UUID, plus a 1-based source record/line location and explicit mapped draft-routing topic. The top-level SHA-256 binds it to the preservation copy. `draftFormatVersion` is **not** the canonical content `formatVersion`. Every record has `reviewStatus: unreviewed`, `authoredReading: null`, and unresolved reading, meaning/translation, classification (including mode, topic, level and flags), and provenance/redistribution findings. Legacy romanization is retained only as a source claim; it is **not** an inferred kana reading. The draft is not a lesson, exercise, review decision, or publishable-rights declaration; it stays outside `site` resources.
+
+The converter parses the headerless CSV with Python `csv.reader` (including quoted commas/newlines), validates every record and the explicit map before writing, and reports row/UUID diagnostics for malformed columns, invalid or repeated UUIDs, flags, unsupported modes and unmapped labels. It rejects colliding map aliases, output in the source CSV directory or application resources, and any existing output differing in bytes **or** containing extra files. An identical rerun leaves the existing file untouched; failures do not overwrite it. To incorporate source changes, review the difference and explicitly move the old output aside before regenerating—never discard reviewed notes as an automatic side effect. No rights are inferred from the repository license. Step 2.2 audits the complete SIGN inventory before any kana promotion.
+
+In `shared` the models reject local invalid values in constructors and on deserialization; the strict document decoder is present, while cross-document CLI checks arrive in later F01 steps. Do not promote legacy drafts or F00 mock copy without fresh review.
