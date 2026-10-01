@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>F00 · Learning hub navigator</title>
+<link rel="stylesheet" href="../../design-system/tokens.css"><link rel="stylesheet" href="../../design-system/components.css">
+<style>
+main, header, footer { max-width: 1000px; margin: auto; padding: var(--space-6); }
+.peers { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: var(--space-4); }
+.fixtures { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+@media (max-width: 600px) { main, header, footer { padding: var(--space-4); } }
+</style></head>
+<body><header><p class="learning-id">F00 / SIMULATED MOCK REVIEW · hub-and-spoke</p><h1>Learning hub</h1><p>Four peer destinations, no required order. Home is available now; Topics, Review, and Settings are pending. The Home fixtures are embedded scenarios, not stored learner records or a live lesson.</p><a class="btn" href="01-home.html">Enter Home</a></header>
+<main><h2>Peer map</h2><div class="peers"><article class="card"><h3>Home</h3><p>One next learning priority with quiet supporting context.</p><a href="01-home.html">Open Home</a></article><article class="card" aria-disabled="true"><h3>Topics / Learn · pending</h3><p>Catalog and missing-content recovery will be connected in Step 1.3.</p></article><article class="card" aria-disabled="true"><h3>Review · pending</h3><p>Bounded self-rated review will be connected in Step 1.4.</p></article><article class="card" aria-disabled="true"><h3>Settings / Backup · pending</h3><p>Local-save and portability presentations will be connected in later steps.</p></article></div>
+<section aria-labelledby="home-fixtures"><h2 id="home-fixtures">Direct Home fixture links</h2><p>These reviewer links select a predefined panel; they do not record progress, fetch assets, or save data.</p><nav class="fixtures" aria-label="Home fixture scenarios"><a href="01-home.html#home-first-visit">First visit · C-01 C-04</a><a href="01-home.html#home-resume-priority">Valid unfinished + due · C-02 C-04</a><a href="01-home.html#home-due-review-priority">Due only · C-03 C-04</a><a href="01-home.html#home-unfinished-after-leave">After leaving · C-19</a><a href="01-home.html#offline-cached-home">Cached content · C-30</a><a href="01-home.html#offline-first-visit-uncached">Uncached first visit · C-33</a><a href="01-home.html#home-checkpoint-unavailable">Unavailable checkpoint · recovery example</a></nav></section></main>
+<footer><p class="learning-note">Design source: <a href="../../screens/f00-home/index.html">Four Home compositions</a> · <a href="../../screens/f00-home/option-1.html">Selected Quiet desk</a>. Lesson and other hub pages will be linked when authored. Fixture links carry only scenario identity, never learner answers.</p></footer></body></html>
