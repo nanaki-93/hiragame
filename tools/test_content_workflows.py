@@ -12,7 +12,10 @@ EXPECTED_RUNS = [
     "python3 tools/convert_legacy_content.py --input content-source/legacy/question.csv --topic-map content-source/topic-map.json --output content-source/drafts/legacy",
     "python3 -m unittest discover -s tools -p 'test_*content*.py'",
     "python3 tools/validate_content.py site/src/jsMain/resources/public/content --review-root content-source/review-notes",
-    "./gradlew :shared:jsNodeTest",
+    "python3 -m unittest discover -s tools -p 'test_*runtime*.py'",
+    "./gradlew :shared:jsNodeTest :site:jsNodeTest",
+    "./gradlew :site:reorganizeOutput",
+    "python3 tools/validate_local_runtime.py --artifact-root site/build/dist/js/productionExecutable/public",
 ]
 EXPECTED_ACTIONS = [
     "actions/checkout@v5",
@@ -46,9 +49,10 @@ class ContentWorkflowTests(unittest.TestCase):
         self.assertIn("          python-version: '3.11'", self.lines)
         self.assertIn("          distribution: temurin", self.lines)
         self.assertIn("          java-version: '21'", self.lines)
-        # Node is configured by shared/build.gradle.kts, not a browser or external service.
-        shared_build = WORKFLOW.parents[2] / "shared/build.gradle.kts"
-        self.assertIn("nodejs()", shared_build.read_text(encoding="utf-8"))
+        # Gradle configures Node for both modules, not a browser or external service.
+        for module in ("shared", "site"):
+            build = WORKFLOW.parents[2] / module / "build.gradle.kts"
+            self.assertIn("nodejs()", build.read_text(encoding="utf-8"))
 
     def test_all_checks_run_in_order_with_fail_closed_shell_steps(self):
         runs = [line.strip().removeprefix("run: ") for line in self.lines
@@ -76,42 +80,48 @@ class FirebaseDeployWorkflowTests(unittest.TestCase):
         paths = re.findall(r"(?m)^      - '([^']+)'$", trigger)
         self.assertEqual(set(paths), {
             "site/**", "shared/**", "tools/**", "content-source/**",
-            "gradle/**", "gradlew", "gradle.properties", "build.gradle.kts",
+            "backend/migration/question.csv", "gradle/**", "gradlew", "gradle.properties", "build.gradle.kts",
             "settings.gradle.kts", ".github/workflows/firebase-deploy.yml",
             ".github/workflows/content-check.yml", "firebase.json",
         })
         self.assertEqual(len(paths), len(set(paths)))
         self.assertNotRegex(trigger, r"(?m)^\s*(?:paths-ignore|branches-ignore):")
 
-    def test_gates_run_in_deploy_job_before_build_and_deployment(self):
+    def test_gates_run_in_deploy_job_before_deployment(self):
         names = [step.splitlines()[0] for step in self.steps]
         self.assertEqual(names, [
             "Checkout code", "Make gradlew executable", "Set up Python 3.11",
-            "Set up JDK 21", "Setup Gradle", "Test content tooling and workflow gates",
-            "Validate reviewed canonical content", "Test shared content on Node",
-            "Build project", "Deploy to Firebase",
+            "Set up JDK 21", "Setup Gradle", "Verify preserved CSV bytes",
+            "Verify deterministic legacy drafts", "Test content tooling and workflow gates",
+            "Validate reviewed canonical content", "Test local runtime tooling",
+            "Test shared and site on Node", "Assemble production hosting tree",
+            "Validate local runtime artifact", "Deploy to Firebase",
         ])
         self.assertIn("uses: actions/setup-python@v5", self.steps[2])
         self.assertIn("python-version: '3.11'", self.steps[2])
         self.assertIn("uses: actions/setup-java@v5", self.steps[3])
         self.assertIn("java-version: '21'", self.steps[3])
         self.assertIn("uses: gradle/actions/setup-gradle@v5", self.steps[4])
-        for step, command in zip(self.steps[5:9], EXPECTED_RUNS[2:] + ["./gradlew site:build"]):
+        for step, command in zip(self.steps[5:-1], EXPECTED_RUNS):
             self.assertEqual(re.findall(r"(?m)^        run: (.+)$", step), [command])
-        self.assertIn("uses: FirebaseExtended/action-hosting-deploy@v0", self.steps[9])
-        self.assertIn("repoToken: '${{ secrets.GITHUB_TOKEN }}'", self.steps[9])
-        self.assertIn("firebaseServiceAccount: '${{ secrets.FIREBASE_TOKEN }}'", self.steps[9])
-        self.assertIn("channelId: live", self.steps[9])
-        self.assertIn("projectId: hiragame", self.steps[9])
+        self.assertIn("uses: FirebaseExtended/action-hosting-deploy@v0", self.steps[-1])
+        self.assertIn("repoToken: '${{ secrets.GITHUB_TOKEN }}'", self.steps[-1])
+        self.assertIn("firebaseServiceAccount: '${{ secrets.FIREBASE_TOKEN }}'", self.steps[-1])
+        self.assertIn("channelId: live", self.steps[-1])
+        self.assertIn("projectId: hiragame", self.steps[-1])
 
     def test_no_permissive_gates_or_shell_failure_masking(self):
         self.assertNotRegex(self.job, r"(?m)^\s*(?:if|continue-on-error|needs|strategy):")
         self.assertNotRegex(self.job, r"(?m)^\s*(?:run|shell):\s*[|>]\s*$")
         runs = re.findall(r"(?m)^        run: (.+)$", self.job)
-        self.assertEqual(len(runs), 5)  # chmod, three gates, build
+        self.assertEqual(runs, ["chmod +x ./gradlew", *EXPECTED_RUNS])
         for run in runs:
             self.assertNotRegex(run, r"\|\||&&|;|\$\{|\$\(|`")
         self.assertNotRegex(self.job, r"(?m)^\s*continue-on-error\s*:")
+        # Production assembly depends on distribution, not aggregate build/browser tests.
+        site_build = (WORKFLOW.parents[2] / "site/build.gradle.kts").read_text(encoding="utf-8")
+        self.assertIn('dependsOn("jsBrowserDistribution")', site_build)
+        self.assertNotRegex(site_build, r'(?i)dependsOn\([^)]*browserTest')
 
 
 if __name__ == "__main__":
