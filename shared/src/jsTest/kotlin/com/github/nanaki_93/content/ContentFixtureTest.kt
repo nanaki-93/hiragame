@@ -157,6 +157,91 @@ class ContentFixtureTest {
         assertTrue(catalog.audioAssets.isEmpty())
     }
 
+    /** An in-memory progress-shaped index keeps IDs, not titles, readings, or list positions. */
+    @Test fun canonicalIdsSurviveNonidentityEditsAndRoundTrip() {
+        var directory: String = js("process.cwd()") as String
+        var root: String
+        while (true) {
+            root = path.join(directory, "site", "src", "jsMain", "resources", "public", "content") as String
+            if (fs.existsSync(path.join(root, "catalog.json")) as Boolean) break
+            val parent = path.dirname(directory) as String
+            if (parent == directory) error("Cannot locate canonical content from Node working directory")
+            directory = parent
+        }
+        val catalog = ContentCodec.decodeCatalog(fs.readFileSync(path.join(root, "catalog.json"), "utf8") as String)
+        val lessonEntry = catalog.entries.single { it.kind == DocumentKind.LESSON }
+        val practiceEntry = catalog.entries.single { it.kind == DocumentKind.PRACTICE }
+        val lesson = ContentCodec.decodeLesson(fs.readFileSync(path.join(root, lessonEntry.path), "utf8") as String)
+        val practice = ContentCodec.decodePracticeSet(fs.readFileSync(path.join(root, practiceEntry.path), "utf8") as String)
+        assertEquals(lessonEntry.id, lesson.id)
+        assertEquals(practiceEntry.id, practice.id)
+        assertEquals(catalog.contentVersion, lesson.contentVersion)
+        assertEquals(catalog.contentVersion, practice.contentVersion)
+
+        // Pretend these four IDs were retained by a learner before a content update.
+        val lessonId = "lesson-confirm-meeting-time"
+        val phraseId = "phrase-excuse-me"
+        val exerciseId = "exercise-kana-i-reading"
+        val reviewId = "review-complete-time"
+        assertEquals(lessonId, lesson.id)
+        assertTrue(lesson.phrases.any { it.id == phraseId })
+        assertTrue(practice.exercises.any { it.id == exerciseId })
+        assertTrue(lesson.reviewItems.any { it.id == reviewId })
+        val progressById = mapOf(lessonId to 1, phraseId to 2, exerciseId to 3, reviewId to 4)
+
+        val nextVersion = catalog.contentVersion + 1
+        val revisedTitle = "Check the meeting time politely"
+        val revisedReading = "すみません" // omit punctuation from the phonetic reading
+        val editedCatalog = ContentCodec.decodeCatalog(Json.encodeToString(catalog.copy(
+            contentVersion = nextVersion,
+            topics = catalog.topics.reversed().map { it.copy(title = it.title + " (revised)") },
+            entries = catalog.entries.reversed(),
+        )))
+        val editedLesson = ContentCodec.decodeLesson(Json.encodeToString(lesson.copy(
+            contentVersion = nextVersion,
+            title = revisedTitle,
+            phrases = lesson.phrases.reversed().map { phrase ->
+                if (phrase.id == phraseId) phrase.copy(text = phrase.text.copy(reading = revisedReading)) else phrase
+            },
+            exercises = lesson.exercises.reversed(),
+            reviewItems = lesson.reviewItems.reversed(),
+        )))
+        val editedPractice = ContentCodec.decodePracticeSet(Json.encodeToString(practice.copy(
+            contentVersion = nextVersion,
+            title = "Kana reading practice (revised)",
+            exercises = practice.exercises.reversed(),
+            reviewItems = practice.reviewItems.reversed(),
+        )))
+
+        assertEquals(catalog.entries.map { it.id }.reversed(), editedCatalog.entries.map { it.id })
+        assertEquals(lesson.phrases.map { it.id }.reversed(), editedLesson.phrases.map { it.id })
+        assertEquals(lesson.exercises.map { it.id }.reversed(), editedLesson.exercises.map { it.id })
+        assertEquals(lesson.reviewItems.map { it.id }.reversed(), editedLesson.reviewItems.map { it.id })
+        assertEquals(practice.exercises.map { it.id }.reversed(), editedPractice.exercises.map { it.id })
+        assertEquals(practice.reviewItems.map { it.id }.reversed(), editedPractice.reviewItems.map { it.id })
+        assertEquals(nextVersion, editedCatalog.contentVersion)
+        assertEquals(nextVersion, editedLesson.contentVersion)
+        assertEquals(nextVersion, editedPractice.contentVersion)
+        assertEquals(editedCatalog.formatVersion, editedLesson.formatVersion)
+        assertEquals(editedCatalog.formatVersion, editedPractice.formatVersion)
+        assertEquals(revisedTitle, editedLesson.title)
+        assertEquals(revisedReading, editedLesson.phrases.single { it.id == phraseId }.text.reading)
+        assertTrue(lesson.phrases.single { it.id == phraseId }.text.reading != revisedReading)
+
+        val resolvedEntry = editedCatalog.entries.associateBy { it.id }.getValue(lessonId)
+        assertEquals(DocumentKind.LESSON, resolvedEntry.kind)
+        assertEquals(editedLesson.id, resolvedEntry.id)
+        assertEquals(1, progressById.getValue(resolvedEntry.id))
+        val resolvedPhrase = editedLesson.phrases.associateBy { it.id }.getValue(phraseId)
+        assertEquals(2, progressById.getValue(resolvedPhrase.id))
+        val resolvedExercise = editedPractice.exercises.associateBy { it.id }.getValue(exerciseId)
+        assertEquals(3, progressById.getValue(resolvedExercise.id))
+        val resolvedReview = editedLesson.reviewItems.associateBy { it.id }.getValue(reviewId)
+        assertEquals(ReviewTargetKind.EXERCISE, resolvedReview.targetKind)
+        assertTrue(editedLesson.exercises.any { it.id == resolvedReview.targetId })
+        assertEquals(4, progressById.getValue(resolvedReview.id))
+    }
+
     @Test fun negativeSharedFixturesFailClosed() {
         for (name in listOf("duplicate-key", "unknown-field", "unsupported-version", "malformed", "missing", "invalid-id", "blank", "unknown-enum")) {
             assertFailsWith<Exception>(name) { ContentCodec.decodeCatalog(fixture("catalog-$name.json")) }
