@@ -11,6 +11,26 @@
 
 Hiragame is a full-stack Japanese learning game focused on Hiragana, romanization practice, and JLPT-level progression. It combines a Kotlin/Kobweb browser app, a Spring Boot API, shared Kotlin models, PostgreSQL persistence, JWT cookie authentication, and optional AI-assisted question generation.
 
+## Planned local-first refactor
+
+The description and commands below document the **current implementation**, not the planned replacement. See [PLAN.md](PLAN.md) for the local-first Kotlin/Kobweb target and its [autonomous execution policy](PLAN.md#autonomous-execution-and-verification-policy).
+
+- Style is fixed: **P03 — Phrase Press / T02 — Reading Desk**, with accepted shared components in `.mockups/design-system/`.
+- Agents own remaining layout decisions, implementation and code review; no manual design approval or user testing checkpoints.
+- Verification uses CLI builds, static/content checks, Node/domain tests and isolated adapters with fakes. Accessibility, native keyboard/IME, visual/browser E2E and all running-app interaction tests are out of scope, not pending release gates.
+- Existing semantics, native controls, input safeguards and text-only paths stay intact. No live-browser or accessibility certification is implied.
+- The active F00 documents are `.pi/SPEC.md`, `.pi/ANALYSIS.md` and `.pi/PLAN.md`; [the adoption report](.mockups/adoption-report.md) records provenance. Historical workflow prompts/attestations are not edited; workers using cached requirements must replan/resume from the updated documents.
+
+## Content authoring (F01)
+
+The reviewed canonical JSON seed lives in `site/src/jsMain/resources/public/content/`; preserved legacy CSV and converted drafts are not automatically approved for publication. See the [content authoring guide](content-source/README.md) for conversion, review evidence, and explicit promotion instructions. Validate canonical content from the repository root with:
+
+```sh
+python3 tools/validate_content.py site/src/jsMain/resources/public/content --review-root content-source/review-notes
+```
+
+This checks the source content and review evidence, not runtime loading or deployed asset packaging. The current browser app still uses the backend API for authentication and practice; the local-first runtime is planned work.
+
 ## Features
 
 - Practice Hiragana through `SIGN`, `WORD`, and `SENTENCE` game modes.
