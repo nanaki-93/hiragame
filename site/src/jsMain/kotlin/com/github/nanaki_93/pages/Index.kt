@@ -1,277 +1,111 @@
 package com.github.nanaki_93.pages
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import com.github.nanaki_93.components.styles.Styles
-import com.github.nanaki_93.components.widgets.*
-import com.github.nanaki_93.config.ConfigLoader
-import com.github.nanaki_93.models.*
-import com.github.nanaki_93.service.AuthService
-import com.github.nanaki_93.service.GameService
-import com.github.nanaki_93.service.SessionManager
-import com.github.nanaki_93.util.launchSafe
+import com.github.nanaki_93.components.widgets.PrimaryButton
+import com.github.nanaki_93.components.widgets.SecondaryButton
+import com.github.nanaki_93.content.BrowserContentTextSource
+import com.github.nanaki_93.content.BundledContentLoader
+import com.github.nanaki_93.content.EmptyContentReason
+import com.github.nanaki_93.practice.LocalPracticeCoordinator
+import com.github.nanaki_93.practice.LocalPracticeState
+import com.github.nanaki_93.practice.PracticeCommand
+import com.github.nanaki_93.practice.SessionView
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
-import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
-import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.style.toModifier
-import kotlinx.coroutines.delay
 import org.jetbrains.compose.web.css.cssRem
+import org.jetbrains.compose.web.dom.H1
+import org.jetbrains.compose.web.dom.H2
+import org.jetbrains.compose.web.dom.Main
+import org.jetbrains.compose.web.dom.P
+import org.jetbrains.compose.web.dom.Text
 
-
+/** Home owns only this page's in-memory coordinator; no account or backend is required. */
 @Page
 @Composable
 fun HomePage() {
+    val scope = rememberCoroutineScope()
+    val coordinator = remember { LocalPracticeCoordinator(scope, BundledContentLoader(BrowserContentTextSource())) }
+    val state by coordinator.state.collectAsState()
 
-    var appConfig by remember { mutableStateOf(ConfigLoader.getDefaultConfig()) }
-    var isConfigLoaded by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        appConfig = ConfigLoader.loadConfig()
-        isConfigLoaded = true
-    }
-    var userId by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
-
-    val authService = remember(appConfig) { AuthService(appConfig) }
-    val gameService = remember(appConfig) { GameService(appConfig,authService) }
-
-    var gameState by remember { mutableStateOf(GameState.LOADING) }
-    var gameStateUi by remember { mutableStateOf(GameStateUi(userId = userId, stats = GameStatisticsUi())) }
-    var currentQuestion by remember { mutableStateOf(QuestionDto()) }
-    var availableLevels by remember { mutableStateOf(listOf<Level>()) }
-
-
-    var userInput by remember { mutableStateOf("") }
-    var isAnswering by remember { mutableStateOf(false) }
-    var selectedLevel by remember { mutableStateOf(null as Level?) }
-    var selectedGameMode by remember { mutableStateOf(null as GameMode?) }
-    var showAlert by remember { mutableStateOf(false) }
-
-
-    val coroutineScope = rememberCoroutineScope()
-
-
-    SessionManager.onSessionExpired = {
-        println("Session expired")
-        showAlert = true
-    }
-    suspend fun submitAnswer() {
-        if (isAnswering) return
-
-        isAnswering = true
-        gameState = GameState.SHOWING_FEEDBACK
-
-        val userQuestionDto = UserQuestionDto(
-            questionId = currentQuestion.id ?: "",
-            userInput = userInput,
-            userId = userId
-        )
-
-        gameStateUi = gameService.processAnswer(userQuestionDto)
-        userInput = ""
-
-        // Show feedback for 2 seconds
-        delay(2000)
-
-        // Get next question
-        currentQuestion = gameService.getNextQuestion(SelectRequest(selectedGameMode!!, selectedLevel!!, userId))
-        gameState = GameState.PLAYING
-        isAnswering = false
+    DisposableEffect(coordinator) {
+        coordinator.load()
+        onDispose { coordinator.dispose() }
     }
 
-    suspend fun selectGameMode(mode: GameMode) {
-        selectedGameMode = mode
-        availableLevels = gameService.selectGameMode(LevelListRequest(mode, userId))
-        gameState = GameState.LEVEL_SELECTION
-    }
-
-    suspend fun selectLevel(level: Level) {
-        selectedLevel = level
-        selectedGameMode?.let { gameMode ->
-            currentQuestion = gameService.getNextQuestion(SelectRequest(gameMode, level, userId))
-            gameState = GameState.PLAYING
-        }
-
-    }
-
-    // Single LaunchedEffect for initialization
-    LaunchedEffect(isConfigLoaded) {
-        if (!isConfigLoaded) return@LaunchedEffect
-
-        // Step 1: Check JWT authentication
-        if (!authService.isAuthenticated()) {
-            kotlinx.browser.window.location.href = "/hiragame/login"
-            return@LaunchedEffect
-        }
-
-        // Step 2: Get user data from JWT
-        val userData = authService.getCurrentUser()
-
-        userId = userData.userId
-        username = userData.username
-
-        // Step 3: Initialize game state
-        try {
-            gameStateUi = gameService.getGameState(userId)
-            gameState = GameState.LOADING
-
-            // Step 4: Show loading for 2 seconds then proceed to mode selection
-            delay(2000)
-            gameState = GameState.MODE_SELECTION
-        } catch (e: Exception) {
-            console.error("Failed to initialize game:", e)
-            // Handle error appropriately
-        }
-    }
-
-    // Early return if user is not authenticated
-    if (userId.isEmpty()) return
-
-
-    Box(Styles.GameContainer.toModifier()) {
-        Column(
-            modifier = Styles.Card.toModifier(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(1.cssRem)
-        ) {
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-
-                ) {
-                BaseButton(
-                    text = "Logout",
-                    onClick = {
-                        coroutineScope.launchSafe {
-                            authService.logout()
-                            kotlinx.browser.window.location.href = "/hiragame/login"
+    Main {
+        Box(Styles.GameContainer.toModifier()) {
+            Column(
+                modifier = Styles.Card.toModifier(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(1.cssRem),
+            ) {
+                H1 { Text("Hiragame") }
+                when (val current = state) {
+                    LocalPracticeState.Loading -> {
+                        H2 { Text("Loading reviewed practice") }
+                        P { Text("Reading this site's bundled content. No account is needed.") }
+                    }
+                    is LocalPracticeState.Empty -> {
+                        H2 { Text("No practice available yet") }
+                        P {
+                            Text(when (current.reason) {
+                                EmptyContentReason.EMPTY_CATALOG -> "The content catalog is empty. Reload to check again."
+                                EmptyContentReason.NO_PRACTICE -> "No reviewed practice sets are listed yet. Reload to check again."
+                                EmptyContentReason.EMPTY_PRACTICE_SETS -> "Reviewed practice sets have no exercises yet. Reload to check again."
+                            })
+                        }
+                        PrimaryButton("Reload practice", onClick = coordinator::retryLoad)
+                    }
+                    is LocalPracticeState.Error -> {
+                        H2 { Text("Practice could not load") }
+                        P { Text(current.safeMessage) }
+                        PrimaryButton("Retry loading", onClick = coordinator::retryLoad)
+                    }
+                    is LocalPracticeState.Ready -> {
+                        val session = current.session
+                        if (current.operationError != null) {
+                            P { Text(current.operationError.safeMessage) }
+                            SecondaryButton("Retry action", onClick = { coordinator.retryOperation(current.operationError) })
+                            SecondaryButton("Back to practice sets", onClick = { coordinator.leave(current.operationError) })
+                        } else if (session == null) {
+                            H2 { Text("Practice locally") }
+                            P { Text("A short session with reviewed exercises. Answers stay in this session only; reloading starts fresh.") }
+                            // One clear invitation for the seed; extra sets get their own titled actions.
+                            val sets = current.availablePracticeSets.values.toList()
+                            for (set in sets) {
+                                P { Text("${set.title} · ${set.exercises.size} exercises. ${set.description}") }
+                                PrimaryButton(
+                                    text = if (sets.size == 1) "Start practice" else "Start ${set.title}",
+                                    onClick = { coordinator.start(set.id) },
+                                )
+                            }
+                            if (sets.isEmpty()) P { Text("No exercises are available. Reload to check again.") }
+                            SecondaryButton("Reload practice", onClick = coordinator::load)
+                        } else {
+                            // Prompt controls and feedback are added in the following practice-surface steps.
+                            H2 { Text("Practice session") }
+                            P { Text("This session is in memory only. ${session.counts.completed} of ${session.plan.size} exercises resolved.") }
+                            when (val view = session.view) {
+                                is SessionView.Prompt -> P { Text("Exercise ${view.index + 1} of ${session.plan.size} is ready.") }
+                                else -> P { Text("Session in progress.") }
+                            }
+                            SecondaryButton("Back to practice sets", onClick = {
+                                coordinator.dispatch(PracticeCommand.Leave(session.id, session.revision))
+                            })
                         }
                     }
-                )
-            }
-            CenterRow {
-                TitleText("ひらがな Master - $username")
-            }
-
-
-            Spinner(isVisible = gameState == GameState.LOADING)
-
-
-
-
-            if (selectedGameMode != null) {
-                ModeItemRow("Game Mode:", selectedGameMode?.displayName)
-            }
-            if (selectedLevel != null) {
-                ModeItemRow("Level:", selectedLevel?.displayName)
-            }
-
-
-            if (gameState != GameState.LOADING) {
-
-                SpacedRow {
-                    StatItem("Correct ", "${gameStateUi.stats.correctAnswers}")
-                    StatItem("Attempts", "${gameStateUi.stats.totalAnswered}")
-                    StatItem("Streak", "${gameStateUi.stats.streak}")
                 }
             }
-
-            if (gameState == GameState.LOADING) {
-                LoadingText("Game mode selection will appear shortly...")
-            }
-
-
-            // Only show selector when in mode selection state
-            if (gameState == GameState.MODE_SELECTION) {
-
-                SubTitleText("Select a game mode to continue:")
-                CenterRow {
-                    GameMode.entries.forEach { mode ->
-                        PrimaryButton(
-                            text = mode.displayName,
-                            onClick = { coroutineScope.launchSafe { selectGameMode(mode) } },
-                        )
-                    }
-                }
-            }
-
-
-
-            if (gameState == GameState.LEVEL_SELECTION) {
-
-                SubTitleText("Select your level:")
-                CenterRow {
-                    for (level in availableLevels) {
-                        PrimaryButton(
-                            text = "Lv-${level.displayName}",
-                            onClick = {
-                                coroutineScope.launchSafe { selectLevel(level) }
-                            },
-                        )
-                    }
-                }
-            }
-
-
-            if (gameState == GameState.PLAYING) {
-
-                CenterColumn(
-                    0.cssRem,
-                    Styles.QuestionCard.toModifier(),
-                ) {
-
-                    QuestionText(currentQuestion.japanese)
-                    PromptText("What is the romanization?")
-                    SearchableTextInput(
-                        text = userInput,
-                        onTextChange = { userInput = it },
-                        onEnterPressed = { coroutineScope.launchSafe { submitAnswer() } },
-                        placeholder = "Type romanization here..."
-                    )
-
-                    ActionButton(
-                        text = "Submit",
-                        isLoading = isAnswering,
-                        onClick = { coroutineScope.launchSafe { submitAnswer() } },
-                        enabled = userInput.isNotEmpty() && !isAnswering
-                    )
-                }
-            }
-
-            if (gameState == GameState.SHOWING_FEEDBACK) {
-
-                CenterColumn(
-                    0.cssRem,
-                    Styles.QuestionCard.toModifier(),
-                ) {
-                    CenterRow {
-                        Spinner(isVisible = gameState == GameState.SHOWING_FEEDBACK, size = SpinnerSize.Large)
-                    }
-                    CenterRow {
-                        FeedbackText(gameStateUi.feedback, gameStateUi.isCorrect)
-                    }
-                }
-            }
-
-        }
-        if (showAlert) {
-            SessionExpiredAlert(
-                message = "Your session has expired.",
-                onClose = {
-                    coroutineScope.launchSafe {
-                        authService.logout()
-                        kotlinx.browser.window.location.href = "/hiragame/login"
-                        showAlert = false
-                    }
-                }
-            )
         }
     }
 }
