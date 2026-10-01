@@ -113,6 +113,13 @@ class ExerciseGraphTest {
         assertFailsWith<IllegalArgumentException> { romajiReading.copy(acceptedAnswers = listOf(RomajiReadingAnswer("same"), RomajiReadingAnswer("same"))) }
         assertFailsWith<IllegalArgumentException> { completion.copy(template = "No blank") }
         assertFailsWith<IllegalArgumentException> { completion.copy(acceptedAnswers = listOf(fill, fill)) }
+        val secondFill = JapaneseText("連絡", "れんらく", translation = "contact")
+        val secondExample = JapaneseText("連絡します。", "れんらくします。", translation = "I will contact.")
+        val multiple = completion.copy(acceptedAnswers = listOf(fill, secondFill), expectedCompletedExample = secondExample)
+        assertEquals(multiple, json.decodeFromString<Exercise>(json.encodeToString<Exercise>(multiple)))
+        assertFailsWith<IllegalArgumentException> {
+            multiple.copy(expectedCompletedExample = secondExample.copy(surface = "報告します。"))
+        }
         assertFailsWith<IllegalArgumentException> { production.copy(criteria = emptyList()) }
         assertFailsWith<IllegalArgumentException> { graph().copy(entryNodeId = "missing") }
         assertFailsWith<IllegalArgumentException> { graph().copy(nodes = listOf(TerminalNode("a", "End"), TerminalNode("a", "End"))) }
