@@ -4,7 +4,23 @@
 
 Turn Hiragame into a personal Japanese-learning app for a software engineer who wants to work in Japan. First remove unnecessary infrastructure; then replace romanization-only quizzes with practical, topic-based lessons and conversations.
 
-This document is an implementation plan, not a record of completed work. All features below are initially **not started**.
+This document is an implementation plan, not a record of completed work. Feature status and recorded command results determine completion; unchecked work is not complete.
+
+## Autonomous execution and verification policy
+
+This policy supersedes earlier manual-approval and interactive-verification requirements in project planning documents and historical workflow reports.
+
+- **Style is decided:** preserve **P03 — Phrase Press / T02 — Reading Desk**, `.mockups/design-system/tokens.css`, and the accepted shared components. Do not restart palette, typography, or component approval.
+- **Agents own remaining design details:** choose and record a suitable existing Home option or compatible hybrid, compose missing mocks, then implement the refactor in dependency order. Layout, learning-loop, component-refinement and journey decisions require no further user approval or manual attestation. Record agent decisions as agent decisions, not invented user selections.
+- **No manual verification gates:** implementation, code review, repairs and verification run autonomously. Do not ask the user to inspect screens, approve checkpoints, supply screenshots, or perform tests.
+- **Excluded checks:** no accessibility audits/tests (including automated accessibility or contrast tests), native keyboard/focus/tab/Escape/IME interaction tests, screen-reader tests, or tests that launch or interact with the running app or mocks. No browser E2E, headless-browser/CDP/Playwright/Selenium walkthroughs, visual/screenshot checks, device/browser matrices, or live offline/reload/update tests. Do not start servers or open a browser for validation.
+- **Required checks:** relevant CLI builds/compilation, static artifact/link/token/content/schema checks, pure domain/state-machine tests, and isolated adapter tests using in-memory fakes or stubs. Run JS tests through Node, not a browser. Test backup round trips, failure preservation, session transitions, scheduling and cache/update policy without a running app. Excluded checks are **out of scope**, not pending blockers or passes.
+- **Implementation quality remains:** retain semantic HTML, labels, native controls, existing focus styles, Japanese input safeguards, responsive styles and text/no-audio fallbacks. Avoid custom keyboard machinery or new accessibility deliverables merely to satisfy old checklists. Removing tests does not authorize removing working behavior.
+- **Content review is agent-owned:** review meaning, authored readings, translations, register, answer variants and provenance against available sources; record reviewer type and uncertainties in `content-source/review-notes/`. Human/native-speaker certification is not required and must not be claimed. Correct, replace or omit uncertain material; never invent licence/redistribution rights. Optional audio with unconfirmed rights stays omitted.
+- **Honest completion:** satisfy the scoped artifact and non-interactive checks, record actual commands/results, and continue to the next task. Static/unit passes do not prove real-browser behavior or accessibility. Repair failures; do not weaken validators, fabricate evidence, or mark absent work complete. A missing build dependency or genuine technical failure is reported precisely, not replaced with a manual-check request.
+- **Safety boundaries remain:** preserve unrelated changes and legacy source data. Do not delete personal saves or deployed resources, publish/deploy, spend money, or change secrets without existing explicit authorization. If an external destructive operation is not authorized, defer that operation and continue independent repository work; approval-free design is not blanket destructive authorization.
+
+The active F00 execution documents are `.pi/SPEC.md`, `.pi/ANALYSIS.md`, and `.pi/PLAN.md`. Historical `.pi/workflows/` prompts, attestations and runner state remain untouched; if a runner cached the old requirements, replan/resume from these revised documents rather than treating stale manual gates as current instructions.
 
 ## Product and architecture decisions
 
@@ -85,10 +101,10 @@ Exact Kotlin package names can follow the existing project convention. Keep one 
 | M0 — Contracts and alignment | Agree on content/save contracts and mock the learning experience before new production UI | F00, F01; begin F14 test tooling |
 | M1 — Local practice | Existing useful practice works without backend/accounts; progress survives reload and can be backed up | F02–F05, foundational F11, F13; relevant F14 checks |
 | M2 — Workplace learning | Five reviewed topic lessons, guided conversation, phrase review, and optional audio | F06–F10, remaining F11 |
-| M3 — Offline release | Cached learning works offline; static deployment, updates, documentation, and end-to-end tests are complete | F12, remaining F14 |
+| M3 — Offline release | Offline implementation, static artifact, update logic, documentation, and non-interactive checks are complete | F12, remaining F14 |
 | Later — Optional enhancements | Local AI, recording, authoring helpers, and curriculum expansion | O01–O04 |
 
-Build tests and accessibility into each feature rather than deferring them to the final milestone. Do not remove the backend until local practice and any required personal-data export have been verified.
+Build non-interactive tests into each feature rather than deferring them to the final milestone. Verification throughout this plan means the autonomous policy above, not a live-app walkthrough. Do not remove the backend until local replacement passes scoped checks and legacy content plus any existing personal-data export is preserved. If export requirements are unknown, preserve the backend/data and continue independent work; do not silently discard personal data.
 
 ---
 
@@ -98,23 +114,23 @@ Build tests and accessibility into each feature rather than deferring them to th
 
 **Depends on:** none; develop alongside the initial F01 contracts.
 
-**Status:** In progress; downstream approvals pending. Inventory, presentation contracts, coverage allocations and validation tooling exist in [the F00 adoption report](.mockups/adoption-report.md). The project user selected **P03 — Phrase Press / T02 — Reading Desk**: “T02 for the typography, P03 — Phrase Press for the palette”, recorded `2026-09-30T23:10:40.640Z`. [Selected tokens](.mockups/design-system/tokens.css) are locked; all [three palette](.mockups/design-system/palette.html) and [two typography](.mockups/design-system/typography.html) explorations are retained. [Selection evidence](.mockups/adoption-report.md#63-step-22-selection-token-lock-and-validation) discloses that the cited original attestation JSON is absent; its `.json.bak` corroborates the retained record, not a fresh approval. The earlier “selection pending: stop before token locking” status is superseded history. [Earlier selected-token baseline](.mockups/adoption-report.md#64-selected-token-baseline-reconciliation) records its 51 passing tests and token-stage static validation separately from historical browser/contrast evidence; [current screens-stage reconciliation](.mockups/adoption-report.md#69-current-f00-baseline-reconciliation--step-11-2026-10-01) is in §6.9. [Shared component showcase and CSS](.mockups/design-system/components.html) now include basic, learning and dialog states (C-54–C-56); the project user accepted these exact artifacts as P-04 on `2026-10-01T06:20:08.138Z` ([attribution](.mockups/adoption-report.md#68-four-home-compositions--earlier-step-31)). [Four distinct Home alternatives and comparison](.mockups/screens/f00-home/index.html) exist with C-01–C-04 priority fixtures. The connected hub, six-stage lesson, backup/restore journey and M-01–M-11 persona mirrors are still missing. P-05 remains unresolved: no exact Home option or specified hybrid has been chosen, so connected-flow composition must wait; generic later manual-check attestations do not select a layout. P-06 approval of the completed journey and P-07 Japanese review remain outstanding. Historical browser checks for components/Home are recorded in the report, not fresh full-journey evidence. No F00 acceptance criterion is marked complete.
+**Status:** F00 mockups complete; agent integration review recorded 2026-10-01 in [adoption report §6.12](.mockups/adoption-report.md#612-p-06-agent-integration-review--step-51-2026-10-01). The project user's P03 — Phrase Press / T02 — Reading Desk selection (`2026-09-30T23:10:40.640Z`) and P-04 [shared components](.mockups/design-system/components.html) acceptance (`2026-10-01T06:20:08.138Z`) retain their historical attribution. The agent selected Option 1 — Quiet desk as P-05; all [four Home alternatives](.mockups/screens/f00-home/index.html) remain. The [hub](.mockups/flows/learning-hub/index.html), [six-stage lesson](.mockups/flows/workplace-lesson/index.html), [backup/restore](.mockups/flows/backup-restore/index.html), C-01–C-56 fixtures and M-01–M-11 mirrors are authored and connected. [P-07 agent review](content-source/review-notes/f00-mock-examples.md) covers mock examples only, not approved production curriculum. Current verification: `python3 -m unittest discover -s tools -p 'test_validate_mockups.py'` (51 tests, OK), `python3 tools/validate_mockups.py .mockups --stage complete` (static checks passed), `git diff --check` (passed), plus source/whitespace/link audit recorded in §6.12. No browser, accessibility, storage, production build or full-refactor result is claimed; later features remain incomplete.
 
 ### Implementation tasks
 
-- [ ] Inventory existing pages, components, palettes, and interactions. Reuse useful primitives rather than blindly replacing them.
-- [ ] Define the primary loop: choose a situation → understand a dialogue → practise a response → role-play → review useful phrases later.
-- [ ] Define a minimal navigation structure: Home, Topics/Learn, Review, and Settings/Backup. A lesson is a focused learning session, not another permanent navigation destination.
-- [ ] Home should offer one obvious next action: continue a lesson or start due reviews. Avoid forcing mode and level selection on every visit.
-- [ ] Establish beginner support: optional readings, furigana, translations, and romaji. The learner's current level is not yet known; do not assume conversational proficiency.
-- [ ] Use the existing-project mockup-first process: audit/adopt → palette/tokens → shared components → screen/flow mockups. Only add a motion system if the interactions need one.
-- [ ] Mock lesson stages, topic browsing, review, backup/restore, and empty/error/offline states under `.mockups/` before implementing those new surfaces.
-- [ ] Include mobile, keyboard-only, Japanese long-text, and no-audio/offline cases. Ask for approval before installing any convention in `AGENTS.md`.
-- [ ] Obtain approval of the learning loop and selected mocks. Keep deferred ideas out of the initial release.
+- [x] Inventory existing pages, components, palettes, and interactions. Reuse useful primitives rather than blindly replacing them.
+- [x] Define the primary loop: choose a situation → understand a dialogue → practise a response → role-play → review useful phrases later.
+- [x] Define a minimal navigation structure: Home, Topics/Learn, Review, and Settings/Backup. A lesson is a focused learning session, not another permanent navigation destination.
+- [x] Home should offer one obvious next action: continue a lesson or start due reviews. Avoid forcing mode and level selection on every visit.
+- [x] Establish beginner support: optional readings, furigana, translations, and romaji. The learner's current level is not yet known; do not assume conversational proficiency.
+- [x] Use the existing-project mockup-first process: audit/adopt → palette/tokens → shared components → screen/flow mockups. Only add a motion system if the interactions need one.
+- [x] Mock lesson stages, topic browsing, review, backup/restore, and empty/error/offline states under `.mockups/` before implementing those new surfaces.
+- [x] Include responsive styles, Japanese long-text and no-audio/offline fixtures; inspect source and static artifacts only. Retain allocated mirrors as static presentation examples, not accessibility-test obligations. Do not install a new `AGENTS.md` convention as part of this work.
+- [x] Have agents select remaining layout details and review the learning loop/mocks against the decided style and product contracts. Record decisions and continue without user approval. Keep deferred ideas out of the initial release.
 
 ### Acceptance criteria
 
-- One approved learning journey covers all new core surfaces and important states.
+- One agent-reviewed learning journey covers all new core surfaces and important states, with complete static validation and no manual approval gate.
 - No login, artificial loading delay, or unnecessary JLPT gate appears in the target experience.
 - Mockups use realistic workplace Japanese and clearly distinguish guided practice from open-ended self-assessment.
 
@@ -167,8 +183,8 @@ Build tests and accessibility into each feature rather than deferring them to th
 
 ### Acceptance criteria
 
-- Useful practice runs with the backend and PostgreSQL stopped.
-- No learning action makes an authentication or game-API request.
+- The local practice engine passes domain tests without a backend or PostgreSQL; source/build inspection confirms no required service dependency.
+- Source and artifact checks find no required authentication or game-API calls in the learning path; no live network walkthrough is required.
 - Empty content, loading failures, repeated clicks, and session completion are handled deliberately.
 - Domain behaviour is covered by tests and does not depend on browser APIs.
 
@@ -194,7 +210,7 @@ Build tests and accessibility into each feature rather than deferring them to th
 
 ### Acceptance criteria
 
-- Progress and preferences survive reload and reopening on the same browser/origin.
+- Serialized progress/preferences round-trip into a fresh store/session instance in isolated tests; the browser adapter implements same-origin persistence without requiring a live reload test.
 - Storage errors never prevent the learner from continuing or downloading a backup.
 - Corrupt, older, and unsupported-newer saves have tested, non-destructive behaviour.
 - State remains bounded; audio, transcripts, and lesson content are not stored in `localStorage`.
@@ -246,7 +262,7 @@ Build tests and accessibility into each feature rather than deferring them to th
 
 - Both hiragana and katakana are usable without backend services.
 - Authored valid reading variants are accepted; genuinely different answers remain distinguishable.
-- IME composition cannot accidentally submit an unfinished answer.
+- Input source retains composition guards against submitting unfinished Japanese; native keyboard/IME interaction tests are explicitly out of scope.
 - Learners can continue into workplace lessons without an arbitrary score gate.
 
 ## F06 — Topic catalog and starter curriculum
@@ -269,7 +285,7 @@ Build tests and accessibility into each feature rather than deferring them to th
 - [ ] Aim for a short, manageable lesson: roughly 6–10 dialogue turns, 5–8 target phrases, 1–2 grammar patterns, guided exercises, and a role-play objective. Adjust length to difficulty rather than enforcing counts mechanically.
 - [ ] Teach polite `です／ます` communication first, with contextual explanations of technical loanwords and workplace register.
 - [ ] Include beginner scaffolding and a more independent practice path using the same scenario where practical.
-- [ ] Obtain human Japanese review for shipped dialogues, readings, translations, explanations, and audio. Record decisions in `content-source/review-notes/`.
+- [ ] Perform agent Japanese-content review for shipped dialogues, readings, translations and explanations; record sources, uncertainties and reviewer type in `content-source/review-notes/`. Require documented rights for optional recordings, but no human review or listening-test gate. Never label agent review as native-speaker certification.
 - [ ] Make catalog empty/error states actionable rather than rendering blank pages.
 
 ### Acceptance criteria
@@ -374,12 +390,12 @@ Build tests and accessibility into each feature rather than deferring them to th
 
 ### Acceptance criteria
 
-- Playback controls work by keyboard and do not overlap multiple recordings.
+- Playback logic stops the previous recording before starting another; isolated adapter tests use a fake audio interface, not live playback or keyboard interaction.
 - Every recording has a matching reviewed transcript.
 - No voice support, blocked playback, or missing audio still leaves the lesson usable.
-- Cached recordings play without network access in supported target browsers.
+- Static asset checks and fake-cache/audio adapter tests cover cached-recording lookup and uncached fallback; real-browser offline playback is not claimed verified.
 
-## F11 — Shared UI, Japanese rendering, and accessibility
+## F11 — Shared UI and Japanese rendering
 
 **Purpose:** keep the expanded app consistent, readable, and usable.
 
@@ -389,21 +405,21 @@ Build tests and accessibility into each feature rather than deferring them to th
 
 - [ ] Consolidate the existing `JpStyles.kt` and `SiteTheme.kt` palettes into one token/theme vocabulary aligned with approved mocks.
 - [ ] Reuse or simplify `BaseComponents.kt`; provide shared buttons, labeled inputs, status/error messages, lesson cards, transcript rows, and review controls.
-- [ ] Fix contrast and focus visibility. Existing inputs remove the default outline, and pale button/error colours need contrast verification.
+- [ ] Reuse the selected token colors and existing focus styles; remove unconditional outline suppression when adapting inputs. Do not add contrast or focus-verification tests.
 - [ ] Use semantic headings/landmarks, associated labels, meaningful control names, and non-colour-only answer feedback.
-- [ ] Implement focus management for stage changes and dialogs, plus accessible feedback/status announcements that do not overwhelm screen readers.
+- [ ] Reuse accepted native dialog semantics and simple status messages; preserve working focus behavior without adding custom keyboard systems or accessibility test gates.
 - [ ] Mark Japanese passages with `lang="ja"`; render authored furigana with semantic ruby markup where appropriate.
-- [ ] Test long Japanese sentences, mixed Japanese/code text, zoom, narrow screens, and touch controls. Do not apply the existing large kana font to full dialogues.
+- [ ] Use wrapping and responsive composition for long Japanese, authored ruby and mixed Japanese/code text. Check source and static fixtures, not rendered zoom, viewport or touch behavior. Do not apply the existing large kana font to full dialogues.
 - [ ] Honour reduced motion and avoid animated spinners/artificial waits as learning feedback.
 - [ ] Use system font fallbacks or locally bundled licensed fonts/icons. Do not require remote font/CDN requests for offline rendering.
 - [ ] Implement visible local-save status, optional-audio status, and actionable error messages consistently across features.
 
 ### Acceptance criteria
 
-- Main learning and backup journeys are operable by keyboard with visible focus.
-- Text and controls meet WCAG AA contrast targets and remain usable at 200% zoom.
-- Japanese text/furigana is legible on mobile, with no essential horizontal overflow.
-- Offline/no-audio and screen-reader experiences retain the full learning task.
+- Shared surfaces reuse selected tokens, accepted primitives, semantic markup and retained native control behavior.
+- Japanese passages use authored readings/ruby and responsive wrapping styles rather than dialogue-wide kana display sizing.
+- Text/no-audio and offline-status paths preserve the learning task in fixtures and isolated state tests.
+- Accessibility, contrast, keyboard/IME, screen-reader, zoom and rendered-layout testing are out of scope; no conformance or browser-usability certification is claimed.
 
 ## F12 — Offline caching and installable app
 
@@ -427,10 +443,10 @@ Build tests and accessibility into each feature rather than deferring them to th
 
 ### Acceptance criteria
 
-- After confirmed caching, a network-disabled browser can reopen the app, navigate lessons, practise, review, and save progress.
-- Cached audio works offline; uncached audio reports unavailability without blocking the lesson.
-- Updating the app preserves progress and does not interrupt an active session unexpectedly.
-- Base-path routing and caching work in both local static preview and Firebase Hosting.
+- Generated manifests and cache asset lists reference complete, same-origin production files under the correct base path.
+- Isolated cache-policy tests cover cached/uncached content and audio fallback using fakes; no network-disabled browser test is required.
+- Update-policy tests preserve learner state and defer activation during an active session; no live service-worker test is required.
+- Static route/export and hosting-configuration checks cover nested paths and missing-asset rules. Real-browser offline behavior and deployed hosting are not claimed tested.
 
 ## F13 — Infrastructure retirement and build simplification
 
@@ -470,22 +486,22 @@ Build tests and accessibility into each feature rather than deferring them to th
 - [ ] Add `kotlin.test` domain tests in `shared/src/commonTest/`, run through the supported JS/Node test target. Cover models, answer normalization, sessions, conversation transitions, scheduling, and save migrations.
 - [ ] Add storage/import adapter tests covering malformed JSON, quota/storage denial, unsupported schemas, interrupted/failed writes, and external-tab updates.
 - [ ] Add automated content checks and reviewed-content fixtures. Make missing/invalid lesson references or audio fail CI.
-- [ ] Use a small browser end-to-end harness for complete learning, keyboard/IME interaction, refresh/resume, backup/restore, and offline/update scenarios. Test production/static output, not only development mode.
+- [ ] Cover the learning/session sequence, checkpoint restoration, backup/restore and offline/update policy with pure state-machine and isolated adapter tests using fakes. Inspect production files statically. Do not add or run browser E2E, accessibility/keyboard/IME, screenshot, or other running-app interaction tests.
 - [ ] Verify the correct static build/export procedure for the installed Kobweb version. Replace or correct the current `reorganizeOutput` task so all nested content, audio, manifest, service worker, and route assets are included under the right base path.
 - [ ] Update `.github/workflows/firebase-deploy.yml` to build/test only the remaining modules and deploy the verified static artifact. Add appropriate automated test/content-check jobs.
-- [ ] Configure hosting cache headers for safe service-worker/update behaviour. Verify direct navigation to nested routes and missing-file handling.
+- [ ] Configure hosting cache headers for safe service-worker/update behaviour. Statically check route manifests, nested output paths and missing-file rules without launching the app or contacting deployed hosting.
 - [ ] Update Qodana configuration for the simplified module structure; retain only useful checks.
-- [ ] Rewrite `README.md`: purpose, architecture, prerequisites, one development command, tested build/test/static-preview commands, content authoring, backup limitations, and offline setup.
+- [ ] Rewrite `README.md`: purpose, architecture, prerequisites, development/static-preview commands for optional user use, verified CLI build/test commands, content authoring, backup limitations, and offline setup. Check launch-command configuration in source without starting the app; distinguish it from commands actually executed.
 - [ ] Document content/save schema changes and migrations, source/audio licences, optional-feature boundaries, and how to add a lesson without adding a service.
-- [ ] Verify current Chrome/Edge, Firefox, and Safari where available, including mobile layout. Document unsupported install/audio capabilities rather than hiding them.
+- [ ] Document browser-dependent install/audio capabilities and the lack of live-browser verification. Do not require browser/device matrices, mobile visual checks or user-performed testing.
 - [ ] Run the final release checklist below and record the actual commands/results; do not treat an unrun check as passing.
 
 ### Acceptance criteria
 
 - CI builds and tests without PostgreSQL, auth secrets, or Ollama.
 - A production artifact contains all core lessons and required static resources.
-- A complete first-visit → lesson → review → backup → offline reopen journey passes.
-- README commands match the implementation and a clean environment can reproduce them.
+- Domain/state-machine and isolated adapter scenarios cover first visit, lesson completion, review, backup round trip and offline/update policy without running the UI.
+- README commands match build configuration; recorded CLI build/test commands are reproducible. Development/preview instructions are documented but not claimed live-tested.
 
 ---
 
@@ -524,7 +540,7 @@ Build tests and accessibility into each feature rather than deferring them to th
 
 - [ ] Provide lightweight CLI templates/validation for new topics, dialogues, exercises, and audio references; avoid building a CMS.
 - [ ] Optionally use local AI to draft content outside the learner runtime.
-- [ ] Write generated output to `content-source/drafts/` with provenance, then require human review, stable IDs, validation, and explicit promotion to shipped content.
+- [ ] Write generated output to `content-source/drafts/` with provenance, then require documented agent content review, stable IDs, validation, and explicit promotion to shipped content. Human/native-speaker review is optional and never implied.
 - [ ] Keep authoring dependencies out of the production bundle and document rights/attribution checks.
 
 **Acceptance:** content can expand through reviewed repository files without introducing a backend or publishing unreviewed generated Japanese.
@@ -548,10 +564,10 @@ Build tests and accessibility into each feature rather than deferring them to th
 - [ ] Kana/katakana practice and all five workplace lessons are complete.
 - [ ] Guided conversation, self-assessed role-play, and spaced phrase review work.
 - [ ] Progress persists, corruption/storage failures are non-destructive, and backups round-trip.
-- [ ] Japanese input, furigana, mobile layout, keyboard focus, contrast, and no-audio learning are verified.
-- [ ] Production assets cache successfully; offline reopen and app updates preserve learning state.
-- [ ] Static hosting/base-path routes work; backend deployment and obsolete configuration are removed.
-- [ ] Automated tests/content checks pass, and README build/development instructions are reproduced.
+- [ ] Authored Japanese/ruby, responsive styles, retained input safeguards and text/no-audio fixtures are inspected in source; excluded UI/accessibility/keyboard tests are not release gates.
+- [ ] Production cache manifests and isolated offline/update-policy tests pass; no live offline-reopen result is claimed.
+- [ ] Static hosting/base-path output and configuration checks pass; backend deployment and obsolete repository configuration are removed once preservation prerequisites hold.
+- [ ] Non-interactive tests/content checks pass and README build/test commands are reproduced; development/preview instructions match configuration without launching the app.
 - [ ] Optional AI/recording features are not accidentally treated as core-release dependencies.
 
 ## Implementation discipline
@@ -562,4 +578,4 @@ Build tests and accessibility into each feature rather than deferring them to th
 4. Treat content review as release work, not a post-release cleanup task.
 5. Prefer reliable guided conversation over unreliable automatic grading.
 6. Do not add cloud services, telemetry, credentials, or new persistence engines without an explicit product decision.
-7. Update this plan's feature status and validation evidence as implementation proceeds.
+7. Update this plan's feature status and actual non-interactive validation evidence as implementation proceeds; use the autonomous policy above for every feature, not historical manual gates.
