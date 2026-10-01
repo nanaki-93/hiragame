@@ -150,6 +150,18 @@ class ContentFixtureTest {
         for (name in listOf("duplicate-key", "unknown-field", "unsupported-version", "malformed", "missing", "invalid-id", "blank", "unknown-enum")) {
             assertFailsWith<Exception>(name) { ContentCodec.decodeCatalog(fixture("catalog-$name.json")) }
         }
+        assertFailsWith<Exception>("catalog-out-of-range-content-version") {
+            ContentCodec.decodeCatalog(fixture("catalog-out-of-range-content-version.json"))
+        }
+        for (name in listOf("missing-phrases", "missing-review-items", "null-phrases", "null-review-items",
+                            "out-of-range-content-version", "out-of-range-duration")) {
+            assertFailsWith<Exception>("lesson-$name") { ContentCodec.decodeLesson(fixture("lesson-$name.json")) }
+        }
+        // Practice collections have defaults when absent, but an explicit null is not an empty collection.
+        for (field in listOf("phrases", "reviewItems")) {
+            val practice = fixture("practice-valid.json").replace("\"exercises\":", "\"$field\":null,\"exercises\":")
+            assertFailsWith<Exception>("practice-$field-null") { ContentCodec.decodePracticeSet(practice) }
+        }
         for (name in listOf("unknown-type", "incompatible")) {
             assertFailsWith<Exception>(name) { ContentCodec.decodePracticeSet(fixture("practice-$name.json")) }
         }
