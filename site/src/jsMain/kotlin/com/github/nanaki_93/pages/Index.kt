@@ -16,6 +16,9 @@ import com.github.nanaki_93.content.JapaneseText
 import com.github.nanaki_93.content.ProductionExercise
 import com.github.nanaki_93.content.ReadingExercise
 import com.github.nanaki_93.practice.Assessment
+import com.github.nanaki_93.practice.AuthoredFeedback
+import com.github.nanaki_93.practice.PracticeOutcome
+import com.github.nanaki_93.practice.ReadingExpectedAnswer
 import com.github.nanaki_93.practice.InvalidReason
 import com.github.nanaki_93.practice.PracticeAnswer
 import com.github.nanaki_93.practice.PracticeSession
@@ -114,17 +117,50 @@ fun HomePage() {
                             if (sets.isEmpty()) P { Text("No exercises are available. Reload to check again.") }
                             SecondaryButton("Reload practice", onClick = coordinator::load)
                         } else {
+                            // Commands capture the rendered identity/revision. The coordinator applies them
+                            // synchronously, so a second click from this render is stale and cannot advance.
+                            val send: (PracticeCommand) -> Unit = coordinator::dispatch
+                            SessionCounts(session)
                             when (val view = session.view) {
-                                is SessionView.Prompt -> PracticePrompt(session, view) { answer ->
-                                    coordinator.dispatch(PracticeCommand.Submit(session.id, session.revision, answer))
+                                is SessionView.Prompt -> PracticePrompt(session, view, send) { answer ->
+                                    send(PracticeCommand.Submit(session.id, session.revision, answer))
                                 }
-                                else -> {
-                                    H2 { Text("Practice session") }
-                                    P { Text("Session in progress. Feedback and navigation are shown in the next practice-surface step.") }
+                                is SessionView.Feedback -> {
+                                    PracticeFeedback(session, view.index, reviewing = false)
+                                    SecondaryButton("Retry this exercise", onClick = { send(PracticeCommand.Retry(session.id, session.revision)) })
+                                    if (view.index > 0) SecondaryButton("Previous resolved exercise", onClick = {
+                                        send(PracticeCommand.Previous(session.id, session.revision))
+                                    })
+                                    PrimaryButton(if (view.index == session.plan.lastIndex) "Complete session" else "Continue to next exercise", onClick = {
+                                        send(PracticeCommand.Continue(session.id, session.revision))
+                                    })
                                 }
+                                is SessionView.Review -> {
+                                    PracticeFeedback(session, view.index, reviewing = true)
+                                    if (view.index > 0) SecondaryButton("Previous resolved exercise", onClick = {
+                                        send(PracticeCommand.Previous(session.id, session.revision))
+                                    })
+                                    SecondaryButton("Next resolved exercise or return", onClick = {
+                                        send(PracticeCommand.Next(session.id, session.revision))
+                                    })
+                                    SecondaryButton("Return to current place", onClick = {
+                                        send(PracticeCommand.Return(session.id, session.revision))
+                                    })
+                                }
+                                SessionView.Complete -> {
+                                    H2 { Text("Session complete") }
+                                    P { Text("This summary is for this in-memory session only. Answers are not saved; it does not measure mastery or proficiency.") }
+                                    SecondaryButton("Review previous exercise", onClick = {
+                                        send(PracticeCommand.Previous(session.id, session.revision))
+                                    })
+                                }
+                                SessionView.Left -> Unit
                             }
+                            SecondaryButton("Restart session", onClick = {
+                                send(PracticeCommand.Restart(session.id, session.revision, session.id))
+                            })
                             SecondaryButton("Back to practice sets", onClick = {
-                                coordinator.dispatch(PracticeCommand.Leave(session.id, session.revision))
+                                send(PracticeCommand.Leave(session.id, session.revision))
                             })
                         }
                     }
@@ -145,7 +181,9 @@ internal fun promptAnswer(
 }
 
 @Composable
-private fun PracticePrompt(session: PracticeSession, view: SessionView.Prompt, submit: (PracticeAnswer) -> Unit) {
+private fun PracticePrompt(
+    session: PracticeSession, view: SessionView.Prompt, send: (PracticeCommand) -> Unit, submit: (PracticeAnswer) -> Unit,
+) {
     val exercise = session.plan[view.index].exercise
     // This composable leaves composition on feedback; retry or another exercise gets fresh drafts.
     var draft by remember(session.id, exercise.id) { mutableStateOf("") }
@@ -259,6 +297,93 @@ private fun PracticePrompt(session: PracticeSession, view: SessionView.Prompt, s
             if (answer == null) missingAssessment = true else submit(answer)
         })
     }
+    SecondaryButton("Skip this exercise", onClick = { send(PracticeCommand.Skip(session.id, session.revision)) })
+    SecondaryButton("Reveal answer and end attempt", onClick = { send(PracticeCommand.Reveal(session.id, session.revision)) })
+    if (view.index > 0) SecondaryButton("Previous resolved exercise", onClick = {
+        send(PracticeCommand.Previous(session.id, session.revision))
+    })
+}
+
+@Composable
+private fun SessionCounts(session: PracticeSession) {
+    val counts = session.counts
+    P { Text("Session outcomes · ${counts.completed} of ${session.plan.size} resolved: ${counts.correct} correct, ${counts.incorrect} incorrect, ${counts.skipped} skipped, ${counts.revealed} revealed, ${counts.selfAssessed} self-assessed.") }
+}
+
+/** The stored outcome is read-only in review; only the active feedback view offers Retry/Continue. */
+@Composable
+private fun PracticeFeedback(session: PracticeSession, index: Int, reviewing: Boolean) {
+    val outcome = session.outcomes[index] ?: return
+    H2 { Text(if (reviewing) "Review exercise ${index + 1} of ${session.plan.size}" else "Feedback · exercise ${index + 1} of ${session.plan.size}") }
+    val exercise = session.plan[index].exercise
+    P { Text(when (exercise) {
+        is ChoiceExercise -> exercise.prompt
+        is ReadingExercise -> exercise.prompt
+        is CompletionExercise -> exercise.prompt
+        is ProductionExercise -> exercise.prompt
+    }) }
+    if (exercise is CompletionExercise) P { Span(attrs = { attr("lang", "ja"); classes("practice-japanese") }) {
+        Text(exercise.template.replace("{blank}", "＿＿＿"))
+    } }
+    P { Text(when (outcome) {
+        is PracticeOutcome.Correct -> "Correct"
+        is PracticeOutcome.Incorrect -> "Not quite"
+        is PracticeOutcome.Skipped -> "Skipped · not correct"
+        is PracticeOutcome.Revealed -> "Revealed · not correct"
+        is PracticeOutcome.SelfAssessed -> when (outcome.assessment) {
+            Assessment.MET_CRITERIA -> "Self-assessed: met criteria (not automatically graded)"
+            Assessment.NEEDS_PRACTICE -> "Self-assessed: needs practice (not automatically graded)"
+        }
+    }) }
+    when (val feedback = outcome.feedback) {
+        is AuthoredFeedback.Choice -> {
+            P { Text("Correct option:") }
+            val option = feedback.correctOption
+            val japanese = option.text
+            if (japanese != null) JapaneseFeedbackText(japanese) else P { Text(option.label.orEmpty()) }
+            P { Text("Explanation: ${feedback.explanation}") }
+        }
+        is AuthoredFeedback.Reading -> {
+            P { Text("Reading stimulus:") }
+            JapaneseFeedbackText(feedback.stimulus)
+            for ((number, answer) in feedback.acceptedAnswers.withIndex()) {
+                P { Text("Accepted reading ${number + 1} (${feedback.representation.name.lowercase()}):") }
+                when (answer) {
+                    is ReadingExpectedAnswer.Kana -> JapaneseFeedbackText(answer.text)
+                    is ReadingExpectedAnswer.Romaji -> P { Text(answer.text) }
+                }
+            }
+            P { Text("Explanation: ${feedback.explanation}") }
+        }
+        is AuthoredFeedback.Completion -> {
+            for ((number, fill) in feedback.acceptedFills.withIndex()) {
+                P { Text("Accepted fill ${number + 1}:") }
+                JapaneseFeedbackText(fill)
+            }
+            P { Text("Completed example:") }
+            JapaneseFeedbackText(feedback.completedExample)
+            P { Text("Explanation: ${feedback.explanation}") }
+        }
+        is AuthoredFeedback.Production -> {
+            P { Text("Authored examples, not a unique correct answer:") }
+            for ((number, example) in feedback.examples.withIndex()) {
+                P { Text("${example.label} ${number + 1}:") }
+                JapaneseFeedbackText(example.text)
+            }
+            for ((number, criterion) in feedback.criteria.withIndex()) {
+                P { Text("${criterion.label} ${number + 1}: ${criterion.text}") }
+            }
+        }
+    }
+}
+
+@Composable
+private fun JapaneseFeedbackText(text: JapaneseText) {
+    P { JapanesePassage(text) }
+    // A label-only choice never passes through here; do not infer a reading or meaning.
+    P { Text("Reading: ${text.reading}") }
+    text.translation?.let { P { Text("Meaning: $it") } }
+    text.gloss?.let { P { Text("Gloss: $it") } }
 }
 
 /** Text nodes only: authored segments with readings become real ruby, never injected markup. */

@@ -139,6 +139,72 @@ class LocalPracticeCoordinatorTest {
         assertEquals(SessionView.Feedback(3), session().view)
     }
 
+    @Test fun feedbackNavigationIsExplicitGuardedAndReviewIsReadOnly() = runTest {
+        val coordinator = LocalPracticeCoordinator(this, BundledContentLoader(seedSource()))
+        coordinator.load()
+        runCurrent()
+        coordinator.start("practice-kana-a-i")
+        fun session() = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
+        val first = session()
+        val skip = PracticeCommand.Skip(first.id, first.revision)
+        coordinator.dispatch(skip)
+        coordinator.dispatch(skip) // duplicate action from the old render
+        assertEquals(SessionView.Feedback(0), session().view)
+        assertEquals(1, session().counts.skipped)
+        assertEquals(0, session().counts.correct)
+        val retry = PracticeCommand.Retry(session().id, session().revision)
+        coordinator.dispatch(retry)
+        coordinator.dispatch(retry)
+        assertEquals(SessionView.Prompt(0), session().view)
+        assertEquals(0, session().counts.completed)
+        val reveal = PracticeCommand.Reveal(session().id, session().revision)
+        coordinator.dispatch(reveal)
+        assertEquals(SessionView.Feedback(0), session().view)
+        assertEquals(1, session().counts.revealed)
+        assertEquals(0, session().counts.correct)
+        val advance = PracticeCommand.Continue(session().id, session().revision)
+        coordinator.dispatch(advance)
+        coordinator.dispatch(advance)
+        assertEquals(SessionView.Prompt(1), session().view)
+        coordinator.dispatch(PracticeCommand.Previous(session().id, session().revision))
+        val review = session()
+        assertEquals(SessionView.Review(0, SessionView.Prompt(1)), review.view)
+        coordinator.dispatch(PracticeCommand.Submit(review.id, review.revision, PracticeAnswer.Choice("option-kana-a")))
+        coordinator.dispatch(PracticeCommand.Retry(review.id, review.revision))
+        assertSame(review, session())
+        coordinator.dispatch(PracticeCommand.Next(review.id, review.revision))
+        assertEquals(SessionView.Prompt(1), session().view)
+        coordinator.dispatch(PracticeCommand.Submit(session().id, session().revision, PracticeAnswer.Text("i")))
+        assertEquals(SessionView.Feedback(1), session().view)
+        coordinator.dispatch(PracticeCommand.Previous(session().id, session().revision))
+        coordinator.dispatch(PracticeCommand.Return(session().id, session().revision))
+        assertEquals(SessionView.Feedback(1), session().view)
+        val finish = PracticeCommand.Continue(session().id, session().revision)
+        coordinator.dispatch(finish)
+        coordinator.dispatch(finish)
+        assertEquals(SessionView.Complete, session().view)
+        assertEquals(2, session().counts.completed)
+        coordinator.dispatch(PracticeCommand.Previous(session().id, session().revision))
+        val lastReview = session()
+        assertTrue(lastReview.isComplete)
+        assertEquals(SessionView.Review(1, SessionView.Complete), lastReview.view)
+        coordinator.dispatch(PracticeCommand.Previous(lastReview.id, lastReview.revision))
+        coordinator.dispatch(PracticeCommand.Next(session().id, session().revision))
+        coordinator.dispatch(PracticeCommand.Next(session().id, session().revision))
+        assertEquals(SessionView.Complete, session().view)
+        assertEquals(2, session().counts.completed)
+        val old = session()
+        val restart = PracticeCommand.Restart(old.id, old.revision, old.id)
+        coordinator.dispatch(restart)
+        coordinator.dispatch(restart)
+        assertTrue(session().id > old.id)
+        assertEquals(0, session().counts.completed)
+        coordinator.dispatch(PracticeCommand.Leave(old.id, old.revision))
+        assertEquals(SessionView.Prompt(0), session().view)
+        coordinator.dispatch(PracticeCommand.Leave(session().id, session().revision))
+        assertNull(assertIs<LocalPracticeState.Ready>(coordinator.state.value).session)
+    }
+
     @Test fun launcherStartsSelectedReviewedSetWithoutIdentityAndReloadClearsSession() = runTest {
         val seed = seed().content
         val original = seed.practiceSets.getValue("practice-kana-a-i")
@@ -187,7 +253,7 @@ class LocalPracticeCoordinatorTest {
             "userId", "login", "GameMode", "LevelListRequest", "GameStatistics", "delay(", "launchSafe")) {
             assertTrue(obsolete !in home, "Home still contains $obsolete")
         }
-        for (required in listOf("PracticePrompt(session, view)", "promptAnswer(exercise, selectedChoice, draft, assessment, exampleRevealed)",
+        for (required in listOf("PracticePrompt(session, view, send)", "promptAnswer(exercise, selectedChoice, draft, assessment, exampleRevealed)",
             "PracticeCommand.Submit(session.id, session.revision, answer)", "InputType.Radio", "InputType.Text",
             "TextArea(value = draft", "Legend {", "Label(attrs", "Input(type =", "attr(\"lang\", \"ja\")",
             "TagElement<HTMLElement>(\"ruby\"", "TagElement<HTMLElement>(\"rt\"", "remember(session.id, exercise.id)")) {
@@ -201,6 +267,22 @@ class LocalPracticeCoordinatorTest {
         assertTrue("P { JapanesePassage(example) }" in productionUi, "Authored example must be shown as Japanese text")
         for (unsafe in listOf("innerHTML", "unsafeHTML", "SearchableTextInput", "onKeyDown", "localStorage")) {
             assertTrue(unsafe !in home, "Home prompt contains unsafe or legacy behavior: $unsafe")
+        }
+        for (required in listOf("SessionCounts(session)", "PracticeFeedback(session, view.index, reviewing = false)",
+            "PracticeFeedback(session, view.index, reviewing = true)", "SessionView.Complete ->", "SessionView.Review ->",
+            "PracticeCommand.Skip(session.id, session.revision)", "PracticeCommand.Reveal(session.id, session.revision)",
+            "PracticeCommand.Continue(session.id, session.revision)", "PracticeCommand.Retry(session.id, session.revision)",
+            "PracticeCommand.Previous(session.id, session.revision)", "PracticeCommand.Next(session.id, session.revision)",
+            "PracticeCommand.Return(session.id, session.revision)", "PracticeCommand.Restart(session.id, session.revision, session.id)",
+            "PracticeCommand.Leave(session.id, session.revision)", "counts.skipped", "counts.revealed", "counts.selfAssessed",
+            "is AuthoredFeedback.Choice ->", "is AuthoredFeedback.Reading ->", "is AuthoredFeedback.Completion ->",
+            "is AuthoredFeedback.Production ->", "JapaneseFeedbackText(feedback.stimulus)", "JapaneseFeedbackText(feedback.completedExample)",
+            "text.translation?.let", "text.gloss?.let", "Session outcomes", "not saved", "not automatically graded")) {
+            assertTrue(required in home, "Home missing feedback/navigation feature $required")
+        }
+        val reviewUi = home.substringAfter("is SessionView.Review -> {").substringBefore("SessionView.Complete -> {")
+        for (forbidden in listOf("PracticeCommand.Submit(", "PracticeCommand.Retry(", "PracticeCommand.Continue(", "PracticeCommand.Skip(", "PracticeCommand.Reveal(")) {
+            assertTrue(forbidden !in reviewUi, "History must be read-only: $forbidden")
         }
         val styles = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/components/styles/JpStyles.kt"), "utf8") as String
         val practiceStyles = styles.substringAfter("registerStyleBase(\".practice-answer\")").substringBefore("registerStyleBase(\".practice-choice\")")
@@ -346,6 +428,45 @@ class LocalPracticeCoordinatorTest {
         assertTrue(fresh.id > before.id)
         coordinator.dispatch(command)
         assertSame(fresh, assertIs<LocalPracticeState.Ready>(coordinator.state.value).session)
+    }
+
+    @Test fun failedFeedbackNavigationRetainsOutcomeUntilExplicitRetryOrLeave() = runTest {
+        val valid = seed()
+        var fail = true
+        val coordinator = LocalPracticeCoordinator(this, { valid }, reducer = { state, command ->
+            if (fail && command is PracticeCommand.Continue) error("private navigation failure")
+            reduce(state, command)
+        })
+        coordinator.load()
+        runCurrent()
+        coordinator.start("practice-kana-a-i")
+        fun ready() = assertIs<LocalPracticeState.Ready>(coordinator.state.value)
+        val first = ready().session!!
+        coordinator.dispatch(PracticeCommand.Reveal(first.id, first.revision))
+        val feedback = ready().session!!
+        val advance = PracticeCommand.Continue(feedback.id, feedback.revision)
+        coordinator.dispatch(advance)
+        val error = ready().operationError!!
+        assertSame(feedback, ready().session)
+        assertEquals(1, ready().session!!.counts.revealed)
+        coordinator.dispatch(PracticeCommand.Leave(feedback.id, feedback.revision)) // blocked until retry or leave error
+        assertSame(feedback, ready().session)
+        fail = false
+        coordinator.retryOperation(error)
+        assertNull(ready().operationError)
+        assertEquals(SessionView.Prompt(1), ready().session!!.view)
+        coordinator.dispatch(advance) // old feedback action is stale
+        assertEquals(SessionView.Prompt(1), ready().session!!.view)
+        val next = ready().session!!
+        coordinator.dispatch(PracticeCommand.Skip(next.id, next.revision))
+        val lastFeedback = ready().session!!
+        fail = true
+        coordinator.dispatch(PracticeCommand.Continue(lastFeedback.id, lastFeedback.revision))
+        val lastError = ready().operationError!!
+        assertSame(lastFeedback, ready().session)
+        coordinator.leave(lastError)
+        assertNull(ready().session)
+        assertNull(ready().operationError)
     }
 
     @Test fun failedStartCanRetryAndLeaveAndRestartUsesCoordinatorIdentity() = runTest {
