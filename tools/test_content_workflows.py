@@ -1,4 +1,4 @@
-"""Static checks for the secret-free PR/push content gate (no CI YAML dependency)."""
+"""Static checks for content and in-job deployment gates (no CI YAML dependency)."""
 
 import re
 import unittest
@@ -6,6 +6,7 @@ from pathlib import Path
 
 
 WORKFLOW = Path(__file__).resolve().parent.parent / ".github/workflows/content-check.yml"
+DEPLOY_WORKFLOW = WORKFLOW.with_name("firebase-deploy.yml")
 EXPECTED_RUNS = [
     "cmp backend/migration/question.csv content-source/legacy/question.csv",
     "python3 tools/convert_legacy_content.py --input content-source/legacy/question.csv --topic-map content-source/topic-map.json --output content-source/drafts/legacy",
@@ -58,6 +59,59 @@ class ContentWorkflowTests(unittest.TestCase):
         self.assertNotRegex("\n".join(self.lines), r"(?i)\b(?:secrets|firebase|deploy|setup-node|docker|browser)\b")
         for run in runs:
             self.assertNotRegex(run, r"\|\||&&|;|\$\{|\$\(|`|\n")
+
+
+class FirebaseDeployWorkflowTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.source = DEPLOY_WORKFLOW.read_text(encoding="utf-8")
+        # All assertions below operate on the existing deploy job, not a separate job
+        # that could run asynchronously or be skipped by the deploy job.
+        cls.job = cls.source.split("jobs:\n  deploy:\n", 1)[1]
+        cls.steps = re.split(r"(?m)^      - name: ", cls.job)[1:]
+
+    def test_push_paths_cover_content_tools_sources_and_workflows(self):
+        trigger = self.source.split("jobs:\n", 1)[0]
+        self.assertIn("on:\n  push:\n    branches:\n      - main\n    paths:\n", trigger)
+        paths = re.findall(r"(?m)^      - '([^']+)'$", trigger)
+        self.assertEqual(set(paths), {
+            "site/**", "shared/**", "tools/**", "content-source/**",
+            "gradle/**", "gradlew", "gradle.properties", "build.gradle.kts",
+            "settings.gradle.kts", ".github/workflows/firebase-deploy.yml",
+            ".github/workflows/content-check.yml", "firebase.json",
+        })
+        self.assertEqual(len(paths), len(set(paths)))
+        self.assertNotRegex(trigger, r"(?m)^\s*(?:paths-ignore|branches-ignore):")
+
+    def test_gates_run_in_deploy_job_before_build_and_deployment(self):
+        names = [step.splitlines()[0] for step in self.steps]
+        self.assertEqual(names, [
+            "Checkout code", "Make gradlew executable", "Set up Python 3.11",
+            "Set up JDK 21", "Setup Gradle", "Test content tooling and workflow gates",
+            "Validate reviewed canonical content", "Test shared content on Node",
+            "Build project", "Deploy to Firebase",
+        ])
+        self.assertIn("uses: actions/setup-python@v5", self.steps[2])
+        self.assertIn("python-version: '3.11'", self.steps[2])
+        self.assertIn("uses: actions/setup-java@v5", self.steps[3])
+        self.assertIn("java-version: '21'", self.steps[3])
+        self.assertIn("uses: gradle/actions/setup-gradle@v5", self.steps[4])
+        for step, command in zip(self.steps[5:9], EXPECTED_RUNS[2:] + ["./gradlew site:build"]):
+            self.assertEqual(re.findall(r"(?m)^        run: (.+)$", step), [command])
+        self.assertIn("uses: FirebaseExtended/action-hosting-deploy@v0", self.steps[9])
+        self.assertIn("repoToken: '${{ secrets.GITHUB_TOKEN }}'", self.steps[9])
+        self.assertIn("firebaseServiceAccount: '${{ secrets.FIREBASE_TOKEN }}'", self.steps[9])
+        self.assertIn("channelId: live", self.steps[9])
+        self.assertIn("projectId: hiragame", self.steps[9])
+
+    def test_no_permissive_gates_or_shell_failure_masking(self):
+        self.assertNotRegex(self.job, r"(?m)^\s*(?:if|continue-on-error|needs|strategy):")
+        self.assertNotRegex(self.job, r"(?m)^\s*(?:run|shell):\s*[|>]\s*$")
+        runs = re.findall(r"(?m)^        run: (.+)$", self.job)
+        self.assertEqual(len(runs), 5)  # chmod, three gates, build
+        for run in runs:
+            self.assertNotRegex(run, r"\|\||&&|;|\$\{|\$\(|`")
+        self.assertNotRegex(self.job, r"(?m)^\s*continue-on-error\s*:")
 
 
 if __name__ == "__main__":
