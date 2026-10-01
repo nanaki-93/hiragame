@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Read-only structural validation of the version-one bundled content tree.
+"""Read-only structural and reference validation of the version-one bundled content tree.
 
-Cross-document references, review evidence and asset security are separate validation stages.
+Review evidence and asset security are separate validation stages.
 """
 import argparse
 import json
@@ -217,9 +217,106 @@ def local(document, location):
                 validate(node, NODES[kind], f'{location}.conversationGraph.nodes[{i}]')
                 if kind == 'choiceInteraction':
                     options = [t['optionId'] for t in node['transitions']]
-                    if not options or len(options) != len(set(options)):
-                        fail(f'{location}.conversationGraph.nodes[{i}].transitions', 'empty or duplicate transitions')
+                    if not options:
+                        fail(f'{location}.conversationGraph.nodes[{i}].transitions', 'nonterminal dead end: no option transitions')
+                    if len(options) != len(set(options)):
+                        fail(f'{location}.conversationGraph.nodes[{i}].transitions', 'duplicate option transitions')
             distinct(graph['nodes'], f'{location}.conversationGraph.nodes')
+
+
+def references(document, location):
+    """Resolve only document-owned IDs; an identical ID in another document is not a target."""
+    turns = document.get('dialogue', {}).get('turns', [])
+    speakers = {speaker['id'] for speaker in document.get('dialogue', {}).get('speakers', [])}
+    turn_ids = {turn['id'] for turn in turns}
+    phrases = {phrase['id'] for phrase in document.get('phrases', [])}
+    exercises = {exercise['id']: exercise for exercise in document['exercises']}
+    for i, turn in enumerate(turns):
+        if turn['speakerId'] not in speakers:
+            fail(f'{location}.dialogue.turns[{i}].speakerId', f'undeclared speaker {turn["speakerId"]}')
+    for i, phrase in enumerate(document.get('phrases', [])):
+        source = phrase.get('sourceTurnId')
+        if source is not None and source not in turn_ids:
+            fail(f'{location}.phrases[{i}].sourceTurnId', f'unknown local turn {source}')
+    for i, item in enumerate(document.get('reviewItems', [])):
+        targets = phrases if item['targetKind'] == 'phrase' else exercises
+        if item['targetId'] not in targets:
+            fail(f'{location}.reviewItems[{i}].targetId',
+                 f'unknown local {item["targetKind"]} {item["targetId"]}')
+
+    graph = document.get('conversationGraph')
+    if not graph:
+        return
+    base = f'{location}.conversationGraph'
+    nodes = {node['id']: (i, node) for i, node in enumerate(graph['nodes'])}
+    entry = graph['entryNodeId']
+    if entry not in nodes:
+        fail(f'{base}.entryNodeId', f'unknown local node {entry}')
+    edges = {}
+    for i, node in enumerate(graph['nodes']):
+        loc = f'{base}.nodes[{i}] ({node["id"]})'
+        kind = node['type']
+        if kind == 'prompt' and node['speakerId'] not in speakers:
+            fail(f'{loc}.speakerId', f'undeclared speaker {node["speakerId"]}')
+        if kind in ('choiceInteraction', 'completionInteraction'):
+            exercise = exercises.get(node['exerciseId'])
+            expected = 'choice' if kind == 'choiceInteraction' else 'completion'
+            if exercise is None or exercise['type'] != expected:
+                fail(f'{loc}.exerciseId', f'expected local {expected} exercise {node["exerciseId"]}')
+        if kind == 'choiceInteraction':
+            options = {option['id'] for option in exercise['options']}
+            transitions = node['transitions']
+            actual = {transition['optionId'] for transition in transitions}
+            for j, transition in enumerate(transitions):
+                if transition['optionId'] not in options:
+                    fail(f'{loc}.transitions[{j}].optionId', f'unknown option {transition["optionId"]}')
+            missing = options - actual
+            if missing:
+                fail(f'{loc}.transitions', f'missing option transitions: {", ".join(sorted(missing))}')
+            outgoing = [(transition['nextNodeId'], f'{loc}.transitions[{j}].nextNodeId')
+                        for j, transition in enumerate(transitions)]
+        elif kind == 'terminal':
+            outgoing = []
+        else:
+            outgoing = [(node['nextNodeId'], f'{loc}.nextNodeId')]
+        for target, edge_loc in outgoing:
+            if target not in nodes:
+                fail(edge_loc, f'unknown local node {target}')
+        edges[node['id']] = [target for target, _ in outgoing]
+
+    # Iterative three-color DFS: each node/edge is visited a bounded number of times.
+    # Inspect disconnected components too, so a hidden cycle cannot be masked by an
+    # unreachable-node diagnostic.
+    colors = {}
+    for start in [entry, *nodes]:
+        if start in colors:
+            continue
+        colors[start] = 1
+        stack = [(start, iter(edges[start]))]
+        while stack:
+            node_id, successors = stack[-1]
+            target = next(successors, None)
+            if target is None:
+                colors[node_id] = 2
+                stack.pop()
+            elif colors.get(target) == 1:
+                i, _ = nodes[node_id]
+                fail(f'{base}.nodes[{i}] ({node_id})', f'conversation graph cycle to {target}')
+            elif target not in colors:
+                colors[target] = 1
+                stack.append((target, iter(edges[target])))
+    seen = {entry}
+    pending = [entry]
+    while pending:
+        for target in edges[pending.pop()]:
+            if target not in seen:
+                seen.add(target)
+                pending.append(target)
+    for node_id, (i, _) in nodes.items():
+        if node_id not in seen:
+            fail(f'{base}.nodes[{i}] ({node_id})', 'unreachable node')
+    if not any(node['type'] == 'terminal' for _, node in nodes.values()):
+        fail(base, 'nonterminal dead end: no terminal path')
 
 
 def load(path, root):
@@ -242,9 +339,13 @@ def check(root):
         distinct(catalog.get(key, []), f'catalog.json:$.{key}')
     listed = {'catalog.json'}
     global_ids = {key: set() for key in ('phrases', 'exercises', 'reviewItems')}
+    topics = {topic['id'] for topic in catalog['topics']}
+    lessons = {}
     for i, entry in enumerate(catalog['entries']):
         name = entry['path']
         loc = f'catalog.json:$.entries[{i}] ({entry["id"]})'
+        if entry['topicId'] not in topics:
+            fail(f'{loc}.topicId', f'unknown topic {entry["topicId"]}')
         # Filesystem escape and symlink checks are added by the path-safety stage.
         if (Path(name).is_absolute() or '..' in Path(name).parts or '\\' in name or
                 '://' in name or not name.endswith('.json')):
@@ -263,12 +364,43 @@ def check(root):
             if document[key] != expected:
                 fail(f'{docloc}.{key}', f'mismatch: expected {expected!r}')
         local(document, docloc)
+        references(document, docloc)
+        if entry['kind'] == 'lesson':
+            lessons[entry['id']] = (document, docloc)
         for key, seen in global_ids.items():
             for j, item in enumerate(document.get(key, [])):
                 identifier = item['id']
                 if identifier in seen:
                     fail(f'{docloc}.{key}[{j}].id', f'duplicate catalog-wide {key} ID {identifier}')
                 seen.add(identifier)
+    # All entries are loaded before prerequisite resolution, so catalog ordering is irrelevant.
+    for lesson_id, (document, loc) in lessons.items():
+        for i, prerequisite in enumerate(document['prerequisiteLessonIds']):
+            field = f'{loc}.prerequisiteLessonIds[{i}]'
+            if prerequisite == lesson_id:
+                fail(field, f'self prerequisite {prerequisite}')
+            if prerequisite not in lessons:
+                fail(field, f'unknown bundled lesson prerequisite {prerequisite}')
+    colors = {}
+    for start in lessons:
+        if start in colors:
+            continue
+        colors[start] = 1
+        stack = [(start, iter(enumerate(lessons[start][0]['prerequisiteLessonIds'])))]
+        while stack:
+            lesson_id, prerequisites = stack[-1]
+            next_edge = next(prerequisites, None)
+            if next_edge is None:
+                colors[lesson_id] = 2
+                stack.pop()
+                continue
+            i, prerequisite = next_edge
+            if colors.get(prerequisite) == 1:
+                fail(f'{lessons[lesson_id][1]}.prerequisiteLessonIds[{i}]',
+                     f'prerequisite cycle to {prerequisite}')
+            if prerequisite not in colors:
+                colors[prerequisite] = 1
+                stack.append((prerequisite, iter(enumerate(lessons[prerequisite][0]['prerequisiteLessonIds']))))
     for path in sorted(root.rglob('*.json')):
         name = path.relative_to(root).as_posix()
         if name not in listed:
