@@ -1,8 +1,10 @@
 # F00 Adoption Report
 
-**Generated:** 2026-09-30 (Step 1.1 inventory; Step 1.2 presentation contracts; Steps 1.3–1.4 static validation tooling; Step 2.1 palette/type explorations; Step 2.2 selected semantic tokens).
+**Generated:** 2026-09-30 (Step 1.1 inventory; Step 1.2 presentation contracts; Steps 1.3–1.4 static validation tooling; Step 2.1 palette/type explorations; Step 2.2 selected semantic tokens). **Reconciled:** 2026-10-01 (current remaining-work Step 1.1; §6.4).
 
-**Status:** In progress; later approvals pending. Read-only validator/tests, retained palette/type explorations and locked P03/T02 semantic tokens exist. Palette/type selection is user-verified via task-6 attestation (§6.3). No shared components, screens or flows exist; no later task implemented.
+**Status:** In progress; downstream approvals pending. Inventory, contracts, coverage allocations, read-only validator/tests, retained explorations and locked **P03 — Phrase Press / T02 — Reading Desk** tokens exist. The project user's recorded selection is retained; the original task-6 attestation JSON is absent, with read-only corroboration from its `.json.bak` (§6.3). No shared components, Home alternatives, connected flows or persona mirrors exist. P-04/P-05/P-06 and Japanese review P-07 remain pending; no F00 completion claimed.
+
+**Chronology:** Original step numbers and dated evidence below describe the earlier workflow. Superseded inventory/selection statements are historical, not instructions to restart completed work. The remaining-work baseline and next step are recorded separately in §6.4; stable coverage IDs and approval fields are retained.
 
 **Scan boundary:** Existing frontend pages, widgets, styles, shell, and services specified by `.pi/PLAN.md`; module/hosting boundaries inspected read-only.
 
@@ -13,6 +15,8 @@
 ## 1. Inventory
 
 ### Instructions, scope, and evidence provenance
+
+**Historical initial-inventory baseline (2026-09-30):** the working-tree and absent-artifact observations below apply to that step, not today's selected-token tree. Current inspection is in §6.4.
 
 - Rechecked repository and ancestor directories `/`, `/Users`, `/Users/marcoandreose`, `/Users/marcoandreose/DEV`, `/Users/marcoandreose/DEV/lab`, including ignored target directories: no applicable `AGENTS.md` or repository `CLAUDE.md`. No project commit-rule conflict found. Convention installation is **not authorized**; no instruction file created.
 - No `.gitmodules` or declared Git submodules; `git submodule status` returned no entries. `settings.gradle.kts:32–34` includes `:site`, `:shared`, `:backend`; these module boundaries remain intact.
@@ -366,7 +370,7 @@ For C-54 every introduced primitive must showcase every applicable state, not ju
 
 ### SPEC 3.1–3.3 comparison (Step 1.2 document verification)
 
-Compared the conceptual contracts and **every C-01–C-56 row** with `.pi/SPEC.md` §§3.1–3.3 and the cumulative task-2 checklist. This checks planned coverage, not rendered behavior or fulfilled approvals.
+**Historical comparison (2026-09-30, before tooling/visual selection):** compared the conceptual contracts and **every C-01–C-56 row** with the then-current `.pi/SPEC.md` §§3.1–3.3 and cumulative task-2 checklist. The “not implemented/selected” and “all still pending” results below describe that earlier baseline; tooling, explorations and P-03 selection now exist (§6.3–6.4). Downstream artifacts/approvals remain pending. This checks planned coverage, not rendered behavior or fulfilled approvals.
 
 | SPEC requirement | Contract / allocated coverage | Comparison result |
 |---|---|---|
@@ -410,6 +414,8 @@ Every row is **planned, uncreated; findings pending Step 4.5**. Planned mirror d
 No mirror opt-out has been provided; no current accessibility exclusion has been browser-verified.
 
 ## 6. Validation evidence ledger
+
+**Historical evidence:** dated results and original step numbers in V-01–V-17 are retained from the earlier workflow, not fresh reruns. In particular, V-07's then-pending selected-token evidence was subsequently recorded in §6.3; component evidence remains pending. Current baseline commands/results are separately recorded in §6.4.
 
 | Evidence ID | Check / planned evidence location | Current result | Owner |
 |---|---|---|---|
@@ -485,11 +491,13 @@ Browser JavaScript recomputation returned **144 rows; 6 below threshold; 0 preco
 
 Checks for mobile/200% zoom, actual IME, screen readers, network/storage panels, components/dialogs and connected journeys remain their later-task obligations; no attestation or user approval was supplied. Palette/type exploration does not satisfy them.
 
-**Pending P-03 questions:** choose P01/P02/P03 or specify an exact hybrid; choose T01/T02 or specify which body/heading/UI stacks to combine. Provide reviewer/date, theme preference, density and conditions. Confirm fallback comfort on the reviewer's device. No direction is marked selected, no `tokens.css` exists, and no subsequent task is implemented. F00 remains in progress.
+**Historical pending P-03 questions (superseded by §6.3):** choose P01/P02/P03 or specify an exact hybrid; choose T01/T02 or specify which body/heading/UI stacks to combine. Provide reviewer/date, theme preference, density and conditions. Confirm fallback comfort on the reviewer's device. At the end of Step 2.1, no direction was marked selected, no `tokens.css` existed, and no subsequent task was implemented. Selection and token locking have since completed; F00 remains in progress.
 
 ### 6.3 Step 2.2 selection, token lock and validation
 
 **Prerequisite / human evidence:** project user selected **T02 — Reading Desk** and **P03 — Phrase Press**. Exact statement: “T02 for the typography, P03 — Phrase Press for the palette”. Runner recorded this at **2026-09-30T23:10:40.640Z** for task 6 / source HEAD `81637daf628f56cb483ab7658013dfa706468640` in `.pi/workflows/2026-09-30T17-59-08-200Z-ropQPn/manual-attestation-task-6.json`. Reviewer attribution is the **project user**; no personal name, additional conditions, trimming permission, component/journey approval or language review was supplied. Selection is **user-verified**, not an agent-performed manual observation. Both selected artifact comments and the tokens header record this provenance.
+
+**Provenance limitation, rechecked 2026-10-01:** the cited original `manual-attestation-task-6.json` is absent. Read-only inspection of `.pi/workflows/2026-09-30T17-59-08-200Z-ropQPn/manual-attestation-task-6.json.bak` corroborates the exact statement, timestamp, task 6 and source HEAD above. This preserves the recorded project-user selection; it is not a fresh approval of the current HEAD or agent-performed observation. No workflow file was restored or edited.
 
 Rechecked the first incomplete task (2.2), cumulative task-6 checklist (no previous findings), working tree and applicable ancestor/root/target instructions; no AGENTS.md found. No interrupted token work existed. Loaded palette/principles and token vocabulary, token template and preview references. Only the four Step 2.2 target files changed. Pre-existing IDE, workflow and Python-cache files remain untouched. No convention installation, production changes, staging or commit performed in this execution step.
 
@@ -507,9 +515,27 @@ Theme mechanism is explicit `[data-theme="light"]` / `[data-theme="dark"]` on ro
 
 Script evidence is `/tmp/hiragame-task6-verify.py` (execution artifact, not a new repository tool); its calculations use the current on-disk tokens and authored preview rows. No new browser/manual observation is claimed for Step 2.2; selected values are compared programmatically. Step 2.1 browser/capture evidence remains historical (§6.2), not evidence that the new reference panes were visually inspected. User attestation satisfies selection only. Required Step 2.2 automated checks ran; responsive, component, dialog, IME and journey checks remain later-task obligations.
 
+### 6.4 Selected-token baseline reconciliation
+
+**Current remaining-work Step 1.1, 2026-10-01:** confirmed the first top-level incomplete task in `.pi/PLAN.md` matches the runner and read the complete task-1 review checklist (no previous findings). This is a status reconciliation, not a repeat inventory or visual exploration. Loaded adopt/principles and their scan-detectors, report-template, mode-propagation, installer, UX-laws, cross-discipline and shared-chrome references. Scope supplies the continuation boundary; no convention installation is authorized.
+
+- Rechecked ancestor directories through `/`, root and all repository directories with `find`, including ignored `.mockups/` targets: no applicable `AGENTS.md` found. `git submodule status` returned no entries; no commit-rule conflict found. An initial broad sibling-directory search timed out; the bounded repository/ancestor recheck completed successfully.
+- `git status --short` before edits: pre-existing modified `.idea/data_source_mapping.xml`, untracked `.pi/` and `tools/__pycache__/`. No interrupted target edits found. `git diff --name-status` and `git ls-files --others --exclude-standard` enumerated this state; workflow/cache files were not edited.
+- `find .mockups -type f -print` found exactly this report plus `design-system/palette.html`, `typography.html`, `tokens.css`. Token header and preview selection comments agree on P03/T02, attribution, timestamp and source HEAD. Components/CSS, Home alternatives, connected journeys and M-01–M-11 mirrors remain uncreated. Coverage/fixture allocations C-01–C-56 and pending approval fields are unchanged.
+- Before editing: `python3 -m unittest discover -s tools -p 'test_validate_mockups.py'` — **51 tests, OK**; `python3 tools/validate_mockups.py .mockups --stage tokens` — **static checks passed**; `git diff --check` — **passed**. Historical browser/contrast evidence in §§6.2–6.3 was not rerun; no fresh browser, IME, contrast or accessibility observation is claimed. Token-stage success is not complete-stage coverage or human approval.
+- Changes are limited to this report and root `PLAN.md` within F00. Selected CSS and both explorations remain unchanged. Non-target tracked-file and non-F00 PLAN preservation are checked against `/tmp/hiragame-f00-reconcile-baseline.json` (temporary execution evidence, not a repository deliverable). Post-edit verification results are recorded below.
+
+**Post-edit verification (2026-10-01):**
+
+- `python3 -m unittest discover -s tools -p 'test_validate_mockups.py'` — **51 tests, OK**; `python3 tools/validate_mockups.py .mockups --stage tokens` — **static checks passed**.
+- `git diff --check` — **passed**. `git diff --name-status` — this report and root `PLAN.md`, plus the pre-existing IDE change only. `git ls-files --others --exclude-standard` — **177 paths enumerated** at this check, exclusively pre-existing `.pi/` and `tools/__pycache__/` categories; enumeration saved to `/tmp/hiragame-f00-reconcile-untracked.txt`.
+- Python stdin SHA-256/document comparison against the pre-edit snapshot — **passed**: all **101 non-target tracked files** unchanged, including selected tokens/explorations, production and the IDE file; non-F00 PLAN content and F00 task/acceptance text unchanged; coverage ledger/fixture registry, mirror allocations and approval table unchanged; exact four-file artifact inventory confirmed. Token/preview hashes also match the pre-edit `shasum -a 256 .mockups/design-system/*` output.
+
+**Next missing work:** basic shared components (current remaining-work Step 2.1), followed by learning primitives and safe dialogs. Obtain attributable P-04 approval of the completed showcase/CSS before Home composition, P-05 selection before connected flows and P-06 approval before F00 completion. P-07 language review remains pending. REIMAGINE remains a recommendation, not fabricated mode approval. No later-task implementation or approval is supplied by this reconciliation.
+
 ## 7. Approval ledger
 
-P-03 selection was supplied by the project user via runner attestation (§6.3). Other gates remain pending; automated success cannot fill human approval fields.
+P-03 selection was supplied by the project user via the retained runner-attestation record, with the original-file limitation disclosed in §6.3. Other gates remain pending; automated success cannot fill human approval fields.
 
 | Gate | Exact decision/artifact required | Current status / workflow boundary |
 |---|---|---|
