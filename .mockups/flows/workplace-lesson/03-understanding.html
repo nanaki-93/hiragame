@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>F00 · Understanding — clarification</title>
+<link rel="stylesheet" href="../../design-system/tokens.css"><link rel="stylesheet" href="../../design-system/components.css">
+<style>
+.review-strip { padding: var(--space-3) var(--space-4); background: var(--color-bg-inverse); color: var(--color-text-inverse); font: var(--font-size-sm)/var(--line-height-base) var(--font-ui); }
+.review-strip a { color: var(--color-text-inverse); }
+.review-links, .stage-links { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.review-links { padding: var(--space-4); border-bottom: 1px solid var(--color-border); }
+.shell { max-width: 850px; margin: auto; padding: var(--space-6); min-width: 0; }
+.stage-links { justify-content: space-between; margin-block: var(--space-4); }
+.scenario { margin-block: var(--space-6); }
+.choice-list { display: grid; gap: var(--space-3); }
+@media (max-width: 700px) { .shell { padding: var(--space-4); } }
+</style></head>
+<body><header class="review-strip"><strong>Simulated mock review · Understanding</strong> · <a href="index.html">Lesson navigator</a></header>
+<aside class="review-links" aria-label="Understanding reviewer scenarios"><span>Predefined fixture snapshots (not learner answers):</span><a href="#understanding-choice">Choice</a><a href="#understanding-correct">Correct</a><a href="#understanding-incorrect">Incorrect</a></aside>
+<main class="shell"><header><p class="learning-id">HIRAGAME / WORKPLACE JAPANESE</p><h1>Understanding · check the intent</h1><nav class="stage-links" aria-label="Lesson navigation"><a href="02-dialogue.html#lesson-dialogue">← Dialogue</a><span>Stage 3 of 6 · Understanding</span><span aria-disabled="true">Next: Guided Practice · pending</span></nav><ol class="stage-track" aria-label="Lesson stages"><li class="stage-track__step stage-track__step--done"><a href="01-situation.html#lesson-situation">1 · Situation · revisit</a></li><li class="stage-track__step stage-track__step--done"><a href="02-dialogue.html#lesson-dialogue">2 · Dialogue · revisit</a></li><li class="stage-track__step" aria-current="step">3 · Understanding</li><li class="stage-track__step">4 · Guided Practice · pending</li><li class="stage-track__step">5 · Role-play · pending</li><li class="stage-track__step">6 · Summary · pending</li></ol><p><a href="../learning-hub/01-home.html">Leave lesson → Home</a> · <a href="../learning-hub/02-topics.html#topics-catalog">Leave lesson → Topics</a></p></header>
+<p class="learning-note">An agent-authored design example, not approved curriculum. Choose what the engineer means after the colleague explains asynchronous processing. No timer clears feedback or advances the stage. This is a page-local attempt: links carry only fixture identity, not your answer, and no progress is saved. Without JavaScript all three static panels remain readable; the submit control stays disabled. An unknown fragment shows the choice when JavaScript is available.</p>
+<!-- Static fixture panels are readable without script. Script selects one panel; reviewer links are not submissions. -->
+<section class="scenario" id="understanding-choice" data-fixture="understanding-choice" data-coverage="C-11 C-19"><div class="card"><h2>Why does the engineer say this?</h2><p>The colleague said the process runs asynchronously and its result can be checked later. The engineer responds:</p><div class="transcript"><p class="transcript__ja" lang="ja">つまり、この<ruby>処理<rt>しょり</rt></ruby>は<ruby>非同期<rt>ひどうき</rt></ruby>で<ruby>実行<rt>じっこう</rt></ruby>されるということですね。</p><p class="transcript__translation">So, this means the process runs asynchronously, right?</p></div><fieldset aria-describedby="choice-guidance"><legend>What is the engineer doing?</legend><div class="choice-list"><label class="choice"><input type="radio" name="intent" value="correct"> Restating the interpretation and inviting the colleague to confirm it.</label><label class="choice"><input type="radio" name="intent" value="certain"> Declaring that the engineer knows the explanation is certainly correct.</label><label class="choice"><input type="radio" name="intent" value="faster"> Asking the colleague to make the process run faster.</label></div></fieldset><p class="learning-note" id="choice-guidance">Select one meaning, then submit once. Answer choices are not a Japanese writing grade.</p><button class="btn btn-primary" type="button" id="submit-intent" disabled>Check interpretation</button><noscript><p class="alert">JavaScript is off: submission is unavailable, but <a href="#understanding-correct">the correct explanation</a> and <a href="#understanding-incorrect">the incorrect explanation</a> are readable snapshots. No attempt is recorded.</p></noscript></div></section>
+<section class="scenario" id="understanding-correct" data-fixture="understanding-correct" data-coverage="C-11"><div class="guided-feedback alert alert--success"><h2 tabindex="-1">Correct · checking an interpretation</h2><p><strong>The engineer paraphrases what was heard and invites confirmation.</strong> <span lang="ja">つまり</span> introduces the restatement; <span lang="ja">ということですね</span> checks whether that interpretation matches the colleague’s explanation. The colleague replies <span lang="ja">はい、そのとおりです。</span> (“Yes, that's right.”)</p><p>This does not claim certainty before the colleague answers, nor ask for faster execution. Feedback stays here until you explicitly choose a path. A second submission cannot change this attempt.</p><div class="learning-actions"><a class="btn btn-primary" href="index.html#guided-practice-pending">Continue to Guided Practice handoff →</a><button class="btn" type="button" data-new-attempt>Try a new page-local attempt</button><a href="02-dialogue.html#lesson-dialogue">Revisit Dialogue</a></div><p class="learning-note">Stage 4 is not authored yet; Continue opens the lesson map’s pending handoff, not a fabricated practice page. Once Stage 4 exists this link can point there.</p></div></section>
+<section class="scenario" id="understanding-incorrect" data-fixture="understanding-incorrect" data-coverage="C-11"><div class="guided-feedback alert alert--warning"><h2 tabindex="-1">Not quite · the engineer is checking meaning</h2><p><span id="incorrect-selection">If you chose “certainly correct,” the engineer has not yet received confirmation.</span> <span lang="ja">ということですね</span> invites the colleague to check the interpretation.</p><p>If you chose “make the process faster,” the colleague described <em>when</em> the process runs and when the result can be checked, not a request to speed it up.</p><p>The intended meaning is: “So, this means the process runs asynchronously, right?” The colleague then confirms it with <span lang="ja">はい、そのとおりです。</span> This explanation stays visible until you explicitly continue or start a new attempt; a second submission cannot change the result.</p><div class="learning-actions"><a class="btn btn-primary" href="index.html#guided-practice-pending">Continue to Guided Practice handoff →</a><button class="btn" type="button" data-new-attempt>Try a new page-local attempt</button><a href="02-dialogue.html#lesson-dialogue">Revisit Dialogue</a></div><p class="learning-note">Stage 4 is pending. Continue opens its place in the map, not a practice result. The fixture link above can be opened directly without submitting.</p></div></section>
+</main><footer class="shell"><a href="index.html">Lesson reviewer map</a> · <a href="../learning-hub/01-home.html">Leave lesson</a></footer>
+<script>
+const panels = [...document.querySelectorAll('main [data-fixture]')];
+const radios = [...document.querySelectorAll('input[name="intent"]')];
+const submit = document.getElementById('submit-intent');
+const incorrectSelection = document.getElementById('incorrect-selection');
+const defaultIncorrectSelection = incorrectSelection.textContent;
+let submitted = false;
+let result = '';
+function showScenario() {
+  let selected = panels.find(panel => '#' + panel.id === location.hash) || panels[0];
+  // Reviewer snapshots cannot replace a submitted result within this page-local attempt.
+  if (submitted) selected = document.getElementById(result);
+  for (const panel of panels) panel.hidden = panel !== selected;
+  for (const link of document.querySelectorAll('.review-links a')) {
+    if (link.hash === '#' + selected.id) link.setAttribute('aria-current', 'true');
+    else link.removeAttribute('aria-current');
+  }
+}
+radios.forEach(radio => radio.addEventListener('change', () => { submit.disabled = submitted || !radios.some(item => item.checked); }));
+submit.addEventListener('click', () => {
+  const picked = radios.find(item => item.checked);
+  if (submitted || !picked) return;
+  submitted = true; // lock synchronously before changing the fragment or showing feedback
+  result = picked.value === 'correct' ? 'understanding-correct' : 'understanding-incorrect';
+  submit.disabled = true;
+  radios.forEach(item => item.disabled = true);
+  incorrectSelection.textContent = picked.value === 'faster'
+    ? 'You chose “make the process faster.” The engineer is checking the interpretation, not asking for a speed change.'
+    : 'You chose “certainly correct.” The engineer has not yet received confirmation.';
+  location.hash = result;
+  showScenario();
+  document.querySelector('#' + result + ' h2').focus();
+});
+document.querySelectorAll('[data-new-attempt]').forEach(button => button.addEventListener('click', () => {
+  submitted = false;
+  result = '';
+  incorrectSelection.textContent = defaultIncorrectSelection;
+  radios.forEach(item => { item.checked = false; item.disabled = false; });
+  submit.disabled = true;
+  location.hash = 'understanding-choice';
+  showScenario();
+  radios[0].focus();
+}));
+window.addEventListener('hashchange', showScenario);
+showScenario();
+</script></body></html>
