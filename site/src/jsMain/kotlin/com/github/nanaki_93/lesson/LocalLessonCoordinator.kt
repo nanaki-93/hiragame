@@ -8,7 +8,13 @@ import com.github.nanaki_93.content.ContentHttpException
 import com.github.nanaki_93.content.DocumentKind
 import com.github.nanaki_93.content.EmptyContentReason
 import com.github.nanaki_93.content.Lesson
+import com.github.nanaki_93.progress.LessonStage
+import com.github.nanaki_93.progress.SaveProblem
+import com.github.nanaki_93.progress.completeLesson
+import com.github.nanaki_93.progress.visitLesson
 import com.github.nanaki_93.storage.LocalProgressOwner
+import com.github.nanaki_93.storage.PersistenceStatus
+import com.github.nanaki_93.storage.ProgressMutationResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -24,9 +30,13 @@ sealed interface LocalLessonState {
     data object Loading : LocalLessonState
     data class Entry(val lesson: Lesson, val checkpoint: LessonCheckpointResolution,
                      val operationError: LessonOperationError? = null) : LocalLessonState
-    data class RecoveryRequired(val lesson: Lesson, val checkpoint: LessonCheckpointResolution.Incompatible) : LocalLessonState
+    data class RecoveryRequired(val lesson: Lesson, val checkpoint: LessonCheckpointResolution.Incompatible,
+                                val operationError: LessonOperationError? = null) : LocalLessonState
     data class Active(val lesson: Lesson, val session: LessonSession,
-                      val operationError: LessonOperationError? = null) : LocalLessonState
+                      val operationError: LessonOperationError? = null,
+                      val commit: LessonCommit? = null,
+                      /** True only after Finish was accepted in this run, not merely on Summary entry. */
+                      val finished: Boolean = false) : LocalLessonState
     data class Missing(val requestedId: String) : LocalLessonState
     data class Empty(val reason: LessonEmptyReason) : LocalLessonState
     data class Error(val kind: LessonLoadErrorKind, val safeMessage: String) : LocalLessonState
@@ -36,6 +46,12 @@ enum class LessonEmptyReason { EMPTY_CATALOG, NO_LESSONS }
 enum class LessonLoadErrorKind { CONTENT, HTTP, UNEXPECTED, CANCELLED }
 data class LessonOperationError(val safeMessage: String, val token: Long)
 
+/** A rejected bounded update never becomes saved progress, even if the transient session advances. */
+sealed interface LessonCommit {
+    data class Accepted(val status: PersistenceStatus) : LessonCommit
+    data class Rejected(val reason: SaveProblem) : LessonCommit
+}
+
 /** Runtime identities are never reused after a reload, even when the saved snapshot compares equal. */
 private var nextLessonRuntimeId = 1L
 private fun lessonRuntimeId(): Long {
@@ -43,9 +59,7 @@ private fun lessonRuntimeId(): Long {
     return nextLessonRuntimeId++
 }
 
-/** One requested catalog lookup and at most one transient session. The owner alone owns saved state.
- * Commit/persistence wiring for accepted actions is added in Step 2.5.
- */
+/** One requested catalog lookup and at most one transient session. The owner alone owns saved state. */
 class LocalLessonCoordinator(
     private val scope: CoroutineScope,
     private val progress: LocalProgressOwner,
@@ -74,6 +88,8 @@ class LocalLessonCoordinator(
     private sealed interface LessonOperation {
         data object Start : LessonOperation
         data object Resume : LessonOperation
+        data object Recover : LessonOperation
+        data class Finish(val sessionId: Long, val revision: Long) : LessonOperation
         data class Dispatch(val command: LessonCommand) : LessonOperation
     }
 
@@ -191,10 +207,13 @@ class LocalLessonCoordinator(
         }
     }
 
-    /** Entry actions in this step only create runtime state; Step 2.5 commits Start and transitions. */
     fun start() = perform(LessonOperation.Start)
+    /** Resolving a saved place and opening its prompt never rewrites the save. */
     fun resume() = perform(LessonOperation.Resume)
+    fun recoverToSituation() = perform(LessonOperation.Recover)
     fun dispatch(command: LessonCommand) = perform(LessonOperation.Dispatch(command))
+    /** Captured Summary identity/revision; repeat Finish for this run is a no-op. */
+    fun finish(sessionId: Long, revision: Long) = perform(LessonOperation.Finish(sessionId, revision))
 
     fun retryOperation(error: LessonOperationError) {
         if (disposed) return
@@ -202,6 +221,7 @@ class LocalLessonCoordinator(
         val current = mutableState.value
         val shown = when (current) {
             is LocalLessonState.Entry -> current.operationError
+            is LocalLessonState.RecoveryRequired -> current.operationError
             is LocalLessonState.Active -> current.operationError
             else -> null
         }
@@ -227,6 +247,7 @@ class LocalLessonCoordinator(
         val error = when (current) {
             is LocalLessonState.Entry -> current.operationError
             is LocalLessonState.Active -> current.operationError
+            is LocalLessonState.RecoveryRequired -> current.operationError
             else -> return
         }
         if (error != null && (!retrying || pending != operation)) return
@@ -242,6 +263,15 @@ class LocalLessonCoordinator(
                     val restored = resumeLessonSession(lessonRuntimeId(), entry.lesson, available.record)
                     (restored as? LessonResumeResult.Available)?.session ?: return
                 }
+                LessonOperation.Recover -> startLessonSession(lessonRuntimeId(),
+                    (current as? LocalLessonState.RecoveryRequired)?.lesson ?: return)
+                is LessonOperation.Finish -> {
+                    val active = current as? LocalLessonState.Active ?: return
+                    if (active.finished || active.session.id != operation.sessionId ||
+                        active.session.revision != operation.revision || active.session.stage != LessonStage.SUMMARY ||
+                        active.session.left) return
+                    active.session
+                }
                 is LessonOperation.Dispatch -> {
                     val active = current as? LocalLessonState.Active ?: return
                     val command = operation.command
@@ -253,14 +283,34 @@ class LocalLessonCoordinator(
             // Owner generation may change synchronously inside an injected reducer or initializer.
             reconcileOwner()
             if (disposed || !progress.isCurrentGeneration(ownerGeneration) || mutableState.value !== current) return
-            pending = null
             if (operation is LessonOperation.Dispatch && next === current.sessionOrNull()) return
+            val lesson = when (current) {
+                is LocalLessonState.Entry -> current.lesson
+                is LocalLessonState.RecoveryRequired -> current.lesson
+                is LocalLessonState.Active -> current.lesson
+                else -> return
+            }
+            // Sample time before entering the owner. A clock callback can itself replace the owner.
+            val shouldCommit = !next.left && operation != LessonOperation.Resume &&
+                !(operation is LessonOperation.Dispatch && operation.command is LessonCommand.Submit && next.validation != null)
+            val timestamp = if (shouldCommit) now() else null
+            reconcileOwner()
+            if (disposed || !progress.isCurrentGeneration(ownerGeneration) || mutableState.value !== current) return
+            // Only a changed, committed cursor/action is saved. Invalid input and Leave are local.
+            val commit = when {
+                next.left || operation == LessonOperation.Resume -> null
+                operation is LessonOperation.Finish -> save { completeLesson(it, lesson.id, lesson.contentVersion, timestamp!!) }
+                !shouldCommit -> null
+                else -> save { visitLesson(it, lesson.id, lesson.contentVersion,
+                    next.stage, next.checkpointId, timestamp!!) }
+            }
+            reconcileOwner() // The owner may be replaced synchronously during mutate.
+            if (disposed || !progress.isCurrentGeneration(ownerGeneration) || mutableState.value !== current) return
+            pending = null
             mutableState.value = if (next.left) content?.let(::projectEntry) ?: LocalLessonState.Loading
-                else LocalLessonState.Active(when (current) {
-                    is LocalLessonState.Entry -> current.lesson
-                    is LocalLessonState.Active -> current.lesson
-                    else -> return
-                }, next)
+                else LocalLessonState.Active(lesson, next, commit = commit,
+                    finished = (current as? LocalLessonState.Active)?.finished == true ||
+                        (operation is LessonOperation.Finish && commit is LessonCommit.Accepted))
         } catch (e: CancellationException) {
             throw e
         } catch (_: Exception) {
@@ -270,6 +320,7 @@ class LocalLessonCoordinator(
             val failure = LessonOperationError("Unable to complete this lesson action. Retry or return to Topics.", ++errorToken)
             mutableState.value = when (current) {
                 is LocalLessonState.Entry -> current.copy(operationError = failure)
+                is LocalLessonState.RecoveryRequired -> current.copy(operationError = failure)
                 is LocalLessonState.Active -> current.copy(operationError = failure)
                 else -> return
             }
@@ -277,6 +328,13 @@ class LocalLessonCoordinator(
     }
 
     private fun LocalLessonState.sessionOrNull(): LessonSession? = (this as? LocalLessonState.Active)?.session
+
+    private fun save(update: (com.github.nanaki_93.progress.SaveEnvelope) -> com.github.nanaki_93.progress.ProgressUpdate): LessonCommit =
+        when (val result = progress.mutate(update)) {
+            ProgressMutationResult.Accepted, ProgressMutationResult.Unchanged ->
+                LessonCommit.Accepted(progress.state.value.status)
+            is ProgressMutationResult.Rejected -> LessonCommit.Rejected(result.reason)
+        }
 
     fun dispose() {
         if (disposed) return

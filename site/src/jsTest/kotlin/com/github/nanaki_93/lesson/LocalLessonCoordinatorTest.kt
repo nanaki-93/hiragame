@@ -6,9 +6,15 @@ import com.github.nanaki_93.content.CatalogLoad
 import com.github.nanaki_93.content.ContentHttpException
 import com.github.nanaki_93.content.ContentTextSource
 import com.github.nanaki_93.progress.LessonProgress
+import com.github.nanaki_93.progress.ReviewItemProgress
+import com.github.nanaki_93.progress.ReviewOutcome
+import com.github.nanaki_93.storage.PersistenceStatus
+import com.github.nanaki_93.storage.StoreFailure
+import com.github.nanaki_93.progress.SaveProblem
 import com.github.nanaki_93.progress.LessonStage
 import com.github.nanaki_93.progress.ProgressUpdate
 import com.github.nanaki_93.storage.LocalProgressOwner
+import com.github.nanaki_93.storage.MemoryProgressBacking
 import com.github.nanaki_93.storage.MemoryProgressStore
 import com.github.nanaki_93.storage.ProgressStore
 import com.github.nanaki_93.storage.StoreReadResult
@@ -55,6 +61,193 @@ class LocalLessonCoordinatorTest {
     private fun record(stage: LessonStage, item: String? = null) = LessonProgress("one", 99, 1000L, stage, item)
     private fun put(owner: LocalProgressOwner, record: LessonProgress) {
         owner.mutate { ProgressUpdate.Applied(it.copy(lessonProgress = listOf(record))) }
+    }
+
+    @Test fun startNavigationAndFinishCommitOnlyGuardedActions() = runTest {
+        val store = CountingStore()
+        val progress = owner(store)
+        val coordinator = LocalLessonCoordinator(this, progress, loader()::load, now = { 2000L })
+        coordinator.load("one")
+        runCurrent()
+        coordinator.start()
+        val situation = assertIs<LocalLessonState.Active>(coordinator.state.value)
+        assertEquals(LessonCommit.Accepted(PersistenceStatus.Saved), situation.commit)
+        assertEquals(LessonStage.SITUATION, progress.state.value.snapshot.lessonProgress.single().stage)
+        val startWrites = store.writes
+        coordinator.start()
+        coordinator.finish(situation.session.id, situation.session.revision) // not Summary
+        assertEquals(startWrites, store.writes)
+        val next = LessonCommand.Next(situation.session.id, situation.session.revision)
+        coordinator.dispatch(next)
+        val dialogue = assertIs<LocalLessonState.Active>(coordinator.state.value)
+        assertEquals(LessonStage.DIALOGUE, dialogue.session.stage)
+        coordinator.dispatch(next)
+        assertEquals(startWrites + 1, store.writes)
+        // All empty stages require explicit navigation; Summary itself isn't completion.
+        while (assertIs<LocalLessonState.Active>(coordinator.state.value).session.stage != LessonStage.SUMMARY) {
+            val session = assertIs<LocalLessonState.Active>(coordinator.state.value).session
+            if (session.stage == LessonStage.ROLE_PLAY) coordinator.dispatch(LessonCommand.Skip(session.id, session.revision))
+            val current = assertIs<LocalLessonState.Active>(coordinator.state.value).session
+            coordinator.dispatch(if (current.stage == LessonStage.ROLE_PLAY) LessonCommand.Continue(current.id, current.revision)
+                else LessonCommand.Next(current.id, current.revision))
+        }
+        val summary = assertIs<LocalLessonState.Active>(coordinator.state.value)
+        assertEquals(null, progress.state.value.snapshot.lessonProgress.single().completedAtEpochMs)
+        assertEquals(false, summary.finished)
+        coordinator.finish(summary.session.id, summary.session.revision)
+        val finished = assertIs<LocalLessonState.Active>(coordinator.state.value)
+        assertTrue(finished.finished)
+        assertEquals(LessonCommit.Accepted(PersistenceStatus.Saved), finished.commit)
+        assertEquals(2000L, progress.state.value.snapshot.lessonProgress.single().completedAtEpochMs)
+        val writes = store.writes
+        coordinator.finish(summary.session.id, summary.session.revision)
+        assertEquals(writes, store.writes)
+        coordinator.dispose()
+        progress.dispose()
+    }
+
+    @Test fun recoveryOnlyOnConsentPreservesCompletionReviewsAndOtherRecords() = runTest {
+        val store = CountingStore()
+        val progress = owner(store)
+        val old = record(LessonStage.DIALOGUE, "removed-turn").copy(completedAtEpochMs = 500L)
+        val other = LessonProgress("unavailable", 1, 500L, LessonStage.SUMMARY, completedAtEpochMs = 500L)
+        val review = ReviewItemProgress("item", "other", ReviewOutcome.GOOD, 500L,
+            lastActionToken = "token")
+        progress.mutate { ProgressUpdate.Applied(it.copy(lessonProgress = listOf(old, other), reviewItems = listOf(review))) }
+        val coordinator = LocalLessonCoordinator(this, progress, loader()::load, now = { 2000L })
+        coordinator.load("one")
+        runCurrent()
+        assertIs<LocalLessonState.RecoveryRequired>(coordinator.state.value)
+        val writes = store.writes
+        coordinator.start()
+        coordinator.resume()
+        assertEquals(writes, store.writes)
+        assertEquals(old, progress.state.value.snapshot.lessonProgress.first())
+        coordinator.recoverToSituation()
+        val recovered = assertIs<LocalLessonState.Active>(coordinator.state.value)
+        assertEquals(LessonStage.SITUATION, recovered.session.stage)
+        assertEquals(LessonCommit.Accepted(PersistenceStatus.Saved), recovered.commit)
+        assertEquals(old.copy(contentVersion = 1, updatedAtEpochMs = 2000L,
+            stage = LessonStage.SITUATION, checkpointId = null), progress.state.value.snapshot.lessonProgress.first())
+        assertEquals(other, progress.state.value.snapshot.lessonProgress.last())
+        assertEquals(listOf(review), progress.state.value.snapshot.reviewItems)
+        coordinator.recoverToSituation()
+        assertEquals(writes + 1, store.writes)
+        coordinator.dispose()
+        progress.dispose()
+    }
+
+    @Test fun deniedAndRejectedMutationsStayUsableWithoutFalseCompletion() = runTest {
+        val backing = MemoryProgressStore().also { it.writeFailure = StoreFailure.DENIED }
+        val store = CountingStore(backing)
+        val progress = owner(store)
+        var time = 2000L
+        val coordinator = LocalLessonCoordinator(this, progress, loader()::load, now = { time })
+        coordinator.load("one")
+        runCurrent()
+        coordinator.start()
+        val started = assertIs<LocalLessonState.Active>(coordinator.state.value)
+        assertIs<LessonCommit.Accepted>(started.commit)
+        assertIs<PersistenceStatus.MemoryOnly>(assertIs<LessonCommit.Accepted>(started.commit).status)
+        assertEquals(1, store.writes)
+        time = -1L // shared mutation rejects an invalid timestamp before the owner can publish it
+        coordinator.dispatch(LessonCommand.Next(started.session.id, started.session.revision))
+        val moved = assertIs<LocalLessonState.Active>(coordinator.state.value)
+        assertEquals(LessonStage.DIALOGUE, moved.session.stage)
+        assertEquals(LessonCommit.Rejected(SaveProblem.INVALID_SNAPSHOT), moved.commit)
+        assertEquals(LessonStage.SITUATION, progress.state.value.snapshot.lessonProgress.single().stage)
+        assertEquals(1, store.writes)
+        coordinator.dispatch(LessonCommand.Next(moved.session.id, moved.session.revision))
+        val understanding = assertIs<LocalLessonState.Active>(coordinator.state.value)
+        assertEquals(LessonStage.UNDERSTANDING, understanding.session.stage)
+        assertIs<LessonCommit.Rejected>(understanding.commit)
+        coordinator.dispose()
+        progress.dispose()
+    }
+
+    @Test fun rejectedFinishDoesNotClaimCompletionAndMayBeRetried() = runTest {
+        val progress = owner()
+        var time = 2000L
+        val coordinator = LocalLessonCoordinator(this, progress, loader()::load, now = { time })
+        coordinator.load("one")
+        runCurrent()
+        coordinator.start()
+        while (assertIs<LocalLessonState.Active>(coordinator.state.value).session.stage != LessonStage.SUMMARY) {
+            val session = assertIs<LocalLessonState.Active>(coordinator.state.value).session
+            coordinator.dispatch(when (session.stage) {
+                LessonStage.ROLE_PLAY -> LessonCommand.SkipRemaining(session.id, session.revision)
+                else -> LessonCommand.Next(session.id, session.revision)
+            })
+        }
+        val summary = assertIs<LocalLessonState.Active>(coordinator.state.value).session
+        time = -1L
+        coordinator.finish(summary.id, summary.revision)
+        val rejected = assertIs<LocalLessonState.Active>(coordinator.state.value)
+        assertEquals(false, rejected.finished)
+        assertEquals(LessonCommit.Rejected(SaveProblem.INVALID_SNAPSHOT), rejected.commit)
+        assertEquals(null, progress.state.value.snapshot.lessonProgress.single().completedAtEpochMs)
+        time = 3000L
+        coordinator.finish(summary.id, summary.revision)
+        assertTrue(assertIs<LocalLessonState.Active>(coordinator.state.value).finished)
+        assertEquals(3000L, progress.state.value.snapshot.lessonProgress.single().completedAtEpochMs)
+        coordinator.dispose()
+        progress.dispose()
+    }
+
+    @Test fun clockTriggeredOwnerReloadRejectsObsoleteActionBeforeMutation() = runTest {
+        val store = CountingStore()
+        val progress = owner(store)
+        var reloadOnClock = false
+        val coordinator = LocalLessonCoordinator(this, progress, loader()::load, now = {
+            if (reloadOnClock) progress.reloadSavedState()
+            2000L
+        })
+        coordinator.load("one")
+        runCurrent()
+        coordinator.start()
+        val active = assertIs<LocalLessonState.Active>(coordinator.state.value).session
+        val writes = store.writes
+        reloadOnClock = true
+        coordinator.dispatch(LessonCommand.Next(active.id, active.revision))
+        assertIs<LocalLessonState.Entry>(coordinator.state.value)
+        assertEquals(writes, store.writes)
+        coordinator.dispose()
+        progress.dispose()
+    }
+
+    @Test fun protectedAndConflictingSavesStayUntouchedWhileNavigationContinues() = runTest {
+        val protectedBacking = MemoryProgressBacking("unsupported original")
+        val protectedStore = CountingStore(MemoryProgressStore(protectedBacking))
+        val protectedOwner = owner(protectedStore)
+        val protectedLesson = LocalLessonCoordinator(this, protectedOwner, loader())
+        protectedLesson.load("one")
+        runCurrent()
+        protectedLesson.start()
+        val protectedSession = assertIs<LocalLessonState.Active>(protectedLesson.state.value)
+        assertIs<PersistenceStatus.Protected>(assertIs<LessonCommit.Accepted>(protectedSession.commit).status)
+        assertEquals("unsupported original", protectedBacking.raw)
+        assertEquals(0, protectedStore.writes)
+        protectedLesson.dispatch(LessonCommand.Next(protectedSession.session.id, protectedSession.session.revision))
+        assertEquals(LessonStage.DIALOGUE, assertIs<LocalLessonState.Active>(protectedLesson.state.value).session.stage)
+        protectedLesson.dispose()
+        protectedOwner.dispose()
+
+        val backing = MemoryProgressBacking()
+        val store = CountingStore(MemoryProgressStore(backing))
+        val progress = owner(store)
+        val coordinator = LocalLessonCoordinator(this, progress, loader())
+        coordinator.load("one")
+        runCurrent()
+        coordinator.start()
+        val started = assertIs<LocalLessonState.Active>(coordinator.state.value).session
+        backing.externalChange("another tab's original")
+        coordinator.dispatch(LessonCommand.Next(started.id, started.revision))
+        val moved = assertIs<LocalLessonState.Active>(coordinator.state.value)
+        assertEquals(LessonCommit.Accepted(PersistenceStatus.Conflict), moved.commit)
+        assertEquals("another tab's original", backing.raw)
+        assertEquals(1, store.writes)
+        coordinator.dispose()
+        progress.dispose()
     }
 
     @Test fun validatedLookupEntryAndResumeAreReadOnlyAndNeverFallback() = runTest {
