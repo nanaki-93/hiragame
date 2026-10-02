@@ -44,9 +44,44 @@ data class LessonCatalogView(
     val selectedTopicId: String?,
     val invalidTopicFilter: Boolean,
     val beginnerPath: Boolean,
+    /** Suggested starter order, shown only when guidance is enabled; never restricts the catalog. */
+    val beginnerPathCards: List<LessonCard>,
+    val recommendation: LessonRecommendation?,
     /** Saved IDs not present among the resolved catalog lessons; never removed from the save. */
     val unavailableSavedLessons: List<LessonSavedStatus>,
 )
+
+data class LessonRecommendation(
+    val lessonId: String,
+    val reason: String,
+    val revisit: Boolean,
+)
+
+// The preserved short meeting-time seed is supplemental, not one of the five ordered starters.
+private const val SUPPLEMENTAL_SEED_ID = "lesson-confirm-meeting-time"
+
+private fun recommendLesson(cards: List<LessonCard>, snapshot: SaveEnvelope): LessonRecommendation? {
+    val unfinished = cards.filterNot { it.status.isCompleted }
+    val saved = unfinished.filter { it.status.record != null && it.status.checkpointAvailable == true }
+        .maxByOrNull { it.status.record!!.updatedAtEpochMs }
+    if (saved != null) return LessonRecommendation(
+        saved.lessonId, "Suggested because a saved place is available; this is a read-only preview.", false,
+    )
+    val aids = snapshot.preferences
+    if (aids.showReadings || aids.showTranslation || aids.showRomaji) {
+        val beginner = unfinished.firstOrNull {
+            it.difficulty == AdvisoryDifficulty.BEGINNER && it.lessonId != SUPPLEMENTAL_SEED_ID
+        }
+        if (beginner != null) return LessonRecommendation(
+            beginner.lessonId, "Suggested because reading, translation, or romaji support is enabled.", false,
+        )
+    }
+    val next = unfinished.firstOrNull()
+    if (next != null) return LessonRecommendation(next.lessonId, "Suggested as the next lesson in catalog order.", false)
+    return cards.firstOrNull()?.let {
+        LessonRecommendation(it.lessonId, "Revisit suggestion: all available lessons are marked completed.", true)
+    }
+}
 
 private fun checkpointPresent(lesson: Lesson, record: LessonProgress): Boolean {
     val id = record.checkpointId ?: return true // A stage boundary has no item to resolve.
@@ -90,6 +125,10 @@ fun projectLessonCatalog(
         selectedTopicId = options.topicId,
         invalidTopicFilter = options.topicId != null && topics.none { it.topic.id == options.topicId },
         beginnerPath = options.beginnerPath,
+        beginnerPathCards = if (options.beginnerPath) cards.filter {
+            it.difficulty == AdvisoryDifficulty.BEGINNER && it.lessonId != SUPPLEMENTAL_SEED_ID
+        } else emptyList(),
+        recommendation = recommendLesson(cards, snapshot),
         unavailableSavedLessons = snapshot.lessonProgress.filter { it.lessonId !in availableIds }.map {
             LessonSavedStatus(it, documentAvailable = false, checkpointAvailable = false)
         },
