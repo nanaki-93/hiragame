@@ -13,6 +13,11 @@
       "description": "Basic, voiced, semi-voiced and contracted katakana, plus long-mark and small-kana word-spelling contrasts, in bounded recognition and typed-kana sets."
     },
     {
+      "id": "foundational-vocabulary",
+      "title": "Foundational vocabulary",
+      "description": "Daily-life and engineering-workplace words in two independent six-item kana-reading sets."
+    },
+    {
       "id": "workplace-clarification",
       "title": "Workplace clarification",
       "description": "Polite ways to check a meeting time with a colleague."
@@ -342,6 +347,18 @@
       "kind": "practice",
       "topicId": "katakana-foundations",
       "path": "practice/katakana-contracted-spelling-examples-reading.json"
+    },
+    {
+      "id": "practice-vocabulary-daily-reading",
+      "kind": "practice",
+      "topicId": "foundational-vocabulary",
+      "path": "practice/vocabulary-daily-reading.json"
+    },
+    {
+      "id": "practice-vocabulary-workplace-reading",
+      "kind": "practice",
+      "topicId": "foundational-vocabulary",
+      "path": "practice/vocabulary-workplace-reading.json"
     }
   ]
 }

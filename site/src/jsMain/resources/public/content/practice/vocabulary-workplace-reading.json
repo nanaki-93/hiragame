@@ -1,0 +1,75 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-vocabulary-workplace-reading",
+  "topicId": "foundational-vocabulary",
+  "title": "Engineering workplace: read six useful words",
+  "description": "Read common planning and engineering-workplace terms in hiragana; no lesson route or prerequisites.",
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored short workplace cues and explanations; common word spellings and meanings are linguistic facts, not legacy CSV or mock text.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-written prompts, translations, contexts and explanations; no copied text, audio or third-party assets."
+  },
+  "reviewItems": [
+    {"id": "review-vocab-workplace-meeting", "targetKind": "exercise", "targetId": "exercise-vocab-workplace-meeting", "skill": "Read 会議 (meeting)", "direction": "written-word-to-hiragana"},
+    {"id": "review-vocab-workplace-materials", "targetKind": "exercise", "targetId": "exercise-vocab-workplace-materials", "skill": "Read 資料 (materials)", "direction": "written-word-to-hiragana"},
+    {"id": "review-vocab-workplace-schedule", "targetKind": "exercise", "targetId": "exercise-vocab-workplace-schedule", "skill": "Read 予定 (schedule/plan)", "direction": "written-word-to-hiragana"},
+    {"id": "review-vocab-workplace-contact", "targetKind": "exercise", "targetId": "exercise-vocab-workplace-contact", "skill": "Read 連絡 (contact)", "direction": "written-word-to-hiragana"},
+    {"id": "review-vocab-workplace-confirm", "targetKind": "exercise", "targetId": "exercise-vocab-workplace-confirm", "skill": "Read 確認 (confirmation)", "direction": "written-word-to-hiragana"},
+    {"id": "review-vocab-workplace-development", "targetKind": "exercise", "targetId": "exercise-vocab-workplace-development", "skill": "Read 開発 (development)", "direction": "written-word-to-hiragana"}
+  ],
+  "exercises": [
+    {
+      "id": "exercise-vocab-workplace-meeting", "type": "reading",
+      "prompt": "In a team's calendar, read this event and type its reading in hiragana.",
+      "stimulus": {"surface": "会議", "reading": "かいぎ", "translation": "meeting", "context": "A team meeting appears on the calendar."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "かいぎ", "reading": "かいぎ", "translation": "meeting", "romaji": "kaigi", "context": "A team meeting appears on the calendar."}}],
+      "explanation": "会議 is read かいぎ and means meeting; it can be a scheduled team discussion."
+    },
+    {
+      "id": "exercise-vocab-workplace-materials", "type": "reading",
+      "prompt": "In a meeting invitation, read this word for accompanying documents and type its reading in hiragana.",
+      "stimulus": {"surface": "資料", "reading": "しりょう", "translation": "materials or reference documents", "context": "Share the reference materials before a meeting."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "しりょう", "reading": "しりょう", "translation": "materials or reference documents", "romaji": "shiryou", "context": "Share the reference materials before a meeting."}}],
+      "explanation": "資料 is read しりょう: materials or reference documents for a meeting. The ょ is small."
+    },
+    {
+      "id": "exercise-vocab-workplace-schedule", "type": "reading",
+      "prompt": "On a project calendar, read this word for plans and type its reading in hiragana.",
+      "stimulus": {"surface": "予定", "reading": "よてい", "translation": "plan or schedule", "context": "Check the plan for next week."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "よてい", "reading": "よてい", "translation": "plan or schedule", "romaji": "yotei", "context": "Check the plan for next week."}}],
+      "explanation": "予定 is read よてい: a plan or scheduled event, as on a project calendar."
+    },
+    {
+      "id": "exercise-vocab-workplace-contact", "type": "reading",
+      "prompt": "In a message asking you to get in touch, read this noun and type its reading in hiragana.",
+      "stimulus": {"surface": "連絡", "reading": "れんらく", "translation": "contact or communication", "context": "Send a message to keep a teammate informed."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "れんらく", "reading": "れんらく", "translation": "contact or communication", "romaji": "renraku", "context": "Send a message to keep a teammate informed."}}],
+      "explanation": "連絡 is read れんらく and means contact or communication; it can refer to getting in touch with a colleague."
+    },
+    {
+      "id": "exercise-vocab-workplace-confirm", "type": "reading",
+      "prompt": "Before sending a change, read this word for checking and type its reading in hiragana.",
+      "stimulus": {"surface": "確認", "reading": "かくにん", "translation": "confirmation or checking", "context": "Check the details before sending a change."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "かくにん", "reading": "かくにん", "translation": "confirmation or checking", "romaji": "kakunin", "context": "Check the details before sending a change."}}],
+      "explanation": "確認 is read かくにん: confirmation or checking of details before a change."
+    },
+    {
+      "id": "exercise-vocab-workplace-development", "type": "reading",
+      "prompt": "In an engineering project update, read this activity and type its reading in hiragana.",
+      "stimulus": {"surface": "開発", "reading": "かいはつ", "translation": "development", "context": "Discuss software development with the team."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "かいはつ", "reading": "かいはつ", "translation": "development", "romaji": "kaihatsu", "context": "Discuss software development with the team."}}],
+      "explanation": "開発 is read かいはつ and means development; here it refers to a software project."
+    }
+  ]
+}

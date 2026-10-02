@@ -722,6 +722,139 @@ class FoundationalContentTests(unittest.TestCase):
         self.assertIn('practice-katakana-voiced-g-z-reading', {e['id'] for e in catalog['entries']})
         self.assertIn('practice-hiragana-contracted-k-s-t-reading', {e['id'] for e in catalog['entries']})
 
+    def test_foundational_vocabulary_coverage(self):
+        # Independent inventory, not reconstructed from the shipped answer fields.
+        expected = {
+            'daily': {
+                'water': ('水', 'みず', 'water', 'mizu'),
+                'station': ('駅', 'えき', 'station', 'eki'),
+                'train': ('電車', 'でんしゃ', 'train', 'densha'),
+                'weather': ('天気', 'てんき', 'weather', 'tenki'),
+                'shopping': ('買い物', 'かいもの', 'shopping', 'kaimono'),
+                'tomorrow': ('明日', 'あした', 'tomorrow', 'ashita'),
+            },
+            'workplace': {
+                'meeting': ('会議', 'かいぎ', 'meeting', 'kaigi'),
+                'materials': ('資料', 'しりょう', 'materials', 'shiryou'),
+                'schedule': ('予定', 'よてい', 'plan', 'yotei'),
+                'contact': ('連絡', 'れんらく', 'contact', 'renraku'),
+                'confirm': ('確認', 'かくにん', 'confirmation', 'kakunin'),
+                'development': ('開発', 'かいはつ', 'development', 'kaihatsu'),
+            },
+        }
+        catalog = read(CONTENT / 'catalog.json')
+        self.assertEqual((1, 2), (catalog['formatVersion'], catalog['contentVersion']))
+        topics = [t for t in catalog['topics'] if t['id'] == 'foundational-vocabulary']
+        self.assertEqual(1, len(topics))
+        self.assertTrue(topics[0]['title'] and topics[0]['description'])
+        entries = [e for e in catalog['entries'] if e['id'].startswith('practice-vocabulary-')]
+        self.assertEqual(2, len(entries))
+        self.assertEqual(2, len({e['path'] for e in entries}))
+        note = (NOTES / 'f05-foundations.md').read_text(encoding='utf-8')
+        seen_words, seen_exercises, seen_reviews = set(), set(), set()
+        for category, inventory in expected.items():
+            doc_id = f'practice-vocabulary-{category}-reading'
+            entry = next(e for e in entries if e['id'] == doc_id)
+            self.assertEqual(('practice', 'foundational-vocabulary',
+                              f'practice/vocabulary-{category}-reading.json'),
+                             (entry['kind'], entry['topicId'], entry['path']))
+            doc = read(CONTENT / entry['path'])
+            self.assertEqual((1, 2, doc_id, entry['topicId']),
+                             (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))
+            self.assertTrue(doc['title'] and doc['description'])
+            self.assertEqual(6, len(doc['exercises']))
+            self.assertLessEqual(len(doc['exercises']), 10)
+            review = doc['review']
+            self.assertEqual(('reviewed', 'agent', '2026-10-02', 'publishable', 'f05-foundations.md'),
+                             (review['status'], review['reviewerType'], review['reviewDate'],
+                              review['rights'], review['reviewNote']))
+            self.assertIn('Independently authored', review['provenance'])
+            self.assertIn('Original agent-written', review['rightsBasis'])
+            self.assertIn(f'Scope: document `{doc_id}`', note)
+            loc = f'{entry["path"]}:$ ({doc_id})'
+            validator.validate(doc, validator.PRACTICE, loc)
+            validator.local(doc, loc)
+            validator.references(doc, loc)
+            validator.review_document(doc, loc, NOTES)
+            items = {item['targetId']: item for item in doc['reviewItems']}
+            self.assertEqual(6, len(items))
+            self.assertEqual({ex['id'] for ex in doc['exercises']}, set(items))
+            self.assertEqual({f'exercise-vocab-{category}-{slug}' for slug in inventory}, set(items))
+            for ex in doc['exercises']:
+                slug = ex['id'].removeprefix(f'exercise-vocab-{category}-')
+                surface, reading, meaning, romaji = inventory[slug]
+                item = items[ex['id']]
+                self.assertEqual(('exercise', ex['id'], f'review-vocab-{category}-{slug}',
+                                  'written-word-to-hiragana'),
+                                 (item['targetKind'], item['targetId'], item['id'], item['direction']))
+                self.assertIn(surface, item['skill'])
+                self.assertEqual(('reading', 'kana'), (ex['type'], ex['answerRepresentation']))
+                self.assertTrue(ex['prompt'].strip() and ex['explanation'].strip())
+                stimulus = ex['stimulus']
+                self.assertEqual((surface, reading), (stimulus['surface'], stimulus['reading']))
+                self.assertIn(meaning, stimulus['translation'])
+                self.assertTrue(stimulus['context'].strip())
+                self.assertNotIn('romaji', stimulus)
+                self.assertNotIn(reading, ex['prompt'])
+                self.assertIn(reading, ex['explanation'])
+                self.assertIn(meaning, ex['explanation'])
+                answers = ex['acceptedAnswers']
+                self.assertEqual(['あした', 'あす'] if slug == 'tomorrow' else [reading],
+                                 [a['text']['surface'] for a in answers])
+                for answer in answers:
+                    self.assertEqual('kana', answer['type'])
+                    text = answer['text']
+                    self.assertEqual(text['surface'], text['reading'])
+                    self.assertTrue(text['translation'].strip() and text['context'].strip())
+                    self.assertTrue(text['romaji'].strip())
+                self.assertEqual(romaji, answers[0]['text']['romaji'])
+                self.assertNotIn(surface, seen_words)
+                self.assertNotIn(ex['id'], seen_exercises)
+                self.assertNotIn(item['id'], seen_reviews)
+                seen_words.add(surface)
+                seen_exercises.add(ex['id'])
+                seen_reviews.add(item['id'])
+                row = [line for line in note.splitlines()
+                       if line.startswith(f'| `{ex["id"]}`, `{item["id"]}` |')]
+                self.assertEqual(1, len(row), ex['id'])
+                self.assertIn(f'{surface} / {reading}', row[0])
+                self.assertIn(meaning, row[0])
+                self.assertIn('Reviewed:', row[0])
+        self.assertEqual((12, 12, 12), (len(seen_words), len(seen_exercises), len(seen_reviews)))
+        self.assertIn('あす', note)
+        self.assertIn('pitch accent', note)
+
+    def test_all_micro_sets_reachable_and_unique(self):
+        # Complete canonical scenario: execute only at the final gate.
+        catalog = read(CONTENT / 'catalog.json')
+        self.assertEqual((1, 2), (catalog['formatVersion'], catalog['contentVersion']))
+        self.assertEqual(len(catalog['topics']), len({t['id'] for t in catalog['topics']}))
+        entries = catalog['entries']
+        self.assertEqual(len(entries), len({e['id'] for e in entries}))
+        self.assertEqual(len(entries), len({e['path'] for e in entries}))
+        ids = set()
+        for entry in entries:
+            with self.subTest(entry=entry['id']):
+                self.assertIn(entry['topicId'], {t['id'] for t in catalog['topics']})
+                doc = read(CONTENT / entry['path'])
+                self.assertEqual((1, 2, entry['id'], entry['topicId']),
+                                 (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))
+                if entry['kind'] == 'practice':
+                    self.assertTrue(1 <= len(doc['exercises']) <= 10, entry['id'])
+                self.assertEqual({ex['id'] for ex in doc['exercises']},
+                                 {item['targetId'] for item in doc['reviewItems']
+                                  if item['targetKind'] == 'exercise'})
+                for ex in doc['exercises']:
+                    for identifier in [ex['id'], *(o['id'] for o in ex.get('options', []))]:
+                        self.assertNotIn(identifier, ids, identifier)
+                        ids.add(identifier)
+                for item in doc['reviewItems']:
+                    self.assertNotIn(item['id'], ids, item['id'])
+                    ids.add(item['id'])
+        self.assertEqual({p.relative_to(CONTENT).as_posix()
+                          for p in CONTENT.rglob('*.json')} - {'catalog.json'},
+                         {entry['path'] for entry in entries})
+
     def _check_contracted_document(self, doc, entry, note):
         self.assertEqual((1, 2, entry['id'], entry['topicId']),
                          (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))
