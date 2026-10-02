@@ -87,6 +87,7 @@ import org.jetbrains.compose.web.dom.TagElement
 import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.TextArea
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.events.Event
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.H3
@@ -719,6 +720,18 @@ internal fun replacementMessage(result: ProtectedReplacementResult): String = wh
     is ProtectedReplacementResult.InvalidReplacement -> "Replacement could not be prepared. The unreadable original remains stored."
 }
 
+/** Composition events belong to one prompt, not the save or the session reducer. */
+internal class JapaneseSubmissionGuard {
+    private var composing = false
+
+    fun compositionStarted() { composing = true }
+    fun compositionEnded() { composing = false } // Never submit here; wait for a deliberate action.
+
+    fun canSubmit(nativeComposing: Boolean) = !composing && !nativeComposing
+    fun canSubmitOnEnter(nativeComposing: Boolean, keyCode: Int, repeat: Boolean) =
+        canSubmit(nativeComposing) && keyCode != 229 && !repeat
+}
+
 /** Keep raw drafts local to the prompt. The evaluator, not the UI, judges blank and authored answers. */
 internal fun promptAnswer(
     exercise: Exercise, choiceId: String?, draft: String, assessment: Assessment?, exampleRevealed: Boolean,
@@ -741,6 +754,14 @@ private fun PracticePrompt(
     var assessment by remember(session.id, exercise.id) { mutableStateOf<Assessment?>(null) }
     var missingAssessment by remember(session.id, exercise.id) { mutableStateOf(false) }
     var exampleRevealed by remember(session.id, exercise.id) { mutableStateOf(false) }
+    val submissionGuard = remember(session.id, exercise.id) { JapaneseSubmissionGuard() }
+    // No form surrounds these controls: Enter has only this guarded path; it cannot
+    // trigger an implicit form submission. Textareas are intentionally not wired to Enter.
+    fun submitPrompt(nativeComposing: Boolean = false) {
+        if ((exercise is ReadingExercise || exercise is CompletionExercise) && !submissionGuard.canSubmit(nativeComposing)) return
+        val answer = promptAnswer(exercise, selectedChoice, draft, assessment, exampleRevealed)
+        if (answer == null) missingAssessment = true else submit(answer)
+    }
 
     H2 { Text("Exercise ${view.index + 1} of ${session.plan.size}") }
     P { Text("${session.counts.completed} resolved of ${session.plan.size}. Checkpoints are saved when possible; typed responses are not retained.") }
@@ -772,13 +793,7 @@ private fun PracticePrompt(
             Label(attrs = { attr("for", "practice-response") }) {
                 Text(if (exercise.answerRepresentation == AnswerRepresentation.KANA) "Reading in kana" else "Reading in romaji")
             }
-            Input(type = InputType.Text, attrs = {
-                id("practice-response")
-                classes("practice-answer")
-                attr("maxlength", "200")
-                value(draft)
-                onInput { draft = it.value }
-            })
+            JapaneseAnswerInput(draft, { draft = it }, submissionGuard, ::submitPrompt)
         }
         is CompletionExercise -> {
             val parts = exercise.template.split("{blank}")
@@ -786,13 +801,7 @@ private fun PracticePrompt(
                 Text(parts[0]); Text("＿＿＿"); Text(parts[1])
             } }
             Label(attrs = { attr("for", "practice-response") }) { Text("Fill the blank in Japanese") }
-            Input(type = InputType.Text, attrs = {
-                id("practice-response")
-                classes("practice-answer")
-                attr("maxlength", "200")
-                value(draft)
-                onInput { draft = it.value }
-            })
+            JapaneseAnswerInput(draft, { draft = it }, submissionGuard, ::submitPrompt)
         }
         is ProductionExercise -> {
             Label(attrs = { attr("for", "practice-response") }) { Text("Your response in Japanese") }
@@ -845,15 +854,51 @@ private fun PracticePrompt(
     }
     if (missingAssessment) P(attrs = { attr("role", "alert") }) { Text("Choose a self-assessment before submitting.") }
     if (exercise !is ProductionExercise || exampleRevealed) {
-        PrimaryButton("Submit answer", onClick = {
-            val answer = promptAnswer(exercise, selectedChoice, draft, assessment, exampleRevealed)
-            if (answer == null) missingAssessment = true else submit(answer)
-        })
+        PrimaryButton("Submit answer", onClick = { submitPrompt() })
     }
     SecondaryButton("Skip this exercise", onClick = { send(PracticeCommand.Skip(session.id, session.revision)) })
     SecondaryButton("Reveal answer and end attempt", onClick = { send(PracticeCommand.Reveal(session.id, session.revision)) })
     if (view.index > 0) SecondaryButton("Previous resolved exercise", onClick = {
         send(PracticeCommand.Previous(session.id, session.revision))
+    })
+}
+
+/** The ref attaches native composition listeners to this input alone and removes them on disposal.
+ * Compose's key event exposes the native IME/repeat compatibility signals. Do not preventDefault
+ * while composing: Enter must remain available to the IME to commit its candidate.
+ */
+@Composable
+private fun JapaneseAnswerInput(
+    draft: String, onDraft: (String) -> Unit, guard: JapaneseSubmissionGuard, submit: () -> Unit,
+) {
+    Input(type = InputType.Text, attrs = {
+        id("practice-response")
+        classes("practice-answer")
+        attr("maxlength", "200")
+        value(draft)
+        onInput {
+            if (it.nativeEvent.asDynamic().isComposing == true) guard.compositionStarted()
+            onDraft(it.value)
+        }
+        ref { input ->
+            val started: (Event) -> Unit = { guard.compositionStarted() }
+            val ended: (Event) -> Unit = { guard.compositionEnded() }
+            input.addEventListener("compositionstart", started)
+            input.addEventListener("compositionend", ended)
+            onDispose {
+                input.removeEventListener("compositionstart", started)
+                input.removeEventListener("compositionend", ended)
+            }
+        }
+        onKeyDown { event ->
+            val native = event.nativeEvent.asDynamic()
+            if (event.key == "Enter" && guard.canSubmitOnEnter(
+                    native.isComposing == true, (native.keyCode as? Int) ?: 0, native.repeat == true,
+                )) {
+                event.preventDefault()
+                submit()
+            }
+        }
     })
 }
 
