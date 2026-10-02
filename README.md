@@ -81,3 +81,15 @@ Content CI and the Firebase deployment workflow run non-interactive validation, 
 `backend/` is excluded from Gradle but temporarily retained because old personal-progress export requirements are unknown. Its deployment workflow and active frontend dependencies are removed. [F13 preservation report](content-source/review-notes/f13-retirement.md) records how to recover the historical toolchain for an export. Legacy quiz scores cannot be converted into phrase mastery. Cloud Run/database resources and unused CI secrets have **not** been retired; repository changes do not stop remote billing.
 
 Optional AI, microphone recording, authoring helpers and expansion are separate from the required offline learning loop. See [PLAN.md](PLAN.md) for their current implementation and verification status.
+
+## Optional local AI
+
+Role-play offers an explicit opt-in for a session-only local model conversation, with six learner turns, cancellation, bounded context and a thirty-second reply timeout. It accepts only loopback endpoints and downloaded model names from the local model list, excludes cloud-labelled/remote models and never stores credentials. Replies are schema-validated, shown as unreviewed text and separated from uncertain suggestions; neither affects progress or approved content. The authored conversation remains available on every failure. No local Japanese-model recommendation has been verified; model choice, download size and latency depend on the installation/hardware. No model downloads happen automatically.
+
+Direct browser access can fail due to CORS, HTTPS or local-network restrictions. The optional stateless helper serves the already-built site and forwards only two fixed paths to `127.0.0.1:11434`; it binds only to loopback, checks Host/Origin, bounds bodies/turns, blocks redirects and does not log transcripts. To use it voluntarily (not run during verification):
+
+```sh
+python3 tools/local_ai_helper.py
+```
+
+Open `http://127.0.0.1:8765/hiragame/`, then select endpoint `http://127.0.0.1:8765/ollama` in the lesson. This requires a separately installed, running Ollama with a downloaded local model and cloud features disabled. It is not part of static deployment or the required app. API contracts were checked against [Ollama chat](https://docs.ollama.com/api/chat), [installed-model listing](https://docs.ollama.com/api/tags) and [local configuration](https://docs.ollama.com/faq).

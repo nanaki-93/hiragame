@@ -95,6 +95,7 @@ kotlin {
                 implementation(libs.kobweb.core)
                 implementation(libs.kobweb.silk)
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
                 // Shared models/logic
                 implementation(project(":shared"))
             }
