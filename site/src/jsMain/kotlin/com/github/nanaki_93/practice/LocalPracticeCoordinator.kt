@@ -6,7 +6,11 @@ import com.github.nanaki_93.content.BundledContentLoader
 import com.github.nanaki_93.content.CatalogLoad
 import com.github.nanaki_93.content.EmptyContentReason
 import com.github.nanaki_93.content.ContentHttpException
+import com.github.nanaki_93.progress.CheckpointView
+import com.github.nanaki_93.progress.PracticeCheckpoint
+import com.github.nanaki_93.progress.PracticeRestoreResult
 import com.github.nanaki_93.progress.ProgressUpdate
+import com.github.nanaki_93.progress.restorePractice
 import com.github.nanaki_93.progress.projectPracticeCheckpoint
 import com.github.nanaki_93.storage.LocalProgressOwner
 import kotlin.random.Random
@@ -43,6 +47,22 @@ enum class PracticeOperation { START, DISPATCH }
 /** Messages are deliberately fixed: never display untrusted exception or response text. */
 data class PracticeOperationError(val operation: PracticeOperation, val safeMessage: String, val token: Long)
 
+/** Runtime IDs are never reused by another coordinator in the same application instance. */
+private var nextRuntimePracticeId = 1L
+private fun runtimePracticeId(): Long {
+    check(nextRuntimePracticeId < Long.MAX_VALUE) { "Session identity exhausted" }
+    return nextRuntimePracticeId++
+}
+
+/** Resolution is a read-only projection: missing or changed content never edits the save. */
+sealed interface PracticeCheckpointResolution {
+    val checkpoint: PracticeCheckpoint
+    data class Available(override val checkpoint: PracticeCheckpoint) : PracticeCheckpointResolution {
+        val completed: Boolean get() = checkpoint.view == CheckpointView.COMPLETE
+    }
+    data class Unavailable(override val checkpoint: PracticeCheckpoint, val missingSet: Boolean) : PracticeCheckpointResolution
+}
+
 /** Owns one load attempt and one session; only committed reducer frontiers reach the save owner. */
 class LocalPracticeCoordinator(
     private val scope: CoroutineScope,
@@ -56,24 +76,31 @@ class LocalPracticeCoordinator(
     constructor(scope: CoroutineScope, progress: LocalProgressOwner, loader: BundledContentLoader) : this(scope, progress, loader::load)
 
     private val mutableState = MutableStateFlow<LocalPracticeState>(LocalPracticeState.Loading)
-    val state: StateFlow<LocalPracticeState> = mutableState
+    val state: StateFlow<LocalPracticeState> get() {
+        reconcileOwner()
+        return mutableState
+    }
     private var generation = 0L
     private var loadJob: Job? = null
-    private var nextSessionId = 1L
+    private var ownerGeneration = progress.generation
     private var nextErrorToken = 1L
     private var nextTransition = 0L
     private var runToken: String? = null
     private var pendingOperation: PendingOperation? = null
     private var disposed = false
+    // Owner reloads must invalidate the published flow even if nobody calls a coordinator method.
+    private val stopObservingOwner = progress.observeGeneration { reconcileOwner() }
 
     private sealed interface PendingOperation {
-        data class Start(val setId: String, val limit: Int) : PendingOperation
+        data class Start(val setId: String, val limit: Int, val recovering: Boolean = false) : PendingOperation
+        data class Resume(val setId: String) : PendingOperation
         data class Command(val command: PracticeCommand) : PendingOperation
     }
 
     /** Reload and retry always supersede the previous generation, even if a source ignores cancellation. */
     fun load() {
         if (disposed) return
+        reconcileOwner()
         generation++
         loadJob?.cancel()
         pendingOperation = null
@@ -82,6 +109,7 @@ class LocalPracticeCoordinator(
         loadJob = scope.launch {
             try {
                 val result = loadContent()
+                reconcileOwner()
                 if (token != generation || disposed) return@launch
                 mutableState.value = when (result) {
                     is CatalogLoad.Ready -> LocalPracticeState.Ready(result.content)
@@ -90,6 +118,7 @@ class LocalPracticeCoordinator(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
+                reconcileOwner()
                 if (token != generation || disposed) return@launch
                 val bundled = e as? BundledContentException
                 val kind = when {
@@ -114,14 +143,36 @@ class LocalPracticeCoordinator(
         if (state.value is LocalPracticeState.Error || state.value is LocalPracticeState.Empty) load()
     }
 
-    /** The selected set must be in the latest validated snapshot, not a caller-provided document. */
+    /** Read against the latest catalog and save; never remove records when content is missing. */
+    fun savedCheckpoints(): Map<String, PracticeCheckpointResolution> {
+        reconcileOwner()
+        val ready = state.value as? LocalPracticeState.Ready ?: return emptyMap()
+        return progress.state.value.snapshot.practiceProgress.associate { checkpoint ->
+            val set = ready.availablePracticeSets[checkpoint.setId]
+            val resolution = if (set == null) PracticeCheckpointResolution.Unavailable(checkpoint, missingSet = true)
+            else if (restorePractice(1, set, checkpoint) is PracticeRestoreResult.Restored)
+                PracticeCheckpointResolution.Available(checkpoint)
+            else PracticeCheckpointResolution.Unavailable(checkpoint, missingSet = false)
+            checkpoint.setId to resolution
+        }
+    }
+
+    /** Start a new run for a resolvable set, even if a prior run was completed. */
     fun start(setId: String, limit: Int = 10) = perform(PendingOperation.Start(setId, limit))
+
+    /** Explicitly replace an incompatible checkpoint, only when its set is currently available. */
+    fun startFreshAfterUnavailable(setId: String, limit: Int = 10) =
+        perform(PendingOperation.Start(setId, limit, recovering = true))
+
+    /** Resume does not save or advance; feedback waits for an explicit learner action. */
+    fun resume(setId: String) = perform(PendingOperation.Resume(setId))
 
     /** Synchronous update: callbacks captured with an older revision cannot act twice. */
     fun dispatch(command: PracticeCommand) = perform(PendingOperation.Command(command))
 
     /** Capture the error shown by the UI; an old retry cannot act on a subsequent failure. */
     fun retryOperation(error: PracticeOperationError) {
+        reconcileOwner()
         val ready = state.value as? LocalPracticeState.Ready ?: return
         if (ready.operationError != error) return
         pendingOperation?.let { perform(it, retrying = true) }
@@ -129,6 +180,7 @@ class LocalPracticeCoordinator(
 
     /** Leave after an operation failure without re-entering the failing reducer. Normal exit uses guarded Leave. */
     fun leave(error: PracticeOperationError) {
+        reconcileOwner()
         val ready = state.value as? LocalPracticeState.Ready ?: return
         if (ready.operationError != error) return
         pendingOperation = null
@@ -139,14 +191,32 @@ class LocalPracticeCoordinator(
     fun dispose() {
         if (disposed) return
         disposed = true
+        stopObservingOwner()
         generation++
         loadJob?.cancel()
         loadJob = null
         pendingOperation = null
     }
 
+    private fun reconcileOwner() {
+        if (disposed || ownerGeneration == progress.generation) return
+        ownerGeneration = progress.generation
+        generation++
+        pendingOperation = null
+        runToken = null
+        val current = mutableState.value
+        if (current is LocalPracticeState.Ready) mutableState.value = current.copy(session = null, operationError = null)
+        else if (current is LocalPracticeState.Loading) {
+            loadJob?.cancel()
+            if (progress.isCurrentGeneration(ownerGeneration)) {
+                load() // a load started before reload must not publish against the new save
+            }
+        }
+    }
+
     private fun perform(operation: PendingOperation, retrying: Boolean = false) {
         if (disposed) return
+        reconcileOwner()
         val ready = state.value as? LocalPracticeState.Ready ?: return
         // An operation error must be explicitly retried or left, not silently overwritten.
         if (ready.operationError != null && (!retrying || pendingOperation != operation)) return
@@ -155,26 +225,34 @@ class LocalPracticeCoordinator(
                 is PendingOperation.Start -> {
                     if (ready.session != null) return
                     val set = ready.availablePracticeSets[operation.setId] ?: return
-                    check(nextSessionId < Long.MAX_VALUE) { "Session identity exhausted" }
-                    sessionFactory(nextSessionId, set, operation.limit).also { nextSessionId++ }
+                    val resolution = savedCheckpoints()[operation.setId]
+                    if (operation.recovering != (resolution is PracticeCheckpointResolution.Unavailable)) return
+                    sessionFactory(runtimePracticeId(), set, operation.limit)
+                }
+                is PendingOperation.Resume -> {
+                    if (ready.session != null) return
+                    val resolution = savedCheckpoints()[operation.setId] as? PracticeCheckpointResolution.Available ?: return
+                    val set = ready.availablePracticeSets[operation.setId] ?: return
+                    val restored = restorePractice(runtimePracticeId(), set, resolution.checkpoint)
+                    if (restored !is PracticeRestoreResult.Restored) return
+                    runToken = resolution.checkpoint.runToken
+                    restored.session
                 }
                 is PendingOperation.Command -> {
                     val current = ready.session ?: return
                     val command = operation.command
                     if (command.sessionId != current.id || command.revision != current.revision) return
                     val guarded = if (command is PracticeCommand.Restart) {
-                        check(nextSessionId < Long.MAX_VALUE) { "Session identity exhausted" }
-                        command.copy(newSessionId = nextSessionId)
+                        command.copy(newSessionId = runtimePracticeId())
                     } else command
-                    reducer(current, guarded).also {
-                        if (it !== current && guarded is PracticeCommand.Restart) nextSessionId++
-                    }
+                    reducer(current, guarded)
                 }
             }
             // Reducer validation and read-only navigation may change its runtime revision but
             // not the committed frontier. Never observe the StateFlow as a save trigger.
             val committed = when (operation) {
                 is PendingOperation.Start -> true
+                is PendingOperation.Resume -> false
                 is PendingOperation.Command -> updated !== ready.session && when (operation.command) {
                     is PracticeCommand.Submit -> updated.view is SessionView.Feedback
                     is PracticeCommand.Skip, is PracticeCommand.Reveal, is PracticeCommand.Retry,
@@ -217,7 +295,7 @@ class LocalPracticeCoordinator(
             throw e
         } catch (e: Exception) {
             pendingOperation = operation
-            val kind = if (operation is PendingOperation.Start) PracticeOperation.START else PracticeOperation.DISPATCH
+            val kind = if (operation is PendingOperation.Start || operation is PendingOperation.Resume) PracticeOperation.START else PracticeOperation.DISPATCH
             mutableState.value = ready.copy(operationError = PracticeOperationError(
                 kind, if (kind == PracticeOperation.START) "Unable to start this session. Retry or leave."
                 else "Unable to complete this action. Retry or leave.",
