@@ -8,6 +8,7 @@ import com.varabyte.kobweb.compose.foundation.layout.Row
 import com.varabyte.kobweb.compose.ui.Alignment
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.color
+import com.varabyte.kobweb.compose.ui.modifiers.border
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.flex
 import com.varabyte.kobweb.compose.ui.modifiers.gap
@@ -16,9 +17,12 @@ import com.varabyte.kobweb.silk.components.forms.Button
 import com.varabyte.kobweb.silk.components.forms.TextInput
 import com.varabyte.kobweb.silk.components.text.SpanText
 import com.varabyte.kobweb.silk.style.toModifier
+import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import org.jetbrains.compose.web.attributes.AutoComplete
 import org.jetbrains.compose.web.css.CSSLengthOrPercentageValue
 import org.jetbrains.compose.web.css.cssRem
+import org.jetbrains.compose.web.css.LineStyle
+import org.jetbrains.compose.web.css.px
 
 // Layout Components
 @Composable
@@ -133,7 +137,12 @@ fun SecondaryButton(
 ) {
     Button(
         onClick ={onClick()},
-        modifier = Styles.ButtonSecondary.toModifier(),
+        // The light style has dark text on a transparent surface; override it on dark cards.
+        // Keep the native/Silk focus outline unchanged in both modes.
+        modifier = Styles.ButtonSecondary.toModifier().then(
+            if (ColorMode.current == ColorMode.DARK) Modifier.color(Colors.DarkText).border(2.px, LineStyle.Solid, Colors.DarkBorder)
+            else Modifier
+        ),
         enabled = enabled
     ) {
         SpanText(text)

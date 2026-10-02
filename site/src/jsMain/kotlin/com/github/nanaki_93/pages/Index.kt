@@ -23,6 +23,7 @@ import com.github.nanaki_93.practice.InvalidReason
 import com.github.nanaki_93.practice.PracticeAnswer
 import com.github.nanaki_93.practice.PracticeSession
 import com.github.nanaki_93.components.styles.Styles
+import com.github.nanaki_93.components.styles.Colors
 import com.github.nanaki_93.components.widgets.PrimaryButton
 import com.github.nanaki_93.components.widgets.SecondaryButton
 import com.github.nanaki_93.content.BrowserContentTextSource
@@ -30,6 +31,16 @@ import com.github.nanaki_93.content.BundledContentLoader
 import com.github.nanaki_93.content.EmptyContentReason
 import com.github.nanaki_93.practice.LocalPracticeCoordinator
 import com.github.nanaki_93.LocalProgress
+import com.github.nanaki_93.initialSilkMode
+import com.github.nanaki_93.progress.SavedColorMode
+import com.github.nanaki_93.progress.SaveProblem
+import com.github.nanaki_93.progress.changePreferences
+import com.github.nanaki_93.storage.LocalProgressOwner
+import com.github.nanaki_93.storage.LocalProgressState
+import com.github.nanaki_93.storage.PersistenceStatus
+import com.github.nanaki_93.storage.ProgressMutationResult
+import com.github.nanaki_93.storage.StoreFailure
+import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import com.github.nanaki_93.practice.LocalPracticeState
 import com.github.nanaki_93.practice.PracticeCommand
 import com.github.nanaki_93.practice.SessionView
@@ -37,6 +48,9 @@ import com.varabyte.kobweb.compose.foundation.layout.Arrangement
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Alignment
+import com.varabyte.kobweb.compose.ui.Modifier
+import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
+import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.style.toModifier
 import org.jetbrains.compose.web.attributes.InputType
@@ -53,9 +67,10 @@ import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.dom.P
+import org.jetbrains.compose.web.dom.Section
 import org.jetbrains.compose.web.dom.Text
 
-/** Home owns only this page's in-memory coordinator; no account or backend is required. */
+/** Home owns only its practice coordinator; the save owner survives page navigation. */
 @Page
 @Composable
 fun HomePage() {
@@ -63,6 +78,7 @@ fun HomePage() {
     val progress = LocalProgress.current
     val coordinator = remember(progress) { LocalPracticeCoordinator(scope, progress, BundledContentLoader(BrowserContentTextSource())) }
     val state by coordinator.state.collectAsState()
+    val darkMode = ColorMode.current == ColorMode.DARK
 
     DisposableEffect(coordinator) {
         coordinator.load()
@@ -70,9 +86,13 @@ fun HomePage() {
     }
 
     Main {
-        Box(Styles.GameContainer.toModifier()) {
+        Box(Styles.GameContainer.toModifier().then(
+            if (darkMode) Modifier.backgroundColor(Colors.DarkBackground) else Modifier
+        )) {
             Column(
-                modifier = Styles.Card.toModifier(),
+                modifier = Styles.Card.toModifier().then(
+                    if (darkMode) Modifier.backgroundColor(Colors.DarkCardBackground).color(Colors.DarkText) else Modifier
+                ),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(1.cssRem),
             ) {
@@ -165,6 +185,75 @@ fun HomePage() {
                                 send(PracticeCommand.Leave(session.id, session.revision))
                             })
                         }
+                    }
+                }
+                SavePreferencesSection(progress)
+            }
+        }
+    }
+}
+
+/** Select a preference once; the owner returns only after the write attempt has completed.
+ * Even a failed write keeps an accepted choice usable in this view, without a saved claim.
+ */
+internal fun selectColorMode(
+    progress: LocalProgressOwner,
+    mode: SavedColorMode,
+    apply: () -> Unit,
+): ProgressMutationResult {
+    val result = progress.mutate { changePreferences(it, it.preferences.copy(colorMode = mode)) }
+    if (result == ProgressMutationResult.Accepted) apply()
+    return result
+}
+
+internal fun saveStatusMessage(state: LocalProgressState): String = when (val status = state.status) {
+    PersistenceStatus.Fresh -> "No local snapshot yet. Progress checkpoints will be saved in this browser when possible."
+    PersistenceStatus.Saved -> if (state.rejectedUpdate != null)
+        "Earlier progress is saved in this browser. The latest change was not retained."
+    else "Saved in this browser. Progress checkpoints and preferences are stored locally; typed responses are not retained."
+    is PersistenceStatus.MemoryOnly -> when (status.reason) {
+        StoreFailure.DENIED -> "Changes only in memory: browser storage is unavailable or denied. Unsaved work may be lost on reload."
+        StoreFailure.QUOTA -> "Changes only in memory: storage is full. The earlier stored snapshot was not replaced; unsaved work may be lost on reload."
+        StoreFailure.OTHER -> "Changes only in memory: saving failed. Unsaved work may be lost on reload."
+    }
+    is PersistenceStatus.Protected -> when (status.reason) {
+        SaveProblem.UNSUPPORTED_VERSION -> "Saving paused: this local save uses an unsupported version. The original is preserved; changes in this view are only in memory."
+        else -> "Saving paused: this local save cannot be read safely. The original is preserved; changes in this view are only in memory."
+    }
+    PersistenceStatus.Conflict -> "Saving paused: another tab changed the local snapshot. Changes in this view are only in memory and may be lost on reload."
+}
+
+/** Independent of the bundled catalog: render status and preferences even if practice fails to load. */
+@Composable
+private fun SavePreferencesSection(progress: LocalProgressOwner) {
+    val saved by progress.state.collectAsState()
+    val colorModeState = ColorMode.currentState
+    Section(attrs = { classes("save-preferences") }) {
+        H2 { Text("Save & preferences") }
+        P(attrs = { attr("role", "status") }) { Text(saveStatusMessage(saved)) }
+        if (saved.rejectedUpdate != null) {
+            P(attrs = { attr("role", "alert") }) {
+                Text("The latest change exceeded save limits or was invalid and was not retained. Earlier progress remains available.")
+            }
+        }
+        if (saved.status is PersistenceStatus.MemoryOnly) {
+            SecondaryButton("Retry saving", onClick = { progress.retrySaving() })
+        }
+        Fieldset {
+            Legend { Text("Color mode") }
+            Span(attrs = { classes("save-color-options") }) {
+                for ((mode, label) in listOf(
+                    SavedColorMode.SYSTEM to "System", SavedColorMode.LIGHT to "Light", SavedColorMode.DARK to "Dark",
+                )) {
+                    Label(attrs = { classes("save-mode-choice") }) {
+                        Input(type = InputType.Radio, attrs = {
+                            attr("name", "save-color-mode")
+                            checked(saved.snapshot.preferences.colorMode == mode)
+                            onChange {
+                                selectColorMode(progress, mode) { colorModeState.value = initialSilkMode(progress) }
+                            }
+                        })
+                        Text(label)
                     }
                 }
             }

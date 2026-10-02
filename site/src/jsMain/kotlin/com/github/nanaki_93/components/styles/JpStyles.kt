@@ -40,10 +40,27 @@ fun initSiteStyles(ctx: InitSilkContext) {
     ctx.stylesheet.registerStyleBase(".practice-japanese") {
         Modifier.fontSize(1.2.cssRem).lineHeight(2.0)
     }
+    // Keep save controls usable on narrow screens; native radio focus outlines remain intact.
+    ctx.stylesheet.registerStyleBase(".save-preferences") {
+        Modifier.fillMaxWidth().textAlign(TextAlign.Start).borderTop(1.px, LineStyle.Solid, Colors.Border)
+            .padding(topBottom = 1.cssRem)
+    }
+    ctx.stylesheet.registerStyleBase(".save-color-options") {
+        Modifier.display(DisplayStyle.Flex).flexWrap(FlexWrap.Wrap).gap(0.75.cssRem)
+    }
+    ctx.stylesheet.registerStyleBase(".save-mode-choice") {
+        Modifier.display(DisplayStyle.Flex).alignItems(AlignItems.Center).gap(0.35.cssRem)
+            .padding(0.3.cssRem)
+    }
 }
 
 object Colors {
     val Background = Color("#F8F5F2") // Lighter, warmer off-white
+    // Accepted Reading Desk dark surfaces and text; the Home card must respond to Silk mode.
+    val DarkBackground = Color("#23122f")
+    val DarkCardBackground = Color("#301b40")
+    val DarkText = Color("#f5f0ff")
+    val DarkBorder = Color("#b28aca")
     val CardBackground = Color("#FFFFFF")
     val Primary = Color("#E3B09C") // Muted Sakura pink / Peach
     val Secondary = Color("#9EB89B") // Muted Forest green / Moss green
