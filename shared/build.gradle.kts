@@ -13,7 +13,6 @@ version = "1.0-SNAPSHOT"
 kotlin {
     jvmToolchain(21)
 
-    jvm()
     js(IR) {
         browser()
         nodejs()
