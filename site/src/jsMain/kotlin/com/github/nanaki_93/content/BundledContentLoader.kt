@@ -97,9 +97,7 @@ class BundledContentLoader(private val source: ContentTextSource) {
         }
         lessons.keys.forEach(::visit)
 
-        if (practices.isEmpty()) return CatalogLoad.Empty(EmptyContentReason.NO_PRACTICE)
-        if (practices.values.all { it.exercises.isEmpty() })
-            return CatalogLoad.Empty(EmptyContentReason.EMPTY_PRACTICE_SETS)
+        // Readiness describes the entire validated manifest, not Home's practice availability.
         return CatalogLoad.Ready(BundledContent(catalog, practices.toMap(), lessons.toMap()))
     }
 
