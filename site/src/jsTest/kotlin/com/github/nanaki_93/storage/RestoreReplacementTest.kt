@@ -178,6 +178,42 @@ class RestoreReplacementTest {
         assertEquals(emptyList(), subject.state.value.snapshot.lessonProgress)
     }
 
+    @Test fun throwingMetadataSuppliersConsumeRestoreAuthorizationBeforeStorageAccess() {
+        for (protected in listOf(false, true)) for (throwClock in listOf(false, true)) {
+            val raw = if (protected) "unreadable" else stored()
+            val backing = MemoryProgressBacking(raw)
+            val store = SpyStore(backing)
+            var fail = false
+            var ids = 0
+            val subject = owner(store,
+                { if (fail && throwClock) error("clock unavailable") else 200L },
+                { if (fail && !throwClock) error("identity unavailable") else "new_local_id_${++ids}" })
+            val original = subject.state.value
+            val baseline = subject.savedBaseline
+            val recovery = subject.originalProtectedRaw
+            val generation = subject.generation
+            var callbacks = 0
+            subject.observeGeneration { callbacks++ }
+            val token = assertIs<ReplacementPreparation.Ready>(subject.beginRestore(candidate())).token
+            val reads = store.reads
+            fail = true
+            assertEquals(ReplacementResult.InvalidReplacement(SaveProblem.INVALID_SNAPSHOT), subject.confirmReplacement(token))
+            assertEquals(ReplacementResult.Stale, subject.confirmReplacement(token))
+            assertEquals(reads, store.reads)
+            assertEquals(0, store.writes)
+            assertEquals(raw, backing.raw)
+            assertEquals(baseline, subject.savedBaseline)
+            assertEquals(recovery, subject.originalProtectedRaw)
+            assertEquals(original, subject.state.value)
+            assertEquals(generation, subject.generation)
+            assertEquals(0, callbacks)
+            fail = false
+            assertEquals(ReplacementResult.Replaced, subject.confirmReplacement(
+                assertIs<ReplacementPreparation.Ready>(subject.beginRestore(candidate())).token))
+            assertEquals(1, store.writes)
+        }
+    }
+
     @Test fun overflowInvalidMetadataAndInvalidCandidateNeverWrite() {
         for (revision in listOf(7L, SaveBounds.MAX_SAFE_INTEGER)) {
             val backing = MemoryProgressBacking(stored(revision))
@@ -186,8 +222,11 @@ class RestoreReplacementTest {
             var id = "new_local_id"
             val subject = owner(store, { time }, { id })
             val original = subject.state.value
+            val generation = subject.generation
+            val baseline = subject.savedBaseline
             val token = assertIs<ReplacementPreparation.Ready>(subject.beginRestore(candidate())).token
             assertEquals(ReplacementResult.InvalidReplacement(SaveProblem.INVALID_SNAPSHOT), subject.confirmReplacement(token))
+            assertEquals(ReplacementResult.Stale, subject.confirmReplacement(token))
             time = 200
             id = "bad id"
             val badId = assertIs<ReplacementPreparation.Ready>(subject.beginRestore(candidate())).token
@@ -203,10 +242,13 @@ class RestoreReplacementTest {
             assertEquals(if (revision == SaveBounds.MAX_SAFE_INTEGER)
                 ReplacementResult.InvalidReplacement(SaveProblem.INVALID_SNAPSHOT) else ReplacementResult.Replaced,
                 subject.confirmReplacement(next))
+            assertEquals(ReplacementResult.Stale, subject.confirmReplacement(next))
             assertEquals(if (revision == SaveBounds.MAX_SAFE_INTEGER) 0 else 1, store.writes)
             if (revision == SaveBounds.MAX_SAFE_INTEGER) {
                 assertEquals(original, subject.state.value)
                 assertEquals(stored(revision), backing.raw)
+                assertEquals(baseline, subject.savedBaseline)
+                assertEquals(generation, subject.generation)
             }
         }
         val backing = MemoryProgressBacking(stored())

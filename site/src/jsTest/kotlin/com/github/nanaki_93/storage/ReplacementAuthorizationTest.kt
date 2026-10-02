@@ -112,6 +112,40 @@ class ReplacementAuthorizationTest {
         assertEquals("unreadable", backing.raw)
     }
 
+    @Test fun protectedRecoverySupplierExceptionsDoNotReadWriteOrConsumeRecoveryText() {
+        for (throwClock in listOf(false, true)) {
+            val backing = MemoryProgressBacking("unreadable")
+            val store = ObservedStore(backing)
+            var fail = false
+            val subject = LocalProgressOwner(store,
+                { if (fail && throwClock) error("clock unavailable") else 123L },
+                { if (fail && !throwClock) error("identity unavailable") else "local_valid_id" })
+            val original = subject.state.value
+            val baseline = subject.savedBaseline
+            val generation = subject.generation
+            var notifications = 0
+            subject.observeGeneration { notifications++ }
+            val token = subject.beginProtectedReplacement()!!
+            val reads = store.reads
+            fail = true
+            assertEquals(ProtectedReplacementResult.InvalidReplacement(SaveProblem.INVALID_SNAPSHOT),
+                subject.confirmProtectedReplacement(token))
+            assertEquals(ProtectedReplacementResult.Stale, subject.confirmProtectedReplacement(token))
+            assertEquals(reads, store.reads)
+            assertEquals(0, store.writes)
+            assertEquals("unreadable", backing.raw)
+            assertEquals(baseline, subject.savedBaseline)
+            assertEquals("unreadable", subject.originalProtectedRaw)
+            assertEquals(original, subject.state.value)
+            assertEquals(generation, subject.generation)
+            assertEquals(0, notifications)
+            fail = false
+            assertEquals(ProtectedReplacementResult.Replaced,
+                subject.confirmProtectedReplacement(subject.beginProtectedReplacement()!!))
+            assertEquals(1, store.writes)
+        }
+    }
+
     @Test fun successfulConfirmationPublishesOnlyAfterTheSingleGuardedWrite() {
         val backing = MemoryProgressBacking("unreadable")
         val store = ObservedStore(backing)
