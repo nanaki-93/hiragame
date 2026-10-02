@@ -58,8 +58,11 @@ class TopicsNavigationTests(unittest.TestCase):
         self.assertIn('Back to catalog', topics)
         self.assertIn('Back to Home', topics)
         self.assertIn('Not started', topics)
+        # Selection and recommendation open only the preview; navigation to the player is separate.
+        self.assertIn('selectedLessonId = card.lessonId', topics)
+        self.assertIn('current.content.lessons[selectedLessonId]', topics)
         for forbidden in ('visitLesson(', 'completeLesson(', 'scheduleReview(', 'progress.mutate(',
-                          'localStorage', 'innerHTML', 'Resume lesson', 'Start lesson'):
+                          'localStorage', 'innerHTML', 'coordinator.start(', 'coordinator.resume('):
             self.assertNotIn(forbidden, topics)
 
     def test_preview_resolves_validated_lesson_and_renders_authored_material_as_text(self):
@@ -89,10 +92,11 @@ class TopicsNavigationTests(unittest.TestCase):
         self.assertIn('property("overflow-wrap", "anywhere")', renderer)
         for forbidden in ('innerHTML', 'dangerouslySetInnerHTML'):
             self.assertNotIn(forbidden, renderer)
-        self.assertIn('Staged exercises and actual checkpoint resumption arrive with the future lesson player', topics)
+        self.assertIn('Read-only lesson preview. Viewing this lesson does not change your saved place.', topics)
+        self.assertNotIn('future lesson player', topics)
         self.assertIn('The saved checkpoint is unavailable', topics)
         for forbidden in ('innerHTML', 'dangerouslySetInnerHTML', 'visitLesson(', 'completeLesson(',
-                          'scheduleReview(', 'Start lesson', 'Resume lesson', 'audio.play('):
+                          'scheduleReview(', 'audio.play('):
             self.assertNotIn(forbidden, topics)
 
     def test_preview_study_aids_use_existing_owner_and_report_write_status(self):

@@ -67,7 +67,7 @@ private fun recommendLesson(cards: List<LessonCard>, snapshot: SaveEnvelope): Le
     val saved = unfinished.filter { it.status.record != null && it.status.checkpointAvailable == true }
         .maxByOrNull { it.status.record!!.updatedAtEpochMs }
     if (saved != null) return LessonRecommendation(
-        saved.lessonId, "Suggested because a saved place is available; this is a read-only preview.", false,
+        saved.lessonId, "Suggested because a saved place is available; browsing does not change progress.", false,
     )
     val aids = snapshot.preferences
     if (aids.showReadings || aids.showTranslation || aids.showRomaji) {
