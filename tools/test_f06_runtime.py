@@ -59,8 +59,44 @@ class TopicsNavigationTests(unittest.TestCase):
         self.assertIn('Back to Home', topics)
         self.assertIn('Not started', topics)
         for forbidden in ('visitLesson(', 'completeLesson(', 'scheduleReview(', 'progress.mutate(',
-                          'changePreferences(', 'localStorage', 'innerHTML', 'Resume lesson', 'Start lesson'):
+                          'localStorage', 'innerHTML', 'Resume lesson', 'Start lesson'):
             self.assertNotIn(forbidden, topics)
+
+    def test_preview_resolves_validated_lesson_and_renders_authored_material_as_text(self):
+        topics = (PAGES / 'Topics.kt').read_text(encoding='utf-8')
+        self.assertIn('current.content.lessons[selectedLessonId]', topics)
+        self.assertIn('lesson == null || card == null', topics)
+        self.assertIn('onClose = { selectedLessonId = null; supportNotice = null }', topics)
+        for field in ('lesson.situation', 'lesson.communicationGoal', 'lesson.durationMinutes',
+                      'lesson.difficulty', 'lesson.prerequisiteLessonIds', 'lesson.dialogue.turns',
+                      'lesson.dialogue.speakers', 'lesson.phrases', 'phrase.usage', 'phrase.register',
+                      'lesson.grammarNotes', 'note.examples', 'lesson.exercises',
+                      'exercise.criteria', 'exercise.exampleResponses', 'lesson.rolePlay.task',
+                      'lesson.rolePlay.criteria', 'lesson.rolePlay.hints', 'lesson.rolePlay.examples'):
+            self.assertIn(field, topics)
+        self.assertIn('attr("lang", "ja")', topics)
+        self.assertIn('TagElement<HTMLElement>("ruby"', topics)
+        self.assertIn('TagElement<HTMLElement>("rt"', topics)
+        self.assertIn('Text(segment.surface)', topics)
+        self.assertIn('property("overflow-wrap", "anywhere")', topics)
+        self.assertIn('Staged exercises and actual checkpoint resumption arrive with the future lesson player', topics)
+        self.assertIn('The saved checkpoint is unavailable', topics)
+        for forbidden in ('innerHTML', 'dangerouslySetInnerHTML', 'visitLesson(', 'completeLesson(',
+                          'scheduleReview(', 'Start lesson', 'Resume lesson', 'audio.play('):
+            self.assertNotIn(forbidden, topics)
+
+    def test_preview_study_aids_use_existing_owner_and_report_write_status(self):
+        topics = (PAGES / 'Topics.kt').read_text(encoding='utf-8')
+        home = (PAGES / 'Index.kt').read_text(encoding='utf-8')
+        self.assertIn('selectStudyAid(progress, aid, it.value)', topics)
+        self.assertIn('progress.mutate { snapshot ->', home)
+        self.assertIn('changePreferences(snapshot, when (aid)', home)
+        for preference in ('showReadings', 'showTranslation', 'showRomaji'):
+            self.assertIn(f'preferences.{preference}', topics)
+        self.assertIn('is ProgressMutationResult.Rejected', topics)
+        self.assertIn('saveStatusMessage(saved)', topics)
+        self.assertIn('Link(path = "/")', topics)
+        self.assertIn('"Back to Home"', topics)
 
 
 if __name__ == '__main__':
