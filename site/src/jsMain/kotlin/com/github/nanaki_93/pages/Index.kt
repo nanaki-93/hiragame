@@ -10,6 +10,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.github.nanaki_93.content.AnswerRepresentation
+import com.github.nanaki_93.content.BundledContent
+import com.github.nanaki_93.content.DocumentKind
+import com.github.nanaki_93.content.PracticeSet
+import com.github.nanaki_93.content.Topic
 import com.github.nanaki_93.content.ChoiceExercise
 import com.github.nanaki_93.content.CompletionExercise
 import com.github.nanaki_93.content.Exercise
@@ -84,6 +88,7 @@ import org.jetbrains.compose.web.dom.TextArea
 import org.w3c.dom.HTMLElement
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.H2
+import org.jetbrains.compose.web.dom.H3
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Section
@@ -160,25 +165,36 @@ fun HomePage() {
                                     })
                                 }
                             }
-                            // One clear invitation for the seed; extra sets get their own titled actions.
-                            val sets = current.availablePracticeSets.values.toList()
-                            for (set in sets) {
-                                val resolution = checkpoints[set.id]
-                                P { Text("${set.title} · ${set.exercises.size} exercises. ${set.description}") }
-                                if (resolution is PracticeCheckpointResolution.Available) {
-                                    if (resolution.checkpoint.view != CheckpointView.COMPLETE) {
-                                        PrimaryButton("Resume ${set.title}", onClick = { coordinator.resume(set.id) })
-                                        P { Text("Starting a new run replaces this set's unfinished checkpoint. Other progress is kept.") }
-                                    } else P { Text("Previous run completed. You can start a new run.") }
-                                }
-                                if (resolution !is PracticeCheckpointResolution.Unavailable) {
-                                    SecondaryButton(
-                                        text = if (sets.size == 1) "Start practice" else "Start ${set.title}",
-                                        onClick = { coordinator.start(set.id) },
-                                    )
+                            // Group only published, nonempty practice documents under their catalog topics.
+                            // Details/summary keep dozens of sets available without a wall of primary actions.
+                            val groups = practiceTopicGroups(current.content)
+                            for (group in groups) {
+                                TagElement<HTMLElement>("details", applyAttrs = {
+                                    style { property("width", "100%"); property("text-align", "start"); property("overflow-wrap", "anywhere") }
+                                }) {
+                                    TagElement<HTMLElement>("summary", applyAttrs = {}) {
+                                        H3 { Text("${group.topic.title} · ${group.sets.size} sets") }
+                                    }
+                                    P { Text(group.topic.description) }
+                                    for (set in group.sets) {
+                                        val resolution = checkpoints[set.id]
+                                        Section {
+                                            H3 { Text(set.title) }
+                                            P { Text("Goal: ${set.description} · ${minOf(10, set.exercises.size)} exercises in this run.") }
+                                            if (resolution is PracticeCheckpointResolution.Available) {
+                                                if (resolution.checkpoint.view != CheckpointView.COMPLETE) {
+                                                    PrimaryButton("Resume ${set.title}", onClick = { coordinator.resume(set.id) })
+                                                    P { Text("Starting a new run replaces this set's unfinished checkpoint. Other progress is kept.") }
+                                                } else P { Text("Previous run completed. You can start a new run.") }
+                                            }
+                                            if (resolution !is PracticeCheckpointResolution.Unavailable) {
+                                                SecondaryButton("Start ${set.title}", onClick = { coordinator.start(set.id) })
+                                            }
+                                        }
+                                    }
                                 }
                             }
-                            if (sets.isEmpty()) P { Text("No exercises are available. Reload to check again.") }
+                            if (groups.isEmpty()) P { Text("No exercises are available. Reload to check again.") }
                             SecondaryButton("Reload practice", onClick = coordinator::load)
                         } else {
                             // Commands capture the rendered identity/revision. The coordinator applies them
@@ -232,6 +248,19 @@ fun HomePage() {
                 SavePreferencesSection(progress)
             }
         }
+    }
+}
+
+/** Catalog order is the navigation order; lesson-only topics are not practice destinations. */
+internal data class PracticeTopicGroup(val topic: Topic, val sets: List<PracticeSet>)
+
+internal fun practiceTopicGroups(content: BundledContent): List<PracticeTopicGroup> {
+    val setsByTopic = content.catalog.entries.asSequence()
+        .filter { it.kind == DocumentKind.PRACTICE }
+        .mapNotNull { entry -> content.practiceSets[entry.id]?.takeIf { it.exercises.isNotEmpty() } }
+        .groupBy { it.topicId }
+    return content.catalog.topics.mapNotNull { topic ->
+        setsByTopic[topic.id]?.let { PracticeTopicGroup(topic, it) }
     }
 }
 

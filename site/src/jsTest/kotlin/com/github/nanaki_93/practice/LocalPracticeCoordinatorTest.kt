@@ -10,6 +10,7 @@ import com.github.nanaki_93.content.CompletionExercise
 import com.github.nanaki_93.content.JapaneseText
 import com.github.nanaki_93.content.ProductionExercise
 import com.github.nanaki_93.pages.promptAnswer
+import com.github.nanaki_93.pages.practiceTopicGroups
 import com.github.nanaki_93.pages.saveStatusMessage
 import com.github.nanaki_93.pages.selectColorMode
 import com.github.nanaki_93.pages.reloadSavedAndApplyMode
@@ -125,7 +126,8 @@ class LocalPracticeCoordinatorTest {
         coordinator.load()
         runCurrent()
         val ready = assertIs<LocalPracticeState.Ready>(coordinator.state.value)
-        assertEquals(listOf("practice-kana-a-i"), ready.availablePracticeSets.keys.toList())
+        assertTrue("practice-kana-a-i" in ready.availablePracticeSets)
+        assertTrue(ready.availablePracticeSets.size > 1)
         assertEquals(listOf("lesson-confirm-meeting-time"), ready.content.lessons.keys.toList())
         coordinator.start("practice-kana-a-i")
         var session = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
@@ -157,6 +159,33 @@ class LocalPracticeCoordinatorTest {
         assertIs<SessionView.Review>(assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!.view)
         coordinator.dispatch(PracticeCommand.Return(id, session.revision + 1))
         assertEquals(SessionView.Complete, assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!.view)
+    }
+
+    @Test fun catalogGroupsOfferEveryAvailableSetWithoutProgressGates() = runTest {
+        val progress = owner()
+        val coordinator = coordinator(this, BundledContentLoader(seedSource()), progress)
+        coordinator.load()
+        runCurrent()
+        val ready = assertIs<LocalPracticeState.Ready>(coordinator.state.value)
+        assertTrue(progress.state.value.snapshot.practiceProgress.isEmpty())
+        val groups = practiceTopicGroups(ready.content)
+        assertEquals(listOf("kana-foundations", "katakana-foundations", "foundational-vocabulary"),
+            groups.map { it.topic.id }) // lesson-only topic has no practice disclosure
+        assertEquals(ready.availablePracticeSets.keys.toList(), groups.flatMap { it.sets }.map { it.id })
+        assertEquals("practice-kana-a-i", groups.first().sets.first().id)
+        assertTrue("Romaji beginner option" in groups.first().sets.first().title)
+        assertTrue(groups.flatMap { it.sets }.all { it.exercises.size in 1..10 })
+        for (setId in listOf("practice-kana-a-i", "practice-katakana-basic-vowels-k-reading",
+            "practice-vocabulary-daily-reading")) {
+            coordinator.start(setId)
+            val session = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
+            assertEquals(setId, session.setId)
+            assertEquals(ready.availablePracticeSets.getValue(setId).exercises.map { it.id }, session.plan.map { it.id })
+            coordinator.dispatch(PracticeCommand.Leave(session.id, session.revision))
+        }
+        assertEquals(3, progress.state.value.snapshot.practiceProgress.size)
+        assertTrue(coordinator.savedCheckpoints().values.all { it is PracticeCheckpointResolution.Available })
+        coordinator.dispose()
     }
 
     @Test fun promptControlsMapToTypedCoordinatorSubmissionsWithoutConsumingInvalidAnswers() = runTest {
@@ -291,7 +320,7 @@ class LocalPracticeCoordinatorTest {
         assertIs<LocalPracticeState.Loading>(coordinator.state.value)
         runCurrent()
         val ready = assertIs<LocalPracticeState.Ready>(coordinator.state.value)
-        assertEquals(listOf(original.id, additional.id), ready.availablePracticeSets.keys.toList())
+        assertEquals(seed.practiceSets.keys.toList() + additional.id, ready.availablePracticeSets.keys.toList())
         coordinator.start(additional.id)
         val session = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
         assertEquals(additional.exercises.map { it.id }, session.plan.map { it.id })
@@ -619,7 +648,7 @@ class LocalPracticeCoordinatorTest {
         for (required in listOf("DisposableEffect(coordinator)", "coordinator.load()", "coordinator.dispose()",
             "LocalPracticeState.Loading", "LocalPracticeState.Empty", "LocalPracticeState.Error",
             "LocalPracticeState.Ready", "coordinator::retryLoad", "coordinator.start(set.id)",
-            "sets.size == 1", "set.title")) {
+            "practiceTopicGroups(current.content)", "set.title")) {
             assertTrue(required in home, "Home missing $required")
         }
         for (obsolete in listOf("ConfigLoader", "AuthService", "GameService", "SessionManager",
@@ -667,9 +696,13 @@ class LocalPracticeCoordinatorTest {
         val launchUi = home.substringAfter("val checkpoints = coordinator.savedCheckpoints()").substringBefore("} else {\n                            // Commands capture")
         for (required in listOf("PracticeCheckpointResolution.Available", "PracticeCheckpointResolution.Unavailable",
             "CheckpointView.COMPLETE", "coordinator.resume(set.id)", "coordinator.start(set.id)",
-            "coordinator.startFreshAfterUnavailable(setId)", "resolution.missingSet", "checkpoint is preserved")) {
+            "coordinator.startFreshAfterUnavailable(setId)", "resolution.missingSet", "checkpoint is preserved",
+            "TagElement<HTMLElement>(\"details\"", "TagElement<HTMLElement>(\"summary\"",
+            "group.topic.title", "group.topic.description", "Goal: ${'$'}{set.description}",
+            "minOf(10, set.exercises.size)", "Start ${'$'}{set.title}")) {
             assertTrue(required in launchUi, "Home missing guarded resume/start: $required")
         }
+        assertTrue("practiceTopicGroups(current.content)" in launchUi)
         val recoveryUi = home.substringAfter("H2 { Text(\"Local progress actions\") }").substringBefore("Fieldset {")
         for (required in listOf("downloads.exportCurrent()", "downloads.downloadProtectedOriginal()",
             "progress.originalProtectedRaw != null", "progress.beginProtectedReplacement()",
