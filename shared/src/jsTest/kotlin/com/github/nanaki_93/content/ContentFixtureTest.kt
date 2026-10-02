@@ -70,7 +70,7 @@ class ContentFixtureTest {
         assertTrue(practiceEntries.size > 11) // seed, both scripts, and introductory vocabulary
         assertEquals(setOf("kana-foundations", "katakana-foundations", "foundational-vocabulary"),
             practiceEntries.map { it.topicId }.toSet())
-        assertEquals(2, catalog.contentVersion)
+        assertEquals(3, catalog.contentVersion)
         val entry = practiceEntries.single { it.id == "practice-kana-a-i" }
         assertEquals(DocumentKind.PRACTICE, entry.kind)
         assertEquals("practice-kana-a-i", entry.id)
@@ -126,9 +126,8 @@ class ContentFixtureTest {
             directory = parent
         }
         val catalog = ContentCodec.decodeCatalog(fs.readFileSync(path.join(root, "catalog.json"), "utf8") as String)
-        assertEquals(1, catalog.entries.count { it.kind == DocumentKind.LESSON })
         assertTrue(catalog.entries.size > 12)
-        val entry = catalog.entries.single { it.kind == DocumentKind.LESSON }
+        val entry = catalog.entries.single { it.id == "lesson-confirm-meeting-time" && it.kind == DocumentKind.LESSON }
         assertTrue(catalog.topics.any { it.id == entry.topicId })
         val lesson = ContentCodec.decodeLesson(fs.readFileSync(path.join(root, entry.path), "utf8") as String)
         assertEquals(entry.id, lesson.id)
@@ -188,7 +187,7 @@ class ContentFixtureTest {
             directory = parent
         }
         val catalog = ContentCodec.decodeCatalog(fs.readFileSync(path.join(root, "catalog.json"), "utf8") as String)
-        val lessonEntry = catalog.entries.single { it.kind == DocumentKind.LESSON }
+        val lessonEntry = catalog.entries.single { it.id == "lesson-confirm-meeting-time" && it.kind == DocumentKind.LESSON }
         val practiceEntry = catalog.entries.single { it.id == "practice-kana-a-i" && it.kind == DocumentKind.PRACTICE }
         val lesson = ContentCodec.decodeLesson(fs.readFileSync(path.join(root, lessonEntry.path), "utf8") as String)
         val practice = ContentCodec.decodePracticeSet(fs.readFileSync(path.join(root, practiceEntry.path), "utf8") as String)
