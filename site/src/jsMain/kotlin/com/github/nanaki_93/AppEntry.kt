@@ -1,7 +1,10 @@
 package com.github.nanaki_93
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import com.varabyte.kobweb.compose.css.ScrollBehavior
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.fillMaxHeight
@@ -15,15 +18,38 @@ import com.varabyte.kobweb.silk.init.registerStyleBase
 import com.varabyte.kobweb.silk.style.common.SmoothColorStyle
 import com.varabyte.kobweb.silk.style.toModifier
 import com.varabyte.kobweb.silk.theme.colors.ColorMode
-import com.varabyte.kobweb.silk.theme.colors.loadFromLocalStorage
-import com.varabyte.kobweb.silk.theme.colors.saveToLocalStorage
 import com.varabyte.kobweb.silk.theme.colors.systemPreference
+import com.github.nanaki_93.progress.SavedColorMode
+import com.github.nanaki_93.storage.BrowserProgressStore
+import com.github.nanaki_93.storage.LocalProgressOwner
+import com.github.nanaki_93.storage.readLegacyColorMode
 
-private const val COLOR_MODE_KEY = "hiragame:colorMode"
+/** The InitSilk hook runs before the app composition. Transfer its single startup read to
+ * AppEntry, where the same owner is provided to every page and disposed with the app.
+ */
+private var initializingOwner: LocalProgressOwner? = null
+
+val LocalProgress = staticCompositionLocalOf<LocalProgressOwner> {
+    error("Progress owner must be provided by AppEntry")
+}
+
+private fun createProgressOwner() = LocalProgressOwner(BrowserProgressStore(), ::readLegacyColorMode)
+
+internal fun initialSilkMode(
+    owner: LocalProgressOwner,
+    systemMode: () -> ColorMode = { ColorMode.systemPreference },
+): ColorMode = when (owner.state.value.snapshot.preferences.colorMode) {
+    SavedColorMode.LIGHT -> ColorMode.LIGHT
+    SavedColorMode.DARK -> ColorMode.DARK
+    SavedColorMode.SYSTEM -> try { systemMode() } catch (_: Throwable) { ColorMode.LIGHT }
+}
 
 @InitSilk
 fun initColorMode(ctx: InitSilkContext) {
-    ctx.config.initialColorMode = ColorMode.loadFromLocalStorage(COLOR_MODE_KEY) ?: ColorMode.systemPreference
+    initializingOwner?.dispose()
+    val owner = createProgressOwner()
+    initializingOwner = owner
+    ctx.config.initialColorMode = initialSilkMode(owner)
 }
 
 @InitSilk
@@ -37,14 +63,18 @@ fun initStyles(ctx: InitSilkContext) {
 @App
 @Composable
 fun AppEntry(content: @Composable () -> Unit) {
-    SilkApp {
-        val colorMode = ColorMode.current
-        LaunchedEffect(colorMode) {
-            colorMode.saveToLocalStorage(COLOR_MODE_KEY)
+    val owner = remember { initializingOwner ?: createProgressOwner().also { initializingOwner = it } }
+    DisposableEffect(owner) {
+        onDispose {
+            if (initializingOwner === owner) initializingOwner = null
+            owner.dispose()
         }
-
-        Surface(SmoothColorStyle.toModifier().fillMaxHeight()) {
-            content()
+    }
+    SilkApp {
+        CompositionLocalProvider(LocalProgress provides owner) {
+            Surface(SmoothColorStyle.toModifier().fillMaxHeight()) {
+                content()
+            }
         }
     }
 }
