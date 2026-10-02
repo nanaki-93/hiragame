@@ -9,6 +9,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import com.github.nanaki_93.LocalProgress
 import com.github.nanaki_93.components.styles.Colors
 import com.github.nanaki_93.components.styles.Styles
+import com.github.nanaki_93.components.widgets.PreviewJapaneseText
 import com.github.nanaki_93.components.widgets.PrimaryButton
 import com.github.nanaki_93.components.widgets.SecondaryButton
 import com.github.nanaki_93.content.BrowserContentTextSource
@@ -16,10 +17,18 @@ import com.github.nanaki_93.content.BundledContentLoader
 import com.github.nanaki_93.lesson.LessonCheckpointMismatch
 import com.github.nanaki_93.lesson.LessonCheckpointResolution
 import com.github.nanaki_93.lesson.LessonCommand
+import com.github.nanaki_93.lesson.EmptyLessonStage
 import com.github.nanaki_93.lesson.LessonEmptyReason
+import com.github.nanaki_93.lesson.LessonPlanItem
 import com.github.nanaki_93.lesson.LocalLessonCoordinator
 import com.github.nanaki_93.lesson.LocalLessonState
 import com.github.nanaki_93.progress.LessonStage
+import com.github.nanaki_93.progress.SavePreferences
+import com.github.nanaki_93.content.Lesson
+import com.github.nanaki_93.content.ChoiceExercise
+import com.github.nanaki_93.content.CompletionExercise
+import com.github.nanaki_93.content.ProductionExercise
+import com.github.nanaki_93.content.ReadingExercise
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Modifier
@@ -31,6 +40,7 @@ import com.varabyte.kobweb.silk.style.toModifier
 import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.H2
+import org.jetbrains.compose.web.dom.H3
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Section
@@ -81,6 +91,7 @@ private fun LessonEntry(lessonId: String) {
         LocalLessonCoordinator(scope, progress, BundledContentLoader(BrowserContentTextSource()))
     }
     val state by coordinator.state.collectAsState()
+    val saved by progress.state.collectAsState()
     DisposableEffect(coordinator, lessonId) {
         coordinator.load(lessonId)
         onDispose { coordinator.dispose() }
@@ -141,17 +152,141 @@ private fun LessonEntry(lessonId: String) {
                 PrimaryButton("Continue from Situation", onClick = coordinator::recoverToSituation)
             }
         }
-        is LocalLessonState.Active -> Section {
-            H2 { Text(current.lesson.title) }
-            P { Text("Current stage: ${stageLabel(current.session.stage)}") }
-            current.session.notice?.let { P(attrs = { attr("role", "status") }) { Text(it) } }
-            LessonActionError(current.operationError, coordinator, canLeave = true)
-            if (current.operationError == null) {
-                // The stage controls are added in the following player tasks. Leave is already guarded.
-                SecondaryButton("Leave lesson", onClick = {
-                    coordinator.dispatch(LessonCommand.Leave(current.session.id, current.session.revision))
-                })
+        is LocalLessonState.Active -> LessonPlayer(current, saved.snapshot.preferences, coordinator)
+    }
+}
+
+/** One stage entry or authored item at a time; stage names are orientation, not navigation shortcuts. */
+@Composable
+private fun LessonPlayer(
+    active: LocalLessonState.Active,
+    preferences: SavePreferences,
+    coordinator: LocalLessonCoordinator,
+) {
+    val lesson = active.lesson
+    val session = active.session
+    val stage = session.plan.stage(session.stage)
+    val stageNumber = session.plan.stages.indexOf(stage) + 1
+    Section(attrs = { style { property("overflow-wrap", "anywhere"); property("min-width", "0") } }) {
+        H2 { Text(lesson.title) }
+        P { Text("Stage $stageNumber of ${session.plan.stages.size}: ${stageLabel(session.stage)}") }
+        P { Text(session.plan.stages.joinToString(" → ") { stageLabel(it.stage) }) }
+        P { Text(if (session.itemIndex == null) "Stage introduction" else
+            "Item ${session.itemIndex!! + 1} of ${stage.items.size}") }
+        session.notice?.let { P(attrs = { attr("role", "status") }) { Text(it) } }
+        when (session.stage) {
+            LessonStage.SITUATION -> {
+                H3 { Text("Situation") }
+                P { Text(lesson.situation) }
+                P { Text("Communication goal: ${lesson.communicationGoal}") }
+                P { Text("Suggested difficulty: ${lesson.difficulty.name.lowercase()}; about ${lesson.durationMinutes} minutes. These are guidance, not requirements.") }
+                P { Text("Suggested prerequisite lessons (optional): ${lesson.prerequisiteLessonIds.joinToString().ifEmpty { "none" }}") }
             }
+            LessonStage.DIALOGUE -> when (val item = session.item) {
+                null -> {
+                    H3 { Text("Dialogue") }
+                    P { Text(if (stage.empty == EmptyLessonStage.NO_DIALOGUE_TURNS)
+                        "No dialogue turns are authored for this lesson. Continue when ready."
+                        else "Read the exchange one turn at a time. Select Next to begin; audio is not needed.") }
+                    val generalPhrases = lesson.phrases.filter { it.sourceTurnId == null }
+                    if (generalPhrases.isNotEmpty()) {
+                        H3 { Text("Useful phrases for this situation") }
+                        for (phrase in generalPhrases) {
+                            PreviewJapaneseText(phrase.text, preferences)
+                            P { Text("Use: ${phrase.usage} · Register: ${phrase.register}") }
+                        }
+                    }
+                }
+                is LessonPlanItem.Turn -> DialogueTask(lesson, item, preferences)
+                else -> Unit
+            }
+            LessonStage.UNDERSTANDING, LessonStage.GUIDED_PRACTICE -> when (val item = session.item) {
+                null -> {
+                    H3 { Text(stageLabel(session.stage)) }
+                    P { Text(if (stage.empty == EmptyLessonStage.NO_EXERCISES)
+                        "No exercises are authored for this stage. Continue when ready."
+                        else "Work through each authored prompt in order. Select Next to begin.") }
+                }
+                is LessonPlanItem.Prompt -> {
+                    H3 { Text("Current exercise") }
+                    P { Text(when (val exercise = item.exercise) {
+                        is ChoiceExercise -> exercise.prompt
+                        is ReadingExercise -> exercise.prompt
+                        is CompletionExercise -> exercise.prompt
+                        is ProductionExercise -> exercise.prompt
+                    }) }
+                    P { Text("Response controls for this exercise follow in the next player step. You can go back or explicitly skip the remaining prompts in this stage.") }
+                }
+                else -> Unit
+            }
+            LessonStage.ROLE_PLAY -> {
+                H3 { Text("Role-play") }
+                P { Text(lesson.rolePlay.task) }
+                if (stage.empty == EmptyLessonStage.ROLE_PLAY_OBJECTIVE_ONLY)
+                    P { Text("No production prompt is authored here. Reflect on the objective before continuing; reflection controls follow in the next player step.") }
+                else if (session.item is LessonPlanItem.Prompt) {
+                    val exercise = (session.item as LessonPlanItem.Prompt).exercise as ProductionExercise
+                    P { Text(exercise.prompt) }
+                    P { Text("Role-play response controls follow in the next player step.") }
+                } else P { Text("Select Next to begin the role-play prompts.") }
+            }
+            LessonStage.SUMMARY -> {
+                H3 { Text("Summary") }
+                P { Text("Communication goal: ${lesson.communicationGoal}") }
+                P { Text("Arriving here does not finish the lesson. Finish and session summary controls follow in the next player step.") }
+            }
+        }
+        LessonActionError(active.operationError, coordinator, canLeave = true)
+        if (active.operationError == null) {
+            if (stageNumber > 1 || session.itemIndex != null)
+                SecondaryButton("Previous", onClick = {
+                    coordinator.dispatch(LessonCommand.Previous(session.id, session.revision))
+                })
+            val prompt = session.item is LessonPlanItem.Prompt ||
+                (session.stage == LessonStage.ROLE_PLAY && stage.empty == EmptyLessonStage.ROLE_PLAY_OBJECTIVE_ONLY)
+            when {
+                prompt && session.outcome != null -> PrimaryButton("Continue", onClick = {
+                    coordinator.dispatch(LessonCommand.Continue(session.id, session.revision))
+                })
+                prompt -> {
+                    val objectiveOnly = session.stage == LessonStage.ROLE_PLAY &&
+                        stage.empty == EmptyLessonStage.ROLE_PLAY_OBJECTIVE_ONLY
+                    P { Text(if (objectiveOnly) "Skip the reflection to continue. This is recorded as skipped, not self-assessed."
+                        else "To move past unresolved prompts, choose Skip remaining in this stage. Skipped prompts are not credited as correct.") }
+                    SecondaryButton(if (objectiveOnly) "Skip reflection" else "Skip remaining in this stage", onClick = {
+                        coordinator.dispatch(LessonCommand.SkipRemaining(session.id, session.revision))
+                    })
+                }
+                !prompt && session.stage != LessonStage.SUMMARY -> PrimaryButton(
+                    if (session.itemIndex == null && stage.items.isEmpty()) "Continue to next stage" else "Next",
+                    onClick = { coordinator.dispatch(LessonCommand.Next(session.id, session.revision)) },
+                )
+            }
+            SecondaryButton("Leave lesson", onClick = {
+                coordinator.dispatch(LessonCommand.Leave(session.id, session.revision))
+            })
+        }
+    }
+}
+
+@Composable
+private fun DialogueTask(lesson: Lesson, item: LessonPlanItem.Turn, preferences: SavePreferences) {
+    val speaker = lesson.dialogue.speakers.first { it.id == item.turn.speakerId }
+    H3 { Text("${speaker.name} · ${speaker.role}") }
+    PreviewJapaneseText(item.turn.text, preferences) // Normal reading size, never practice's oversized glyphs.
+    val phrases = lesson.phrases.filter { it.sourceTurnId == item.turn.id }
+    if (phrases.isNotEmpty()) {
+        H3 { Text("Useful phrases in this turn") }
+        for (phrase in phrases) {
+            PreviewJapaneseText(phrase.text, preferences)
+            P { Text("Use: ${phrase.usage} · Register: ${phrase.register}") }
+        }
+    }
+    if (lesson.grammarNotes.isNotEmpty()) {
+        H3 { Text("Grammar support") }
+        for (note in lesson.grammarNotes) {
+            P { Text(note.explanation) }
+            note.examples.forEach { PreviewJapaneseText(it, preferences) }
         }
     }
 }
@@ -165,7 +300,7 @@ private fun LessonActionError(
     if (error == null) return
     P(attrs = { attr("role", "alert") }) { Text(error.safeMessage) }
     SecondaryButton("Retry action", onClick = { coordinator.retryOperation(error) })
-    if (canLeave) SecondaryButton("Leave this action", onClick = { coordinator.leaveAfterError(error) })
+    if (canLeave) SecondaryButton("Leave lesson", onClick = { coordinator.leaveAfterError(error) })
 }
 
 private fun mismatchMessage(reason: LessonCheckpointMismatch): String = when (reason) {

@@ -44,6 +44,45 @@ class LessonRouteTests(unittest.TestCase):
             self.assertNotIn(forbidden, page)
         self.assertNotRegex(coordinator, r'loadContent\s*\(\s*(?:id|lessonId|requestedId)')
 
+    def test_stage_player_renders_one_cursor_and_guarded_navigation(self):
+        page = PAGE.read_text(encoding='utf-8')
+        self.assertIn('LocalLessonState.Active -> LessonPlayer(current, saved.snapshot.preferences, coordinator)', page)
+        self.assertIn('session.plan.stage(session.stage)', page)
+        self.assertIn('Stage $stageNumber of ${session.plan.stages.size}', page)
+        self.assertIn('Item ${session.itemIndex!! + 1} of ${stage.items.size}', page)
+        self.assertIn('session.plan.stages.joinToString(" → ")', page)
+        self.assertIn('when (session.stage)', page)
+        for stage in ('SITUATION', 'DIALOGUE', 'UNDERSTANDING', 'GUIDED_PRACTICE', 'ROLE_PLAY', 'SUMMARY'):
+            self.assertIn('LessonStage.' + stage, page)
+        self.assertIn('session.item', page)
+        self.assertIn('session.outcome != null', page)
+        self.assertIn('coordinator.dispatch(LessonCommand.Next(session.id, session.revision))', page)
+        self.assertIn('coordinator.dispatch(LessonCommand.Previous(session.id, session.revision))', page)
+        self.assertIn('coordinator.dispatch(LessonCommand.Continue(session.id, session.revision))', page)
+        self.assertIn('coordinator.dispatch(LessonCommand.SkipRemaining(session.id, session.revision))', page)
+        self.assertIn('coordinator.dispatch(LessonCommand.Leave(session.id, session.revision))', page)
+        self.assertIn('coordinator.leaveAfterError(error)', page)
+        self.assertIn('Skipped prompts are not credited as correct.', page)
+        self.assertIn('No exercises are authored for this stage.', page)
+        self.assertIn('No dialogue turns are authored for this lesson.', page)
+        self.assertNotIn('window.location.href', page)
+
+    def test_authored_context_turns_and_support_without_large_practice_type(self):
+        page = PAGE.read_text(encoding='utf-8')
+        renderer = (ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/components/widgets/JapaneseTextPresentation.kt').read_text(encoding='utf-8')
+        for field in ('lesson.situation', 'lesson.communicationGoal', 'lesson.difficulty',
+                      'lesson.durationMinutes', 'lesson.prerequisiteLessonIds', 'item.turn.speakerId',
+                      'item.turn.text', 'phrase.sourceTurnId == item.turn.id',
+                      'phrase.usage', 'phrase.register', 'note.explanation', 'note.examples'):
+            self.assertIn(field, page)
+        self.assertIn('PreviewJapaneseText(item.turn.text, preferences)', page)
+        self.assertIn('JapanesePassage(text, aids.ruby, practiceTypography = false)', renderer)
+        self.assertIn('attr("lang", "ja")', renderer)
+        self.assertIn('TagElement<HTMLElement>("ruby"', renderer)
+        self.assertIn('Text(segment.surface)', renderer)
+        self.assertIn('property("overflow-wrap", "anywhere")', page)
+        self.assertNotIn('innerHTML', page)
+
     def test_entry_recovery_and_safe_exits(self):
         page = PAGE.read_text(encoding='utf-8')
         for state in ('Loading', 'Missing', 'Empty', 'Error', 'Entry', 'RecoveryRequired', 'Active'):
