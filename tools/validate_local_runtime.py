@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only, fail-closed checks for the F02 hosted runtime (not a browser test)."""
+"""Read-only, fail-closed checks for the local hosted runtime (not a browser test)."""
 import argparse
 import re
 import sys
@@ -8,14 +8,22 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 CONTENT = REPO / 'site/src/jsMain/resources/public/content'
 SITE = REPO / 'site/src/jsMain/kotlin/com/github/nanaki_93'
-SHARED = REPO / 'shared/src/commonMain/kotlin/com/github/nanaki_93/practice'
+SHARED = REPO / 'shared/src/commonMain/kotlin/com/github/nanaki_93'
+# Only these two isolated adapters may touch browser storage directly. All other
+# runtime sources must use the progress owner/store, not Silk's storage helpers.
+BROWSER_STORAGE_ADAPTERS = {'BrowserProgressStore.kt', 'LegacyColorMode.kt'}
 HOSTED_CONTENT = Path('hiragame/content')
 EXECUTABLE = {'.js', '.mjs', '.cjs'}  # .js.map is source text, not executed
 
-# Only the active entry points and the new runtime/domain are subject to this
-# boundary. Dormant services and shared backend DTOs are retained for F13.
+# Only the active entry points and local runtime/domain are subject to this
+# boundary. Dormant services and shared backend DTOs (models/) are retained for F13.
 SOURCE_FILES = [SITE / 'AppEntry.kt', SITE / 'pages/Index.kt', SITE / 'pages/Login.kt']
-SOURCE_DIRS = [SITE / 'content', SITE / 'practice', SHARED]
+SOURCE_DIRS = [SITE / 'pages', SITE / 'content', SITE / 'practice', SITE / 'storage',
+               SHARED / 'content', SHARED / 'practice', SHARED / 'progress']
+DIRECT_BROWSER_STORAGE = re.compile(
+    r'\b(?:localStorage|sessionStorage|loadFromLocalStorage|saveToLocalStorage)\b'
+    r'|\b(?:getItem|setItem|removeItem)\s*\(\s*["\x27]hiragame:(?:state|colorMode)\b'
+)
 SOURCE_LEGACY = re.compile(
     r'\b(?:ConfigLoader|AuthService|GameService|SessionManager|launchSafe|'
     r'AppConfig|LoginRegisterRequest|UserData|UserQuestionDto|QuestionDto|'
@@ -55,8 +63,9 @@ def validate(artifact_root, source_root=CONTENT, source_files=None, source_dirs=
             if path.is_symlink():
                 errors.append(f'canonical content symlink not allowed: {path}')
 
-    for path in [*source_files, *(p for d in source_dirs for p in files_under(d))]:
-        if not path.is_file():
+    storage_dirs = {d for d in source_dirs if d.name == 'storage'}
+    for path in sorted({*source_files, *(p for d in source_dirs for p in files_under(d))}):
+        if not path.is_file() or path.is_symlink():
             errors.append(f'missing runtime source: {path}')
             continue
         try:
@@ -67,8 +76,12 @@ def validate(artifact_root, source_root=CONTENT, source_files=None, source_dirs=
         for number, line in enumerate(text.splitlines(), 1):
             if SOURCE_LEGACY.search(line):
                 errors.append(f'legacy runtime dependency in {path}:{number}')
+            if DIRECT_BROWSER_STORAGE.search(line) and not (
+                path.parent in storage_dirs and path.name in BROWSER_STORAGE_ADAPTERS
+            ):
+                errors.append(f'direct browser storage outside isolated adapter in {path}:{number}')
     for directory in source_dirs:
-        if not directory.is_dir():
+        if not directory.is_dir() or directory.is_symlink():
             errors.append(f'missing runtime source directory: {directory}')
 
     if not artifact_root.is_dir() or artifact_root.is_symlink():
