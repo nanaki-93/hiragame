@@ -183,7 +183,7 @@ class LocalPracticeCoordinatorTest {
         val ready = assertIs<LocalPracticeState.Ready>(coordinator.state.value)
         assertTrue("practice-kana-a-i" in ready.availablePracticeSets)
         assertTrue(ready.availablePracticeSets.size > 1)
-        assertEquals(listOf("lesson-confirm-meeting-time"), ready.content.lessons.keys.toList())
+        assertTrue("lesson-confirm-meeting-time" in ready.content.lessons)
         coordinator.start("practice-kana-a-i")
         var session = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
         assertEquals(listOf("exercise-kana-a-choice", "exercise-kana-i-reading"), session.plan.map { it.id })
@@ -1046,6 +1046,45 @@ class LocalPracticeCoordinatorTest {
             "ConfigLoader still exists")
     }
 
+    @Test fun practiceEmptyStatesAreDerivedFromReadyContentWithoutHidingLessons() = runTest {
+        val content = seed().content
+        val lessonOnly = content.copy(practiceSets = emptyMap())
+        val emptySets = content.copy(practiceSets = content.practiceSets.mapValues { (_, set) ->
+            set.copy(exercises = emptyList())
+        })
+        val usable = content.practiceSets.values.first()
+        val mixed = emptySets.copy(practiceSets = emptySets.practiceSets +
+            (usable.id to usable))
+        for ((bundle, expected) in listOf(
+            lessonOnly to EmptyContentReason.NO_PRACTICE,
+            emptySets to EmptyContentReason.EMPTY_PRACTICE_SETS,
+        )) {
+            assertTrue(bundle.lessons.isNotEmpty())
+            val progress = owner()
+            val practice = coordinator(this, { CatalogLoad.Ready(bundle) }, progress)
+            try {
+                practice.load()
+                runCurrent()
+                assertEquals(expected, assertIs<LocalPracticeState.Empty>(practice.state.value).reason)
+                assertTrue(progress.state.value.snapshot.practiceProgress.isEmpty())
+                practice.start(usable.id) // empty Home cannot start a session
+                assertEquals(expected, assertIs<LocalPracticeState.Empty>(practice.state.value).reason)
+            } finally {
+                practice.dispose()
+                progress.dispose()
+            }
+        }
+        val practice = coordinator(this, { CatalogLoad.Ready(mixed) })
+        try {
+            practice.load()
+            runCurrent()
+            assertEquals(listOf(usable.id), assertIs<LocalPracticeState.Ready>(practice.state.value)
+                .availablePracticeSets.keys.toList())
+        } finally {
+            practice.dispose()
+        }
+    }
+
     @Test fun failedLoadCanRetryAndEmptyCanReload() = runTest {
         val valid = seed()
         var attempts = 0
@@ -1068,7 +1107,7 @@ class LocalPracticeCoordinatorTest {
         assertEquals(2, attempts)
         var empty = true
         val other = coordinator(this, {
-            if (empty) CatalogLoad.Empty(EmptyContentReason.NO_PRACTICE) else valid
+            if (empty) CatalogLoad.Ready(valid.content.copy(practiceSets = emptyMap())) else valid
         })
         other.load()
         runCurrent()
@@ -1077,6 +1116,20 @@ class LocalPracticeCoordinatorTest {
         other.retryLoad()
         runCurrent()
         assertIs<LocalPracticeState.Ready>(other.state.value)
+
+        var catalogEmpty = true
+        val manifestEmpty = coordinator(this, {
+            if (catalogEmpty) CatalogLoad.Empty(EmptyContentReason.EMPTY_CATALOG) else valid
+        })
+        manifestEmpty.load()
+        runCurrent()
+        assertEquals(EmptyContentReason.EMPTY_CATALOG,
+            assertIs<LocalPracticeState.Empty>(manifestEmpty.state.value).reason)
+        catalogEmpty = false
+        manifestEmpty.retryLoad()
+        runCurrent()
+        assertIs<LocalPracticeState.Ready>(manifestEmpty.state.value)
+        manifestEmpty.dispose()
     }
 
     @Test fun loadErrorsExposeTypedKindWithoutExaminingDiagnosticText() = runTest {
