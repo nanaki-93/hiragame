@@ -130,10 +130,15 @@ fun HomePage() {
             ) {
                 H1 { Text("Hiragame") }
                 Link(path = "/review") { Text("Phrase review") }
-                val dueCount = saved.snapshot.reviewItems.count { (it.dueAtEpochMs ?: it.lastReviewedAtEpochMs) <= kotlin.js.Date.now().toLong() }
-                P { Text("$dueCount phrases due · ${saved.snapshot.lessonProgress.count { it.completedAtEpochMs != null }} lessons completed") }
-                if (dueCount > 0) Link(path = "/review") { Text("Start due reviews") }
-                else saved.snapshot.lessonProgress.filter { it.completedAtEpochMs == null }.maxByOrNull { it.updatedAtEpochMs }?.let {
+                val content = (state as? LocalPracticeState.Ready)?.content
+                val dueCount = content?.let {
+                    com.github.nanaki_93.review.reviewDueCount(
+                        com.github.nanaki_93.review.eligibleReviewCards(it.lessons.values, it.practiceSets.values, saved.snapshot),
+                        saved.snapshot, kotlin.js.Date.now().toLong())
+                }
+                P { Text("${dueCount?.let { "$it available phrases due" } ?: "Open Phrase review to check due items"} · ${saved.snapshot.lessonProgress.count { it.completedAtEpochMs != null }} lessons completed") }
+                if (dueCount != null && dueCount > 0) Link(path = "/review") { Text("Start due reviews") }
+                else saved.snapshot.lessonProgress.filter { it.completedAtEpochMs == null && content?.lessons?.containsKey(it.lessonId) == true }.maxByOrNull { it.updatedAtEpochMs }?.let {
                     Link(path = "/lesson?lessonId=${it.lessonId}") { Text("Continue your lesson") }
                 }
                 // Keep the catalog reachable during loading, empty practice, errors, and active sessions.

@@ -46,4 +46,17 @@ class PhraseReviewTest {
         val end = scheduleReview(card("end"), null, ReviewOutcome.GOOD, SaveBounds.MAX_EPOCH_MS, "end")
         assertEquals(SaveBounds.MAX_EPOCH_MS, end.dueAtEpochMs)
     }
+
+    @Test fun unavailableAndReassignedItemsRemainSavedButDoNotInflateDueCount() {
+        val available = card("available")
+        val moved = card("moved")
+        val records = listOf(
+            scheduleReview(available, null, ReviewOutcome.AGAIN, 0, "one"),
+            scheduleReview(card("removed"), null, ReviewOutcome.AGAIN, 0, "two"),
+            scheduleReview(moved.copy(documentId = "retired_document"), null, ReviewOutcome.AGAIN, 0, "three"),
+        )
+        val prior = save.copy(reviewItems = records)
+        assertEquals(1, reviewDueCount(listOf(available, moved), prior, 600_000))
+        assertEquals(records, prior.reviewItems)
+    }
 }
