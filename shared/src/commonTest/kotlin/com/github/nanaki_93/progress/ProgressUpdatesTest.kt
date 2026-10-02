@@ -17,22 +17,53 @@ class ProgressUpdatesTest {
 
     private fun applied(result: ProgressUpdate): SaveEnvelope = assertIs<ProgressUpdate.Applied>(result).snapshot
 
-    @Test fun lessonVisitCheckpointAndCompletionAreExplicitAndRevisitKeepsCompletion() {
+    @Test fun finishIsAtomicIdempotentAndReplayPreservesFirstCompletionAndOtherRecords() {
         val initial = baseline()
         val visited = applied(visitLesson(initial, "newLesson", 2, LessonStage.SITUATION, null, 11))
-        val checkpoint = applied(visitLesson(visited, "newLesson", 2, LessonStage.ROLE_PLAY, "node_1", 12))
-        val completed = applied(completeLesson(checkpoint, "newLesson", 13))
-        val revisited = applied(visitLesson(completed, "newLesson", 3, LessonStage.DIALOGUE, "node_2", 14))
+        val summary = applied(visitLesson(visited, "newLesson", 2, LessonStage.SUMMARY, null, 12))
+        assertEquals(null, summary.lessonProgress.last().completedAtEpochMs) // Entering Summary is not Finish.
+        val completed = applied(completeLesson(summary, "newLesson", 2, 13))
+        assertEquals(LessonProgress("newLesson", 2, 13, LessonStage.SUMMARY, null, 13),
+            completed.lessonProgress.last())
+        assertEquals(completed, assertIs<ProgressUpdate.Unchanged>(
+            completeLesson(completed, "newLesson", 2, 14)).snapshot)
+        assertEquals(completed, assertIs<ProgressUpdate.Rejected>(
+            completeLesson(completed, "newLesson", 2, -1)).snapshot)
+        assertEquals(completed, assertIs<ProgressUpdate.Rejected>(
+            completeLesson(completed, "newLesson", 0, 14)).snapshot)
+
+        val revisited = applied(visitLesson(completed, "newLesson", 3, LessonStage.DIALOGUE, "turn_2", 15))
         assertEquals(13L, revisited.lessonProgress.last().completedAtEpochMs)
-        assertEquals("node_2", revisited.lessonProgress.last().checkpointId)
-        assertEquals(3, revisited.lessonProgress.last().contentVersion)
-        assertIs<ProgressUpdate.Unchanged>(completeLesson(revisited, "newLesson", 15))
-        assertEquals(initial.lessonProgress.single(), revisited.lessonProgress.first())
-        assertEquals(initial.practiceProgress, revisited.practiceProgress)
-        assertEquals(initial.reviewItems, revisited.reviewItems)
-        assertEquals(initial.revision, revisited.revision)
-        assertEquals(initial.savedAtEpochMs, revisited.savedAtEpochMs)
-        assertEquals(revisited, assertIs<SaveDecodeResult.Valid>(decodeSave(encodeSave(revisited))).snapshot)
+        assertEquals("turn_2", revisited.lessonProgress.last().checkpointId)
+        val replayFinished = applied(completeLesson(revisited, "newLesson", 3, 17))
+        assertEquals(LessonProgress("newLesson", 3, 17, LessonStage.SUMMARY, null, 13),
+            replayFinished.lessonProgress.last())
+        assertEquals(replayFinished, assertIs<ProgressUpdate.Unchanged>(
+            completeLesson(replayFinished, "newLesson", 3, 18)).snapshot)
+        val enteredSummaryAgain = applied(visitLesson(
+            applied(visitLesson(replayFinished, "newLesson", 3, LessonStage.DIALOGUE, "turn_2", 19)),
+            "newLesson", 3, LessonStage.SUMMARY, null, 20))
+        assertEquals(13L, enteredSummaryAgain.lessonProgress.last().completedAtEpochMs)
+        assertEquals(enteredSummaryAgain, assertIs<ProgressUpdate.Unchanged>(
+            completeLesson(enteredSummaryAgain, "newLesson", 3, 21)).snapshot)
+        assertEquals(initial.lessonProgress.single(), replayFinished.lessonProgress.first())
+        assertEquals(initial.practiceProgress, replayFinished.practiceProgress)
+        assertEquals(initial.reviewItems, replayFinished.reviewItems)
+        assertEquals(initial.preferences, replayFinished.preferences)
+        assertEquals(initial.snapshotId, replayFinished.snapshotId)
+        assertEquals(initial.revision, replayFinished.revision)
+        assertEquals(initial.savedAtEpochMs, replayFinished.savedAtEpochMs)
+        assertEquals(replayFinished, assertIs<SaveDecodeResult.Valid>(decodeSave(encodeSave(replayFinished))).snapshot)
+    }
+
+    @Test fun finishFromOldCheckpointIsOneValidatedChangeAndCannotLeaveAnOldPlace() {
+        val initial = baseline()
+        val oldPlace = applied(visitLesson(initial, "newLesson", 2, LessonStage.GUIDED_PRACTICE, "exercise_1", 11))
+        val finished = applied(completeLesson(oldPlace, "newLesson", 3, 12))
+        assertEquals(LessonProgress("newLesson", 3, 12, LessonStage.SUMMARY, null, 12),
+            finished.lessonProgress.last())
+        assertEquals(initial.reviewItems, finished.reviewItems)
+        assertEquals(initial.practiceProgress, finished.practiceProgress)
     }
 
     @Test fun reviewValuesAreExplicitAndDuplicateTokensDoNotApplyAgain() {
@@ -132,8 +163,10 @@ class ProgressUpdatesTest {
             visitLesson(initial, "newLesson", 0, LessonStage.SUMMARY, null, 11),
             visitLesson(initial, "lostLesson", 1, LessonStage.SUMMARY, "bad.id", 11),
             visitLesson(initial, "lostLesson", 1, LessonStage.SUMMARY, null, -1),
-            completeLesson(initial, "notEncountered", 11),
-            completeLesson(initial, "lostLesson", SaveBounds.MAX_EPOCH_MS + 1),
+            completeLesson(initial, "notEncountered", 1, 11),
+            completeLesson(initial, "lostLesson", 0, 11),
+            completeLesson(initial, "lostLesson", 1, -1),
+            completeLesson(initial, "lostLesson", 1, SaveBounds.MAX_EPOCH_MS + 1),
             recordReview(initial, initial.reviewItems.single().copy(itemId = "bad/id", lastActionToken = "new")),
             recordReview(initial, initial.reviewItems.single().copy(step = -1, lastActionToken = "new")),
         )

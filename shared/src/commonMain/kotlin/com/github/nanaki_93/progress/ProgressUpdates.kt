@@ -47,20 +47,27 @@ fun visitLesson(
     snapshot.copy(lessonProgress = snapshot.lessonProgress.replaceById(lessonId, LessonProgress::lessonId, record))
 }
 
-/** Completion is an explicit action on an encountered lesson; a replay cannot erase its first completion. */
+/** Finish is one validated mutation: Summary/null and first completion are committed together.
+ * Requires an encountered lesson. Repeating Finish at the same version is a no-op, even with a new clock value.
+ * A later revisit can move the checkpoint; finishing it again restores Summary without changing first completion.
+ */
 fun completeLesson(
     snapshot: SaveEnvelope,
     lessonId: String,
+    contentVersion: Int,
     completedAtEpochMs: Long,
 ): ProgressUpdate = update(snapshot) {
+    require(contentVersion > 0 && completedAtEpochMs in 0..SaveBounds.MAX_EPOCH_MS) { "Invalid completion" }
     val previous = snapshot.lessonProgress.firstOrNull { it.lessonId == lessonId }
         ?: throw IllegalArgumentException("Lesson has not been encountered")
-    if (previous.completedAtEpochMs != null) snapshot else snapshot.copy(
-        lessonProgress = snapshot.lessonProgress.replaceById(
-            lessonId, LessonProgress::lessonId,
-            previous.copy(updatedAtEpochMs = completedAtEpochMs, completedAtEpochMs = completedAtEpochMs),
-        ),
-    )
+    if (previous.stage == LessonStage.SUMMARY && previous.checkpointId == null &&
+        previous.completedAtEpochMs != null && previous.contentVersion == contentVersion) snapshot
+    else snapshot.copy(lessonProgress = snapshot.lessonProgress.replaceById(
+        lessonId, LessonProgress::lessonId,
+        previous.copy(contentVersion = contentVersion, updatedAtEpochMs = completedAtEpochMs,
+            stage = LessonStage.SUMMARY, checkpointId = null,
+            completedAtEpochMs = previous.completedAtEpochMs ?: completedAtEpochMs),
+    ))
 }
 
 /** Ratings and optional scheduling values are supplied explicitly by a future consumer, never inferred here. */
