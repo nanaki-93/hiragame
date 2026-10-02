@@ -10,11 +10,29 @@ import com.github.nanaki_93.content.CompletionExercise
 import com.github.nanaki_93.content.JapaneseText
 import com.github.nanaki_93.content.ProductionExercise
 import com.github.nanaki_93.pages.promptAnswer
+import com.github.nanaki_93.storage.LocalProgressOwner
+import com.github.nanaki_93.storage.MemoryProgressStore
+import com.github.nanaki_93.storage.ProgressStore
+import com.github.nanaki_93.storage.StoreReadResult
+import com.github.nanaki_93.storage.StoreWriteResult
+import com.github.nanaki_93.storage.StoreSubscription
+import com.github.nanaki_93.storage.StoreFailure
+import com.github.nanaki_93.storage.PersistenceStatus
+import com.github.nanaki_93.progress.CheckpointView
+import com.github.nanaki_93.progress.LessonProgress
+import com.github.nanaki_93.progress.LessonStage
+import com.github.nanaki_93.progress.ProgressUpdate
+import com.github.nanaki_93.progress.ReviewItemProgress
+import com.github.nanaki_93.progress.ReviewOutcome
+import com.github.nanaki_93.progress.SaveCodec
+import com.github.nanaki_93.progress.SaveDecodeResult
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.CoroutineScope
+import com.github.nanaki_93.content.PracticeSet
 import kotlinx.coroutines.withContext
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -42,11 +60,36 @@ class LocalPracticeCoordinatorTest {
         }
     }
 
+    private var snapshotSequence = 0
+    private fun owner(store: ProgressStore = MemoryProgressStore()): LocalProgressOwner =
+        LocalProgressOwner(store, { 1_000L }, { "snapshot_${++snapshotSequence}" })
+
+    // Existing reducer tests also run against an isolated fake owner without browser globals.
+    private fun coordinator(
+        scope: CoroutineScope, load: suspend () -> CatalogLoad,
+        progress: LocalProgressOwner = owner(),
+        reducer: (PracticeSession, PracticeCommand) -> PracticeSession = ::reduce,
+        sessionFactory: (Long, PracticeSet, Int) -> PracticeSession = ::startSession,
+    ) = LocalPracticeCoordinator(scope, progress, load, reducer, sessionFactory, now = { 1_000L })
+
+    private fun coordinator(scope: CoroutineScope, loader: BundledContentLoader, progress: LocalProgressOwner = owner()) =
+        coordinator(scope, loader::load, progress)
+
+    private class CountingStore(val delegate: MemoryProgressStore = MemoryProgressStore()) : ProgressStore {
+        var writes = 0
+        override fun read(): StoreReadResult = delegate.read()
+        override fun write(expectedRaw: String?, replacementRaw: String): StoreWriteResult {
+            writes++
+            return delegate.write(expectedRaw, replacementRaw)
+        }
+        override fun subscribe(onExternalChange: () -> Unit): StoreSubscription = delegate.subscribe(onExternalChange)
+    }
+
     private suspend fun seed(): CatalogLoad.Ready =
         assertIs<CatalogLoad.Ready>(BundledContentLoader(seedSource()).load())
 
     @Test fun canonicalTwoItemSessionRequiresExplicitContinue() = runTest {
-        val coordinator = LocalPracticeCoordinator(this, BundledContentLoader(seedSource()))
+        val coordinator = coordinator(this, BundledContentLoader(seedSource()))
         coordinator.load()
         runCurrent()
         val ready = assertIs<LocalPracticeState.Ready>(coordinator.state.value)
@@ -93,7 +136,7 @@ class LocalPracticeCoordinatorTest {
             CompletionExercise("fill-ending", "Complete the sentence", "読み{blank}", listOf(fill), completed, "Polite ending"),
             ProductionExercise("write-response", "Write a reply", listOf(completed), listOf("Use a polite ending")),
         ))
-        val coordinator = LocalPracticeCoordinator(this, { CatalogLoad.Ready(content.copy(practiceSets = mapOf(set.id to set))) })
+        val coordinator = coordinator(this, { CatalogLoad.Ready(content.copy(practiceSets = mapOf(set.id to set))) })
         coordinator.load()
         runCurrent()
         coordinator.start(set.id)
@@ -140,7 +183,7 @@ class LocalPracticeCoordinatorTest {
     }
 
     @Test fun feedbackNavigationIsExplicitGuardedAndReviewIsReadOnly() = runTest {
-        val coordinator = LocalPracticeCoordinator(this, BundledContentLoader(seedSource()))
+        val coordinator = coordinator(this, BundledContentLoader(seedSource()))
         coordinator.load()
         runCurrent()
         coordinator.start("practice-kana-a-i")
@@ -210,7 +253,7 @@ class LocalPracticeCoordinatorTest {
         val original = seed.practiceSets.getValue("practice-kana-a-i")
         val additional = original.copy(id = "practice-kana-extra", title = "Another reviewed practice")
         val content = seed.copy(practiceSets = seed.practiceSets + (additional.id to additional))
-        val coordinator = LocalPracticeCoordinator(this, { CatalogLoad.Ready(content) })
+        val coordinator = coordinator(this, { CatalogLoad.Ready(content) })
         coordinator.load()
         coordinator.start(original.id) // no start during loading
         assertIs<LocalPracticeState.Loading>(coordinator.state.value)
@@ -277,7 +320,7 @@ class LocalPracticeCoordinatorTest {
             "PracticeCommand.Leave(session.id, session.revision)", "counts.skipped", "counts.revealed", "counts.selfAssessed",
             "is AuthoredFeedback.Choice ->", "is AuthoredFeedback.Reading ->", "is AuthoredFeedback.Completion ->",
             "is AuthoredFeedback.Production ->", "JapaneseFeedbackText(feedback.stimulus)", "JapaneseFeedbackText(feedback.completedExample)",
-            "text.translation?.let", "text.gloss?.let", "Session outcomes", "not saved", "not automatically graded")) {
+            "text.translation?.let", "text.gloss?.let", "Session outcomes", "typed responses are not retained", "not automatically graded")) {
             assertTrue(required in home, "Home missing feedback/navigation feature $required")
         }
         val reviewUi = home.substringAfter("is SessionView.Review -> {").substringBefore("SessionView.Complete -> {")
@@ -329,7 +372,7 @@ class LocalPracticeCoordinatorTest {
     @Test fun failedLoadCanRetryAndEmptyCanReload() = runTest {
         val valid = seed()
         var attempts = 0
-        val coordinator = LocalPracticeCoordinator(this, {
+        val coordinator = coordinator(this, {
             if (++attempts == 1) throw BundledContentException("catalog.json", "untrusted server body")
             valid
         })
@@ -347,7 +390,7 @@ class LocalPracticeCoordinatorTest {
         coordinator.retryLoad() // no accidental reload from ready
         assertEquals(2, attempts)
         var empty = true
-        val other = LocalPracticeCoordinator(this, {
+        val other = coordinator(this, {
             if (empty) CatalogLoad.Empty(EmptyContentReason.NO_PRACTICE) else valid
         })
         other.load()
@@ -366,7 +409,7 @@ class LocalPracticeCoordinatorTest {
             IllegalStateException("untrusted") to LoadErrorKind.UNEXPECTED,
         )
         for ((failure, expected) in failures) {
-            val coordinator = LocalPracticeCoordinator(this, { throw failure })
+            val coordinator = coordinator(this, { throw failure })
             coordinator.load()
             runCurrent()
             val error = assertIs<LocalPracticeState.Error>(coordinator.state.value)
@@ -381,7 +424,7 @@ class LocalPracticeCoordinatorTest {
         val release = CompletableDeferred<CatalogLoad>()
         var cancelled = 0
         var attempts = 0
-        val coordinator = LocalPracticeCoordinator(this, {
+        val coordinator = coordinator(this, {
             if (++attempts == 1) {
                 try { withContext(NonCancellable) { release.await() } }
                 finally { cancelled++ }
@@ -399,7 +442,7 @@ class LocalPracticeCoordinatorTest {
 
         val lateFailure = CompletableDeferred<Unit>()
         attempts = 0
-        val second = LocalPracticeCoordinator(this, {
+        val second = coordinator(this, {
             if (++attempts == 1) {
                 withContext(NonCancellable) { lateFailure.await() }
                 error("late failure")
@@ -417,7 +460,7 @@ class LocalPracticeCoordinatorTest {
     @Test fun disposedLoadCannotPublishEvenIfItsSourceIgnoresCancellation() = runTest {
         val release = CompletableDeferred<Unit>()
         val valid = seed()
-        val coordinator = LocalPracticeCoordinator(this, {
+        val coordinator = coordinator(this, {
             withContext(NonCancellable) { release.await() }
             valid
         })
@@ -434,7 +477,7 @@ class LocalPracticeCoordinatorTest {
     @Test fun invalidActionsAndEvaluatorFailuresRetainSessionWithRetryOrLeave() = runTest {
         val valid = seed()
         var fail = true
-        val coordinator = LocalPracticeCoordinator(this, { valid }, reducer = { state, command ->
+        val coordinator = coordinator(this, { valid }, reducer = { state, command ->
             if (fail && command is PracticeCommand.Submit) error("private evaluator diagnostic")
             reduce(state, command)
         })
@@ -470,7 +513,7 @@ class LocalPracticeCoordinatorTest {
     @Test fun failedFeedbackNavigationRetainsOutcomeUntilExplicitRetryOrLeave() = runTest {
         val valid = seed()
         var fail = true
-        val coordinator = LocalPracticeCoordinator(this, { valid }, reducer = { state, command ->
+        val coordinator = coordinator(this, { valid }, reducer = { state, command ->
             if (fail && command is PracticeCommand.Continue) error("private navigation failure")
             reduce(state, command)
         })
@@ -506,10 +549,181 @@ class LocalPracticeCoordinatorTest {
         assertNull(ready().operationError)
     }
 
+    @Test fun onlyCommittedFrontiersWriteAndRestartPreservesOtherProgress() = runTest {
+        val content = seed().content
+        val store = CountingStore()
+        val progress = owner(store)
+        val lesson = LessonProgress("unknown-lesson", 1, 1000, LessonStage.SITUATION)
+        val review = ReviewItemProgress("unknown-item", "unknown-document", ReviewOutcome.GOOD, 1000,
+            lastActionToken = "review-token")
+        assertEquals(com.github.nanaki_93.storage.ProgressMutationResult.Accepted, progress.mutate {
+            ProgressUpdate.Applied(it.copy(lessonProgress = listOf(lesson), reviewItems = listOf(review)))
+        })
+        val coordinator = coordinator(this, { CatalogLoad.Ready(content) }, progress)
+        coordinator.load()
+        runCurrent()
+        val initial = store.writes
+        assertEquals(1, initial) // seeded unrelated progress, not content load
+        coordinator.start("missing-set")
+        assertEquals(initial, store.writes)
+        coordinator.start("practice-kana-a-i")
+        fun session() = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
+        fun checkpoint() = progress.state.value.snapshot.practiceProgress.single()
+        assertEquals(initial + 1, store.writes)
+        assertEquals(CheckpointView.PROMPT, checkpoint().view)
+        val first = session()
+        coordinator.start(first.setId)
+        coordinator.dispatch(PracticeCommand.Submit(first.id, first.revision, PracticeAnswer.Choice("missing")))
+        assertEquals(initial + 1, store.writes) // invalid input changes UI validation, not save
+        val valid = session()
+        val submit = PracticeCommand.Submit(valid.id, valid.revision, PracticeAnswer.Choice("option-kana-a"))
+        coordinator.dispatch(submit)
+        coordinator.dispatch(submit)
+        assertEquals(initial + 2, store.writes)
+        assertEquals(CheckpointView.FEEDBACK, checkpoint().view)
+        val revision = progress.state.value.snapshot.revision
+        coordinator.dispatch(PracticeCommand.Previous(session().id, session().revision)) // first feedback: no history
+        assertEquals(revision, progress.state.value.snapshot.revision)
+        val retry = PracticeCommand.Retry(session().id, session().revision)
+        coordinator.dispatch(retry)
+        coordinator.dispatch(retry)
+        assertEquals(initial + 3, store.writes)
+        assertEquals(emptyList(), checkpoint().outcomes)
+        val skip = PracticeCommand.Skip(session().id, session().revision)
+        coordinator.dispatch(skip)
+        coordinator.dispatch(skip)
+        assertEquals(initial + 4, store.writes)
+        val advance = PracticeCommand.Continue(session().id, session().revision)
+        coordinator.dispatch(advance)
+        coordinator.dispatch(advance)
+        assertEquals(initial + 5, store.writes)
+        assertEquals(CheckpointView.PROMPT, checkpoint().view)
+        coordinator.dispatch(PracticeCommand.Previous(session().id, session().revision))
+        coordinator.dispatch(PracticeCommand.Next(session().id, session().revision))
+        assertEquals(initial + 5, store.writes) // history navigation is not a transition
+        val reveal = PracticeCommand.Reveal(session().id, session().revision)
+        coordinator.dispatch(reveal)
+        assertEquals(initial + 6, store.writes)
+        val finish = PracticeCommand.Continue(session().id, session().revision)
+        coordinator.dispatch(finish)
+        coordinator.dispatch(finish)
+        assertEquals(initial + 7, store.writes)
+        assertEquals(CheckpointView.COMPLETE, checkpoint().view)
+        val completedAt = checkpoint().lastCompletedAtEpochMs
+        coordinator.dispatch(PracticeCommand.Previous(session().id, session().revision))
+        coordinator.dispatch(PracticeCommand.Return(session().id, session().revision))
+        assertEquals(initial + 7, store.writes)
+        val old = session()
+        val restart = PracticeCommand.Restart(old.id, old.revision, old.id)
+        coordinator.dispatch(restart)
+        coordinator.dispatch(restart)
+        assertEquals(initial + 8, store.writes)
+        assertEquals(CheckpointView.PROMPT, checkpoint().view)
+        assertEquals(completedAt, checkpoint().lastCompletedAtEpochMs)
+        assertEquals(listOf(lesson), progress.state.value.snapshot.lessonProgress)
+        assertEquals(listOf(review), progress.state.value.snapshot.reviewItems)
+        val latest = checkpoint()
+        coordinator.dispatch(PracticeCommand.Leave(session().id, session().revision))
+        assertEquals(initial + 8, store.writes)
+        assertEquals(latest, checkpoint())
+        coordinator.load() // content reload does not erase the stored checkpoint or auto-resume
+        runCurrent()
+        assertNull(assertIs<LocalPracticeState.Ready>(coordinator.state.value).session)
+        assertEquals(latest, checkpoint())
+        assertEquals(progress.state.value.snapshot, assertIs<SaveDecodeResult.Valid>(SaveCodec.decodeSave(store.delegate.backing.raw!!)).snapshot)
+    }
+
+    @Test fun acceptedActionsRemainInMemoryAfterQuotaFailureWithoutRepeatedWrites() = runTest {
+        val content = seed().content
+        val store = CountingStore()
+        val progress = owner(store)
+        val coordinator = coordinator(this, { CatalogLoad.Ready(content) }, progress)
+        coordinator.load()
+        runCurrent()
+        coordinator.start("practice-kana-a-i")
+        val storedStart = store.delegate.backing.raw!!
+        val revision = progress.state.value.snapshot.revision
+        store.delegate.writeFailure = StoreFailure.QUOTA
+        var session = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
+        coordinator.dispatch(PracticeCommand.Skip(session.id, session.revision))
+        assertEquals(2, store.writes)
+        assertIs<PersistenceStatus.MemoryOnly>(progress.state.value.status)
+        session = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
+        coordinator.dispatch(PracticeCommand.Continue(session.id, session.revision))
+        assertEquals(2, store.writes)
+        assertEquals(revision, progress.state.value.snapshot.revision)
+        assertEquals(storedStart, store.delegate.backing.raw)
+        assertEquals(CheckpointView.PROMPT, progress.state.value.snapshot.practiceProgress.single().view)
+        store.delegate.writeFailure = null
+        progress.retrySaving()
+        assertEquals(3, store.writes)
+        assertEquals(revision + 1, progress.state.value.snapshot.revision)
+        assertEquals(progress.state.value.snapshot,
+            assertIs<SaveDecodeResult.Valid>(SaveCodec.decodeSave(store.delegate.backing.raw!!)).snapshot)
+    }
+
+    @Test fun startingAndRestartingOneSetDoesNotReplaceOtherSet() = runTest {
+        val content = seed().content
+        val set = content.practiceSets.getValue("practice-kana-a-i")
+        val second = set.copy(id = "practice-kana-extra")
+        val store = CountingStore()
+        val progress = owner(store)
+        val coordinator = coordinator(this, { CatalogLoad.Ready(content.copy(practiceSets = content.practiceSets + (second.id to second))) }, progress)
+        coordinator.load()
+        runCurrent()
+        coordinator.start(second.id)
+        val first = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
+        coordinator.dispatch(PracticeCommand.Skip(first.id, first.revision))
+        val otherRecord = progress.state.value.snapshot.practiceProgress.single()
+        coordinator.dispatch(PracticeCommand.Leave(first.id, first.revision + 1))
+        assertEquals(2, store.writes)
+        coordinator.start(set.id)
+        var current = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
+        coordinator.dispatch(PracticeCommand.Restart(current.id, current.revision, current.id))
+        current = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
+        assertEquals(4, store.writes)
+        assertEquals(setOf(second.id, set.id), progress.state.value.snapshot.practiceProgress.map { it.setId }.toSet())
+        assertEquals(otherRecord, progress.state.value.snapshot.practiceProgress.first { it.setId == second.id })
+        assertEquals(0, current.counts.completed)
+    }
+
+    @Test fun failedReducerAndProductionDraftsNeverWrite() = runTest {
+        val content = seed().content
+        val original = content.practiceSets.getValue("practice-kana-a-i")
+        val production = ProductionExercise("write-response", "Write", listOf(JapaneseText("はい", "はい", translation = "yes")), listOf("Be polite"))
+        val set = original.copy(exercises = listOf(production))
+        val store = CountingStore()
+        val progress = owner(store)
+        var fail = true
+        val coordinator = coordinator(this, { CatalogLoad.Ready(content.copy(practiceSets = mapOf(set.id to set))) },
+            progress, reducer = { session, command ->
+                if (fail && command is PracticeCommand.Submit) error("private failure")
+                reduce(session, command)
+            })
+        coordinator.load()
+        runCurrent()
+        coordinator.start(set.id)
+        assertEquals(1, store.writes)
+        val first = assertIs<LocalPracticeState.Ready>(coordinator.state.value).session!!
+        // Revealing the example in the prompt is UI-local; no reducer command is dispatched.
+        assertNull(promptAnswer(production, null, "はい", Assessment.MET_CRITERIA, false))
+        assertEquals(1, store.writes)
+        val command = PracticeCommand.Submit(first.id, first.revision,
+            PracticeAnswer.SelfAssessment("private response", Assessment.MET_CRITERIA))
+        coordinator.dispatch(command)
+        assertEquals(1, store.writes)
+        fail = false
+        coordinator.retryOperation(assertIs<LocalPracticeState.Ready>(coordinator.state.value).operationError!!)
+        assertEquals(2, store.writes)
+        coordinator.dispatch(command)
+        assertEquals(2, store.writes)
+        assertTrue("private response" !in store.delegate.backing.raw!!)
+    }
+
     @Test fun failedStartCanRetryAndLeaveAndRestartUsesCoordinatorIdentity() = runTest {
         val valid = seed()
         var fail = true
-        val coordinator = LocalPracticeCoordinator(this, { valid }, sessionFactory = { id, set, limit ->
+        val coordinator = coordinator(this, { valid }, sessionFactory = { id, set, limit ->
             if (fail) error("private factory diagnostic")
             startSession(id, set, limit)
         })
