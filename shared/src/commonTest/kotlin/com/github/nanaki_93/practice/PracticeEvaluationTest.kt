@@ -79,6 +79,72 @@ class PracticeEvaluationTest {
         }
     }
 
+    private fun singleKanaReading(surface: String): ReadingExercise = kana.copy(
+        acceptedAnswers = listOf(KanaReadingAnswer(JapaneseText(surface, surface, translation = "Reading example"))),
+    )
+
+    @Test fun kanaReadingComposesCanonicalMarksOnBothSidesWithoutChangingAuthoredFeedback() {
+        for ((authored, submitted) in listOf(
+            "が" to " か\u3099 \n",
+            "は\u309A" to "ぱ",
+            "ガ" to "カ\u3099",
+        )) {
+            val exercise = singleKanaReading(authored)
+            val feedback = graded(exercise, PracticeAnswer.Text(submitted), true) as AuthoredFeedback.Reading
+            assertEquals(authored, (feedback.acceptedAnswers.single() as ReadingExpectedAnswer.Kana).text.surface)
+        }
+        // Neither grading nor feedback rewrites the submitted draft or authored variants.
+        val draft = " か\u3099 \n"
+        graded(singleKanaReading("が"), PracticeAnswer.Text(draft), true)
+        assertEquals(" か\u3099 \n", draft)
+        graded(kana, PracticeAnswer.Text(" かくにんする。 "), true) // Authored alternative.
+    }
+
+    @Test fun kanaReadingDoesNotFoldWidthScriptSpellingSpacesOrPunctuation() {
+        val distinctions = listOf(
+            "が" to "か", "が" to "ｶﾞ", "が" to "ガ",
+            "じ" to "ぢ", "ず" to "づ", "お" to "を", "は" to "わ", "へ" to "え",
+            "つ" to "っ", "や" to "ゃ", "きゃ" to "きや",
+            "かった" to "かた", "おばあさん" to "おばさん",
+            "コート" to "コト", "コート" to "こーと", "コート" to "ｺｰﾄ",
+            "かくにん" to "かく にん", "はい。" to "はい",
+        )
+        for ((authored, submitted) in distinctions) {
+            graded(singleKanaReading(authored), PracticeAnswer.Text(submitted), false)
+        }
+        val explicitlyAuthored = kana.copy(acceptedAnswers = listOf(
+            KanaReadingAnswer(JapaneseText("コート", "コート", translation = "Coat")),
+            KanaReadingAnswer(JapaneseText("こーと", "こーと", translation = "Coat variant")),
+        ))
+        graded(explicitlyAuthored, PracticeAnswer.Text("こーと"), true)
+    }
+
+    @Test fun romajiReadingUsesOnlyTrimAndCanonicalCompositionWithAuthoredAlternatives() {
+        graded(romaji, PracticeAnswer.Text(" ii "), true)
+        val macron = romaji.copy(acceptedAnswers = listOf(RomajiReadingAnswer("ā")))
+        graded(macron, PracticeAnswer.Text(" a\u0304 "), true)
+        for (unlisted in listOf("a", "A", "aa", "ａ", "a-", "a \u0304", "a\u0304!")) {
+            graded(macron, PracticeAnswer.Text(unlisted), false)
+        }
+        graded(romaji, PracticeAnswer.Text("I"), false)
+    }
+
+    @Test fun completionTrimsOnlyBoundariesAndPreservesCodeWidthPunctuationAndComposition() {
+        fun codeFill(surface: String) = CompletionExercise(
+            "code-fill", "Fill exactly", "{blank}",
+            listOf(JapaneseText(surface, surface, translation = "Exact fill")),
+            JapaneseText(surface, surface, translation = "Exact result"), "Match the authored fill.",
+        )
+        for ((authored, wrong) in listOf(
+            "foo_bar" to "foo bar", "A" to "Ａ", "A!" to "A",
+            "が" to "か\u3099", "ぱ" to "は\u309A",
+        )) {
+            val exercise = codeFill(authored)
+            graded(exercise, PracticeAnswer.Text(" $authored "), true)
+            graded(exercise, PracticeAnswer.Text(wrong), false)
+        }
+    }
+
     @Test fun completionMatchesOnlyAuthoredFillSurfacesNotExampleOrReading() {
         val feedback = graded(completion, PracticeAnswer.Text(" 連絡 "), true) as AuthoredFeedback.Completion
         assertEquals(listOf(fill, alternative), feedback.acceptedFills)
