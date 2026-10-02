@@ -18,6 +18,19 @@ import com.github.nanaki_93.initialSilkMode
 import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import com.github.nanaki_93.pages.downloadMessage
 import com.github.nanaki_93.pages.replacementMessage
+import com.github.nanaki_93.pages.confirmRestoreAndApplyMode
+import com.github.nanaki_93.pages.restoreErrorMessage
+import com.github.nanaki_93.pages.restoreFailureMessage
+import com.github.nanaki_93.storage.BackupFlowCoordinator
+import com.github.nanaki_93.storage.BackupFlowState
+import com.github.nanaki_93.storage.BackupFileReader
+import com.github.nanaki_93.storage.BackupFilePlatform
+import com.github.nanaki_93.storage.BackupFileResource
+import com.github.nanaki_93.storage.BackupFlowError
+import com.github.nanaki_93.storage.BackupReadError
+import com.github.nanaki_93.storage.BackupConfirmationError
+import com.github.nanaki_93.progress.BackupCodec
+import com.github.nanaki_93.progress.BackupProblem
 import com.github.nanaki_93.storage.LocalProgressOwner
 import com.github.nanaki_93.storage.MemoryProgressStore
 import com.github.nanaki_93.storage.ProgressStore
@@ -453,6 +466,69 @@ class LocalPracticeCoordinatorTest {
         assertEquals(1, reloadApplications)
     }
 
+    @Test fun homeRestoreSelectionAndConfirmationLeaveSessionAndModeUntouchedUntilWriteSucceeds() = runTest {
+        val store = CountingStore()
+        val progress = owner(store)
+        val practice = coordinator(this, BundledContentLoader(seedSource()), progress)
+        practice.load()
+        runCurrent()
+        practice.start("practice-kana-a-i")
+        val session = assertIs<LocalPracticeState.Ready>(practice.state.value).session!!
+        val previous = progress.state.value.snapshot
+        val raw = store.delegate.backing.raw
+        val platform = object : BackupFilePlatform {
+            var completed: ((Result<ByteArray>) -> Unit)? = null
+            override fun byteSize(file: Any) = 100L
+            override fun read(file: Any, completed: (Result<ByteArray>) -> Unit): BackupFileResource {
+                this.completed = completed
+                return BackupFileResource { this.completed = null }
+            }
+            override fun timeout(delayMs: Int, expired: () -> Unit) = BackupFileResource { }
+        }
+        val flow = BackupFlowCoordinator(progress, BackupFileReader(platform))
+        var applied = 0
+        val imported = previous.copy(snapshotId = "imported_id", preferences = previous.preferences.copy(colorMode = SavedColorMode.DARK))
+        val json = BackupCodec.encodeBackup(imported, "1.0", 900)
+        flow.select(Unit, "same.json")
+        platform.completed!!(Result.success(json.encodeToByteArray()))
+        assertIs<BackupFlowState.Preview>(flow.state.value)
+        assertSame(session, assertIs<LocalPracticeState.Ready>(practice.state.value).session)
+        assertEquals(raw, store.delegate.backing.raw)
+        assertEquals(0, applied)
+        flow.requestConfirmation()
+        flow.cancel()
+        assertEquals(BackupFlowState.Idle, confirmRestoreAndApplyMode(flow) { applied++ })
+        assertEquals(0, applied)
+        assertEquals(raw, store.delegate.backing.raw)
+        assertSame(session, assertIs<LocalPracticeState.Ready>(practice.state.value).session)
+        flow.select(Unit, "same.json")
+        platform.completed!!(Result.success(json.encodeToByteArray()))
+        flow.requestConfirmation()
+        store.delegate.writeFailure = StoreFailure.QUOTA
+        assertIs<BackupFlowState.Failure>(confirmRestoreAndApplyMode(flow) { applied++ })
+        assertEquals(0, applied)
+        assertEquals(raw, store.delegate.backing.raw)
+        assertEquals(previous, progress.state.value.snapshot)
+        assertSame(session, assertIs<LocalPracticeState.Ready>(practice.state.value).session)
+        store.delegate.writeFailure = null
+        flow.renewReview()
+        flow.requestConfirmation()
+        assertIs<BackupFlowState.Success>(confirmRestoreAndApplyMode(flow) { applied++ })
+        assertEquals(1, applied)
+        assertEquals(SavedColorMode.DARK, progress.state.value.snapshot.preferences.colorMode)
+        assertNull(assertIs<LocalPracticeState.Ready>(practice.state.value).session)
+        confirmRestoreAndApplyMode(flow) { applied++ }
+        assertEquals(1, applied)
+        flow.dispose()
+        practice.dispose()
+    }
+
+    @Test fun restoreMessagesAreFixedAndDoNotContainImportedOrPlatformData() {
+        assertTrue("timed out" in restoreErrorMessage(BackupFlowError.Read(BackupReadError.TIMED_OUT)))
+        assertTrue("not supported" in restoreErrorMessage(BackupFlowError.Validation(BackupProblem.UNSUPPORTED_FORMAT)))
+        assertTrue("blocked" in restoreFailureMessage(BackupConfirmationError.Blocked))
+    }
+
     @Test fun homeWiresLocalLoadAndDisposalWithoutLegacyInitialization() {
         val fs: dynamic = js("require('fs')")
         val path: dynamic = js("require('path')")
@@ -527,6 +603,18 @@ class LocalPracticeCoordinatorTest {
             assertTrue(required in recoveryUi, "Home missing safe recovery control: $required")
         }
         assertTrue("localStorage" !in recoveryUi && "innerHTML" !in recoveryUi)
+        val restoreUi = home.substringAfter("private fun RestoreSection(").substringBefore("internal fun downloadMessage(")
+        for (required in listOf("InputType.File", "Label(attrs", "restore.select(file", "input.value = \"\"",
+            "onClick { restore.cancel() }",
+            "restore.cancel()", "restore.dispose()", "RestorePreview(details)", "Replace, not merge",
+            "Export current progress before restore", "Confirm restore and replace", "Cancel restore",
+            "Unavailable (bare save)", "details.migratedFrom", "details.completedLessonCount",
+            "details.practiceCheckpointCount", "details.reviewItemCount", "Availability against the current catalog was not checked")) {
+            assertTrue(required in home || required in restoreUi, "Home missing restore control: $required")
+        }
+        assertTrue("innerHTML" !in restoreUi && "localStorage" !in restoreUi)
+        assertTrue("Text(\"File: ${'$'}{details.filename}\")" in restoreUi)
+        assertTrue("if (wasConfirming && it is BackupFlowState.Success) apply()" in home)
         assertTrue("replaceProtectedAndApplyMode(progress, token) {\n                        colorModeState.value = initialSilkMode(progress)" in recoveryUi)
         assertTrue("reloadSavedAndApplyMode(progress) { colorModeState.value = initialSilkMode(progress) }" in recoveryUi)
         assertTrue(home.indexOf("SavePreferencesSection(progress)") > home.indexOf("when (val current = state)"),

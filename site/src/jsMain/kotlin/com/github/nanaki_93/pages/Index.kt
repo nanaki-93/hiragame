@@ -2,6 +2,7 @@ package com.github.nanaki_93.pages
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import com.github.nanaki_93.initialSilkMode
 import com.github.nanaki_93.progress.CheckpointView
 import com.github.nanaki_93.progress.SavedColorMode
 import com.github.nanaki_93.progress.SaveProblem
+import com.github.nanaki_93.progress.BackupProblem
 import com.github.nanaki_93.progress.changePreferences
 import com.github.nanaki_93.storage.LocalProgressOwner
 import com.github.nanaki_93.storage.LocalProgressState
@@ -44,6 +46,13 @@ import com.github.nanaki_93.storage.StoreFailure
 import com.github.nanaki_93.storage.BrowserDownloadSink
 import com.github.nanaki_93.storage.ProgressDownloads
 import com.github.nanaki_93.storage.DownloadResult
+import com.github.nanaki_93.storage.BackupFlowCoordinator
+import com.github.nanaki_93.storage.BackupFlowState
+import com.github.nanaki_93.storage.BackupFlowError
+import com.github.nanaki_93.storage.BackupReadError
+import com.github.nanaki_93.storage.BackupConfirmationError
+import com.github.nanaki_93.storage.BackupPreview
+import com.github.nanaki_93.storage.ReplacementResult
 import com.github.nanaki_93.storage.ProtectedReplacementToken
 import com.github.nanaki_93.storage.ProtectedReplacementResult
 import com.github.nanaki_93.practice.PracticeCheckpointResolution
@@ -248,6 +257,13 @@ internal fun replaceProtectedAndApplyMode(
 internal fun reloadSavedAndApplyMode(progress: LocalProgressOwner, apply: () -> Unit): Boolean =
     progress.reloadSavedState().also { if (it) apply() }
 
+/** Only a newly committed restore may change the visible theme. */
+internal fun confirmRestoreAndApplyMode(flow: BackupFlowCoordinator, apply: () -> Unit): BackupFlowState {
+    val wasConfirming = flow.state.value is BackupFlowState.Confirming
+    if (wasConfirming) flow.confirm()
+    return flow.state.value.also { if (wasConfirming && it is BackupFlowState.Success) apply() }
+}
+
 internal fun saveStatusMessage(state: LocalProgressState): String = when (val status = state.status) {
     PersistenceStatus.Fresh -> "No local snapshot yet. Progress checkpoints will be saved in this browser when possible."
     PersistenceStatus.Saved -> if (state.rejectedUpdate != null)
@@ -271,12 +287,17 @@ private fun SavePreferencesSection(progress: LocalProgressOwner) {
     val saved by progress.state.collectAsState()
     val colorModeState = ColorMode.currentState
     val downloads = remember(progress) { ProgressDownloads(progress, BrowserDownloadSink()) }
+    val restore = remember(progress) { BackupFlowCoordinator(progress) }
+    val restoreState by restore.state.collectAsState()
+    DisposableEffect(restore) { onDispose { restore.dispose() } }
     var actionMessage by remember(progress) { mutableStateOf<String?>(null) }
     var pendingReplacement by remember(progress) { mutableStateOf<ProtectedReplacementToken?>(null) }
     var confirmReload by remember(progress) { mutableStateOf(false) }
     // A reload or successful replacement invalidates confirmations captured by this view.
     val ownerGeneration = progress.generation
     val persistenceStatus = saved.status
+    // State and baseline changes can expire a review without advancing generation.
+    SideEffect { restore.ownerChanged() }
     DisposableEffect(progress, ownerGeneration, persistenceStatus) {
         onDispose {
             pendingReplacement?.let { progress.cancelProtectedReplacement(it) }
@@ -308,6 +329,7 @@ private fun SavePreferencesSection(progress: LocalProgressOwner) {
         } else if (persistenceStatus is PersistenceStatus.MemoryOnly && persistenceStatus.reason == StoreFailure.DENIED) {
             P { Text("Browser storage could not be read; the unavailable original cannot be downloaded. You can still export current memory.") }
         }
+        RestoreSection(restore, restoreState, saved, downloads) { colorModeState.value = initialSilkMode(progress) }
         if (saved.status is PersistenceStatus.Protected) {
             P(attrs = { attr("role", "alert") }) {
                 Text("Replacing the unreadable local save permanently discards its original stored text and any changes only in this view's memory. Download unvalidated recovery text and export current progress first if needed. This does not clear offline content.")
@@ -373,6 +395,122 @@ private fun SavePreferencesSection(progress: LocalProgressOwner) {
             }
         }
     }
+}
+
+private fun utcDate(epochMs: Long): String = kotlin.js.Date(epochMs.toDouble()).toISOString().substring(0, 10)
+
+internal fun restoreErrorMessage(error: BackupFlowError): String = when (error) {
+    is BackupFlowError.Read -> when (error.reason) {
+        BackupReadError.EMPTY -> "The file is empty. Choose a JSON save or backup."
+        BackupReadError.TOO_LARGE -> "The file exceeds the backup size limit. Choose a smaller save."
+        BackupReadError.INVALID_UTF8 -> "The file is not valid UTF-8 text. Choose a JSON save."
+        BackupReadError.TIMED_OUT -> "Reading timed out. Choose the file again."
+        BackupReadError.FAILED -> "The file could not be read. Choose it again."
+    }
+    is BackupFlowError.Validation -> when (error.reason) {
+        BackupProblem.UNSUPPORTED_FORMAT, BackupProblem.UNSUPPORTED_SAVE_VERSION ->
+            "This backup or save version is not supported. Nothing was replaced."
+        BackupProblem.WRONG_APP -> "This backup belongs to another app. Nothing was replaced."
+        BackupProblem.OVERSIZED, BackupProblem.TOO_DEEP -> "This save exceeds import limits. Nothing was replaced."
+        else -> "This file is not a valid Hiragame save or backup. Nothing was replaced."
+    }
+}
+
+internal fun restoreFailureMessage(error: BackupConfirmationError): String = when (error) {
+    BackupConfirmationError.Expired -> "Local progress changed since review. Review the file and current save again before confirming."
+    BackupConfirmationError.Blocked -> "Replacement is blocked until the local save can be read or a conflict is reconciled. Export current memory first."
+    is BackupConfirmationError.Replacement -> when (error.result) {
+        ReplacementResult.Stale -> "Confirmation expired. No save was replaced; review again."
+        ReplacementResult.Conflict -> "Another tab changed the saved text. Replacement stopped; reconcile before reviewing again."
+        is ReplacementResult.Failure -> "Replacement failed because browser storage is unavailable or full. Current progress remains active; review again."
+        is ReplacementResult.InvalidReplacement -> "Replacement could not be prepared safely. Current progress remains active; review again."
+        ReplacementResult.Replaced -> "Replacement completed."
+    }
+}
+
+/** A separate confirmation is required after preview. Imported values remain plain text nodes. */
+@Composable
+private fun RestoreSection(
+    restore: BackupFlowCoordinator,
+    current: BackupFlowState,
+    saved: LocalProgressState,
+    downloads: ProgressDownloads,
+    applyMode: () -> Unit,
+) {
+    var exportMessage by remember(restore) { mutableStateOf<String?>(null) }
+    H2 { Text("Restore a backup") }
+    Label(attrs = { attr("for", "restore-file") }) { Text("Choose a Hiragame JSON backup or save") }
+    Input(type = InputType.File, attrs = {
+        id("restore-file")
+        attr("accept", ".json,application/json") // hint only; decoding validates the contents
+        // Opening the picker supersedes an open confirmation even if the chooser is dismissed.
+        onClick { restore.cancel() }
+        onChange { event ->
+            val input: dynamic = event.target.asDynamic()
+            val file: dynamic = input.files?.item(0)
+            input.value = "" // permit choosing the same file after cancellation or rejection
+            if (file == null) restore.cancel() else restore.select(file, file.name as String)
+        }
+    })
+    when (current) {
+        BackupFlowState.Idle -> Unit
+        is BackupFlowState.Reading -> {
+            P(attrs = { attr("role", "status") }) { Text("Reading ${current.filename}…") }
+            SecondaryButton("Cancel file reading", onClick = restore::cancel)
+        }
+        is BackupFlowState.Error -> {
+            P(attrs = { attr("role", "alert") }) { Text(restoreErrorMessage(current.reason)) }
+            SecondaryButton("Dismiss import error", onClick = restore::cancel)
+        }
+        is BackupFlowState.Preview, is BackupFlowState.Confirming, is BackupFlowState.Failure -> {
+            val details = when (current) {
+                is BackupFlowState.Preview -> current.details
+                is BackupFlowState.Confirming -> current.details
+                is BackupFlowState.Failure -> current.details
+                else -> error("Handled above")
+            }
+            H2 { Text("Review replacement") }
+            RestorePreview(details)
+            P(attrs = { attr("role", "alert") }) {
+                Text("Replace, not merge. This replaces all current learner progress and preferences, including work only in this view's memory and any active practice or draft. This cannot be undone here. Offline content is not cleared.")
+            }
+            P { Text("Export your current validated memory before replacing it. If the stored original is unreadable, download its separate unvalidated recovery text above as well.") }
+            SecondaryButton("Export current progress before restore", onClick = {
+                exportMessage = downloadMessage(downloads.exportCurrent())
+            })
+            exportMessage?.let { P(attrs = { attr("role", "status") }) { Text(it) } }
+            when (current) {
+                is BackupFlowState.Preview -> SecondaryButton("Continue to restore confirmation", onClick = restore::requestConfirmation)
+                is BackupFlowState.Confirming -> {
+                    P { Text("Confirm replacing the local save with this reviewed file? Unsaved changes and the active session will be lost only if the replacement succeeds.") }
+                    PrimaryButton("Confirm restore and replace", onClick = { confirmRestoreAndApplyMode(restore, applyMode) })
+                }
+                is BackupFlowState.Failure -> {
+                    P(attrs = { attr("role", "alert") }) { Text(restoreFailureMessage(current.reason)) }
+                    SecondaryButton("Review again before retry", onClick = restore::renewReview)
+                }
+                else -> Unit
+            }
+            SecondaryButton("Cancel restore", onClick = restore::cancel)
+        }
+        is BackupFlowState.Success -> {
+            P(attrs = { attr("role", "status") }) { Text("Backup restored in this browser. Previous progress was replaced; saved checkpoints can be resumed from the practice list.") }
+            SecondaryButton("Dismiss restore result", onClick = restore::cancel)
+        }
+    }
+}
+
+@Composable
+private fun RestorePreview(details: BackupPreview) {
+    P { Text("File: ${details.filename}") }
+    P { Text("Export date (UTC): ${details.exportedAtEpochMs?.let(::utcDate) ?: "Unavailable (bare save)"}") }
+    P { Text("Snapshot saved date (UTC): ${utcDate(details.snapshotAtEpochMs)}") }
+    P { Text("Source app version: ${details.appVersion ?: "Unavailable (bare save)"}; source save schema: ${details.sourceSchemaVersion}") }
+    details.migratedFrom?.let { P { Text("Migrated from save schema $it in memory before review.") } }
+    val prefs = details.preferences
+    P { Text("Preferences: color mode ${prefs.colorMode.name.lowercase()}, readings ${prefs.showReadings}, translation ${prefs.showTranslation}, romaji ${prefs.showRomaji}.") }
+    P { Text("Lessons: ${details.lessonCount} (${details.completedLessonCount} completed); practice checkpoints: ${details.practiceCheckpointCount}; review items: ${details.reviewItemCount}.") }
+    P { Text("Unknown content IDs are retained. Availability against the current catalog was not checked; some saved records or checkpoints may not be usable until matching content returns. No due-review count was calculated.") }
 }
 
 internal fun downloadMessage(result: DownloadResult): String = when (result) {
