@@ -102,6 +102,9 @@ class ProtectedSaveRecoveryTest {
             val subject = owner(store)
             dark(subject)
             val before = subject.state.value
+            val generation = subject.generation
+            var callbacks = 0
+            subject.observeGeneration { callbacks++ }
             adapter.readFailure = reason
             val denied = subject.beginProtectedReplacement()!!
             assertEquals(ProtectedReplacementResult.Failure(reason), subject.confirmProtectedReplacement(denied))
@@ -117,10 +120,14 @@ class ProtectedSaveRecoveryTest {
             assertEquals(raw, backing.raw)
             assertEquals(raw, subject.savedBaseline)
             assertEquals(raw, subject.originalProtectedRaw)
+            assertEquals(generation, subject.generation)
+            assertTrue(subject.isCurrentGeneration(generation))
+            assertEquals(0, callbacks)
             adapter.writeFailure = null
             assertEquals(ProtectedReplacementResult.Replaced,
                 subject.confirmProtectedReplacement(subject.beginProtectedReplacement()!!))
             assertEquals(2, store.writes)
+            assertEquals(1, callbacks)
         }
     }
 
