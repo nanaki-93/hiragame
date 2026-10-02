@@ -109,7 +109,7 @@ class LessonRouteTests(unittest.TestCase):
         renderer = (ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/components/widgets/JapaneseTextPresentation.kt').read_text(encoding='utf-8')
         for field in ('lesson.situation', 'lesson.communicationGoal', 'lesson.difficulty',
                       'lesson.durationMinutes', 'lesson.prerequisiteLessonIds', 'item.turn.speakerId',
-                      'item.turn.text', 'phrase.sourceTurnId == item.turn.id',
+                      'item.turn.text', 'it.sourceTurnId == item.turn.id',
                       'phrase.usage', 'phrase.register', 'note.explanation', 'note.examples'):
             self.assertIn(field, page)
         self.assertIn('PreviewJapaneseText(item.turn.text, preferences)', page)
