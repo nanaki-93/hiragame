@@ -15,10 +15,11 @@ BROWSER_STORAGE_ADAPTERS = {'BrowserProgressStore.kt', 'LegacyColorMode.kt'}
 HOSTED_CONTENT = Path('hiragame/content')
 EXECUTABLE = {'.js', '.mjs', '.cjs'}  # .js.map is source text, not executed
 
-# Only the active entry points and local runtime/domain are subject to this
-# boundary. Dormant services and shared backend DTOs (models/) are retained for F13.
-SOURCE_FILES = [SITE / 'AppEntry.kt', SITE / 'pages/Index.kt', SITE / 'pages/Login.kt']
-SOURCE_DIRS = [SITE / 'pages', SITE / 'content', SITE / 'practice', SITE / 'storage',
+# Active entry points, presentation components (including future extractions),
+# and local runtime/domain are scanned. Dormant services and shared backend DTOs
+# (models/) are retained for F13; only the two storage adapters are exempted below.
+SOURCE_FILES = [SITE / 'AppEntry.kt', SITE / 'SiteTheme.kt', SITE / 'pages/Index.kt', SITE / 'pages/Login.kt']
+SOURCE_DIRS = [SITE / 'pages', SITE / 'components', SITE / 'content', SITE / 'practice', SITE / 'storage',
                SHARED / 'content', SHARED / 'practice', SHARED / 'progress']
 DIRECT_BROWSER_STORAGE = re.compile(
     r'\b(?:localStorage|sessionStorage|loadFromLocalStorage|saveToLocalStorage)\b'
