@@ -12,11 +12,15 @@ class BrowserAudioPort : AudioPort {
     override fun start(source: AudioSource, speed: Double, started: () -> Unit, ended: () -> Unit, failed: (Boolean) -> Unit) {
         failure = failed
         when (source) {
-            is AudioSource.Recording -> {
+            is AudioSource.Recording, is AudioSource.LocalRecording -> {
                 val audio = js("new Audio()")
                 media = audio
                 audio.preload = "none"
-                audio.src = "/hiragame/content/${source.path}"
+                audio.src = when (source) {
+                    is AudioSource.Recording -> "/hiragame/content/${source.path}"
+                    is AudioSource.LocalRecording -> source.objectUrl
+                    else -> error("Unsupported recording")
+                }
                 audio.playbackRate = speed
                 audio.onplaying = { started() }
                 audio.onended = { ended() }

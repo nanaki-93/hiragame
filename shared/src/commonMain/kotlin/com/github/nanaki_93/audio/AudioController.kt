@@ -5,6 +5,9 @@ sealed interface AudioSource {
     data class Recording(val path: String, override val transcript: String) : AudioSource {
         init { require(Regex("audio/[A-Za-z0-9_/-]+\\.(mp3|ogg|wav|m4a)").matches(path) && ".." !in path) }
     }
+    data class LocalRecording(val objectUrl: String, override val transcript: String = "Your recording") : AudioSource {
+        init { require(objectUrl.startsWith("blob:")) }
+    }
     data class Synthetic(override val transcript: String) : AudioSource
 }
 enum class AudioState { IDLE, LOADING, PLAYING, PAUSED, YOUR_TURN, ENDED, UNAVAILABLE, ERROR }

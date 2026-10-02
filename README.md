@@ -93,3 +93,5 @@ python3 tools/local_ai_helper.py
 ```
 
 Open `http://127.0.0.1:8765/hiragame/`, then select endpoint `http://127.0.0.1:8765/ollama` in the lesson. This requires a separately installed, running Ollama with a downloaded local model and cloud features disabled. It is not part of static deployment or the required app. API contracts were checked against [Ollama chat](https://docs.ollama.com/api/chat), [installed-model listing](https://docs.ollama.com/api/tags) and [local configuration](https://docs.ollama.com/faq).
+
+Optional recording in Role-play requests microphone permission only on Record. A take is capped at thirty seconds/five MiB, held in memory and released on cancel, replacement or leaving the activity. Playback shares the audio controller with examples, so starting another source stops the previous one. It is never uploaded, transcribed or included in backups. Permission denial and unsupported recording leave typing/speaking without recording available. Comparison is voluntary and has no automatic pronunciation score.

@@ -242,6 +242,7 @@ private fun LessonPlayer(
                 com.github.nanaki_93.components.widgets.GuidedConversation(lesson, preferences)
                 com.github.nanaki_93.ai.OptionalAiConversation(lesson)
                 H3 { Text("Role-play") }
+                com.github.nanaki_93.audio.RecordingControls(lesson.rolePlay.examples.firstOrNull()?.surface)
                 P { Text(lesson.rolePlay.task) }
                 if (stage.empty == EmptyLessonStage.ROLE_PLAY_OBJECTIVE_ONLY) {
                     P { Text("No production prompt is authored here. Reflect on the authored objective instead.") }
