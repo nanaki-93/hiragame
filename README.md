@@ -28,13 +28,15 @@ The commands above are the reproducible non-interactive release checks. [Feature
 
 ## Development and optional local preview
 
-For development, use the Kobweb Gradle run task:
+With JDK 21 selected, start development from the repository root:
 
 ```sh
-./gradlew :site:kobwebStart
+make run
 ```
 
-The repository's `.kobweb/conf.yaml` sets port 8081 and base path `/hiragame`. Stop with `./gradlew :site:kobwebStop`. These commands are documented from the task/configuration and **not launched during verification**. Development does not load the production offline registration script. Use a distinct origin/port for production preview so an old worker cannot control development.
+Open `http://localhost:8081/hiragame/`. This runs `./gradlew --no-daemon :site:kobwebStart --continuous`, rebuilding when source files change. Use Ctrl+C to leave watch mode, then `make stop` to stop the managed development server. `make build` assembles the static production distribution, and `make help` lists the commands. The Makefile respects `JAVA_HOME`; use the JDK selection described above if your default Java is older.
+
+The repository's `site/.kobweb/conf.yaml` sets port 8081 and base path `/hiragame`. Make recipes and Gradle task graphs are checked with dry runs; the development server is **not launched during verification**. Development does not load the production offline registration script. Use a distinct origin/port for production preview so an old worker cannot control development.
 
 After production assembly, this optional static preview serves the distribution without Internet:
 
