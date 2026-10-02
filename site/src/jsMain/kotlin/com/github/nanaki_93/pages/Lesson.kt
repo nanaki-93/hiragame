@@ -4,12 +4,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import com.github.nanaki_93.LocalProgress
 import com.github.nanaki_93.components.styles.Colors
 import com.github.nanaki_93.components.styles.Styles
+import com.github.nanaki_93.components.widgets.AuthoredFeedbackContent
+import com.github.nanaki_93.components.widgets.JapaneseAnswerInput
+import com.github.nanaki_93.components.widgets.JapanesePassage
+import com.github.nanaki_93.components.widgets.JapaneseResponseArea
+import com.github.nanaki_93.components.widgets.JapaneseSubmissionGuard
+import com.github.nanaki_93.components.widgets.JapaneseStudyText
 import com.github.nanaki_93.components.widgets.PreviewJapaneseText
+import com.github.nanaki_93.components.widgets.visibleAids
 import com.github.nanaki_93.components.widgets.PrimaryButton
 import com.github.nanaki_93.components.widgets.SecondaryButton
 import com.github.nanaki_93.content.BrowserContentTextSource
@@ -20,6 +30,7 @@ import com.github.nanaki_93.lesson.LessonCommand
 import com.github.nanaki_93.lesson.EmptyLessonStage
 import com.github.nanaki_93.lesson.LessonEmptyReason
 import com.github.nanaki_93.lesson.LessonPlanItem
+import com.github.nanaki_93.lesson.LessonOutcome
 import com.github.nanaki_93.lesson.LocalLessonCoordinator
 import com.github.nanaki_93.lesson.LocalLessonState
 import com.github.nanaki_93.progress.LessonStage
@@ -29,6 +40,10 @@ import com.github.nanaki_93.content.ChoiceExercise
 import com.github.nanaki_93.content.CompletionExercise
 import com.github.nanaki_93.content.ProductionExercise
 import com.github.nanaki_93.content.ReadingExercise
+import com.github.nanaki_93.content.AnswerRepresentation
+import com.github.nanaki_93.practice.Assessment
+import com.github.nanaki_93.practice.InvalidReason
+import com.github.nanaki_93.practice.PracticeAnswer
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Modifier
@@ -38,6 +53,12 @@ import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.components.navigation.Link
 import com.varabyte.kobweb.silk.style.toModifier
 import com.varabyte.kobweb.silk.theme.colors.ColorMode
+import org.jetbrains.compose.web.attributes.InputType
+import org.jetbrains.compose.web.dom.Fieldset
+import org.jetbrains.compose.web.dom.Input
+import org.jetbrains.compose.web.dom.Label
+import org.jetbrains.compose.web.dom.Legend
+import org.jetbrains.compose.web.dom.Span
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.H3
@@ -207,27 +228,24 @@ private fun LessonPlayer(
                         "No exercises are authored for this stage. Continue when ready."
                         else "Work through each authored prompt in order. Select Next to begin.") }
                 }
-                is LessonPlanItem.Prompt -> {
-                    H3 { Text("Current exercise") }
-                    P { Text(when (val exercise = item.exercise) {
-                        is ChoiceExercise -> exercise.prompt
-                        is ReadingExercise -> exercise.prompt
-                        is CompletionExercise -> exercise.prompt
-                        is ProductionExercise -> exercise.prompt
-                    }) }
-                    P { Text("Response controls for this exercise follow in the next player step. You can go back or explicitly skip the remaining prompts in this stage.") }
+                is LessonPlanItem.Prompt -> key(session.id, session.stage, item.checkpointId, session.outcome != null) {
+                    LessonPrompt(lesson, session, item, preferences, coordinator)
                 }
                 else -> Unit
             }
             LessonStage.ROLE_PLAY -> {
                 H3 { Text("Role-play") }
                 P { Text(lesson.rolePlay.task) }
-                if (stage.empty == EmptyLessonStage.ROLE_PLAY_OBJECTIVE_ONLY)
-                    P { Text("No production prompt is authored here. Reflect on the objective before continuing; reflection controls follow in the next player step.") }
-                else if (session.item is LessonPlanItem.Prompt) {
-                    val exercise = (session.item as LessonPlanItem.Prompt).exercise as ProductionExercise
-                    P { Text(exercise.prompt) }
-                    P { Text("Role-play response controls follow in the next player step.") }
+                if (stage.empty == EmptyLessonStage.ROLE_PLAY_OBJECTIVE_ONLY) {
+                    P { Text("No production prompt is authored here. Reflect on the authored objective instead.") }
+                    key(session.id, session.stage, "objective", session.outcome != null) {
+                        LessonPrompt(lesson, session, null, preferences, coordinator)
+                    }
+                } else if (session.item is LessonPlanItem.Prompt) {
+                    val item = session.item as LessonPlanItem.Prompt
+                    key(session.id, session.stage, item.checkpointId, session.outcome != null) {
+                        LessonPrompt(lesson, session, item, preferences, coordinator)
+                    }
                 } else P { Text("Select Next to begin the role-play prompts.") }
             }
             LessonStage.SUMMARY -> {
@@ -245,9 +263,14 @@ private fun LessonPlayer(
             val prompt = session.item is LessonPlanItem.Prompt ||
                 (session.stage == LessonStage.ROLE_PLAY && stage.empty == EmptyLessonStage.ROLE_PLAY_OBJECTIVE_ONLY)
             when {
-                prompt && session.outcome != null -> PrimaryButton("Continue", onClick = {
-                    coordinator.dispatch(LessonCommand.Continue(session.id, session.revision))
-                })
+                prompt && session.outcome != null -> {
+                    PrimaryButton("Continue", onClick = {
+                        coordinator.dispatch(LessonCommand.Continue(session.id, session.revision))
+                    })
+                    SecondaryButton("Retry this prompt", onClick = {
+                        coordinator.dispatch(LessonCommand.Retry(session.id, session.revision))
+                    })
+                }
                 prompt -> {
                     val objectiveOnly = session.stage == LessonStage.ROLE_PLAY &&
                         stage.empty == EmptyLessonStage.ROLE_PLAY_OBJECTIVE_ONLY
@@ -265,6 +288,163 @@ private fun LessonPlayer(
             SecondaryButton("Leave lesson", onClick = {
                 coordinator.dispatch(LessonCommand.Leave(session.id, session.revision))
             })
+        }
+    }
+}
+
+/** Prompt-local state is discarded when the keyed cursor leaves composition or its session changes.
+ * Revision is intentionally not a key: invalid submissions retain the draft at this prompt. */
+@Composable
+private fun LessonPrompt(
+    lesson: Lesson,
+    session: com.github.nanaki_93.lesson.LessonSession,
+    item: LessonPlanItem.Prompt?,
+    preferences: SavePreferences,
+    coordinator: LocalLessonCoordinator,
+) {
+    val exercise = item?.exercise
+    val production = exercise is ProductionExercise || item == null
+    var draft by remember { mutableStateOf("") }
+    var choice by remember { mutableStateOf<String?>(null) }
+    var assessment by remember { mutableStateOf<Assessment?>(null) }
+    var missingAssessment by remember { mutableStateOf(false) }
+    var hintsVisible by remember { mutableStateOf(false) }
+    var phrasesVisible by remember { mutableStateOf(false) }
+    var examplesVisible by remember { mutableStateOf(false) }
+    val guard = remember { JapaneseSubmissionGuard() }
+    val id = session.id
+    val revision = session.revision
+    fun submit(nativeComposing: Boolean = false) {
+        if (!production && exercise !is ChoiceExercise && !guard.canSubmit(nativeComposing)) return
+        val answer = when (exercise) {
+            is ChoiceExercise -> PracticeAnswer.Choice(choice ?: "")
+            is ReadingExercise, is CompletionExercise -> PracticeAnswer.Text(draft)
+            is ProductionExercise, null -> assessment?.let { PracticeAnswer.SelfAssessment(draft, it) }
+        }
+        if (answer == null) missingAssessment = true
+        else coordinator.dispatch(LessonCommand.Submit(id, revision, answer))
+    }
+
+    if (exercise != null) P { Text(when (exercise) {
+        is ChoiceExercise -> exercise.prompt
+        is ReadingExercise -> exercise.prompt
+        is CompletionExercise -> exercise.prompt
+        is ProductionExercise -> exercise.prompt
+    }) }
+    if (production) {
+        P { Text("Role-play objective: ${lesson.rolePlay.task}") }
+        P { Text("Compare your response against these criteria; this is your judgment, not an automatic grade.") }
+        for ((index, criterion) in (if (exercise is ProductionExercise) exercise.criteria else lesson.rolePlay.criteria).withIndex())
+            P { Text("Criterion ${index + 1}: $criterion") }
+    }
+    val outcome = session.outcome
+    if (outcome == null) {
+        when (exercise) {
+            is ChoiceExercise -> Fieldset {
+                Legend { Text("Choose one answer") }
+                for (option in exercise.options) Label(attrs = { classes("practice-choice") }) {
+                    Input(type = InputType.Radio, attrs = {
+                        attr("name", "lesson-choice-$id-${exercise.id}")
+                        checked(choice == option.id)
+                        onChange { choice = option.id }
+                    })
+                    option.text?.let { JapanesePassage(it, visibleAids(it, preferences, answerHidden = true).ruby, practiceTypography = false) }
+                        ?: Text(option.label.orEmpty())
+                }
+            }
+            is ReadingExercise -> {
+                P { JapanesePassage(exercise.stimulus, visibleAids(exercise.stimulus, preferences, answerHidden = true).ruby, practiceTypography = false) }
+                Label(attrs = { attr("for", "lesson-response") }) {
+                    Text(if (exercise.answerRepresentation == AnswerRepresentation.KANA) "Reading in kana" else "Reading in romaji")
+                }
+                JapaneseAnswerInput(draft, { draft = it }, guard, ::submit, inputId = "lesson-response")
+            }
+            is CompletionExercise -> {
+                val parts = exercise.template.split("{blank}")
+                P { Span(attrs = { attr("lang", "ja"); style { property("overflow-wrap", "anywhere") } }) {
+                    Text(parts[0]); Text("＿＿＿"); Text(parts[1])
+                } }
+                Label(attrs = { attr("for", "lesson-response") }) { Text("Fill the blank in Japanese") }
+                JapaneseAnswerInput(draft, { draft = it }, guard, ::submit, inputId = "lesson-response")
+            }
+            is ProductionExercise, null -> {
+                Label(attrs = { attr("for", "lesson-response") }) { Text("Your response in Japanese") }
+                JapaneseResponseArea(draft, { draft = it }, inputId = "lesson-response")
+                if (lesson.rolePlay.hints.isNotEmpty()) {
+                    if (!hintsVisible) SecondaryButton("Show role-play hints", onClick = { hintsVisible = true })
+                    else lesson.rolePlay.hints.forEach { P { Text("Hint: $it") } }
+                }
+                if (lesson.phrases.isNotEmpty()) {
+                    if (!phrasesVisible) SecondaryButton("Show useful phrases", onClick = { phrasesVisible = true })
+                    else lesson.phrases.forEach { phrase ->
+                        JapaneseStudyText(phrase.text, preferences)
+                        P { Text("Use: ${phrase.usage} · Register: ${phrase.register}") }
+                    }
+                }
+                val examples = if (exercise is ProductionExercise) exercise.exampleResponses else lesson.rolePlay.examples
+                if (examples.isNotEmpty()) {
+                    if (!examplesVisible) SecondaryButton("Show possible responses", onClick = { examplesVisible = true })
+                    else examples.forEach { example ->
+                        P { Text("Possible response, not the only valid Japanese:") }
+                        JapaneseStudyText(example, preferences)
+                    }
+                }
+                Fieldset {
+                    Legend { Text("Your self-assessment (required to submit)") }
+                    for ((rating, label) in listOf(Assessment.MET_CRITERIA to "I met the criteria",
+                        Assessment.NEEDS_PRACTICE to "I need more practice")) {
+                        Label(attrs = { classes("practice-choice") }) {
+                            Input(type = InputType.Radio, attrs = {
+                                attr("name", "lesson-assessment-$id-${item?.checkpointId ?: "objective"}")
+                                checked(assessment == rating)
+                                onChange { assessment = rating; missingAssessment = false }
+                            })
+                            Text(label)
+                        }
+                    }
+                }
+            }
+        }
+        if (!production) P { Text("Answer-identifying readings, meanings, and fills are hidden until this prompt is resolved.") }
+        session.validation?.let { reason -> P(attrs = { attr("role", "alert") }) {
+            Text(when (reason) {
+                InvalidReason.BLANK_INPUT -> "Enter a response or choose an answer before submitting."
+                InvalidReason.UNKNOWN_CHOICE -> "Choose one of the available answers."
+                InvalidReason.WRONG_ANSWER_TYPE -> "This answer type does not match this prompt."
+            })
+        } }
+        if (missingAssessment) P(attrs = { attr("role", "alert") }) { Text("Choose a self-assessment before submitting.") }
+        PrimaryButton(if (production) "Submit self-assessment" else "Check answer", onClick = { submit() })
+        SecondaryButton("Skip this prompt", onClick = {
+            coordinator.dispatch(LessonCommand.Skip(id, revision))
+        })
+        SecondaryButton(if (production) "Reveal examples and end attempt" else "Reveal answer and end attempt", onClick = {
+            coordinator.dispatch(LessonCommand.Reveal(id, revision))
+        })
+    } else {
+        P(attrs = { attr("role", "status") }) { Text(when (outcome) {
+            LessonOutcome.CORRECT -> "Correct"
+            LessonOutcome.INCORRECT -> "Not quite; review the authored explanation below."
+            LessonOutcome.SKIPPED -> "Skipped · not a correct answer"
+            LessonOutcome.REVEALED -> "Revealed · not a correct answer"
+            LessonOutcome.SELF_MET_CRITERIA -> "Self-assessed: I met the criteria (not automatically graded)"
+            LessonOutcome.SELF_NEEDS_PRACTICE -> "Self-assessed: I need more practice (not automatically graded)"
+        }) }
+        session.feedback?.let { AuthoredFeedbackContent(it, preferences) }
+        P { Text("Situation: ${lesson.situation}") }
+        if (lesson.phrases.isNotEmpty()) {
+            H3 { Text("Useful phrases in context") }
+            lesson.phrases.forEach { phrase ->
+                PreviewJapaneseText(phrase.text, preferences)
+                P { Text("Use: ${phrase.usage} · Register: ${phrase.register}") }
+            }
+        }
+        if (lesson.grammarNotes.isNotEmpty()) {
+            H3 { Text("Grammar support") }
+            lesson.grammarNotes.forEach { note ->
+                P { Text(note.explanation) }
+                note.examples.forEach { PreviewJapaneseText(it, preferences) }
+            }
         }
     }
 }
