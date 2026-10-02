@@ -1,5 +1,7 @@
 package com.github.nanaki_93.progress
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -8,6 +10,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlin.random.Random
 
 /** These are fixed categories: neither exception messages nor saved text cross the codec boundary. */
 enum class SaveProblem {
@@ -22,6 +25,29 @@ sealed interface SaveDecodeResult {
 /** An invalid in-memory snapshot is never serialized or partially returned. */
 class SaveEncodeException(val reason: SaveProblem) : IllegalArgumentException("Cannot encode save: ${reason.name}")
 
+/** Compatibility fixture only: this precursor was not previously shipped as a learner save. */
+@Serializable
+private data class VersionZeroSave(
+    @SerialName("schemaVersion") val schemaVersion: Int,
+    @SerialName("savedAtEpochMs") val savedAtEpochMs: Long,
+    @SerialName("preferences") val preferences: VersionZeroPreferences,
+    @SerialName("lessonProgress") val lessonProgress: List<LessonProgress>,
+    @SerialName("reviewItems") val reviewItems: List<ReviewItemProgress>,
+)
+
+@Serializable
+private data class VersionZeroPreferences(
+    @SerialName("colorMode") val colorMode: SavedColorMode,
+    @SerialName("showReadings") val showReadings: Boolean = true,
+    @SerialName("showTranslation") val showTranslation: Boolean = true,
+    @SerialName("showRomaji") val showRomaji: Boolean = false,
+) {
+    fun toCurrent() = SavePreferences(colorMode, showReadings, showTranslation, showRomaji)
+}
+
+private fun newMigrationIdentity(): String =
+    "migration_${Random.nextInt().toUInt().toString(16)}_${Random.nextInt().toUInt().toString(16)}"
+
 object SaveCodec {
     private val wire = Json {
         ignoreUnknownKeys = false
@@ -30,7 +56,11 @@ object SaveCodec {
         encodeDefaults = true
     }
 
-    fun decodeSave(raw: String): SaveDecodeResult {
+    /** The identity supplier is called only for a structurally valid version-0 candidate. */
+    fun decodeSave(
+        raw: String,
+        newSnapshotId: () -> String = ::newMigrationIdentity,
+    ): SaveDecodeResult {
         // Length is a cheap first guard, including for enormous inputs with no closing bracket.
         if (raw.length > SaveBounds.MAX_JSON_BYTES || raw.encodeToByteArray().size > SaveBounds.MAX_JSON_BYTES) {
             return SaveDecodeResult.Protected(SaveProblem.OVERSIZED)
@@ -47,10 +77,16 @@ object SaveCodec {
         val fields = root as? JsonObject ?: return SaveDecodeResult.Protected(SaveProblem.INVALID_SNAPSHOT)
         val version = fields["schemaVersion"] as? JsonPrimitive
             ?: return SaveDecodeResult.Protected(SaveProblem.UNSUPPORTED_VERSION)
-        // Never allow a defaulted schemaVersion to turn an unversioned object into version 1.
-        if (version.isString || version.content != SaveBounds.SCHEMA_VERSION.toString()) {
-            return SaveDecodeResult.Protected(SaveProblem.UNSUPPORTED_VERSION)
+        // Never default an absent, quoted, fractional, negative or future version.
+        if (version.isString) return SaveDecodeResult.Protected(SaveProblem.UNSUPPORTED_VERSION)
+        return when (version.content) {
+            "0" -> decodeVersionZero(raw, root, newSnapshotId)
+            SaveBounds.SCHEMA_VERSION.toString() -> decodeVersionOne(raw, root)
+            else -> SaveDecodeResult.Protected(SaveProblem.UNSUPPORTED_VERSION)
         }
+    }
+
+    private fun decodeVersionOne(raw: String, root: JsonObject): SaveDecodeResult {
         val snapshot = try {
             wire.decodeFromString<SaveEnvelope>(raw).also(::validateSave)
         } catch (_: IllegalArgumentException) {
@@ -65,6 +101,55 @@ object SaveCodec {
         // original wire types against the validated canonical schema instead of trusting it.
         if (!matchesWireTypes(root, canonical)) return SaveDecodeResult.Protected(SaveProblem.INVALID_SNAPSHOT)
         return SaveDecodeResult.Valid(snapshot)
+    }
+
+    private fun decodeVersionZero(
+        raw: String,
+        root: JsonObject,
+        newSnapshotId: () -> String,
+    ): SaveDecodeResult {
+        val precursor = try {
+            wire.decodeFromString<VersionZeroSave>(raw)
+        } catch (_: IllegalArgumentException) {
+            return SaveDecodeResult.Protected(SaveProblem.INVALID_SNAPSHOT)
+        }
+        // Compare against the precursor, not the migrated envelope: only its documented
+        // optional preference fields may be absent. Do not let JS coerce wire numbers.
+        val canonical = wire.parseToJsonElement(wire.encodeToString(precursor))
+        if (!matchesWireTypes(root, canonical)) return SaveDecodeResult.Protected(SaveProblem.INVALID_SNAPSHOT)
+        // Validate the precursor's records and dates before requesting a new identity.
+        val candidate = SaveEnvelope(
+            savedAtEpochMs = precursor.savedAtEpochMs,
+            snapshotId = "migration_placeholder",
+            revision = 0,
+            preferences = precursor.preferences.toCurrent(),
+            lessonProgress = precursor.lessonProgress,
+            reviewItems = precursor.reviewItems,
+        )
+        try {
+            validateSave(candidate)
+        } catch (_: IllegalArgumentException) {
+            return SaveDecodeResult.Protected(SaveProblem.INVALID_SNAPSHOT)
+        }
+        // The injected supplier is outside the codec's control; a failed identity must not
+        // escape decoding or turn the original save into a usable partial migration.
+        val identity = try {
+            newSnapshotId()
+        } catch (_: Throwable) {
+            return SaveDecodeResult.Protected(SaveProblem.INVALID_SNAPSHOT)
+        }
+        val migrated = try {
+            candidate.copy(snapshotId = identity).also(::validateSave)
+        } catch (_: IllegalArgumentException) {
+            return SaveDecodeResult.Protected(SaveProblem.INVALID_SNAPSHOT)
+        }
+        // Apply the version-1 byte budget as well: never expose a snapshot that cannot be saved.
+        try {
+            encodeSave(migrated)
+        } catch (failure: SaveEncodeException) {
+            return SaveDecodeResult.Protected(failure.reason)
+        }
+        return SaveDecodeResult.Valid(migrated, migratedFrom = 0)
     }
 
     private val integerToken = Regex("-?(0|[1-9][0-9]*)")
@@ -155,5 +240,6 @@ object SaveCodec {
     }
 }
 
-fun decodeSave(raw: String): SaveDecodeResult = SaveCodec.decodeSave(raw)
+fun decodeSave(raw: String, newSnapshotId: () -> String = ::newMigrationIdentity): SaveDecodeResult =
+    SaveCodec.decodeSave(raw, newSnapshotId)
 fun encodeSave(snapshot: SaveEnvelope): String = SaveCodec.encodeSave(snapshot)

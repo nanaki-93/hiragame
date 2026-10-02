@@ -73,9 +73,11 @@ class SaveCodecTest {
 
     @Test fun unsupportedAndMissingVersionsStayProtected() {
         val raw = encodeSave(snapshot())
-        listOf("0", "2", "-1", "1.0", "\"1\"", "null").forEach {
+        listOf("2", "-1", "1.0", "\"1\"", "null").forEach {
             protected(raw.replace("\"schemaVersion\":1", "\"schemaVersion\":$it"), SaveProblem.UNSUPPORTED_VERSION)
         }
+        // A version-1 envelope mislabeled as the precursor contains forbidden fields.
+        protected(raw.replace("\"schemaVersion\":1", "\"schemaVersion\":0"), SaveProblem.INVALID_SNAPSHOT)
         protected(raw.replace("\"schemaVersion\":1,", ""), SaveProblem.UNSUPPORTED_VERSION)
     }
 
