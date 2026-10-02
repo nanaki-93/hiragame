@@ -1,0 +1,78 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-vocabulary-daily-reading",
+  "topicId": "foundational-vocabulary",
+  "title": "Daily life: read six useful words",
+  "description": "Read everyday written words in hiragana; meanings and examples appear with feedback.",
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored short daily-life cues and explanations; common word spellings and meanings are linguistic facts, not legacy CSV or mock text.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-written prompts, translations, contexts and explanations; no copied text, audio or third-party assets."
+  },
+  "reviewItems": [
+    {"id": "review-vocab-daily-water", "targetKind": "exercise", "targetId": "exercise-vocab-daily-water", "skill": "Read 水 (water) in daily use", "direction": "written-word-to-hiragana"},
+    {"id": "review-vocab-daily-station", "targetKind": "exercise", "targetId": "exercise-vocab-daily-station", "skill": "Read 駅 (station) in travel", "direction": "written-word-to-hiragana"},
+    {"id": "review-vocab-daily-train", "targetKind": "exercise", "targetId": "exercise-vocab-daily-train", "skill": "Read 電車 (train) in travel", "direction": "written-word-to-hiragana"},
+    {"id": "review-vocab-daily-weather", "targetKind": "exercise", "targetId": "exercise-vocab-daily-weather", "skill": "Read 天気 (weather) when planning", "direction": "written-word-to-hiragana"},
+    {"id": "review-vocab-daily-shopping", "targetKind": "exercise", "targetId": "exercise-vocab-daily-shopping", "skill": "Read 買い物 (shopping) in errands", "direction": "written-word-to-hiragana"},
+    {"id": "review-vocab-daily-tomorrow", "targetKind": "exercise", "targetId": "exercise-vocab-daily-tomorrow", "skill": "Read 明日 (tomorrow) in conversation", "direction": "written-word-to-hiragana"}
+  ],
+  "exercises": [
+    {
+      "id": "exercise-vocab-daily-water", "type": "reading",
+      "prompt": "At a café, read this word aloud and type its reading in hiragana.",
+      "stimulus": {"surface": "水", "reading": "みず", "translation": "water", "context": "At a café, ask for a glass of water."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "みず", "reading": "みず", "translation": "water", "romaji": "mizu", "context": "At a café, ask for a glass of water."}}],
+      "explanation": "水 is read みず and means water; this is the everyday word for water in a café."
+    },
+    {
+      "id": "exercise-vocab-daily-station", "type": "reading",
+      "prompt": "On a transit sign, read this place name and type its reading in hiragana.",
+      "stimulus": {"surface": "駅", "reading": "えき", "translation": "station", "context": "Look for the station when taking a train."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "えき", "reading": "えき", "translation": "station", "romaji": "eki", "context": "Look for the station when taking a train."}}],
+      "explanation": "駅 is read えき and means station; it appears on transit signs."
+    },
+    {
+      "id": "exercise-vocab-daily-train", "type": "reading",
+      "prompt": "In a travel plan, read this transport word and type its reading in hiragana.",
+      "stimulus": {"surface": "電車", "reading": "でんしゃ", "translation": "train", "context": "Take a train to the station."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "でんしゃ", "reading": "でんしゃ", "translation": "train", "romaji": "densha", "context": "Take a train to the station."}}],
+      "explanation": "電車 is read でんしゃ and means train, usually an electric train. Small ゃ belongs to しゃ."
+    },
+    {
+      "id": "exercise-vocab-daily-weather", "type": "reading",
+      "prompt": "Before going out, read this forecast heading and type its reading in hiragana.",
+      "stimulus": {"surface": "天気", "reading": "てんき", "translation": "weather", "context": "Check the weather before going out."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "てんき", "reading": "てんき", "translation": "weather", "romaji": "tenki", "context": "Check the weather before going out."}}],
+      "explanation": "天気 is read てんき and means weather; use it when talking about a forecast."
+    },
+    {
+      "id": "exercise-vocab-daily-shopping", "type": "reading",
+      "prompt": "On an errand list, read this activity and type its reading in hiragana.",
+      "stimulus": {"surface": "買い物", "reading": "かいもの", "translation": "shopping", "context": "Go shopping for daily necessities."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "かいもの", "reading": "かいもの", "translation": "shopping", "romaji": "kaimono", "context": "Go shopping for daily necessities."}}],
+      "explanation": "買い物 is read かいもの and means shopping; the い is part of the written word."
+    },
+    {
+      "id": "exercise-vocab-daily-tomorrow", "type": "reading",
+      "prompt": "In a message about plans for the next day, read this word and type its reading in hiragana.",
+      "stimulus": {"surface": "明日", "reading": "あした", "translation": "tomorrow", "context": "Talk about plans for tomorrow."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {"type": "kana", "text": {"surface": "あした", "reading": "あした", "translation": "tomorrow (everyday speech)", "romaji": "ashita", "context": "Talk about plans for tomorrow."}},
+        {"type": "kana", "text": {"surface": "あす", "reading": "あす", "translation": "tomorrow (more formal or news style)", "romaji": "asu", "context": "A more formal way to say tomorrow."}}
+      ],
+      "explanation": "明日 means tomorrow. Both あした (everyday speech) and あす (more formal or news style) are authored readings here; other readings are not inferred."
+    }
+  ]
+}
