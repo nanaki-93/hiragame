@@ -17,6 +17,7 @@ class SaveCodecTest {
             "unknown_set", 2, 12, "run_1", "transition_1", listOf("ex_1", "ex_2"),
             listOf(CompactOutcome.CORRECT, CompactOutcome.SELF_NEEDS_PRACTICE),
             2, CheckpointView.COMPLETE, 13,
+            listOf(CheckpointExerciseType.CHOICE, CheckpointExerciseType.PRODUCTION),
         )),
         reviewItems = listOf(ReviewItemProgress(
             "unknown_review", "unknown_document", ReviewOutcome.HARD, 14,

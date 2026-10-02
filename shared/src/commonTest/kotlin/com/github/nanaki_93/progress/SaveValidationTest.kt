@@ -17,6 +17,7 @@ class SaveValidationTest {
             exerciseIds = (0 until 10).map { "missing_$it" },
             outcomes = List(10) { CompactOutcome.SELF_NEEDS_PRACTICE },
             frontier = 10, view = CheckpointView.COMPLETE, lastCompletedAtEpochMs = SaveBounds.MAX_EPOCH_MS,
+            exerciseTypes = List(10) { CheckpointExerciseType.PRODUCTION },
         )),
         reviewItems = listOf(ReviewItemProgress(
             "unlisted_review", "unlisted_doc", ReviewOutcome.AGAIN, 0,
@@ -92,6 +93,8 @@ class SaveValidationTest {
         bad(p.copy(lastTransitionToken = "bad token"))
         bad(p.copy(exerciseIds = emptyList(), outcomes = emptyList(), frontier = 0))
         bad(p.copy(exerciseIds = List(11) { "id$it" }, outcomes = List(11) { CompactOutcome.CORRECT }, frontier = 11))
+        bad(p.copy(exerciseTypes = emptyList()))
+        bad(p.copy(outcomes = List(10) { CompactOutcome.CORRECT }))
         bad(p.copy(exerciseIds = List(10) { "same" }))
         bad(p.copy(exerciseIds = listOf("bad.id") + p.exerciseIds.drop(1)))
         bad(p.copy(outcomes = emptyList()))
