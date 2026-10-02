@@ -617,6 +617,10 @@ class ContentValidationTests(unittest.TestCase):
         self.assertIn('missing local audio asset', self.run_cli(1))
         (self.root / 'audio').mkdir()
         (self.root / 'audio/one.mp3').write_bytes(b'fake audio fixture')
+        with (self.root / 'audio/one.mp3').open('wb') as oversized:
+            oversized.truncate(5 * 1024 * 1024 + 1)
+        self.assertIn('audio size limit', self.run_cli(1))
+        (self.root / 'audio/one.mp3').write_bytes(b'fake audio fixture')
         reviewed = note.read_text()
         note.write_text(reviewed.replace('permission granted for publication of the recording; recording reviewed', 'reviewed'))
         self.assertIn('explicit review and publication permission', self.run_cli(1))

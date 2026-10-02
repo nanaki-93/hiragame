@@ -222,7 +222,7 @@ private fun LessonPlayer(
                         }
                     }
                 }
-                is LessonPlanItem.Turn -> DialogueTask(lesson, item, preferences)
+                is LessonPlanItem.Turn -> DialogueTask(lesson, item, preferences, coordinator.audioAssets)
                 else -> Unit
             }
             LessonStage.UNDERSTANDING, LessonStage.GUIDED_PRACTICE -> when (val item = session.item) {
@@ -357,6 +357,7 @@ private fun LessonPrompt(
     var choice by remember { mutableStateOf<String?>(null) }
     var assessment by remember { mutableStateOf<Assessment?>(null) }
     var missingAssessment by remember { mutableStateOf(false) }
+    var answeredAloud by remember { mutableStateOf(false) }
     var hintsVisible by remember { mutableStateOf(false) }
     var phrasesVisible by remember { mutableStateOf(false) }
     var examplesVisible by remember { mutableStateOf(false) }
@@ -368,7 +369,7 @@ private fun LessonPrompt(
         val answer = when (exercise) {
             is ChoiceExercise -> PracticeAnswer.Choice(choice ?: "")
             is ReadingExercise, is CompletionExercise -> PracticeAnswer.Text(draft)
-            is ProductionExercise, null -> assessment?.let { PracticeAnswer.SelfAssessment(draft, it) }
+            is ProductionExercise, null -> assessment?.let { PracticeAnswer.SelfAssessment(if (answeredAloud) "Responded aloud" else draft, it) }
         }
         if (answer == null) missingAssessment = true
         else coordinator.dispatch(LessonCommand.Submit(id, revision, answer))
@@ -419,6 +420,10 @@ private fun LessonPrompt(
             is ProductionExercise, null -> {
                 Label(attrs = { attr("for", "lesson-response") }) { Text("Your response in Japanese") }
                 JapaneseResponseArea(draft, { draft = it }, inputId = "lesson-response")
+                Label {
+                    Input(type = InputType.Checkbox, attrs = { checked(answeredAloud); onChange { answeredAloud = it.value } })
+                    Text("I responded aloud instead of typing")
+                }
                 if (lesson.rolePlay.hints.isNotEmpty()) {
                     SecondaryButton(if (hintsVisible) "Hide role-play hints" else "Show role-play hints", onClick = { hintsVisible = !hintsVisible })
                     if (hintsVisible) lesson.rolePlay.hints.forEach { P { Text("Hint: $it") } }
@@ -499,9 +504,10 @@ private fun LessonPrompt(
 }
 
 @Composable
-private fun DialogueTask(lesson: Lesson, item: LessonPlanItem.Turn, preferences: SavePreferences) {
+private fun DialogueTask(lesson: Lesson, item: LessonPlanItem.Turn, preferences: SavePreferences, audio: List<com.github.nanaki_93.content.AudioAsset>) {
     val speaker = lesson.dialogue.speakers.first { it.id == item.turn.speakerId }
     H3 { Text("${speaker.name} · ${speaker.role}") }
+    com.github.nanaki_93.audio.ListeningControls(item.turn.text.surface, audio.firstOrNull { it.id == item.turn.audioId })
     PreviewJapaneseText(item.turn.text, preferences) // Normal reading size, never practice's oversized glyphs.
     val phrases = lesson.phrases.filter { it.sourceTurnId == item.turn.id }
     if (phrases.isNotEmpty()) {
