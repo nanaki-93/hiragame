@@ -21,6 +21,11 @@
       "id": "workplace-clarification",
       "title": "Workplace clarification",
       "description": "Polite ways to check a meeting time with a colleague."
+    },
+    {
+      "id": "workplace-introductions",
+      "title": "Workplace introductions",
+      "description": "Introduce your engineering role and relevant work when meeting a teammate."
     }
   ],
   "entries": [
@@ -29,6 +34,12 @@
       "kind": "practice",
       "topicId": "kana-foundations",
       "path": "practice/kana-a-i.json"
+    },
+    {
+      "id": "lesson-engineering-introduction",
+      "kind": "lesson",
+      "topicId": "workplace-introductions",
+      "path": "lessons/engineering-introduction.json"
     },
     {
       "id": "lesson-confirm-meeting-time",
