@@ -65,7 +65,7 @@ object SaveCodec {
         if (raw.length > SaveBounds.MAX_JSON_BYTES || raw.encodeToByteArray().size > SaveBounds.MAX_JSON_BYTES) {
             return SaveDecodeResult.Protected(SaveProblem.OVERSIZED)
         }
-        val lexical = inspect(raw)
+        val lexical = inspectJsonLexically(raw, SaveBounds.MAX_JSON_DEPTH)
         if (lexical != null) return SaveDecodeResult.Protected(lexical)
 
         val root = try {
@@ -186,57 +186,8 @@ object SaveCodec {
             throw SaveEncodeException(SaveProblem.OVERSIZED)
         }
         // Generated JSON is shallow, but keep the limit symmetric for future schema changes.
-        inspect(raw)?.let { throw SaveEncodeException(it) }
+        inspectJsonLexically(raw, SaveBounds.MAX_JSON_DEPTH)?.let { throw SaveEncodeException(it) }
         return raw
-    }
-
-    /** Lexical, iterative preflight: no recursive JSON tree construction before the depth check. */
-    private fun inspect(raw: String): SaveProblem? {
-        // A frame holds the keys of one object (null for an array), plus whether its next
-        // string token is a key. The JSON parser below remains responsible for full grammar.
-        data class Frame(val keys: MutableSet<String>?, var expectingKey: Boolean)
-        val stack = ArrayList<Frame>()
-        var i = 0
-        while (i < raw.length) {
-            when (raw[i]) {
-                '{', '[' -> {
-                    if (stack.size == SaveBounds.MAX_JSON_DEPTH) return SaveProblem.TOO_DEEP
-                    stack.add(Frame(if (raw[i] == '{') HashSet() else null, raw[i] == '{'))
-                    i++
-                }
-                '}', ']' -> {
-                    if (stack.isNotEmpty()) stack.removeAt(stack.lastIndex)
-                    i++
-                }
-                ',' -> {
-                    stack.lastOrNull()?.let { if (it.keys != null) it.expectingKey = true }
-                    i++
-                }
-                '"' -> {
-                    val start = i++
-                    var closed = false
-                    while (i < raw.length) {
-                        when (raw[i++]) {
-                            '\\' -> if (i < raw.length) i++
-                            '"' -> { closed = true; break }
-                        }
-                    }
-                    if (!closed) return SaveProblem.MALFORMED_JSON
-                    val frame = stack.lastOrNull()
-                    if (frame?.expectingKey == true && frame.keys != null) {
-                        val key = try {
-                            wire.decodeFromString<String>(raw.substring(start, i))
-                        } catch (_: IllegalArgumentException) {
-                            return SaveProblem.MALFORMED_JSON
-                        }
-                        if (!frame.keys.add(key)) return SaveProblem.DUPLICATE_KEY
-                        frame.expectingKey = false
-                    }
-                }
-                else -> i++
-            }
-        }
-        return null
     }
 }
 
