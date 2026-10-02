@@ -570,10 +570,12 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** F01 and experience authoring the starter lessons.
 
-- [ ] Provide lightweight CLI templates/validation for new topics, dialogues, exercises, and audio references; avoid building a CMS.
-- [ ] Optionally use local AI to draft content outside the learner runtime.
-- [ ] Write generated output to `content-source/drafts/` with provenance, then require documented agent content review, stable IDs, validation, and explicit promotion to shipped content. Human/native-speaker review is optional and never implied.
-- [ ] Keep authoring dependencies out of the production bundle and document rights/attribution checks.
+**Status:** Implemented 2026-10-03; [O03 evidence](content-source/review-notes/o03-validation.md). No optional AI drafting dependency is required.
+
+- [x] Provide lightweight CLI templates/validation for new topics, dialogues, exercises, and audio references; avoid building a CMS.
+- [x] Optionally use local AI to draft content outside the learner runtime.
+- [x] Write generated output to `content-source/drafts/` with provenance, then require documented agent content review, stable IDs, validation, and explicit promotion to shipped content. Human/native-speaker review is optional and never implied.
+- [x] Keep authoring dependencies out of the production bundle and document rights/attribution checks.
 
 **Acceptance:** content can expand through reviewed repository files without introducing a backend or publishing unreviewed generated Japanese.
 
