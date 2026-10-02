@@ -83,6 +83,7 @@ fun TopicsPage() {
                 if (darkMode) Modifier.backgroundColor(Colors.DarkCardBackground).color(Colors.DarkText) else Modifier
             )) {
                 H1 { Text("Topics / Learn") }
+                Link(path = "/review") { Text("Phrase review") }
                 Link(path = "/") { Text("Back to Home") }
                 when (val current = state) {
                     LocalCatalogState.Loading -> Section(attrs = { attr("aria-live", "polite") }) {
