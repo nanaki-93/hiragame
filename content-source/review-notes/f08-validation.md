@@ -1,0 +1,7 @@
+# F08 validation — 2026-10-03
+
+Implemented bounded authored conversation traversal for all six lessons within Role-play. Contextual feedback waits for Continue; stale revisions cannot advance; cycles, invalid targets and unreachable nodes reject initialization. Each prompt offers exit/restart, constrained tasks offer reveal, and phrase banks/hints/examples can be hidden. F07 self-assessed free production remains separate. No response or transcript is written to a save; the enclosing Role-play checkpoint remains the resumable place.
+
+Content review: [F08 conversation](f08-conversation.md), with scoped item decisions in the existing lesson review notes. Content version 4 retains stable IDs. Pinned canonical version expectations in tests advance from 3 to 4; branch expectations include the new repetition path. The existing large restoration integration test now gets a ten-second Mocha timeout rather than the default two seconds; assertions unchanged.
+
+Commands: `python3 tools/validate_content.py site/src/jsMain/resources/public/content --review-root content-source/review-notes`; `python3 -m unittest discover -s tools -p 'test_*content*.py'`; `JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home ./gradlew --no-daemon :shared:jsNodeTest :site:jsNodeTest`. Results: content valid; 54 Python tests passed; 110 shared Node tests and 178 site Node tests passed. Site compilation passed as part of Node tests. Tests use Node and in-memory adapters. No running-app, browser, audio, accessibility or deployment result is claimed.

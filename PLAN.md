@@ -340,17 +340,19 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** F01, F07, F11.
 
+**Status:** Implemented 2026-10-03. See [F08 evidence](content-source/review-notes/f08-validation.md).
+
 ### Implementation tasks
 
-- [ ] Implement an authored conversation graph: speaker prompt, response choices or constrained prompt, feedback, and next node.
-- [ ] Support useful branches such as asking for repetition, asking about an unfamiliar term, or confirming an interpretation.
-- [ ] Validate graph references and provide a clear end/restart/exit path; avoid unintentionally looping conversations.
-- [ ] For constrained exercises, use reviewed accepted variants and explain the communication intent.
-- [ ] For open-ended role-play, let the learner type or say a response, reveal example answers, and self-assess.
-- [ ] Clearly label model answers as examples, not the only possible correct Japanese.
-- [ ] Distinguish task completion from grammatical correctness. Do not invent an automatic conversational score without a valid evaluator.
-- [ ] Offer hints and phrase banks that can be hidden for independent practice.
-- [ ] Keep responses session-local; persist only checkpoints/outcomes needed for learning, not a complete chat log.
+- [x] Implement an authored conversation graph: speaker prompt, response choices or constrained prompt, feedback, and next node.
+- [x] Support useful branches such as asking for repetition, asking about an unfamiliar term, or confirming an interpretation.
+- [x] Validate graph references and provide a clear end/restart/exit path; avoid unintentionally looping conversations.
+- [x] For constrained exercises, use reviewed accepted variants and explain the communication intent.
+- [x] For open-ended role-play, let the learner type or say a response, reveal example answers, and self-assess.
+- [x] Clearly label model answers as examples, not the only possible correct Japanese.
+- [x] Distinguish task completion from grammatical correctness. Do not invent an automatic conversational score without a valid evaluator.
+- [x] Offer hints and phrase banks that can be hidden for independent practice.
+- [x] Keep responses session-local; persist only checkpoints/outcomes needed for learning, not a complete chat log.
 
 ### Acceptance criteria
 

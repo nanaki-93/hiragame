@@ -29,3 +29,15 @@ Reviewed on 2026-10-01 by an AI agent, not a human or certified native speaker. 
 | `node-time`, `node-choice`, `node-guidance`, `node-completion`, `node-end` and both transitions | The graph reprises the colleague's three-o'clock statement and, on the four-o'clock branch, 三時です。 / さんじです。 (“It's three o'clock”). Feedback explains why repeating three confirms while proposing four changes the time. Both branches reach the same constrained completion and terminal message. | Graph feedback and terminal copy are original agent writing covered by this review; no learner state, automated grading, looping retry, or runtime conversation is implied. |
 
 All lesson IDs remain stable independently of titles or order. The lesson has no prerequisites (so none point to unbundled content). The only variants are those explicitly shown; there are no external rights claims or recordings.
+
+### F08 extension — agent review, 2026-10-03
+
+See [conversation review](f08-conversation.md) for branch meaning, original provenance and rights.
+
+Reviewed `node-time`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `node-choice`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `node-guidance`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `node-completion`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `node-end`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `node-repeat-time`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `option-repeat-time`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.

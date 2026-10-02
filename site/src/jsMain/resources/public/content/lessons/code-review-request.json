@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "contentVersion": 3,
+  "contentVersion": 4,
   "id": "lesson-code-review-request",
   "topicId": "workplace-reviews",
   "title": "Request a code review and respond to feedback",
@@ -47,5 +47,147 @@
   ],
   "rolePlay": {"task": "Ask a teammate to review a small test-screen wording change. They suggest clearer action text. Acknowledge the idea, ask for the reason if needed, and explain what you will do next without saying the change is already approved.", "criteria": ["Describe the actual change and request a specific check.", "Respond to the suggestion respectfully, rather than dismissing it or automatically promising approval.", "Name a truthful next step; other constructive polite replies are valid."], "hints": ["変更 means change and レビュー means review; tell the teammate what needs checking.", "ご提案ありがとうございます acknowledges a suggestion without committing to it.", "Use 見直してから to put the revision before another review."], "examples": [{"surface": "この変更をレビューしていただけますか。表現が分かりやすいか、確認をお願いします。ご提案ありがとうございます。理由を教えていただけますか。", "reading": "このへんこうをれびゅーしていただけますか。ひょうげんがわかりやすいか、かくにんをおねがいします。ごていあんありがとうございます。りゆうをおしえていただけますか。", "translation": "Could you review this change? Please check whether the wording is clear. Thank you for the suggestion. Could you tell me why?", "segments": [{"surface": "この"}, {"surface": "変更", "reading": "へんこう"}, {"surface": "をレビューしていただけますか。"}, {"surface": "表現", "reading": "ひょうげん"}, {"surface": "が"}, {"surface": "分", "reading": "わ"}, {"surface": "かりやすいか、"}, {"surface": "確認", "reading": "かくにん"}, {"surface": "をお"}, {"surface": "願", "reading": "ねが"}, {"surface": "いします。ご"}, {"surface": "提案", "reading": "ていあん"}, {"surface": "ありがとうございます。"}, {"surface": "理由", "reading": "りゆう"}, {"surface": "を"}, {"surface": "教", "reading": "おし"}, {"surface": "えていただけますか。"}]}]},
   "reviewItems": [{"id": "review-review-request", "targetKind": "phrase", "targetId": "phrase-review-focus", "skill": "Request a focused review", "direction": "context-to-utterance"}, {"id": "review-review-response", "targetKind": "exercise", "targetId": "exercise-review-completion", "skill": "Acknowledge feedback before asking why", "direction": "suggestion-to-utterance"}],
-  "review": {"status": "reviewed", "reviewerType": "agent", "reviewDate": "2026-10-02", "reviewNote": "f06-starter-lessons.md", "provenance": "Independently agent-authored fictional F06 review conversation and teaching text; no mock, CSV, or external passage promoted.", "rights": "publishable", "rightsBasis": "Original agent-authored Japanese and English text; no third-party passages or recordings used. Common linguistic forms are not copied material."}
+  "review": {"status": "reviewed", "reviewerType": "agent", "reviewDate": "2026-10-02", "reviewNote": "f06-starter-lessons.md", "provenance": "Independently agent-authored fictional F06 review conversation and teaching text; no mock, CSV, or external passage promoted.", "rights": "publishable", "rightsBasis": "Original agent-authored Japanese and English text; no third-party passages or recordings used. Common linguistic forms are not copied material."},
+  "conversationGraph": {
+    "entryNodeId": "lesson-code-review-request-conversation-start",
+    "nodes": [
+      {
+        "type": "prompt",
+        "id": "lesson-code-review-request-conversation-start",
+        "speakerId": "speaker-review-colleague",
+        "text": {
+          "surface": "どの部分を確認すればいいですか。",
+          "reading": "どのぶぶんをかくにんすればいいですか。",
+          "translation": "Which part should I check?",
+          "segments": [
+            {
+              "surface": "どの"
+            },
+            {
+              "surface": "部分",
+              "reading": "ぶぶん"
+            },
+            {
+              "surface": "を"
+            },
+            {
+              "surface": "確認",
+              "reading": "かくにん"
+            },
+            {
+              "surface": "すればいいですか。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-code-review-request-conversation-choice"
+      },
+      {
+        "type": "choiceInteraction",
+        "id": "lesson-code-review-request-conversation-choice",
+        "exerciseId": "exercise-review-choice",
+        "transitions": [
+          {
+            "optionId": "option-review-focus",
+            "feedback": "The first request specifies the desired feedback. The other explicitly asks for approval without review, which does not serve this task.",
+            "nextNodeId": "lesson-code-review-request-conversation-follow"
+          },
+          {
+            "optionId": "option-review-approve",
+            "feedback": "The first request specifies the desired feedback. The other explicitly asks for approval without review, which does not serve this task.",
+            "nextNodeId": "lesson-code-review-request-conversation-repeat"
+          }
+        ]
+      },
+      {
+        "type": "prompt",
+        "id": "lesson-code-review-request-conversation-repeat",
+        "speakerId": "speaker-review-colleague",
+        "text": {
+          "surface": "どの部分を確認すればいいですか。",
+          "reading": "どのぶぶんをかくにんすればいいですか。",
+          "translation": "Which part should I check?",
+          "segments": [
+            {
+              "surface": "どの"
+            },
+            {
+              "surface": "部分",
+              "reading": "ぶぶん"
+            },
+            {
+              "surface": "を"
+            },
+            {
+              "surface": "確認",
+              "reading": "かくにん"
+            },
+            {
+              "surface": "すればいいですか。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-code-review-request-conversation-follow"
+      },
+      {
+        "type": "prompt",
+        "id": "lesson-code-review-request-conversation-follow",
+        "speakerId": "speaker-review-colleague",
+        "text": {
+          "surface": "ここは「もう一度お試しください」のほうが分かりやすいと思います。",
+          "reading": "ここわもういちどおためしくださいのほうがわかりやすいとおもいます。",
+          "translation": "I think ‘Please try again’ would be clearer here.",
+          "context": "The quoted wording is a suggestion for this fictional screen, not a universal accessibility or product requirement.",
+          "segments": [
+            {
+              "surface": "ここは「"
+            },
+            {
+              "surface": "もう"
+            },
+            {
+              "surface": "一度",
+              "reading": "いちど"
+            },
+            {
+              "surface": "お"
+            },
+            {
+              "surface": "試",
+              "reading": "ため"
+            },
+            {
+              "surface": "しください」のほうが"
+            },
+            {
+              "surface": "分",
+              "reading": "わ"
+            },
+            {
+              "surface": "かりやすいと"
+            },
+            {
+              "surface": "思",
+              "reading": "おも"
+            },
+            {
+              "surface": "います。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-code-review-request-conversation-complete"
+      },
+      {
+        "type": "completionInteraction",
+        "id": "lesson-code-review-request-conversation-complete",
+        "exerciseId": "exercise-review-completion",
+        "feedback": "Both authored fills thank the reviewer; ご is optional here. These are literal accepted variants for this blank, not a free-response answer key.",
+        "nextNodeId": "lesson-code-review-request-conversation-end"
+      },
+      {
+        "type": "terminal",
+        "id": "lesson-code-review-request-conversation-end",
+        "message": "You reached the end of the guided task. Try your own response in the self-assessed role-play."
+      }
+    ]
+  }
 }

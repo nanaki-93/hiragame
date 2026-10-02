@@ -20,6 +20,18 @@ The reviewer checked each item in the following ID-covered table for the decisio
 
 Role-play task, three criteria, three hints and the sample first-meeting response were reviewed: it introduces the learner, describes current work, and asks about the teammate's role. 田中 / たなか, 作 / つく and 仕事 / しごと are segmented with authored readings. The sample is one possible fictional answer, not a key. No interaction graph or audio is needed for the read-only F06 preview. Content references point only to IDs in this document. No uncertainty remains that requires asserting an outside source or unsupported permission.
 
+
+### F08 extension — agent review, 2026-10-03
+
+See [conversation review](f08-conversation.md) for branch meaning, original provenance and rights.
+
+Reviewed `lesson-engineering-introduction-conversation-start`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-engineering-introduction-conversation-choice`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-engineering-introduction-conversation-repeat`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-engineering-introduction-conversation-follow`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-engineering-introduction-conversation-complete`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-engineering-introduction-conversation-end`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+
 Reviewed on 2026-10-02 by an AI agent. Scope: entry and document `lesson-clarify-understanding` under broadened topic `workplace-clarification`, its situation, goal, dialogue, phrases, grammar, exercises, review references and role-play. The review metadata is **inherited by every nested item** in this document, including authored readings/ruby, translations, criteria, options, answer variants and examples. The agent checked each item in the following ID-covered table for meaning, naturalness in this teammate setting, register, readings, translations, distractors, accepted variants, communication intent and rights. This is agent review, not human or native-speaker certification.
 
 **Provenance and rights:** Original Japanese and English scenario and teaching copy were composed independently for F06, not taken from the F00 mocks, legacy CSV, or the F01 meeting-time seed. Common expressions and grammatical forms are linguistic facts. No third-party passages, recordings or external sources were used, and no external permission is claimed. The agent marked this original text publishable under the original-material rights decision; the repository license is not a clearance for external material. No audio is referenced. Eight turns, seven phrases and two grammar notes meet the guidance; 12 minutes includes self-assessed speaking. There is no prerequisite: the seed stays a separate supplemental meeting-time lesson with all its IDs unchanged. Polite です／ます forms suit this illustrative teammate exchange but may need adaptation for a different relationship. ログイン is identified as a loanword naming the sign-in screen; 画面 can mean screen or view. An initial ambiguity about whether the task calls for a fix was resolved by asking before acting and reporting only *if* a problem is found. The English gloss of ということですね was chosen as an interpretation check, not an assertion of agreement. Example-only responses do not assert that any problem exists. No unresolved uncertainty requires invented sourcing or permission.
@@ -39,6 +51,18 @@ Reviewed on 2026-10-02 by an AI agent. Scope: entry and document `lesson-clarify
 | `review-clarify-ask`, `review-clarify-confirm` | Stable review references point to a phrase and constrained exercise in this document; directions describe the communication skill. | References do not schedule review during F06 browsing. Original text publishable under inherited rights decision. |
 
 The role-play task, criteria, hints and sample (without IDs) were also reviewed: the sample paraphrases Sato's agreed request with authored ログイン and kanji readings, but other polite, truthful paraphrases are valid. There is no conversation graph or audio; the dialogue, exercises and role-play are available as text for a future player. All references are local except the stable topic ID. No question of external rights remains.
+
+
+### F08 extension — agent review, 2026-10-03
+
+See [conversation review](f08-conversation.md) for branch meaning, original provenance and rights.
+
+Reviewed `lesson-clarify-understanding-conversation-start`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-clarify-understanding-conversation-choice`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-clarify-understanding-conversation-repeat`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-clarify-understanding-conversation-follow`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-clarify-understanding-conversation-complete`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-clarify-understanding-conversation-end`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
 
 Reviewed on 2026-10-02 by an AI agent. Scope: `lesson-daily-update-blocker`, its new `workplace-updates` topic and catalog entry, situation/goal, all dialogue, phrases, grammar, exercises, review references, and role-play. Review metadata and the following original-material rights decision are **inherited by every nested item**, including Japanese readings/ruby, English translations, option text, variants, hints and examples. The agent checked each item in the ID-covered table below for meaning, naturalness in this check-in, register, reading, translation, distractor/answer intent, and rights. This is agent review, not human or native-speaker certification.
 
@@ -60,6 +84,18 @@ Reviewed on 2026-10-02 by an AI agent. Scope: `lesson-daily-update-blocker`, its
 
 The role-play task, three criteria, three hints and sample response (without IDs) were also checked: the revised sample distinguishes 表示 from 文言, explicitly asks how to apply for test-account access through the team's approved process, and makes access a condition of the next check. The request's 利用 / りよう, 申請 / しんせい, 方法 / ほうほう, 教 / おし ruby and full reading/translation match the Japanese; other truthful polite responses are valid. No graph or audio is needed for this read-only preview. All references are local except the stable topic and advisory prerequisite. No external rights question remains.
 
+
+### F08 extension — agent review, 2026-10-03
+
+See [conversation review](f08-conversation.md) for branch meaning, original provenance and rights.
+
+Reviewed `lesson-daily-update-blocker-conversation-start`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-daily-update-blocker-conversation-choice`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-daily-update-blocker-conversation-repeat`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-daily-update-blocker-conversation-follow`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-daily-update-blocker-conversation-complete`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-daily-update-blocker-conversation-end`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+
 Reviewed on 2026-10-02 by an AI agent. Scope: `lesson-bug-reproduction` and its `workplace-bugs` topic/entry, situation, goal, dialogue, phrases, grammar, exercises, references and role-play. The document review metadata and original-material rights decision are **inherited by every nested item**, including options, readings, ruby, variants and examples. This is agent review, not human or native-speaker certification. Eight turns, six phrases and two grammar notes meet the guidance; 14 minutes includes self-assessment. The advisory prerequisite `lesson-daily-update-blocker` is acyclic and never gates access. Polite です／ます suits the illustrative teammate conversation but is not universal workplace advice.
 
 **Provenance and rights:** All Japanese and English text was composed independently for this fictional F06 test scenario. No external references were consulted; no mock or CSV passage, third-party text or audio was used or permission claimed. Common language forms are not copied passages. Original agent-authored material is marked publishable under this original-material rights decision, not an external license. The reviewer checked each item below for meaning, readings/ruby, translation, contextual register, intent, distractors, variants and rights. Initially “nothing appears” risked suggesting the *whole screen* was blank: context and prompts now explicitly limit it to the message area. コード means an input sign-in code, not source code; テスト, ログイン, エラーメッセージ, ボタン, サーバー and メッセージ are loanwords explained where introduced. No real credential is needed. Expected behavior is assumed only for this fictional agreed test, not certified as a universal UI rule. Two repetitions are observations, not a failure rate. No unresolved uncertainty or unsupported outside authority remains.
@@ -80,6 +116,18 @@ Reviewed on 2026-10-02 by an AI agent. Scope: `lesson-bug-reproduction` and its 
 
 The ID-less role-play task, all criteria, hints and sample were reviewed as well: the sample orders the actions and contrasts the expected message with the missing message, with matching authored reading, translation and ruby. The prompt provides the two-attempt observation separately; other truthful polite reports are valid. No graph or audio is required. All targets and source turns resolve locally; topic and advisory prerequisite resolve in the catalog. The decision to omit speculative root causes rather than teach a diagnosis closes the remaining linguistic uncertainty.
 
+
+### F08 extension — agent review, 2026-10-03
+
+See [conversation review](f08-conversation.md) for branch meaning, original provenance and rights.
+
+Reviewed `lesson-bug-reproduction-conversation-start`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-bug-reproduction-conversation-choice`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-bug-reproduction-conversation-repeat`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-bug-reproduction-conversation-follow`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-bug-reproduction-conversation-complete`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-bug-reproduction-conversation-end`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+
 Reviewed on 2026-10-02 by an AI agent. Scope: `lesson-code-review-request`, its `workplace-reviews` topic and catalog entry, situation, goal, dialogue, phrases, grammar, exercises, review references and role-play. Review metadata and the original-material rights decision are **inherited by every nested item**, including options, ruby/readings, translations, variants, criteria, hints and examples. The agent checked each item in the ID-covered table below for meaning, reading, translation, naturalness in this fictional teammate exchange, register, distractor/answer intent and rights. This is agent review, not human or native-speaker certification. Eight turns, six phrases and two grammar notes meet the authoring guidance; 14 minutes allows for self-assessment. The suggested `lesson-clarify-understanding` prerequisite is acyclic and advisory, never a gate. The five starter entries are in canonical order; the retained `lesson-confirm-meeting-time` is supplemental, not starter number six.
 
 **Provenance and rights:** All Japanese and English material was independently composed for F06; no F00 mock, legacy CSV, external passage or recording was promoted. No outside sources were consulted and no outside permission is claimed. Common linguistic forms are not copied passages. This original agent-authored material is marked publishable under an original-material rights decision, not an external license. No audio is referenced. レビュー is the loanword for review, テスト for test and エラー for error; 文言 refers to the text displayed. Polite です／ます requests suit the example, but review conventions and teammate relationships vary. Initially the proposed response risked implying that the suggestion had already been applied or approved; the final 〜してから wording makes revision and another review future actions. The quoted alternative error text is illustrative, not a universal product or accessibility prescription. There are no unresolved uncertainties requiring invented authority.
@@ -98,3 +146,14 @@ Reviewed on 2026-10-02 by an AI agent. Scope: `lesson-code-review-request`, its 
 | `review-review-request`, `review-review-response` | Stable references point to the local focus phrase and constrained completion exercise with explicit skill/direction. | Browsing F06 does not schedule a review. Original text publishable under inherited rights decision. |
 
 The ID-less role-play task, all criteria, hints and sample were also reviewed: its sample requests a clarity check, thanks the reviewer and asks for reasoning; it does not assert a revision has been applied. Its authored readings, translation and ruby correspond to the Japanese; other polite, constructive responses remain valid. All reference targets and source turns are local; the stable topic and advisory prerequisite resolve in the catalog. No graph or audio is needed for the read-only preview.
+
+### F08 extension — agent review, 2026-10-03
+
+See [conversation review](f08-conversation.md) for branch meaning, original provenance and rights.
+
+Reviewed `lesson-code-review-request-conversation-start`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-code-review-request-conversation-choice`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-code-review-request-conversation-repeat`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-code-review-request-conversation-follow`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-code-review-request-conversation-complete`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.
+Reviewed `lesson-code-review-request-conversation-end`: agent checked branch context, authored readings, meaning, transitions and intent; approved publishable.

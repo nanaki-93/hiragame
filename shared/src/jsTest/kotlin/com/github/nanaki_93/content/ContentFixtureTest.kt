@@ -70,7 +70,7 @@ class ContentFixtureTest {
         assertTrue(practiceEntries.size > 11) // seed, both scripts, and introductory vocabulary
         assertEquals(setOf("kana-foundations", "katakana-foundations", "foundational-vocabulary"),
             practiceEntries.map { it.topicId }.toSet())
-        assertEquals(3, catalog.contentVersion)
+        assertEquals(4, catalog.contentVersion)
         val entry = practiceEntries.single { it.id == "practice-kana-a-i" }
         assertEquals(DocumentKind.PRACTICE, entry.kind)
         assertEquals("practice-kana-a-i", entry.id)
@@ -167,7 +167,7 @@ class ContentFixtureTest {
         assertTrue(graph.entryNodeId in nodes)
         val branch = nodes["node-choice"] as ChoiceInteractionNode
         assertEquals(choice.options.map { it.id }.toSet(), branch.transitions.map { it.optionId }.toSet())
-        assertEquals(setOf("node-completion", "node-guidance"), branch.transitions.map { it.nextNodeId }.toSet())
+        assertEquals(setOf("node-completion", "node-guidance", "node-repeat-time"), branch.transitions.map { it.nextNodeId }.toSet())
         assertEquals(completion.id, (nodes["node-completion"] as CompletionInteractionNode).exerciseId)
         assertTrue(nodes.values.filterIsInstance<PromptNode>().all { it.nextNodeId in nodes })
         assertTrue(branch.transitions.all { it.nextNodeId in nodes && it.feedback.isNotBlank() })

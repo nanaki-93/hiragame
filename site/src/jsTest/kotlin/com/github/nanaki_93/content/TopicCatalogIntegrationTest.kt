@@ -100,7 +100,7 @@ class TopicCatalogIntegrationTest {
 
     @Test fun canonicalSixObjectivesRemainSelectableAndMetadataComesFromValidatedDocuments() = runTest {
         val content = loaded()
-        assertEquals(3, content.catalog.contentVersion)
+        assertEquals(4, content.catalog.contentVersion)
         assertEquals(starterIds + seedId, content.lessons.keys.toList())
         val progress = owner(MemoryProgressStore())
         try {
@@ -178,7 +178,7 @@ class TopicCatalogIntegrationTest {
             malformedManifest.load(); runCurrent()
             assertIs<LocalCatalogState.Error>(malformedManifest.state.value)
         } finally { malformedManifest.dispose() }
-        val wrongVersion = canonical(path(seedId)).replace("\"contentVersion\": 3", "\"contentVersion\": 2")
+        val wrongVersion = canonical(path(seedId)).replace("\"contentVersion\": 4", "\"contentVersion\": 2")
         val invalid = source(overrides = mapOf(path(seedId) to wrongVersion))
         assertEquals(path(seedId), assertIs<BundledContentException>(runCatching {
             BundledContentLoader(invalid).load()
