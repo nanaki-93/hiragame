@@ -5,6 +5,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PAGE = ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/pages/Lesson.kt'
 COORDINATOR = ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/lesson/LocalLessonCoordinator.kt'
+TOPICS = ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/pages/Topics.kt'
+CATALOG = ROOT / 'shared/src/commonMain/kotlin/com/github/nanaki_93/content/LessonCatalog.kt'
 
 
 class LessonRouteTests(unittest.TestCase):
@@ -24,6 +26,31 @@ class LessonRouteTests(unittest.TestCase):
         self.assertLess(page.index('Link(path = "/topics")'), page.index('when (val current = state)'))
         self.assertNotIn('Link(path = "/hiragame', page)
         self.assertNotIn('Link(path = "/review', page)
+
+    def test_topics_links_enter_player_without_starting_a_session_during_browsing(self):
+        topics = TOPICS.read_text(encoding='utf-8')
+        catalog = CATALOG.read_text(encoding='utf-8')
+        preview = topics.split('private fun LessonPreview(', 1)[1].split('private fun LessonCatalogCard(', 1)[0]
+        card = topics.split('private fun LessonCatalogCard(', 1)[1].split('private fun LessonEntryLink(', 1)[0]
+        recommendation = topics.split('view.recommendation?.let { recommendation ->', 1)[1].split('if (view.cards.isEmpty())', 1)[0]
+        link = topics.split('private fun LessonEntryLink(', 1)[1].split('private fun CatalogCard(', 1)[0]
+        self.assertIn('Link(path = "/lesson?lessonId=$lessonId")', link)
+        self.assertIn('Text("Open lesson player")', link)
+        self.assertNotIn('/hiragame', topics)  # Kobweb applies the base path once.
+        self.assertIn('LessonEntryLink(card.lessonId)', preview)
+        self.assertIn('LessonEntryLink(card.lessonId)', card)
+        self.assertIn('LessonEntryLink(card.lessonId)', recommendation)
+        self.assertIn('SecondaryButton("View lesson: ${card.title}"', recommendation)
+        self.assertIn('PrimaryButton("View lesson: ${card.title}"', card)
+        self.assertIn('selectedLessonId = card.lessonId', topics)
+        self.assertIn('current.content.lessons[selectedLessonId]', topics)
+        self.assertIn('view.unavailableSavedLessons', topics)
+        self.assertIn('lesson document unavailable; saved checkpoint unavailable', topics)
+        self.assertIn('browsing does not change progress', catalog)
+        self.assertNotIn('future lesson player', topics)
+        for forbidden in ('visitLesson(', 'completeLesson(', 'progress.mutate(', 'coordinator.start(',
+                          'coordinator.resume(', 'localStorage', 'scheduleReview('):
+            self.assertNotIn(forbidden, topics)
 
     def test_query_is_bounded_lookup_only_and_never_writes_on_invalid_link(self):
         page = PAGE.read_text(encoding='utf-8')

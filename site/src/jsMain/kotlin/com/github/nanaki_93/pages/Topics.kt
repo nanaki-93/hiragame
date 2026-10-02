@@ -168,6 +168,7 @@ fun TopicsPage() {
                                     P { Text(recommendation.reason) }
                                     P { Text("This is guidance, not an assessment or a requirement.") }
                                     SecondaryButton("View lesson: ${card.title}", onClick = { selectedLessonId = card.lessonId; supportNotice = null })
+                                    LessonEntryLink(card.lessonId)
                                 }
                             }
                             if (view.cards.isEmpty()) Section {
@@ -217,11 +218,12 @@ private fun LessonPreview(
 ) {
     Section(attrs = { style { property("overflow-wrap", "anywhere"); property("min-width", "0") } }) {
         H2 { Text(lesson.title) }
-        P { Text("Read-only lesson preview. Staged exercises and actual checkpoint resumption arrive with the future lesson player; viewing this lesson does not change your saved place.") }
+        P { Text("Read-only lesson preview. Viewing this lesson does not change your saved place. Open the player to choose Start, Resume, Revisit, or checkpoint recovery when available.") }
         P { Text(lessonProgressLabel(card.status)) }
         if (card.status.checkpointAvailable == false) P(attrs = { attr("role", "status") }) {
             Text("The saved checkpoint is unavailable. Your saved place is retained; this preview cannot repair or replace it.")
         }
+        LessonEntryLink(card.lessonId)
         SecondaryButton("Back to catalog", onClick = onClose)
         H3 { Text("Situation") }
         P { Text(lesson.situation) }
@@ -322,12 +324,19 @@ private fun LessonCatalogCard(card: LessonCard, allCards: List<LessonCard>, onSe
         P { Text("Suggested prerequisites (not required): ${prerequisites.joinToString().ifEmpty { "none" }}.") }
         P { Text(lessonProgressLabel(card.status)) }
         P { Text("Lesson document: ${if (card.status.documentAvailable) "available" else "unavailable"}; saved checkpoint: ${when (card.status.checkpointAvailable) {
-            true -> "reference available (not playable here)"
+            true -> "available in the lesson player"
             false -> "unavailable; saved place retained"
             null -> "none"
         }}.") }
         PrimaryButton("View lesson: ${card.title}", onClick = onSelect)
+        LessonEntryLink(card.lessonId)
     }
+}
+
+/** Catalog IDs are validated stable keys; the player performs the entry action only after navigation. */
+@Composable
+private fun LessonEntryLink(lessonId: String) {
+    Link(path = "/lesson?lessonId=$lessonId") { Text("Open lesson player") }
 }
 
 /** Local card spacing uses inherited surface colors in both Silk modes; controls keep native focus. */
