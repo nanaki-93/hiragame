@@ -1,0 +1,171 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-voiced-p-reading",
+  "topicId": "katakana-foundations",
+  "title": "Semi-voiced katakana: P row — write in kana",
+  "description": "Type katakana from Latin-letter spelling cues, with base-sign context for same-sound signs. Kana answers only.",
+  "reviewItems": [
+    {
+      "id": "review-kv-reading-30d1",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30d1",
+      "skill": "Recall the spelling of semi-voiced katakana パ",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kv-reading-30d4",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30d4",
+      "skill": "Recall the spelling of semi-voiced katakana ピ",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kv-reading-30d7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30d7",
+      "skill": "Recall the spelling of semi-voiced katakana プ",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kv-reading-30da",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30da",
+      "skill": "Recall the spelling of semi-voiced katakana ペ",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kv-reading-30dd",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30dd",
+      "skill": "Recall the spelling of semi-voiced katakana ポ",
+      "direction": "latin-and-base-cue-to-katakana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independent agent-authored voiced and semi-voiced katakana sign cues and feedback; no legacy CSV or mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; katakana correspondences are linguistic facts. No third-party work or audio used."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30d1",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "pa",
+        "reading": "pa",
+        "translation": "Latin-letter cue for a katakana spelling."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "パ",
+            "reading": "パ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pa.",
+            "romaji": "pa"
+          }
+        }
+      ],
+      "explanation": "The cue pa is written パ. Katakana semi-voiced sign conventionally cued as pa. Only this authored katakana spelling is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30d4",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "pi",
+        "reading": "pi",
+        "translation": "Latin-letter cue for a katakana spelling."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ピ",
+            "reading": "ピ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pi.",
+            "romaji": "pi"
+          }
+        }
+      ],
+      "explanation": "The cue pi is written ピ. Katakana semi-voiced sign conventionally cued as pi. Only this authored katakana spelling is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30d7",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "pu",
+        "reading": "pu",
+        "translation": "Latin-letter cue for a katakana spelling."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "プ",
+            "reading": "プ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pu.",
+            "romaji": "pu"
+          }
+        }
+      ],
+      "explanation": "The cue pu is written プ. Katakana semi-voiced sign conventionally cued as pu. Only this authored katakana spelling is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30da",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "pe",
+        "reading": "pe",
+        "translation": "Latin-letter cue for a katakana spelling."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ペ",
+            "reading": "ペ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pe.",
+            "romaji": "pe"
+          }
+        }
+      ],
+      "explanation": "The cue pe is written ペ. Katakana semi-voiced sign conventionally cued as pe. Only this authored katakana spelling is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30dd",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "po",
+        "reading": "po",
+        "translation": "Latin-letter cue for a katakana spelling."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ポ",
+            "reading": "ポ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as po.",
+            "romaji": "po"
+          }
+        }
+      ],
+      "explanation": "The cue po is written ポ. Katakana semi-voiced sign conventionally cued as po. Only this authored katakana spelling is accepted."
+    }
+  ]
+}
