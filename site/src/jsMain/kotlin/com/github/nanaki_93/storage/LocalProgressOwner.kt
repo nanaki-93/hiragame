@@ -1,6 +1,7 @@
 package com.github.nanaki_93.storage
 
 import com.github.nanaki_93.progress.ProgressUpdate
+import com.github.nanaki_93.progress.ValidatedBackup
 import com.github.nanaki_93.progress.SaveBounds
 import com.github.nanaki_93.progress.SaveCodec
 import com.github.nanaki_93.progress.SaveDecodeResult
@@ -82,7 +83,10 @@ class LocalProgressOwner(
     private var protectedRaw: String? = null
     private var disposed = false
     private var subscription: StoreSubscription? = null
-    private enum class ReplacementOperation { PROTECTED_FRESH }
+    private sealed interface ReplacementOperation {
+        data object ProtectedFresh : ReplacementOperation
+        data class Restore(val candidate: ValidatedBackup) : ReplacementOperation
+    }
     private data class PendingReplacement(
         val token: ReplacementToken,
         val operation: ReplacementOperation,
@@ -149,10 +153,10 @@ class LocalProgressOwner(
             is StoreReadResult.Raw -> read.value
             is StoreReadResult.Failure -> {
                 // Until a successful read or explicit retry, equality cannot be established.
+                pendingReplacement = null
                 if (mutableState.value.status != PersistenceStatus.Conflict &&
                     mutableState.value.status !is PersistenceStatus.Protected
                 ) {
-                    pendingReplacement = null
                     mutableState.value = mutableState.value.copy(status = PersistenceStatus.MemoryOnly(read.reason))
                 }
                 return
@@ -286,10 +290,14 @@ class LocalProgressOwner(
 
     /** Issuance never reads or writes storage. A new preparation supersedes the last one. */
     private fun beginReplacement(operation: ReplacementOperation): ReplacementPreparation {
+        // A new request supersedes any older authorization, even if it cannot be issued.
+        pendingReplacement = null
         if (disposed || !baselineKnown) return ReplacementPreparation.Blocked
         val current = mutableState.value
-        if (current.status !is PersistenceStatus.Protected ||
-            protectedRaw == null || protectedRaw != acknowledgedRaw
+        if (current.status == PersistenceStatus.Conflict ||
+            (operation == ReplacementOperation.ProtectedFresh &&
+                (current.status !is PersistenceStatus.Protected || protectedRaw == null || protectedRaw != acknowledgedRaw)) ||
+            (current.status is PersistenceStatus.Protected && protectedRaw != acknowledgedRaw)
         ) return ReplacementPreparation.Blocked
         val token = ReplacementToken()
         pendingReplacement = PendingReplacement(token, operation, acknowledgedRaw, generation,
@@ -299,7 +307,31 @@ class LocalProgressOwner(
 
     /** Prepare explicit recovery without reading storage or publishing a fresh snapshot. */
     fun prepareProtectedReplacement(): ReplacementPreparation =
-        beginReplacement(ReplacementOperation.PROTECTED_FRESH)
+        beginReplacement(ReplacementOperation.ProtectedFresh)
+
+    /** A preview is not authorization. Reconcile an unknown startup baseline before issuing a token. */
+    fun beginRestore(candidate: ValidatedBackup): ReplacementPreparation {
+        pendingReplacement = null
+        if (disposed) return ReplacementPreparation.Blocked
+        if (!baselineKnown && mutableState.value.status is PersistenceStatus.MemoryOnly) {
+            when (val read = store.read()) {
+                StoreReadResult.Missing -> {
+                    baselineKnown = true
+                    acknowledgedRaw = null
+                }
+                is StoreReadResult.Raw -> {
+                    // Never replace newly discovered data without an explicit reload/reconciliation.
+                    mutableState.value = mutableState.value.copy(status = PersistenceStatus.Conflict)
+                    return ReplacementPreparation.Blocked
+                }
+                is StoreReadResult.Failure -> {
+                    mutableState.value = mutableState.value.copy(status = PersistenceStatus.MemoryOnly(read.reason))
+                    return ReplacementPreparation.Blocked
+                }
+            }
+        }
+        return beginReplacement(ReplacementOperation.Restore(candidate))
+    }
 
     /** Compatibility entry point for the existing explicitly warned protected recovery control. */
     fun beginProtectedReplacement(): ProtectedReplacementToken? =
@@ -332,8 +364,7 @@ class LocalProgressOwner(
             mutableState.value.snapshot != pending.snapshot ||
             mutableState.value.status != pending.status ||
             acknowledgedRaw != pending.baseline ||
-            (pending.operation == ReplacementOperation.PROTECTED_FRESH &&
-                protectedRaw != pending.baseline)
+            (pending.status is PersistenceStatus.Protected && protectedRaw != pending.baseline)
         ) return ReplacementResult.Stale
 
         // Validate the complete replacement before touching storage. Never publish a candidate
@@ -341,8 +372,25 @@ class LocalProgressOwner(
         val replacement: SaveEnvelope
         val wire: String
         try {
-            replacement = when (pending.operation) {
-                ReplacementOperation.PROTECTED_FRESH -> fresh()
+            replacement = when (val operation = pending.operation) {
+                ReplacementOperation.ProtectedFresh -> fresh()
+                is ReplacementOperation.Restore -> {
+                    val imported = operation.candidate.snapshot
+                    // Reject fabricated/stale candidates before copying them; do not trust their
+                    // identity or revision as authority for the local write sequence.
+                    encodeSave(imported)
+                    val revision = if (pending.status is PersistenceStatus.Protected) 0L else {
+                        if (pending.snapshot.revision >= SaveBounds.MAX_SAFE_INTEGER) {
+                            throw SaveEncodeException(SaveProblem.INVALID_SNAPSHOT)
+                        }
+                        pending.snapshot.revision + 1
+                    }
+                    val localId = newSnapshotId()
+                    if (localId == imported.snapshotId || localId == pending.snapshot.snapshotId) {
+                        throw SaveEncodeException(SaveProblem.INVALID_SNAPSHOT)
+                    }
+                    imported.copy(snapshotId = localId, savedAtEpochMs = clock(), revision = revision)
+                }
             }
             wire = encodeSave(replacement)
         } catch (error: SaveEncodeException) {
@@ -350,6 +398,7 @@ class LocalProgressOwner(
         }
 
         // The owner reread catches missed events; the store compares again before its write.
+        // These comparisons are not an atomic cross-tab compare-and-swap.
         val observed = when (val read = store.read()) {
             is StoreReadResult.Failure -> return ReplacementResult.Failure(read.reason)
             StoreReadResult.Missing -> null
