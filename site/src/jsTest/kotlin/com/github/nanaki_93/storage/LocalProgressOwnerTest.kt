@@ -177,13 +177,14 @@ class LocalProgressOwnerTest {
         assertEquals(0L, subject.state.value.snapshot.revision)
         adapter.writeFailure = null
         backing.externalChange("replacement from elsewhere")
+        assertEquals(PersistenceStatus.Conflict, subject.state.value.status)
         assertEquals(PersistenceStatus.Conflict, subject.retrySaving())
         assertEquals("replacement from elsewhere", backing.raw)
         assertEquals(original, subject.savedBaseline)
         assertEquals(SavedColorMode.DARK, subject.state.value.snapshot.preferences.colorMode)
-        assertEquals(2, store.writes)
+        assertEquals(1, store.writes)
         assertEquals(PersistenceStatus.Conflict, subject.retrySaving())
-        assertEquals(2, store.writes)
+        assertEquals(1, store.writes)
     }
 
     @Test fun failedRetryRemainsPausedAndLaterRetryDoesNotReplayActions() {
