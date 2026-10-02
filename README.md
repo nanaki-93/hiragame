@@ -9,7 +9,7 @@
 
 # Hiragame
 
-Hiragame is a Kotlin/Kobweb Japanese learning app. Home now offers account-free, local practice from a small reviewed seed: one two-exercise kana set (choice and reading). It loads bundled JSON from the same-origin `/hiragame/content/` tree; answers and outcomes exist only in the current in-memory session and are lost on reload or leave. A reviewed workplace lesson is bundled as content but has no lesson player yet. This is not a complete kana or workplace curriculum, saved progress, or an offline-installable app.
+Hiragame is a Kotlin/Kobweb Japanese learning app. Home offers account-free, local practice from a small reviewed seed: one two-exercise kana set (choice and reading). It loads bundled JSON from the same-origin `/hiragame/content/` tree. Practice checkpoints and preferences are saved in this browser when storage succeeds; typed responses are not retained in the save. A reviewed workplace lesson is bundled as content but has no lesson player yet. This is not a complete kana or workplace curriculum or an offline-installable app.
 
 The Spring Boot API, PostgreSQL, authentication/game services, and their deployment remain in the repository for compatibility but are **not required for Home practice**. See [PLAN.md](PLAN.md) for the longer local-first roadmap and its [autonomous execution policy](PLAN.md#autonomous-execution-and-verification-policy).
 
@@ -33,9 +33,21 @@ This checks source content and review evidence, not runtime loading or deployed 
 
 ## Current boundaries
 
-- Home has loading, empty, and error/retry states, then starts a bounded in-memory practice session. Answers use authored feedback; moving on, retrying, skipping, revealing, restarting, and leaving are explicit actions. The completion summary describes only that session, not mastery or saved progress.
+- Home has loading, empty, and error/retry states, then starts a bounded practice session. Answers use authored feedback; moving on, retrying, skipping, revealing, restarting, and leaving are explicit actions. The completion summary describes that run, not mastery or proficiency. Saving a checkpoint does not save the text of an answer.
 - `/login` is a compatibility link back to Home, not an authentication form. No backend, PostgreSQL, API credentials, or account are needed for local practice.
 - Legacy backend endpoints, shared API DTOs, AI generation, and Cloud Run deployment still exist for compatibility; the active learning route does not use them. Backend features are not a description of Home behavior.
+
+## Local progress and recovery (F03)
+
+Home uses a single versioned `hiragame:state` snapshot in this browser's local storage, not an account or cloud sync. It retains color mode, optional study-support preference values (not yet exposed as controls), lesson stage/checkpoint/completion records, review-item state and optional scheduling fields, and **one latest compact practice run per set**: exercise IDs, outcome classifications, frontier and completion. Only the color-mode preference and reviewed practice set have Home controls today; there is no lesson player or review scheduler yet. Practice progress can be resumed when the saved set and exercises still resolve in bundled content. Missing content does not erase its saved record; Home offers an explicit fresh start for an unavailable checkpoint. Starting a new run replaces that set's latest checkpoint, not a history of runs.
+
+The save omits submitted answers and typed responses, drafts, authored exercises/feedback, full transcripts, audio, recordings and answer histories. Drafts live only in the current view. A successful save is local to this browser/origin and may be lost if browser storage is cleared; it is not a synced account backup. Home shows whether progress is saved, only in memory, protected, or paused due to a conflict. If saving fails (for example, access denied or storage full), accepted work remains in memory for this view, but can be lost on reload; the earlier stored snapshot is not replaced. Use **Retry saving** explicitly after fixing storage access or space. A change rejected by save limits is *not* retained as progress; earlier valid progress remains.
+
+Use **Export current progress** on Home to download the current validated JSON, including work not confirmed saved when in memory-only or conflict state. This does not include typed answers. If a stored save is unreadable or uses an unsupported version, ordinary saves pause and the original text stays untouched. If readable from storage, **Download unvalidated original** saves that exact text separately for recovery; it is not a validated or importable backup. If storage cannot be read, that original cannot be downloaded, though current memory can be exported. Home also offers a warned, explicitly confirmed **Replace unreadable local save** action; download the original first if needed. Replacement discards the unreadable original and changes only in memory, and a failed replacement leaves the stored original intact. F04's general import/restore and reset workflows are **not available** here: downloading a file does not provide an in-app way to import it.
+
+When another tab changes or deletes the snapshot, saving pauses. **Keep this view** continues only in memory; export before leaving. **Reload saved state** requires confirmation and discards this view's unsaved work/drafts. There is no automatic merge. The storage adapter compares the raw saved value immediately before a single-key write, but comparison plus write is **not atomic** across tabs: simultaneous writes can still race. This is not transactional cross-tab synchronization.
+
+The current save format is schema version 1. Version 0 is a documented compatibility/test fixture introduced with F03, **not** a format previously shipped to learners: valid version-0 records and timestamps migrate in memory, filling only documented defaults and adding empty practice progress. Reading/migrating does not write storage; the next explicit save uses the original text as its expected baseline. Invalid or newer versions stay protected, not silently downgraded. See [the save contract](shared/src/commonMain/kotlin/com/github/nanaki_93/progress/CONTRACT.md) for exact schemas. CLI/Node tests and static checks exercise domain rules and fake storage adapters; they do **not** verify live-browser persistence, downloads, cross-tab timing, accessibility, offline use, or deployment.
 
 ## Tech Stack
 
@@ -86,7 +98,7 @@ python3 tools/validate_local_runtime.py --artifact-root site/build/dist/js/produ
 
 The assembly writes the static hosting tree to `site/build/dist/js/productionExecutable/public`, with catalog and nested JSON under `hiragame/content/`. The artifact check requires this output and verifies canonical byte parity, base path, and absence of obsolete API config/executable auth/game calls. These are reproducible commands, not a report of executed results. The F02 integration step records actual results in `content-source/review-notes/f02-validation.md`. Source/content and Node checks do not prove behavior in a running browser or deployment.
 
-For optional interactive frontend development, the configured Kobweb app can be started with `cd site && kobweb run` and reached at `http://localhost:8081/hiragame`. This development command is provided for reference, not reported as verified here; Home reads same-origin bundled content and does not require the backend. Do not infer offline installation or persistent outcomes from local serving.
+For optional interactive frontend development, the configured Kobweb app can be started with `cd site && kobweb run` and reached at `http://localhost:8081/hiragame`. This development command is provided for reference, not reported as verified here; Home reads same-origin bundled content and does not require the backend. Local serving alone does not verify offline installation or live-browser persistence.
 
 ## Optional legacy backend development
 
