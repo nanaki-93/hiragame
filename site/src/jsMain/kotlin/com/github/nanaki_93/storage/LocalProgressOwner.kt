@@ -49,6 +49,11 @@ class LocalProgressOwner(
     private var acknowledgedRaw: String? = null
     private var baselineKnown = false
     private var protectedRaw: String? = null
+    private var disposed = false
+    private var subscription: StoreSubscription? = null
+    /** Changes only on explicit reload (or disposal); consumers can reject stale callbacks. */
+    var generation: Long = 0
+        private set
 
     private val mutableState: MutableStateFlow<LocalProgressState>
     val state: StateFlow<LocalProgressState> get() = mutableState
@@ -77,6 +82,65 @@ class LocalProgressOwner(
             }
         }
         mutableState = MutableStateFlow(initial)
+        subscription = store.subscribe {
+            if (!disposed) onExternalChange()
+        }
+    }
+
+    private fun onExternalChange() {
+        // Events signal a need to read; their payload is not trusted as the current value.
+        val observed = when (val read = store.read()) {
+            StoreReadResult.Missing -> null
+            is StoreReadResult.Raw -> read.value
+            is StoreReadResult.Failure -> {
+                // Until a successful read or explicit retry, equality cannot be established.
+                if (mutableState.value.status != PersistenceStatus.Conflict &&
+                    mutableState.value.status !is PersistenceStatus.Protected
+                ) {
+                    mutableState.value = mutableState.value.copy(status = PersistenceStatus.MemoryOnly(read.reason))
+                }
+                return
+            }
+        }
+        if (!baselineKnown || observed != acknowledgedRaw) {
+            mutableState.value = mutableState.value.copy(status = PersistenceStatus.Conflict)
+        }
+    }
+
+    /** Capture at consumer creation; callbacks from before reload/disposal must not act on new state. */
+    fun isCurrentGeneration(expected: Long): Boolean = !disposed && expected == generation
+
+    /** Keep accepted in-memory work. A known conflict cannot resume automatic saving. */
+    fun keepThisView(): PersistenceStatus = mutableState.value.status
+
+    /** Discard memory only after a successful read; even a protected replacement stays recoverable. */
+    fun reloadSavedState(): Boolean {
+        if (disposed) return false
+        val read = store.read()
+        if (read is StoreReadResult.Failure) return false
+        val loaded = when (read) {
+            StoreReadResult.Missing -> LocalProgressState(fresh(), PersistenceStatus.Fresh)
+            is StoreReadResult.Raw -> when (val decoded = SaveCodec.decodeSave(read.value, newSnapshotId)) {
+                is SaveDecodeResult.Valid -> LocalProgressState(decoded.snapshot, PersistenceStatus.Saved)
+                is SaveDecodeResult.Protected -> LocalProgressState(fresh(), PersistenceStatus.Protected(decoded.reason))
+            }
+            is StoreReadResult.Failure -> error("Handled above")
+        }
+        acknowledgedRaw = (read as? StoreReadResult.Raw)?.value
+        protectedRaw = if (loaded.status is PersistenceStatus.Protected) acknowledgedRaw else null
+        baselineKnown = true
+        generation++
+        mutableState.value = loaded
+        return true
+    }
+
+    /** Listener disposal is idempotent, and even a queued callback cannot affect this owner. */
+    fun dispose() {
+        if (disposed) return
+        disposed = true
+        generation++
+        subscription?.dispose()
+        subscription = null
     }
 
     private fun fresh() = SaveEnvelope(savedAtEpochMs = clock(), snapshotId = newSnapshotId(), revision = 0).also {
@@ -85,6 +149,7 @@ class LocalProgressOwner(
 
     /** Transform only the current validated snapshot. Rejected candidates leave it unchanged. */
     fun mutate(transform: (SaveEnvelope) -> ProgressUpdate): ProgressMutationResult {
+        if (disposed) return ProgressMutationResult.Rejected(SaveProblem.INVALID_SNAPSHOT)
         val previous = mutableState.value
         val update = transform(previous.snapshot)
         val candidate = when (update) {
@@ -155,6 +220,7 @@ class LocalProgressOwner(
 
     /** Re-encode latest accepted memory, without replaying the action that produced it. */
     fun retrySaving(): PersistenceStatus {
+        if (disposed) return mutableState.value.status
         val current = mutableState.value
         if (current.status !is PersistenceStatus.MemoryOnly) return current.status
         if (!baselineKnown) {
