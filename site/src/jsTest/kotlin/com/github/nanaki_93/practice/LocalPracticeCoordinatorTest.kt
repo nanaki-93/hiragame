@@ -12,6 +12,10 @@ import com.github.nanaki_93.content.ProductionExercise
 import com.github.nanaki_93.pages.promptAnswer
 import com.github.nanaki_93.pages.saveStatusMessage
 import com.github.nanaki_93.pages.selectColorMode
+import com.github.nanaki_93.pages.reloadSavedAndApplyMode
+import com.github.nanaki_93.pages.replaceProtectedAndApplyMode
+import com.github.nanaki_93.initialSilkMode
+import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import com.github.nanaki_93.pages.downloadMessage
 import com.github.nanaki_93.pages.replacementMessage
 import com.github.nanaki_93.storage.LocalProgressOwner
@@ -399,6 +403,56 @@ class LocalPracticeCoordinatorTest {
         assertEquals(SavedColorMode.DARK, stale.state.value.snapshot.preferences.colorMode)
     }
 
+    @Test fun recoveryAndReloadApplyLoadedColorOnlyAfterSuccess() {
+        val protectedStore = MemoryProgressStore(com.github.nanaki_93.storage.MemoryProgressBacking("unreadable save"))
+        val protected = owner(protectedStore)
+        var silkMode = ColorMode.DARK
+        var applied = 0
+        val applyProtected = {
+            silkMode = initialSilkMode(protected) { ColorMode.LIGHT }
+            applied++
+            Unit
+        }
+        val failedToken = protected.beginProtectedReplacement()!!
+        protectedStore.writeFailure = StoreFailure.QUOTA
+        assertEquals(ProtectedReplacementResult.Failure(StoreFailure.QUOTA),
+            replaceProtectedAndApplyMode(protected, failedToken, applyProtected))
+        assertEquals(ColorMode.DARK, silkMode)
+        assertEquals(0, applied)
+        protectedStore.writeFailure = null
+        val token = protected.beginProtectedReplacement()!!
+        assertEquals(ProtectedReplacementResult.Replaced, replaceProtectedAndApplyMode(protected, token, applyProtected))
+        assertEquals(SavedColorMode.SYSTEM, protected.state.value.snapshot.preferences.colorMode)
+        assertEquals(ColorMode.LIGHT, silkMode) // system preference after fresh replacement
+        assertEquals(1, applied)
+        assertEquals(ProtectedReplacementResult.Stale, replaceProtectedAndApplyMode(protected, token, applyProtected))
+        assertEquals(1, applied)
+
+        val backing = com.github.nanaki_93.storage.MemoryProgressBacking()
+        val staleStore = MemoryProgressStore(backing)
+        val stale = owner(staleStore)
+        val other = owner(MemoryProgressStore(backing))
+        var reloadedMode = ColorMode.LIGHT
+        var reloadApplications = 0
+        val applyReload = {
+            reloadedMode = initialSilkMode(stale) { ColorMode.LIGHT }
+            reloadApplications++
+            Unit
+        }
+        other.mutate { com.github.nanaki_93.progress.changePreferences(it,
+            it.preferences.copy(colorMode = SavedColorMode.DARK)) }
+        assertIs<PersistenceStatus.Conflict>(stale.state.value.status)
+        staleStore.readFailure = StoreFailure.DENIED
+        assertTrue(!reloadSavedAndApplyMode(stale, applyReload))
+        assertEquals(ColorMode.LIGHT, reloadedMode)
+        assertEquals(0, reloadApplications)
+        staleStore.readFailure = null
+        assertTrue(reloadSavedAndApplyMode(stale, applyReload))
+        assertEquals(SavedColorMode.DARK, stale.state.value.snapshot.preferences.colorMode)
+        assertEquals(ColorMode.DARK, reloadedMode)
+        assertEquals(1, reloadApplications)
+    }
+
     @Test fun homeWiresLocalLoadAndDisposalWithoutLegacyInitialization() {
         val fs: dynamic = js("require('fs')")
         val path: dynamic = js("require('path')")
@@ -467,12 +521,14 @@ class LocalPracticeCoordinatorTest {
         val recoveryUi = home.substringAfter("H2 { Text(\"Local progress actions\") }").substringBefore("Fieldset {")
         for (required in listOf("downloads.exportCurrent()", "downloads.downloadProtectedOriginal()",
             "progress.originalProtectedRaw != null", "progress.beginProtectedReplacement()",
-            "progress.cancelProtectedReplacement(it)", "progress.confirmProtectedReplacement(token)",
-            "progress.keepThisView()", "progress.reloadSavedState()", "Cancel reload", "Cancel replacement",
+            "progress.cancelProtectedReplacement(it)", "replaceProtectedAndApplyMode(progress, token)",
+            "progress.keepThisView()", "reloadSavedAndApplyMode(progress)", "Cancel reload", "Cancel replacement",
             "Confirm discard and reload", "Confirm replace unreadable save", "unvalidated", "unsaved changes and drafts")) {
             assertTrue(required in recoveryUi, "Home missing safe recovery control: $required")
         }
         assertTrue("localStorage" !in recoveryUi && "innerHTML" !in recoveryUi)
+        assertTrue("replaceProtectedAndApplyMode(progress, token) {\n                        colorModeState.value = initialSilkMode(progress)" in recoveryUi)
+        assertTrue("reloadSavedAndApplyMode(progress) { colorModeState.value = initialSilkMode(progress) }" in recoveryUi)
         assertTrue(home.indexOf("SavePreferencesSection(progress)") > home.indexOf("when (val current = state)"),
             "Recovery controls must be available even on content load failure")
         assertTrue("ColorMode.current == ColorMode.DARK" in home &&

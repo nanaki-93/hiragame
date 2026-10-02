@@ -236,6 +236,18 @@ internal fun selectColorMode(
     return result
 }
 
+/** Recovery can change the saved preference without going through the radio control. */
+internal fun replaceProtectedAndApplyMode(
+    progress: LocalProgressOwner,
+    token: ProtectedReplacementToken,
+    apply: () -> Unit,
+): ProtectedReplacementResult = progress.confirmProtectedReplacement(token).also {
+    if (it == ProtectedReplacementResult.Replaced) apply()
+}
+
+internal fun reloadSavedAndApplyMode(progress: LocalProgressOwner, apply: () -> Unit): Boolean =
+    progress.reloadSavedState().also { if (it) apply() }
+
 internal fun saveStatusMessage(state: LocalProgressState): String = when (val status = state.status) {
     PersistenceStatus.Fresh -> "No local snapshot yet. Progress checkpoints will be saved in this browser when possible."
     PersistenceStatus.Saved -> if (state.rejectedUpdate != null)
@@ -314,7 +326,9 @@ private fun SavePreferencesSection(progress: LocalProgressOwner) {
                 PrimaryButton("Confirm replace unreadable save", onClick = {
                     val token = pendingReplacement
                     pendingReplacement = null
-                    if (token != null) actionMessage = replacementMessage(progress.confirmProtectedReplacement(token))
+                    if (token != null) actionMessage = replacementMessage(replaceProtectedAndApplyMode(progress, token) {
+                        colorModeState.value = initialSilkMode(progress)
+                    })
                 })
             }
         }
@@ -332,7 +346,8 @@ private fun SavePreferencesSection(progress: LocalProgressOwner) {
                 SecondaryButton("Cancel reload", onClick = { confirmReload = false })
                 PrimaryButton("Confirm discard and reload", onClick = {
                     confirmReload = false
-                    actionMessage = if (progress.reloadSavedState()) "Reloaded local state. Unsaved work in this view was discarded."
+                    actionMessage = if (reloadSavedAndApplyMode(progress) { colorModeState.value = initialSilkMode(progress) })
+                        "Reloaded local state. Unsaved work in this view was discarded."
                     else "Could not read the saved state. This view and its unsaved work remain available."
                 })
             }
