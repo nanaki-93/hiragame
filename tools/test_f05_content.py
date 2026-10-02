@@ -1,5 +1,6 @@
 """Focused checks of the checked-in F05 curriculum (not a generated fixture copy)."""
 import json
+import unicodedata
 import unittest
 from pathlib import Path
 
@@ -19,6 +20,23 @@ VOICED_ROWS = {
     'p': ('ぱぴぷぺぽ', 'pa pi pu pe po'),
 }
 SPELLING_BASES = {'じ': 'shi', 'ぢ': 'chi', 'ず': 'su', 'づ': 'tsu'}
+CONTRACTED_ROWS = {
+    'k-s-t': ('きしち', ('ky', 'sh', 'ch')),
+    'n-h-m': ('にひみ', ('ny', 'hy', 'my')),
+    'r-g-j': ('りぎじ', ('ry', 'gy', 'j')),
+    'b-p': ('びぴ', ('by', 'py')),
+}
+SMALL = (('ゃ', 'や', 'a'), ('ゅ', 'ゆ', 'u'), ('ょ', 'よ', 'o'))
+# Independent word/spelling contrasts; these are NOT inferred from the shipped files.
+CONTRASTS = {
+    'high-school': ('こうこう', 'こおこう', 'high school'),
+    'large': ('おおきい', 'おうきい', 'large'),
+    'bought': ('かった', 'かた', 'bought'),
+    'photograph': ('しゃしん', 'しやしん', 'photograph'),
+    'guest': ('きゃく', 'きやく', 'guest'),
+    'nine': ('きゅう', 'きゆう', 'nine'),
+    'today': ('きょう', 'きよう', 'today'),
+}
 
 
 def read(path):
@@ -242,6 +260,150 @@ class FoundationalContentTests(unittest.TestCase):
         self.assertEqual(50, len(exercise_ids))
         self.assertEqual(50, len(review_ids))
         self.assertEqual(75, len(option_ids))
+
+    def test_hiragana_contracted_coverage(self):
+        catalog = read(CONTENT / 'catalog.json')
+        self.assertEqual((1, 2), (catalog['formatVersion'], catalog['contentVersion']))
+        entries = {e['id']: e for e in catalog['entries']
+                   if e['id'].startswith('practice-hiragana-contracted-')}
+        self.assertEqual(10, len(entries))
+        self.assertEqual(10, len({e['path'] for e in entries.values()}))
+        note = (NOTES / 'f05-foundations.md').read_text(encoding='utf-8')
+        targets = {'recognition': {}, 'reading': {}}
+        used_exercises, used_reviews, used_options = set(), set(), set()
+        for slug, (bases, prefixes) in CONTRACTED_ROWS.items():
+            for mode in targets:
+                doc_id = f'practice-hiragana-contracted-{slug}-{mode}'
+                entry = entries[doc_id]
+                self.assertEqual(('practice', 'kana-foundations',
+                                  f'practice/hiragana-contracted-{slug}-{mode}.json'),
+                                 (entry['kind'], entry['topicId'], entry['path']))
+                doc = read(CONTENT / entry['path'])
+                self._check_contracted_document(doc, entry, note)
+                self.assertEqual(len(bases) * 3, len(doc['exercises']))
+                for ex, item in zip(doc['exercises'], doc['reviewItems']):
+                    self._check_contracted_ids(ex, item, note, used_exercises, used_reviews)
+                    target = next((base + small, base + full, prefix + vowel, base, small)
+                                  for base, prefix in zip(bases, prefixes)
+                                  for small, full, vowel in SMALL
+                                  if ex['id'].endswith(f'{ord(base):04x}-{ord(small):04x}'))
+                    form, full_form, cue, base, small = target
+                    self.assertNotIn(form, targets[mode], f'duplicate target {form}')
+                    targets[mode][form] = (doc_id, ex['id'])
+                    self.assertEqual(f'exercise-hc-{mode}-{ord(base):04x}-{ord(small):04x}', ex['id'])
+                    self.assertIn(form, item['skill'])  # explicit target, not a distractor
+                    self.assertEqual('spelling-cue-to-contracted-form' if mode == 'recognition'
+                                     else 'latin-and-base-cue-to-kana', item['direction'])
+                    self.assertIn(cue, ex['prompt'] if mode == 'recognition' else ex['stimulus']['surface'])
+                    if mode == 'recognition':
+                        self.assertEqual('choice', ex['type'])
+                        options = ex['options']
+                        self.assertEqual(3, len(options))
+                        self.assertEqual({form, full_form, base + {'ゃ': 'ゅ', 'ゅ': 'ょ', 'ょ': 'ゃ'}[small]},
+                                         {o['text']['surface'] for o in options})
+                        correct = next(o for o in options if o['id'] == ex['correctOptionId'])
+                        self.assertEqual(form, correct['text']['surface'])
+                        for option in options:
+                            self.assertNotIn(option['id'], used_options)
+                            used_options.add(option['id'])
+                            self.assertIn(f'`{option["id"]}`', note)
+                            self.assertEqual(option['text']['surface'], option['text']['reading'])
+                            self.assertIn('translation', option['text'])
+                            self.assertNotIn('gloss', option['text'])
+                    else:
+                        self.assertEqual(('reading', 'kana'), (ex['type'], ex['answerRepresentation']))
+                        self.assertEqual(ex['stimulus']['surface'], ex['stimulus']['reading'])
+                        self.assertIn('translation', ex['stimulus'])
+                        self.assertNotIn(form, ex['prompt'] + json.dumps(ex['stimulus'], ensure_ascii=False))
+                        self.assertEqual(['kana'], [a['type'] for a in ex['acceptedAnswers']])
+                        self.assertEqual([form], [a['text']['surface'] for a in ex['acceptedAnswers']])
+                        self.assertEqual(form, ex['acceptedAnswers'][0]['text']['reading'])
+                        self.assertIn('translation', ex['acceptedAnswers'][0]['text'])
+                        self.assertNotIn('gloss', ex['acceptedAnswers'][0]['text'])
+                        self.assertEqual(cue, ex['acceptedAnswers'][0]['text']['romaji'])
+                        self.assertNotIn(full_form, [a['text']['surface'] for a in ex['acceptedAnswers']])
+                        self.assertNotEqual(unicodedata.normalize('NFC', form),
+                                            unicodedata.normalize('NFC', full_form))
+        expected = {base + small for bases, _ in CONTRACTED_ROWS.values()
+                    for base in bases for small, _, _ in SMALL}
+        self.assertEqual(33, len(expected))
+        for mode in targets:
+            self.assertEqual(expected, set(targets[mode]))
+
+        for mode in targets:
+            doc_id = f'practice-hiragana-contracted-spelling-examples-{mode}'
+            entry = entries[doc_id]
+            self.assertEqual(('practice', 'kana-foundations',
+                              f'practice/hiragana-contracted-spelling-examples-{mode}.json'),
+                             (entry['kind'], entry['topicId'], entry['path']))
+            doc = read(CONTENT / entry['path'])
+            self._check_contracted_document(doc, entry, note)
+            self.assertEqual(7, len(doc['exercises']))
+            self.assertEqual(set(CONTRASTS),
+                             {ex['id'].removeprefix(f'exercise-hc-example-{mode}-')
+                              for ex in doc['exercises']})
+            for ex, item in zip(doc['exercises'], doc['reviewItems']):
+                self._check_contracted_ids(ex, item, note, used_exercises, used_reviews)
+                slug = ex['id'].removeprefix(f'exercise-hc-example-{mode}-')
+                self.assertIn(slug, CONTRASTS)
+                word, wrong, meaning = CONTRASTS[slug]
+                self.assertIn(word, item['skill'])
+                self.assertIn(meaning, ex['prompt'])
+                self.assertIn(wrong, ex['explanation'])
+                if mode == 'recognition':
+                    self.assertEqual('choice', ex['type'])
+                    self.assertEqual({word, wrong}, {o['text']['surface'] for o in ex['options']})
+                    self.assertEqual(word, next(o['text']['surface'] for o in ex['options']
+                                                if o['id'] == ex['correctOptionId']))
+                    for option in ex['options']:
+                        self.assertNotIn(option['id'], used_options)
+                        used_options.add(option['id'])
+                        self.assertIn(f'`{option["id"]}`', note)
+                        self.assertIn('translation', option['text'])
+                        self.assertNotIn('gloss', option['text'])
+                else:
+                    self.assertEqual(('reading', 'kana'), (ex['type'], ex['answerRepresentation']))
+                    self.assertEqual([word], [a['text']['surface'] for a in ex['acceptedAnswers']])
+                    self.assertNotIn(word, ex['prompt'] + json.dumps(ex['stimulus'], ensure_ascii=False))
+                    self.assertNotIn(wrong, [a['text']['surface'] for a in ex['acceptedAnswers']])
+                    self.assertNotEqual(unicodedata.normalize('NFC', word),
+                                        unicodedata.normalize('NFC', wrong))
+                    self.assertTrue(ex['acceptedAnswers'][0]['text']['translation'].startswith(meaning))
+                    self.assertNotIn('gloss', ex['acceptedAnswers'][0]['text'])
+        self.assertEqual(80, len(used_exercises))
+        self.assertEqual(80, len(used_reviews))
+        self.assertEqual(113, len(used_options))
+
+    def _check_contracted_document(self, doc, entry, note):
+        self.assertEqual((1, 2, entry['id'], entry['topicId']),
+                         (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))
+        self.assertTrue(doc['title'].startswith(('Contracted hiragana:', 'Hiragana spelling:')))
+        self.assertTrue(doc['description'].strip())
+        self.assertTrue(1 <= len(doc['exercises']) <= 10)
+        review = doc['review']
+        self.assertEqual(('reviewed', 'agent', '2026-10-02', 'publishable', 'f05-foundations.md'),
+                         (review['status'], review['reviewerType'], review['reviewDate'],
+                          review['rights'], review['reviewNote']))
+        self.assertIn(f'Scope: document `{doc["id"]}`', note)
+        self.assertEqual(len(doc['exercises']), len(doc['reviewItems']))
+        self.assertEqual({ex['id'] for ex in doc['exercises']},
+                         {item['targetId'] for item in doc['reviewItems']})
+        location = f'{entry["path"]}:$ ({doc["id"]})'
+        validator.validate(doc, validator.PRACTICE, location)
+        validator.local(doc, location)
+        validator.references(doc, location)
+        validator.review_document(doc, location, NOTES)
+
+    def _check_contracted_ids(self, ex, item, note, used_exercises, used_reviews):
+        self.assertTrue(ex['prompt'].strip())
+        self.assertTrue(ex['explanation'].strip())
+        self.assertEqual(('exercise', ex['id']), (item['targetKind'], item['targetId']))
+        self.assertNotIn(ex['id'], used_exercises)
+        self.assertNotIn(item['id'], used_reviews)
+        used_exercises.add(ex['id'])
+        used_reviews.add(item['id'])
+        self.assertIn(f'`{ex["id"]}`', note)
+        self.assertIn(f'`{item["id"]}`', note)
 
 
 if __name__ == '__main__':

@@ -5,7 +5,7 @@
     {
       "id": "kana-foundations",
       "title": "Hiragana foundations",
-      "description": "Basic, voiced and semi-voiced hiragana sign recognition and kana spelling, plus a two-sign romaji beginner option."
+      "description": "Basic, voiced, semi-voiced and contracted hiragana, word-spelling contrasts, and a two-sign romaji beginner option."
     },
     {
       "id": "workplace-clarification",
@@ -121,6 +121,66 @@
       "kind": "practice",
       "topicId": "kana-foundations",
       "path": "practice/hiragana-voiced-p-reading.json"
+    },
+    {
+      "id": "practice-hiragana-contracted-k-s-t-recognition",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-contracted-k-s-t-recognition.json"
+    },
+    {
+      "id": "practice-hiragana-contracted-k-s-t-reading",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-contracted-k-s-t-reading.json"
+    },
+    {
+      "id": "practice-hiragana-contracted-n-h-m-recognition",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-contracted-n-h-m-recognition.json"
+    },
+    {
+      "id": "practice-hiragana-contracted-n-h-m-reading",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-contracted-n-h-m-reading.json"
+    },
+    {
+      "id": "practice-hiragana-contracted-r-g-j-recognition",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-contracted-r-g-j-recognition.json"
+    },
+    {
+      "id": "practice-hiragana-contracted-r-g-j-reading",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-contracted-r-g-j-reading.json"
+    },
+    {
+      "id": "practice-hiragana-contracted-b-p-recognition",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-contracted-b-p-recognition.json"
+    },
+    {
+      "id": "practice-hiragana-contracted-b-p-reading",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-contracted-b-p-reading.json"
+    },
+    {
+      "id": "practice-hiragana-contracted-spelling-examples-recognition",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-contracted-spelling-examples-recognition.json"
+    },
+    {
+      "id": "practice-hiragana-contracted-spelling-examples-reading",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-contracted-spelling-examples-reading.json"
     }
   ]
 }

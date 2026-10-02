@@ -1,0 +1,267 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-contracted-b-p-recognition",
+  "topicId": "kana-foundations",
+  "title": "Contracted hiragana: B and P rows — find the form",
+  "description": "Compare the base sign plus a small ゃ, ゅ or ょ with full-sized kana. The written spelling cue disambiguates similar sounds.",
+  "reviewItems": [
+    {
+      "id": "review-hc-recognition-3073-3083",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-3073-3083",
+      "skill": "Recognize contracted hiragana びゃ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-3073-3085",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-3073-3085",
+      "skill": "Recognize contracted hiragana びゅ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-3073-3087",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-3073-3087",
+      "skill": "Recognize contracted hiragana びょ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-3074-3083",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-3074-3083",
+      "skill": "Recognize contracted hiragana ぴゃ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-3074-3085",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-3074-3085",
+      "skill": "Recognize contracted hiragana ぴゅ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-3074-3087",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-3074-3087",
+      "skill": "Recognize contracted hiragana ぴょ",
+      "direction": "spelling-cue-to-contracted-form"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Original agent-authored contracted hiragana spelling cues and word examples; no legacy CSV or F00 text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original English prompts, translations and explanations; kana spellings and short common-word meanings are linguistic facts. No copied work or audio."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-3073-3083",
+      "prompt": "Which written hiragana uses the bi base sign + small ya (bya)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-3073-3083-0",
+          "text": {
+            "surface": "びゃ",
+            "reading": "びゃ",
+            "translation": "Contracted hiragana bya, written with the bi base sign and small ya.",
+            "romaji": "bya"
+          }
+        },
+        {
+          "id": "option-hc-recognition-3073-3083-1",
+          "text": {
+            "surface": "びや",
+            "reading": "びや",
+            "translation": "Full-sized kana spelling; not bya."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3073-3083-2",
+          "text": {
+            "surface": "びゅ",
+            "reading": "びゅ",
+            "translation": "Different small kana spelling; not bya."
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-3073-3083-0",
+      "explanation": "びゃ is bya: bi base sign + small ya. びや uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-3073-3085",
+      "prompt": "Which written hiragana uses the bi base sign + small yu (byu)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-3073-3085-0",
+          "text": {
+            "surface": "びゆ",
+            "reading": "びゆ",
+            "translation": "Full-sized kana spelling; not byu."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3073-3085-1",
+          "text": {
+            "surface": "びょ",
+            "reading": "びょ",
+            "translation": "Different small kana spelling; not byu."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3073-3085-2",
+          "text": {
+            "surface": "びゅ",
+            "reading": "びゅ",
+            "translation": "Contracted hiragana byu, written with the bi base sign and small yu.",
+            "romaji": "byu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-3073-3085-2",
+      "explanation": "びゅ is byu: bi base sign + small yu. びゆ uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-3073-3087",
+      "prompt": "Which written hiragana uses the bi base sign + small yo (byo)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-3073-3087-0",
+          "text": {
+            "surface": "びょ",
+            "reading": "びょ",
+            "translation": "Contracted hiragana byo, written with the bi base sign and small yo.",
+            "romaji": "byo"
+          }
+        },
+        {
+          "id": "option-hc-recognition-3073-3087-1",
+          "text": {
+            "surface": "びよ",
+            "reading": "びよ",
+            "translation": "Full-sized kana spelling; not byo."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3073-3087-2",
+          "text": {
+            "surface": "びゃ",
+            "reading": "びゃ",
+            "translation": "Different small kana spelling; not byo."
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-3073-3087-0",
+      "explanation": "びょ is byo: bi base sign + small yo. びよ uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-3074-3083",
+      "prompt": "Which written hiragana uses the pi base sign + small ya (pya)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-3074-3083-0",
+          "text": {
+            "surface": "ぴや",
+            "reading": "ぴや",
+            "translation": "Full-sized kana spelling; not pya."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3074-3083-1",
+          "text": {
+            "surface": "ぴゅ",
+            "reading": "ぴゅ",
+            "translation": "Different small kana spelling; not pya."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3074-3083-2",
+          "text": {
+            "surface": "ぴゃ",
+            "reading": "ぴゃ",
+            "translation": "Contracted hiragana pya, written with the pi base sign and small ya.",
+            "romaji": "pya"
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-3074-3083-2",
+      "explanation": "ぴゃ is pya: pi base sign + small ya. ぴや uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-3074-3085",
+      "prompt": "Which written hiragana uses the pi base sign + small yu (pyu)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-3074-3085-0",
+          "text": {
+            "surface": "ぴゅ",
+            "reading": "ぴゅ",
+            "translation": "Contracted hiragana pyu, written with the pi base sign and small yu.",
+            "romaji": "pyu"
+          }
+        },
+        {
+          "id": "option-hc-recognition-3074-3085-1",
+          "text": {
+            "surface": "ぴゆ",
+            "reading": "ぴゆ",
+            "translation": "Full-sized kana spelling; not pyu."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3074-3085-2",
+          "text": {
+            "surface": "ぴょ",
+            "reading": "ぴょ",
+            "translation": "Different small kana spelling; not pyu."
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-3074-3085-0",
+      "explanation": "ぴゅ is pyu: pi base sign + small yu. ぴゆ uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-3074-3087",
+      "prompt": "Which written hiragana uses the pi base sign + small yo (pyo)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-3074-3087-0",
+          "text": {
+            "surface": "ぴよ",
+            "reading": "ぴよ",
+            "translation": "Full-sized kana spelling; not pyo."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3074-3087-1",
+          "text": {
+            "surface": "ぴゃ",
+            "reading": "ぴゃ",
+            "translation": "Different small kana spelling; not pyo."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3074-3087-2",
+          "text": {
+            "surface": "ぴょ",
+            "reading": "ぴょ",
+            "translation": "Contracted hiragana pyo, written with the pi base sign and small yo.",
+            "romaji": "pyo"
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-3074-3087-2",
+      "explanation": "ぴょ is pyo: pi base sign + small yo. ぴよ uses a full-sized kana, so it is a different spelling."
+    }
+  ]
+}
