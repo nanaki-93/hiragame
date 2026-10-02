@@ -53,6 +53,25 @@ class SaveCodecTest {
         protected(raw.replace("\"exerciseIds\":[\"ex_1\",\"ex_2\"]", "\"exerciseIds\":[{\"a\":1,\"a\":2}]"), SaveProblem.DUPLICATE_KEY)
     }
 
+    @Test fun lexicalPreflightKeepsEscapedKeysAndMalformedStringsDistinct() {
+        val duplicate = "{\"outer\":{\"name\":1,\"na\\u006de\":2}}"
+        assertEquals(SaveProblem.DUPLICATE_KEY, inspectJsonLexically(duplicate, 32))
+        assertEquals(SaveProblem.DUPLICATE_KEY, inspectJsonLexically(duplicate, 34))
+        assertEquals(SaveProblem.MALFORMED_JSON, inspectJsonLexically("{\"bad\\uZZZZ\":1}", 32))
+        assertEquals(SaveProblem.MALFORMED_JSON, inspectJsonLexically("{\"key\":\"unterminated", 32))
+        protected("{\"bad\\uZZZZ\":1}", SaveProblem.MALFORMED_JSON)
+        protected("{\"key\":\"unterminated", SaveProblem.MALFORMED_JSON)
+    }
+
+    @Test fun lexicalDepthIsIndependentlyBoundedAndIgnoresBracketsInStrings() {
+        val nested = "[".repeat(33) + "\"[{}]\"" + "]".repeat(33)
+        assertEquals(SaveProblem.TOO_DEEP, inspectJsonLexically(nested, 32))
+        assertEquals(null, inspectJsonLexically(nested, 33))
+        assertEquals(null, inspectJsonLexically(nested, 34))
+        assertEquals(null, inspectJsonLexically("[".repeat(32) + "0" + "]".repeat(32), 32))
+        protected(nested, SaveProblem.TOO_DEEP)
+    }
+
     @Test fun rejectsUnknownFieldsWrongTypesInvalidEnumsAndImpossibleShapes() {
         val raw = encodeSave(snapshot())
         protected(raw.replace("\"snapshotId\":\"write_1\"", "\"snapshotId\":\"write_1\",\"secret\":true"), SaveProblem.INVALID_SNAPSHOT)
