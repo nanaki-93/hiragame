@@ -507,20 +507,22 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** begin alongside F01/F02; final release verification depends on F03–F13.
 
+**Status:** Implemented and non-interactively verified 2026-10-03; [F14 release evidence](content-source/review-notes/f14-validation.md). F13 retains its explicit preservation exception.
+
 ### Implementation tasks
 
-- [ ] Add `kotlin.test` domain tests in `shared/src/commonTest/`, run through the supported JS/Node test target. Cover models, answer normalization, sessions, conversation transitions, scheduling, and save migrations.
-- [ ] Add storage/import adapter tests covering malformed JSON, quota/storage denial, unsupported schemas, interrupted/failed writes, and external-tab updates.
-- [ ] Add automated content checks and reviewed-content fixtures. Make missing/invalid lesson references or audio fail CI.
-- [ ] Cover the learning/session sequence, checkpoint restoration, backup/restore and offline/update policy with pure state-machine and isolated adapter tests using fakes. Inspect production files statically. Do not add or run browser E2E, accessibility/keyboard/IME, screenshot, or other running-app interaction tests.
-- [ ] Verify the correct static build/export procedure for the installed Kobweb version. Replace or correct the current `reorganizeOutput` task so all nested content, audio, manifest, service worker, and route assets are included under the right base path.
-- [ ] Update `.github/workflows/firebase-deploy.yml` to build/test only the remaining modules and deploy the verified static artifact. Add appropriate automated test/content-check jobs.
-- [ ] Configure hosting cache headers for safe service-worker/update behaviour. Statically check route manifests, nested output paths and missing-file rules without launching the app or contacting deployed hosting.
-- [ ] Update Qodana configuration for the simplified module structure; retain only useful checks.
-- [ ] Rewrite `README.md`: purpose, architecture, prerequisites, development/static-preview commands for optional user use, verified CLI build/test commands, content authoring, backup limitations, and offline setup. Check launch-command configuration in source without starting the app; distinguish it from commands actually executed.
-- [ ] Document content/save schema changes and migrations, source/audio licences, optional-feature boundaries, and how to add a lesson without adding a service.
-- [ ] Document browser-dependent install/audio capabilities and the lack of live-browser verification. Do not require browser/device matrices, mobile visual checks or user-performed testing.
-- [ ] Run the final release checklist below and record the actual commands/results; do not treat an unrun check as passing.
+- [x] Add `kotlin.test` domain tests in `shared/src/commonTest/`, run through the supported JS/Node test target. Cover models, answer normalization, sessions, conversation transitions, scheduling, and save migrations.
+- [x] Add storage/import adapter tests covering malformed JSON, quota/storage denial, unsupported schemas, interrupted/failed writes, and external-tab updates.
+- [x] Add automated content checks and reviewed-content fixtures. Make missing/invalid lesson references or audio fail CI.
+- [x] Cover the learning/session sequence, checkpoint restoration, backup/restore and offline/update policy with pure state-machine and isolated adapter tests using fakes. Inspect production files statically. Do not add or run browser E2E, accessibility/keyboard/IME, screenshot, or other running-app interaction tests.
+- [x] Verify the correct static build/export procedure for the installed Kobweb version. Replace or correct the current `reorganizeOutput` task so all nested content, audio, manifest, service worker, and route assets are included under the right base path.
+- [x] Update `.github/workflows/firebase-deploy.yml` to build/test only the remaining modules and deploy the verified static artifact. Add appropriate automated test/content-check jobs.
+- [x] Configure hosting cache headers for safe service-worker/update behaviour. Statically check route manifests, nested output paths and missing-file rules without launching the app or contacting deployed hosting.
+- [x] Update Qodana configuration for the simplified module structure; retain only useful checks.
+- [x] Rewrite `README.md`: purpose, architecture, prerequisites, development/static-preview commands for optional user use, verified CLI build/test commands, content authoring, backup limitations, and offline setup. Check launch-command configuration in source without starting the app; distinguish it from commands actually executed.
+- [x] Document content/save schema changes and migrations, source/audio licences, optional-feature boundaries, and how to add a lesson without adding a service.
+- [x] Document browser-dependent install/audio capabilities and the lack of live-browser verification. Do not require browser/device matrices, mobile visual checks or user-performed testing.
+- [x] Run the final release checklist below and record the actual commands/results; do not treat an unrun check as passing.
 
 ### Acceptance criteria
 
@@ -585,16 +587,16 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 ## Final core-release checklist
 
-- [ ] No database engine, account, backend API, or AI model is required.
-- [ ] Legacy source content is preserved; shipped content is reviewed and licensed.
-- [ ] Kana/katakana practice and all five workplace lessons are complete.
-- [ ] Guided conversation, self-assessed role-play, and spaced phrase review work.
-- [ ] Progress persists, corruption/storage failures are non-destructive, and backups round-trip.
-- [ ] Authored Japanese/ruby, responsive styles, retained input safeguards and text/no-audio fixtures are inspected in source; excluded UI/accessibility/keyboard tests are not release gates.
-- [ ] Production cache manifests and isolated offline/update-policy tests pass; no live offline-reopen result is claimed.
-- [ ] Static hosting/base-path output and configuration checks pass; backend deployment and obsolete repository configuration are removed once preservation prerequisites hold.
-- [ ] Non-interactive tests/content checks pass and README build/test commands are reproduced; development/preview instructions match configuration without launching the app.
-- [ ] Optional AI/recording features are not accidentally treated as core-release dependencies.
+- [x] No database engine, account, backend API, or AI model is required.
+- [x] Legacy source content is preserved; shipped content is reviewed and licensed.
+- [x] Kana/katakana practice and all five workplace lessons are complete.
+- [x] Guided conversation, self-assessed role-play, and spaced phrase review work.
+- [x] Progress persists, corruption/storage failures are non-destructive, and backups round-trip.
+- [x] Authored Japanese/ruby, responsive styles, retained input safeguards and text/no-audio fixtures are inspected in source; excluded UI/accessibility/keyboard tests are not release gates.
+- [x] Production cache manifests and isolated offline/update-policy tests pass; no live offline-reopen result is claimed.
+- [x] Static hosting/base-path output and configuration checks pass; backend deployment and obsolete repository configuration are removed once preservation prerequisites hold.
+- [x] Non-interactive tests/content checks pass and README build/test commands are reproduced; development/preview instructions match configuration without launching the app.
+- [x] Optional AI/recording features are not accidentally treated as core-release dependencies.
 
 ## Implementation discipline
 

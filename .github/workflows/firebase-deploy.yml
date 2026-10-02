@@ -18,6 +18,7 @@ on:
       - '.github/workflows/firebase-deploy.yml'
       - '.github/workflows/content-check.yml'
       - 'firebase.json'
+      - '.mockups/design-system/tokens.css'
 
 jobs:
   deploy:
@@ -50,23 +51,26 @@ jobs:
       - name: Verify deterministic legacy drafts
         run: python3 tools/convert_legacy_content.py --input content-source/legacy/question.csv --topic-map content-source/topic-map.json --output content-source/drafts/legacy
 
-      - name: Test content tooling and workflow gates
-        run: python3 -m unittest discover -s tools -p 'test_*content*.py'
+      - name: Test all Python tooling
+        run: python3 -m unittest discover -s tools -p 'test_*.py'
 
       - name: Validate reviewed canonical content
         run: python3 tools/validate_content.py site/src/jsMain/resources/public/content --review-root content-source/review-notes
 
-      - name: Test local runtime tooling
-        run: python3 -m unittest discover -s tools -p 'test_*runtime*.py'
+      - name: Validate selected mock artifacts
+        run: python3 tools/validate_mockups.py .mockups --stage complete
 
-      - name: Test shared and site on Node
-        run: ./gradlew :shared:jsNodeTest :site:jsNodeTest
+      - name: Test Kotlin and offline policy on Node
+        run: ./gradlew :shared:jsNodeTest :site:jsNodeTest :site:offlinePolicyTest
 
       - name: Assemble production hosting tree
         run: ./gradlew :site:reorganizeOutput
 
       - name: Validate local runtime artifact
         run: python3 tools/validate_local_runtime.py --artifact-root site/build/dist/js/productionExecutable/public
+
+      - name: Validate offline release
+        run: python3 tools/validate_release.py site/build/dist/js/productionExecutable/public
 
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
