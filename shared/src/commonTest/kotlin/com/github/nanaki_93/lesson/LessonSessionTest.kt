@@ -20,7 +20,9 @@ import com.github.nanaki_93.content.RightsStatus
 import com.github.nanaki_93.content.RolePlayObjective
 import com.github.nanaki_93.content.Speaker
 import com.github.nanaki_93.content.TerminalNode
+import com.github.nanaki_93.progress.LessonProgress
 import com.github.nanaki_93.progress.LessonStage
+import com.github.nanaki_93.practice.AuthoredFeedback
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -116,6 +118,147 @@ class LessonSessionTest {
         assertEquals("Check the time", plan.lesson.rolePlay.task)
         assertTrue(plan.stages.all { it.items.isEmpty() && it.containsCheckpoint(null) })
         assertTrue(plan.stages.all { !it.containsCheckpoint("node-time") })
+    }
+
+    private fun LessonSession.next() = reduceLesson(this, LessonCommand.Next(id, revision))
+    private fun LessonSession.previous() = reduceLesson(this, LessonCommand.Previous(id, revision))
+    private fun LessonSession.continueLesson() = reduceLesson(this, LessonCommand.Continue(id, revision))
+    private fun LessonSession.skip() = reduceLesson(this, LessonCommand.Skip(id, revision))
+    private fun LessonSession.skipRemaining() = reduceLesson(this, LessonCommand.SkipRemaining(id, revision))
+    private fun LessonSession.retry() = reduceLesson(this, LessonCommand.Retry(id, revision))
+
+    @Test fun navigationIsExplicitAndUnresolvedPromptsAreGuarded() {
+        var session = startLessonSession(7, lesson())
+        assertEquals(LessonStage.SITUATION, session.stage)
+        assertNull(session.checkpointId)
+        assertSame(session, session.previous())
+        session = session.next()
+        assertEquals(LessonStage.DIALOGUE, session.stage)
+        assertNull(session.item)
+        session = session.next()
+        assertEquals("turn-time", session.checkpointId)
+        session = session.next().next().next()
+        assertEquals(LessonStage.UNDERSTANDING, session.stage)
+        assertNull(session.checkpointId)
+        session = session.next()
+        assertEquals("exercise-check-response", session.checkpointId)
+        assertEquals(LessonItemView.PROMPT, session.itemView)
+        assertNull(session.feedback)
+        assertSame(session, session.next())
+        assertSame(session, session.continueLesson())
+        assertSame(session, session.retry())
+        session = session.skip()
+        assertEquals(LessonOutcome.SKIPPED, session.outcome)
+        assertEquals(LessonItemView.FEEDBACK, session.itemView)
+        assertEquals("Why", assertIs<AuthoredFeedback.Choice>(session.feedback).explanation)
+        assertSame(session, session.next())
+        assertSame(session, session.skip())
+        session = session.continueLesson()
+        assertEquals(LessonStage.GUIDED_PRACTICE, session.stage)
+        assertNull(session.item)
+    }
+
+    @Test fun backtrackingRetainsOutcomesAndRetryClearsOnlyTheChosenSlot() {
+        val source = lesson().copy(exercises = listOf(choice("first"), choice("second"), reading("read")))
+        var session = startLessonSession(1, source).next().next().next().next().next().next()
+        // Dialogue entry + three turns + Understanding entry + first prompt.
+        assertEquals("first", session.checkpointId)
+        session = session.skip().continueLesson()
+        assertEquals("second", session.checkpointId)
+        val blocked = session.next()
+        assertSame(session, blocked)
+        session = session.previous()
+        assertEquals("first", session.checkpointId)
+        assertEquals(LessonOutcome.SKIPPED, session.outcome)
+        assertEquals(LessonItemView.FEEDBACK, session.itemView)
+        assertIs<AuthoredFeedback.Choice>(session.feedback)
+        session = session.previous()
+        assertNull(session.item)
+        session = session.next()
+        assertEquals(LessonOutcome.SKIPPED, session.outcome)
+        session = session.retry()
+        assertNull(session.outcome)
+        assertNull(session.feedback)
+        assertEquals(LessonItemView.PROMPT, session.itemView)
+        assertSame(session, session.continueLesson())
+        session = session.skipRemaining()
+        assertEquals(LessonStage.GUIDED_PRACTICE, session.stage)
+        assertEquals(listOf(LessonOutcome.SKIPPED, LessonOutcome.SKIPPED), session.outcomes)
+        assertNull(session.item)
+    }
+
+    @Test fun skipRemainingOnlySkipsUnresolvedItemsAndNeverChangesPriorOutcomes() {
+        val source = lesson().copy(exercises = listOf(choice("first"), choice("second"), choice("third")))
+        var session = startLessonSession(8, source)
+        while (session.stage != LessonStage.UNDERSTANDING) session = session.next()
+        session = session.next().skip().continueLesson()
+        assertEquals("second", session.checkpointId)
+        val skipCommand = LessonCommand.SkipRemaining(session.id, session.revision)
+        session = reduceLesson(session, skipCommand)
+        assertEquals(LessonStage.GUIDED_PRACTICE, session.stage)
+        assertNull(session.item)
+        assertEquals(List(3) { LessonOutcome.SKIPPED }, session.outcomes)
+        assertSame(session, reduceLesson(session, skipCommand))
+        session = session.previous()
+        assertEquals("third", session.checkpointId)
+        assertEquals(LessonItemView.FEEDBACK, session.itemView)
+        session = session.retry()
+        assertEquals(LessonItemView.PROMPT, session.itemView)
+        assertEquals(2, session.outcomes.size)
+        assertSame(session, session.next())
+    }
+
+    @Test fun emptyStagesNeedAnExplicitNextAndSkipRemainingDoesNotInventItems() {
+        val source = lesson().copy(dialogue = Dialogue(emptyList(), emptyList()), exercises = emptyList())
+        var session = startLessonSession(2, source)
+        for (expected in LessonStage.entries.drop(1)) {
+            session = session.next()
+            assertEquals(expected, session.stage)
+            assertNull(session.item)
+            assertSame(session, session.skipRemaining())
+        }
+        assertSame(session, session.next())
+        assertTrue(session.outcomes.isEmpty())
+    }
+
+    @Test fun resumeKeepsSavedPlaceReadOnlyAndDoesNotRecreateFeedback() {
+        val record = LessonProgress(lesson().id, 1, 20, LessonStage.GUIDED_PRACTICE,
+            "exercise-complete-time", completedAtEpochMs = 18)
+        val session = assertIs<LessonResumeResult.Available>(resumeLessonSession(10, lesson(), record)).session
+        assertEquals(0, session.revision)
+        assertEquals("exercise-complete-time", session.checkpointId)
+        assertEquals(LessonItemView.PROMPT, session.itemView)
+        assertNull(session.feedback)
+        assertEquals(LESSON_RESUME_NOTICE, session.notice)
+        assertTrue(session.resumed)
+        assertTrue(session.outcomes.isEmpty())
+        assertSame(session, session.continueLesson())
+        val entry = assertIs<LessonResumeResult.Available>(resumeLessonSession(11, lesson(),
+            record.copy(checkpointId = null))).session
+        assertNull(entry.item)
+        assertNull(entry.notice)
+        assertEquals(LessonStage.GUIDED_PRACTICE, entry.stage)
+        assertIs<LessonResumeResult.Incompatible>(resumeLessonSession(12, lesson(),
+            record.copy(stage = LessonStage.UNDERSTANDING)))
+    }
+
+    @Test fun staleRepeatedAndOldRunCommandsNeverChangeNewSession() {
+        val initial = startLessonSession(3, lesson())
+        val next = LessonCommand.Next(initial.id, initial.revision)
+        val moved = reduceLesson(initial, next)
+        assertSame(moved, reduceLesson(moved, next))
+        assertSame(moved, reduceLesson(moved, LessonCommand.Next(42, moved.revision)))
+        assertSame(moved, reduceLesson(moved, LessonCommand.Restart(moved.id, moved.revision, moved.id)))
+        val restarted = reduceLesson(moved, LessonCommand.Restart(moved.id, moved.revision, 4))
+        assertEquals(4, restarted.id)
+        assertEquals(0, restarted.revision)
+        assertEquals(LessonStage.SITUATION, restarted.stage)
+        assertSame(restarted, reduceLesson(restarted, next))
+        assertSame(restarted, reduceLesson(restarted, LessonCommand.Leave(3, moved.revision)))
+        val left = reduceLesson(restarted, LessonCommand.Leave(4, 0))
+        assertTrue(left.left)
+        assertSame(left, reduceLesson(left, LessonCommand.Next(4, left.revision)))
+        assertSame(left, reduceLesson(left, LessonCommand.Restart(4, left.revision, 5)))
     }
 
     @Test fun mutatedAuthoredListsCannotIntroduceDuplicateExecutableIds() {
