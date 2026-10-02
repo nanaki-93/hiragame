@@ -841,9 +841,9 @@ class FoundationalContentTests(unittest.TestCase):
                                  (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))
                 if entry['kind'] == 'practice':
                     self.assertTrue(1 <= len(doc['exercises']) <= 10, entry['id'])
-                self.assertEqual({ex['id'] for ex in doc['exercises']},
-                                 {item['targetId'] for item in doc['reviewItems']
-                                  if item['targetKind'] == 'exercise'})
+                    self.assertEqual({ex['id'] for ex in doc['exercises']},
+                                     {item['targetId'] for item in doc['reviewItems']
+                                      if item['targetKind'] == 'exercise'})
                 for ex in doc['exercises']:
                     for identifier in [ex['id'], *(o['id'] for o in ex.get('options', []))]:
                         self.assertNotIn(identifier, ids, identifier)
