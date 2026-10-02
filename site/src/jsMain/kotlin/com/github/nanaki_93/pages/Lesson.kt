@@ -240,6 +240,7 @@ private fun LessonPlayer(
             }
             LessonStage.ROLE_PLAY -> {
                 com.github.nanaki_93.components.widgets.GuidedConversation(lesson, preferences)
+                com.github.nanaki_93.ai.OptionalAiConversation(lesson)
                 H3 { Text("Role-play") }
                 P { Text(lesson.rolePlay.task) }
                 if (stage.empty == EmptyLessonStage.ROLE_PLAY_OBJECTIVE_ONLY) {

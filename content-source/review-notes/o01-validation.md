@@ -1,0 +1,9 @@
+# O01 optional local AI — 2026-10-03
+
+Implemented an authored/default provider interface, opt-in local provider, role-play UI, capability/model listing, six-turn/1,000-character input limits, timeouts and cancellation. Requests are anchored to situation, difficulty, goal and reviewed phrases. JSON replies require exactly reply/suggestion strings; unfinished, malformed, tool-calling and oversized replies fail closed. Generated text is escaped text, unreviewed and never written to content/mastery/saves. Endpoint/model/history are session-local. No cloud endpoints, automatic downloads, frontend keys or account dependency.
+
+Direct access is loopback-only. The optional helper binds 127.0.0.1, serves the built static artifact and forwards only fixed chat/tags operations to 127.0.0.1:11434. It checks local Host/Origin, caps request/response/options/turns, disables environment proxies and redirects and avoids request/transcript logs. It has no database or cloud deployment. Read the README for its optional launch command; it was not launched in verification.
+
+Actual verification: `:site:jsNodeTest` passed 183 site tests including three new provider tests (structured outputs, endpoints/model restrictions, authored fallback, context bounds and cancellation timeout). `python3 -m unittest discover -s tools -p 'test_local_ai_helper.py'` passed three pure request-policy tests without a server. Existing local Ollama binary was found, but a read-only request to `127.0.0.1:11434/api/tags` returned connection refused. No service was started, model downloaded or actual model evaluated. Accordingly the plan's tested Japanese-model recommendation is **unverified**, not complete; the UI makes that limitation explicit. Core learning is unaffected.
+
+Primary API references: https://docs.ollama.com/api/chat , https://docs.ollama.com/api/tags , https://docs.ollama.com/faq . These describe API/configuration only, not Japanese-language quality.

@@ -539,15 +539,17 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** F08, F12, F14. Only start once authored lessons are useful.
 
-- [ ] Add a narrow conversation-provider interface with the authored provider as the default.
+**Status:** Optional provider/UI/helper implemented 2026-10-03; [O01 evidence](content-source/review-notes/o01-validation.md). Opt-in, configuration and capability checks are implemented. A tested Japanese-model recommendation remains unverified: no local model service was available and validation does not start servers or download models.
+
+- [x] Add a narrow conversation-provider interface with the authored provider as the default.
 - [ ] Offer explicit opt-in, model/endpoint configuration, capability checking, and a tested Japanese-model recommendation based on actual evaluation.
-- [ ] Keep prompts anchored to a selected situation, communication goal, difficulty, and reviewed phrase examples.
-- [ ] Limit turns/context, support cancellation/timeouts, and distinguish conversational replies from uncertain correction suggestions.
-- [ ] Validate any structured model response and treat generated text as untrusted. Never automatically add it to approved lesson content or mastery state.
-- [ ] Account for browser CORS, secure-context, and local-network restrictions. If direct access is unreliable, use an optional small stateless loopback helper rather than restoring Spring Boot/PostgreSQL.
-- [ ] Any helper binds to loopback, allows only the intended origins/endpoints, and must not become an unrestricted HTTP relay. No cloud deployment, account, or learner database.
-- [ ] Explain model download size, hardware/latency needs, and correction reliability. No automatic model download.
-- [ ] Fall back to guided conversation if the model is unavailable. Do not save transcripts by default.
+- [x] Keep prompts anchored to a selected situation, communication goal, difficulty, and reviewed phrase examples.
+- [x] Limit turns/context, support cancellation/timeouts, and distinguish conversational replies from uncertain correction suggestions.
+- [x] Validate any structured model response and treat generated text as untrusted. Never automatically add it to approved lesson content or mastery state.
+- [x] Account for browser CORS, secure-context, and local-network restrictions. If direct access is unreliable, use an optional small stateless loopback helper rather than restoring Spring Boot/PostgreSQL.
+- [x] Any helper binds to loopback, allows only the intended origins/endpoints, and must not become an unrestricted HTTP relay. No cloud deployment, account, or learner database.
+- [x] Explain model download size, hardware/latency needs, and correction reliability. No automatic model download.
+- [x] Fall back to guided conversation if the model is unavailable. Do not save transcripts by default.
 
 **Acceptance:** the app remains fully useful with AI disabled, and connection/model failures never block learning.
 
