@@ -4,6 +4,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
+import com.github.nanaki_93.text.normalizeNfc
 
 /** These are authored prompts and answers, not evaluation or normalization rules. */
 @OptIn(ExperimentalSerializationApi::class)
@@ -76,7 +77,7 @@ data class RomajiReadingAnswer(
     }
 }
 
-/** Accepted readings are explicitly authored; no normalization or inferred variants. */
+/** Accepted readings are explicitly authored; canonical-equivalent variants cannot be repeated. */
 @Serializable
 @SerialName("reading")
 data class ReadingExercise(
@@ -98,10 +99,11 @@ data class ReadingExercise(
             }
         }) { "Accepted reading representation must match answerRepresentation" }
         requireUniqueIds(acceptedAnswers.map {
-            when (it) {
+            val surface = when (it) {
                 is KanaReadingAnswer -> it.text.surface
                 is RomajiReadingAnswer -> it.text
             }
+            normalizeNfc(surface.trim())
         }, "accepted readings")
         requireText(explanation, "reading explanation")
     }

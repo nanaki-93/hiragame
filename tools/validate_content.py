@@ -4,6 +4,7 @@ import argparse
 import json
 import re
 import sys
+import unicodedata
 from pathlib import Path
 
 ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_-]*\Z", re.ASCII)
@@ -182,11 +183,15 @@ def local(document, location):
         if kind in ('reading', 'completion'):
             if not ex['acceptedAnswers']:
                 fail(f'{loc}.acceptedAnswers', 'must not be empty')
-            spellings = [(a['surface'] if kind == 'completion' else a['text']['surface'])
-                         if kind == 'completion' or ex['answerRepresentation'] == 'kana' else a['text']
-                         for a in ex['acceptedAnswers']]
-            if len(spellings) != len(set(spellings)):
-                fail(f'{loc}.acceptedAnswers', 'duplicate accepted answer')
+            seen = set()
+            for j, answer in enumerate(ex['acceptedAnswers']):
+                spelling = (answer['surface'] if kind == 'completion' else
+                            answer['text']['surface'] if ex['answerRepresentation'] == 'kana' else answer['text'])
+                # Completion retains the exact authored-surface duplicate rule.
+                key = unicodedata.normalize('NFC', spelling.strip()) if kind == 'reading' else spelling
+                if key in seen:
+                    fail(f'{loc}.acceptedAnswers[{j}]', f'duplicate accepted answer in exercise {ex["id"]}')
+                seen.add(key)
         if kind == 'completion':
             if ex['template'].count('{blank}') != 1:
                 fail(f'{loc}.template', 'expected exactly one {blank}')
@@ -354,6 +359,13 @@ REJECTION = re.compile(
 )
 # A text/transcript license does not license its recording. The object of the
 # publication grant must explicitly be the recording/audio, in the same clause.
+# Item rows may inherit a document's affirmative rights decision, but an item
+# explicitly marked as a draft/refused cannot inherit it. Keep this separate
+# from REJECTION, which covers prose-level rights restrictions.
+ITEM_REFUSAL = re.compile(
+    r'\b(?:draft|denied|rejected|unreviewed|pending|not\s*cleared|'
+    r'not\s+(?:reviewed|approved|publishable)|rights?\s+unknown)\b', re.I,
+)
 RECORDING_GRANT = re.compile(
     r'\b(?:permission\s+(?:is\s+)?granted\s+for\s+publication\s+of\s+(?:the\s+|this\s+)?(?:recording|audio)|'
     r'permission\s+granted\s+to\s+publish\s+(?:the\s+|this\s+)?(?:recording|audio)|'
@@ -370,9 +382,11 @@ def review_scope(note, identifier, location):
     scopes = []
     for index, match in enumerate(anchors):
         end = anchors[index + 1].start() if index + 1 < len(anchors) else len(note)
-        opening = note[match.start():end].split('\n\n', 1)[0]
-        if f'`{identifier}`' in opening:
-            scopes.append(note[match.start():end])
+        opening = match.group()
+        # Mentions in a preamble or another document's scope are not decisions.
+        if re.search(r'\b(?:scope:\s*(?:document\s+)?|entry\s+and\s+document\s+)`' +
+                     re.escape(identifier) + r'`', opening, re.I):
+            scopes.append((opening, note[match.start():end]))
     if not scopes:
         fail(location, f'missing affirmative document-specific review decision for {identifier}')
     # Never let an earlier approval hide a later, conflicting decision. A
@@ -380,7 +394,7 @@ def review_scope(note, identifier, location):
     for line in note.splitlines():
         if f'`{identifier}`' in line and REJECTION.search(line):
             fail(location, f'conflicting rejected decision for {identifier}')
-    return '\n'.join(scopes)
+    return scopes
 
 
 def review_document(document, loc, review_root):
@@ -398,9 +412,19 @@ def review_document(document, loc, review_root):
     note = note_path.read_text(encoding='utf-8')
     if not note.strip():
         fail(f'{base}.reviewNote', 'empty review evidence')
-    scope = review_scope(note, document['id'], f'{base}.reviewNote')
+    scopes = review_scope(note, document['id'], f'{base}.reviewNote')
+    scope = '\n'.join(section for _, section in scopes)
     if REJECTION.search(scope):
         fail(f'{base}.reviewNote', 'review note contains a rejected or restricted decision')
+    for opening, section in scopes:
+        if not re.search(r'^Reviewed on ' + re.escape(meta['reviewDate']) + r'\b', opening, re.I):
+            fail(f'{base}.reviewNote', 'review date conflicts with metadata')
+        reviewer = re.search(r'\bby (?:an?\s+)?(?:AI\s+)?(agent|human)\b', opening, re.I)
+        if reviewer is None or reviewer.group(1).lower() != meta['reviewerType']:
+            fail(f'{base}.reviewNote', 'reviewer attribution conflicts with metadata')
+        for claim in re.finditer(r'\breviewed\s+by\s+(?:an?\s+)?(?:AI\s+)?(agent|human)\b', section, re.I):
+            if claim.group(1).lower() != meta['reviewerType']:
+                fail(f'{base}.reviewNote', 'reviewer attribution conflicts with metadata')
     if not re.search(r'\bprovenance\b', scope, re.I):
         fail(f'{base}.reviewNote', 'review note must document provenance')
     # The rights decision must assert that this original material is publishable,
@@ -410,16 +434,37 @@ def review_document(document, loc, review_root):
                      r'(?:original-material\s+)?rights\s+decision\b', scope, re.I):
         fail(f'{base}.reviewNote', 'missing affirmative publishable rights decision')
     prose = scope.replace('**', '')
+    if re.search(r'\b(?:not\s+inherited|does\s+not\s+apply\s+to)\b', prose, re.I):
+        fail(f'{base}.reviewNote', 'conflicting nested-item review decision')
     inherited = bool(re.search(r'\b(?:inherited\s+by\s+every\s+nested\s+item|'
                                r'applies\s+to\s+(?:both|all)\s+exercises)\b', prose, re.I))
-    # Backtick IDs must be attached to an item row, or to an explicit item-level
-    # affirmative decision. An ID appearing in an unrelated paragraph is not coverage.
+    # Two affirmative item conventions: an explicit `reviewed` cell, or a scoped
+    # declaration that the reviewer checked *each item/row* in the following
+    # ID-covered table (the canonical seed uses this convention). Inherited
+    # metadata/rights alone, or nonempty descriptive cells, are not a review
+    # decision. IDs in other columns or unrelated prose do not grant coverage.
+    row_review = bool(re.search(
+        r'\b(?:agent|reviewer)\s+checked\s+(?:each\s+item\b[^.\n]*|[^.\n]*?\bfor\s+each\s+row\b)',
+        prose, re.I)) and bool(re.search(r'(?im)^\|\s*IDs covered\b[^\n]*\|', scope))
     rows = scope.splitlines()
     covered = {document['id']}  # The affirmative, ID-scoped opening covers the document itself.
     for line in rows:
-        if ((line.lstrip().startswith('|') and inherited) or
-                re.search(r'\breviewed\b.*\b(?:marked|approved|cleared)\s+publishable\b', line, re.I)):
-            covered.update(re.findall(r'`([A-Za-z0-9][A-Za-z0-9_-]*)`', line))
+        cells = [cell.strip() for cell in line.strip().strip('|').split('|')]
+        if line.lstrip().startswith('|') and cells[0].startswith('`'):
+            # Only the ID column conveys coverage. Negative decisions override
+            # both the explicit-cell and scoped table-review conventions.
+            if ITEM_REFUSAL.search(line) or REJECTION.search(line):
+                fail(f'{base}.reviewNote', 'conflicting nested-item review decision')
+            reviewed = any(re.fullmatch(r'reviewed', cell, re.I) for cell in cells[1:])
+            if inherited and (reviewed or (row_review and len(cells) >= 3 and all(cells[1:]))):
+                covered.update(re.findall(r'`([A-Za-z0-9][A-Za-z0-9_-]*)`', cells[0]))
+        else:
+            explicit = re.match(r'\s*Reviewed\s+`([A-Za-z0-9][A-Za-z0-9_-]*)`\s*:\s*', line, re.I)
+            if explicit:
+                if ITEM_REFUSAL.search(line) or REJECTION.search(line):
+                    fail(f'{base}.reviewNote', 'conflicting nested-item review decision')
+                if re.search(r'\b(?:marked|approved|cleared)\s+publishable\b', line, re.I):
+                    covered.add(explicit.group(1))
     items = [('id', document['id'])]
     for key in ('exercises', 'phrases', 'reviewItems', 'grammarNotes'):
         items.extend((f'{key}[{i}].id', item['id']) for i, item in enumerate(document.get(key, [])))
@@ -433,6 +478,29 @@ def review_document(document, loc, review_root):
     if graph:
         items.extend((f'conversationGraph.nodes[{i}].id', node['id'])
                      for i, node in enumerate(graph['nodes']))
+    # A later refusal in prose must override an earlier affirmative table row,
+    # regardless of whether the author used the explicit `Reviewed ID:` format.
+    # Limit the check to this document's backticked item IDs so unrelated draft
+    # notes in a shared evidence file do not revoke another document's review.
+    nested_ids = {identifier for _, identifier in items[1:]}
+    for line in note.splitlines():
+        if not ITEM_REFUSAL.search(line):
+            continue
+        for identifier in nested_ids.intersection(re.findall(r'`([A-Za-z0-9][A-Za-z0-9_-]*)`', line)):
+            item = '`' + re.escape(identifier) + '`'
+            # A bare reference to an ID in draft notes is not a decision.
+            # Recognize dispositions before or after the ID, including
+            # "review for ID remains pending" (not just "review for ID: pending").
+            verb = r'(?:is|remains|was|still)'
+            for pattern in (r'\b(?:decision|status|review)\s+(?:for|of)\s+' + item +
+                            r'\s*(?::|=|—|-|\b' + verb + r'\b)\s*([^.;]*)',
+                            item + r'\s*(?::|=|—|-|\b' + verb +
+                            r'\b|\b(?:review|status|decision)\s*(?::|\b' + verb + r'\b)?)\s*([^.;]*)',
+                            r'\bfor\s+' + item + r'\s*[:,]\s*'
+                            r'(?:(?:review|status|decision)\s*)?(?:(?:is|remains|was)\s*)?([^.;]*)'):
+                decision = re.search(pattern, line, re.I)
+                if decision and ITEM_REFUSAL.search(decision.group(1)):
+                    fail(f'{base}.reviewNote', 'conflicting nested-item review decision')
     for field, identifier in items:
         if identifier not in covered:
             fail(f'{loc}.{field}', f'missing review-note coverage for {identifier} in {meta["reviewNote"]}')
@@ -487,13 +555,16 @@ def load(path, root):
 
 
 def check(root, review_root):
-    # rglob does not descend into directory symlinks; inspect links themselves so
-    # even unlisted assets cannot smuggle an escaping link into the release tree.
+    # rglob does not descend into linked directories. Reject all links in either
+    # tree, including internal links and links to files with misleading suffixes,
+    # before loading any evidence or catalog entries.
     for base in (root, review_root):
+        if base.is_symlink():
+            fail(str(base), 'symlink root is not allowed')
         for path in sorted(base.rglob('*')):
             name = path.relative_to(base).as_posix()
-            if path.is_symlink() and not path.resolve().is_relative_to(base.resolve()):
-                fail(name, 'symlink escapes allowed root')
+            if path.is_symlink():
+                fail(name, 'symlink escapes safe tree inspection')
             if base == root and (path.suffix.lower() == '.csv' or
                                  any(part in ('drafts', 'legacy') for part in path.relative_to(base).parts)):
                 fail(name, 'legacy sources and drafts cannot be bundled')
@@ -571,11 +642,11 @@ def check(root, review_root):
                 colors[prerequisite] = 1
                 stack.append((prerequisite, iter(enumerate(lessons[prerequisite][0]['prerequisiteLessonIds']))))
     check_audio(catalog, documents, root, notes)
-    for path in sorted(root.rglob('*.json')):
-        name = path.relative_to(root).as_posix()
-        safe_path(root, name, name)
-        if name not in listed:
-            fail(name, 'unlisted JSON document')
+    for path in sorted(root.rglob('*')):
+        if path.suffix.lower() == '.json':
+            name = path.relative_to(root).as_posix()
+            if name not in listed:
+                fail(name, 'unlisted JSON document')
 
 
 def main(argv=None):
