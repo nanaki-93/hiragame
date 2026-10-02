@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "contentVersion": 3,
+  "contentVersion": 4,
   "id": "lesson-engineering-introduction",
   "topicId": "workplace-introductions",
   "title": "Introduce yourself as an engineer",
@@ -56,5 +56,117 @@
     {"id": "review-intro-role", "targetKind": "phrase", "targetId": "phrase-intro-role", "skill": "State an engineering role in a first meeting", "direction": "role-to-introduction"},
     {"id": "review-intro-current", "targetKind": "exercise", "targetId": "exercise-intro-completion", "skill": "Use a polite current-work expression", "direction": "context-to-utterance"}
   ],
-  "review": {"status": "reviewed", "reviewerType": "agent", "reviewDate": "2026-10-02", "reviewNote": "f06-starter-lessons.md", "provenance": "Independently agent-authored F06 workplace scenario and teaching copy; no legacy CSV or mock text promoted.", "rights": "publishable", "rightsBasis": "Original agent-authored Japanese and English text; no third-party passages or recordings used. Common linguistic forms are facts, not copied source material."}
+  "review": {"status": "reviewed", "reviewerType": "agent", "reviewDate": "2026-10-02", "reviewNote": "f06-starter-lessons.md", "provenance": "Independently agent-authored F06 workplace scenario and teaching copy; no legacy CSV or mock text promoted.", "rights": "publishable", "rightsBasis": "Original agent-authored Japanese and English text; no third-party passages or recordings used. Common linguistic forms are facts, not copied source material."},
+  "conversationGraph": {
+    "entryNodeId": "lesson-engineering-introduction-conversation-start",
+    "nodes": [
+      {
+        "type": "prompt",
+        "id": "lesson-engineering-introduction-conversation-start",
+        "speakerId": "speaker-intro-colleague",
+        "text": {
+          "surface": "はじめまして。佐藤です。",
+          "reading": "はじめまして。さとうです。",
+          "translation": "Nice to meet you. I'm Sato.",
+          "segments": [
+            {
+              "surface": "はじめまして。"
+            },
+            {
+              "surface": "佐藤",
+              "reading": "さとう"
+            },
+            {
+              "surface": "です。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-engineering-introduction-conversation-choice"
+      },
+      {
+        "type": "choiceInteraction",
+        "id": "lesson-engineering-introduction-conversation-choice",
+        "exerciseId": "exercise-intro-role-choice",
+        "transitions": [
+          {
+            "optionId": "option-intro-current",
+            "feedback": "作っています describes current work; 前は…作っていました describes earlier work. Both sentences can be useful in different contexts.",
+            "nextNodeId": "lesson-engineering-introduction-conversation-follow"
+          },
+          {
+            "optionId": "option-intro-past",
+            "feedback": "作っています describes current work; 前は…作っていました describes earlier work. Both sentences can be useful in different contexts.",
+            "nextNodeId": "lesson-engineering-introduction-conversation-repeat"
+          }
+        ]
+      },
+      {
+        "type": "prompt",
+        "id": "lesson-engineering-introduction-conversation-repeat",
+        "speakerId": "speaker-intro-colleague",
+        "text": {
+          "surface": "はじめまして。佐藤です。",
+          "reading": "はじめまして。さとうです。",
+          "translation": "Nice to meet you. I'm Sato.",
+          "segments": [
+            {
+              "surface": "はじめまして。"
+            },
+            {
+              "surface": "佐藤",
+              "reading": "さとう"
+            },
+            {
+              "surface": "です。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-engineering-introduction-conversation-follow"
+      },
+      {
+        "type": "prompt",
+        "id": "lesson-engineering-introduction-conversation-follow",
+        "speakerId": "speaker-intro-colleague",
+        "text": {
+          "surface": "前はどんな仕事をしていましたか。",
+          "reading": "まえわどんなしごとをしていましたか。",
+          "translation": "What kind of work did you do before?",
+          "context": "The topic particle は is pronounced わ.",
+          "segments": [
+            {
+              "surface": "前",
+              "reading": "まえ"
+            },
+            {
+              "surface": "は",
+              "reading": "わ"
+            },
+            {
+              "surface": "どんな"
+            },
+            {
+              "surface": "仕事",
+              "reading": "しごと"
+            },
+            {
+              "surface": "をしていましたか。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-engineering-introduction-conversation-complete"
+      },
+      {
+        "type": "completionInteraction",
+        "id": "lesson-engineering-introduction-conversation-complete",
+        "exerciseId": "exercise-intro-completion",
+        "feedback": "Both the kanji and kana fills are explicitly accepted for this constrained blank. 作っていました would describe past work instead.",
+        "nextNodeId": "lesson-engineering-introduction-conversation-end"
+      },
+      {
+        "type": "terminal",
+        "id": "lesson-engineering-introduction-conversation-end",
+        "message": "You reached the end of the guided task. Try your own response in the self-assessed role-play."
+      }
+    ]
+  }
 }

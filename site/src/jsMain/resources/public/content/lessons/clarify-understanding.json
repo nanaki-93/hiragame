@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "contentVersion": 3,
+  "contentVersion": 4,
   "id": "lesson-clarify-understanding",
   "topicId": "workplace-clarification",
   "title": "Clarify a request and confirm your understanding",
@@ -54,5 +54,147 @@
     {"id": "review-clarify-ask", "targetKind": "phrase", "targetId": "phrase-clarify-which", "skill": "Ask for an unspecified screen", "direction": "request-to-clarification"},
     {"id": "review-clarify-confirm", "targetKind": "exercise", "targetId": "exercise-clarify-interpret-completion", "skill": "Check an interpretation without asserting a fix", "direction": "context-to-utterance"}
   ],
-  "review": {"status": "reviewed", "reviewerType": "agent", "reviewDate": "2026-10-02", "reviewNote": "f06-starter-lessons.md", "provenance": "Independently agent-authored F06 clarification exchange and teaching text; the separate F01 meeting-time seed is not copied or modified.", "rights": "publishable", "rightsBasis": "Original agent-authored Japanese and English material; no third-party passages or audio used. Common linguistic forms are not copied source material."}
+  "review": {"status": "reviewed", "reviewerType": "agent", "reviewDate": "2026-10-02", "reviewNote": "f06-starter-lessons.md", "provenance": "Independently agent-authored F06 clarification exchange and teaching text; the separate F01 meeting-time seed is not copied or modified.", "rights": "publishable", "rightsBasis": "Original agent-authored Japanese and English material; no third-party passages or audio used. Common linguistic forms are not copied source material."},
+  "conversationGraph": {
+    "entryNodeId": "lesson-clarify-understanding-conversation-start",
+    "nodes": [
+      {
+        "type": "prompt",
+        "id": "lesson-clarify-understanding-conversation-start",
+        "speakerId": "speaker-clarify-colleague",
+        "text": {
+          "surface": "会議の前に、画面を確認してください。",
+          "reading": "かいぎのまえに、がめんをかくにんしてください。",
+          "translation": "Please check the screen before the meeting.",
+          "context": "画面 means a screen or view; the request does not specify which one.",
+          "segments": [
+            {
+              "surface": "会議",
+              "reading": "かいぎ"
+            },
+            {
+              "surface": "の"
+            },
+            {
+              "surface": "前",
+              "reading": "まえ"
+            },
+            {
+              "surface": "に、"
+            },
+            {
+              "surface": "画面",
+              "reading": "がめん"
+            },
+            {
+              "surface": "を"
+            },
+            {
+              "surface": "確認",
+              "reading": "かくにん"
+            },
+            {
+              "surface": "してください。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-clarify-understanding-conversation-choice"
+      },
+      {
+        "type": "choiceInteraction",
+        "id": "lesson-clarify-understanding-conversation-choice",
+        "exerciseId": "exercise-clarify-scope-choice",
+        "transitions": [
+          {
+            "optionId": "option-clarify-ask-screen",
+            "feedback": "どの画面ですか asks for the missing detail. Promising to fix the login screen assumes both the screen and scope; that could be appropriate only after confirmation.",
+            "nextNodeId": "lesson-clarify-understanding-conversation-follow"
+          },
+          {
+            "optionId": "option-clarify-assume-screen",
+            "feedback": "どの画面ですか asks for the missing detail. Promising to fix the login screen assumes both the screen and scope; that could be appropriate only after confirmation.",
+            "nextNodeId": "lesson-clarify-understanding-conversation-repeat"
+          }
+        ]
+      },
+      {
+        "type": "prompt",
+        "id": "lesson-clarify-understanding-conversation-repeat",
+        "speakerId": "speaker-clarify-colleague",
+        "text": {
+          "surface": "会議の前に、画面を確認してください。",
+          "reading": "かいぎのまえに、がめんをかくにんしてください。",
+          "translation": "Please check the screen before the meeting.",
+          "context": "画面 means a screen or view; the request does not specify which one.",
+          "segments": [
+            {
+              "surface": "会議",
+              "reading": "かいぎ"
+            },
+            {
+              "surface": "の"
+            },
+            {
+              "surface": "前",
+              "reading": "まえ"
+            },
+            {
+              "surface": "に、"
+            },
+            {
+              "surface": "画面",
+              "reading": "がめん"
+            },
+            {
+              "surface": "を"
+            },
+            {
+              "surface": "確認",
+              "reading": "かくにん"
+            },
+            {
+              "surface": "してください。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-clarify-understanding-conversation-follow"
+      },
+      {
+        "type": "prompt",
+        "id": "lesson-clarify-understanding-conversation-follow",
+        "speakerId": "speaker-clarify-colleague",
+        "text": {
+          "surface": "ログイン画面です。",
+          "reading": "ろぐいんがめんです。",
+          "translation": "The login screen.",
+          "context": "ログイン is a loanword for logging in; here it names the sign-in screen, not a particular product.",
+          "segments": [
+            {
+              "surface": "ログイン"
+            },
+            {
+              "surface": "画面",
+              "reading": "がめん"
+            },
+            {
+              "surface": "です。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-clarify-understanding-conversation-complete"
+      },
+      {
+        "type": "completionInteraction",
+        "id": "lesson-clarify-understanding-conversation-complete",
+        "exerciseId": "exercise-clarify-interpret-completion",
+        "feedback": "Both listed endings invite confirmation in this constrained blank. ですね seeks agreement; ですか asks directly. No other surface is implicitly accepted.",
+        "nextNodeId": "lesson-clarify-understanding-conversation-end"
+      },
+      {
+        "type": "terminal",
+        "id": "lesson-clarify-understanding-conversation-end",
+        "message": "You reached the end of the guided task. Try your own response in the self-assessed role-play."
+      }
+    ]
+  }
 }

@@ -52,7 +52,7 @@ class ContentWorkflowTests(unittest.TestCase):
         # Gradle configures Node for both modules, not a browser or external service.
         for module in ("shared", "site"):
             build = WORKFLOW.parents[2] / module / "build.gradle.kts"
-            self.assertIn("nodejs()", build.read_text(encoding="utf-8"))
+            self.assertRegex(build.read_text(encoding="utf-8"), r"nodejs(?:\(\)|\s*\{)")
 
     def test_all_checks_run_in_order_with_fail_closed_shell_steps(self):
         runs = [line.strip().removeprefix("run: ") for line in self.lines

@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "contentVersion": 3,
+  "contentVersion": 4,
   "id": "lesson-bug-reproduction",
   "topicId": "workplace-bugs",
   "title": "Report a reproducible bug",
@@ -44,5 +44,120 @@
   ],
   "rolePlay": {"task": "A teammate asks about a bug on the fictional test login screen. Explain the agreed expected message, the empty message area you saw, and how to reproduce it with a dummy incorrect code. Respond if asked how often you observed it.", "criteria": ["Distinguish test environment and agreed expectation from observed behavior.", "Give ordered steps: open screen, enter incorrect dummy code, press Submit.", "Report two observed attempts without diagnosing a server or exposing credentials; other truthful polite responses are valid."], "hints": ["Start with テスト環境 and use はずです for the expectation, 実際には for the contrast.", "再現する手順 means steps to make the same result occur; コード here is an input code, not source code.", "Name the actions in order and say 二回試しました only if you actually tried twice."], "examples": [{"surface": "テスト環境でログイン画面を開き、間違ったコードを入力して、送信ボタンを押します。メッセージが表示されるはずですが、実際には表示されません。", "reading": "てすとかんきょうでろぐいんがめんをひらき、まちがったこーどをにゅうりょくして、そうしんぼたんをおします。めっせーじがひょうじされるはずですが、じっさいにわひょうじされません。", "translation": "In the test environment, open the login screen, enter an incorrect code and press Submit. A message should appear, but it does not.", "segments": [{"surface": "テスト"}, {"surface": "環境", "reading": "かんきょう"}, {"surface": "でログイン"}, {"surface": "画面", "reading": "がめん"}, {"surface": "を"}, {"surface": "開", "reading": "ひら"}, {"surface": "き、"}, {"surface": "間違", "reading": "まちが"}, {"surface": "ったコードを"}, {"surface": "入力", "reading": "にゅうりょく"}, {"surface": "して、"}, {"surface": "送信", "reading": "そうしん"}, {"surface": "ボタンを"}, {"surface": "押", "reading": "お"}, {"surface": "します。メッセージが"}, {"surface": "表示", "reading": "ひょうじ"}, {"surface": "されるはずですが、"}, {"surface": "実際", "reading": "じっさい"}, {"surface": "には"}, {"surface": "表示", "reading": "ひょうじ"}, {"surface": "されません。"}]}]},
   "reviewItems": [{"id": "review-bug-contrast", "targetKind": "phrase", "targetId": "phrase-bug-actual", "skill": "Contrast observed behavior with an expectation", "direction": "observation-to-utterance"}, {"id": "review-bug-steps", "targetKind": "exercise", "targetId": "exercise-bug-completion", "skill": "Introduce an observed result without guessing its cause", "direction": "context-to-utterance"}],
-  "review": {"status": "reviewed", "reviewerType": "agent", "reviewDate": "2026-10-02", "reviewNote": "f06-starter-lessons.md", "provenance": "Independently agent-authored fictional F06 bug report and teaching copy; no mock, CSV or external passage promoted.", "rights": "publishable", "rightsBasis": "Original agent-authored Japanese and English text; no third-party passages or recordings used. Common linguistic forms are not copied material."}
+  "review": {"status": "reviewed", "reviewerType": "agent", "reviewDate": "2026-10-02", "reviewNote": "f06-starter-lessons.md", "provenance": "Independently agent-authored fictional F06 bug report and teaching copy; no mock, CSV or external passage promoted.", "rights": "publishable", "rightsBasis": "Original agent-authored Japanese and English text; no third-party passages or recordings used. Common linguistic forms are not copied material."},
+  "conversationGraph": {
+    "entryNodeId": "lesson-bug-reproduction-conversation-start",
+    "nodes": [
+      {
+        "type": "prompt",
+        "id": "lesson-bug-reproduction-conversation-start",
+        "speakerId": "speaker-bug-colleague",
+        "text": {
+          "surface": "どのような不具合ですか。",
+          "reading": "どのようなふぐあいですか。",
+          "translation": "What kind of problem is it?",
+          "segments": [
+            {
+              "surface": "どのような"
+            },
+            {
+              "surface": "不具合",
+              "reading": "ふぐあい"
+            },
+            {
+              "surface": "ですか。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-bug-reproduction-conversation-choice"
+      },
+      {
+        "type": "choiceInteraction",
+        "id": "lesson-bug-reproduction-conversation-choice",
+        "exerciseId": "exercise-bug-choice",
+        "transitions": [
+          {
+            "optionId": "option-bug-observed",
+            "feedback": "The first response contrasts the agreed expectation with the observation. A server fault is an unverified guess, even if later investigation might find one.",
+            "nextNodeId": "lesson-bug-reproduction-conversation-follow"
+          },
+          {
+            "optionId": "option-bug-guess",
+            "feedback": "The first response contrasts the agreed expectation with the observation. A server fault is an unverified guess, even if later investigation might find one.",
+            "nextNodeId": "lesson-bug-reproduction-conversation-repeat"
+          }
+        ]
+      },
+      {
+        "type": "prompt",
+        "id": "lesson-bug-reproduction-conversation-repeat",
+        "speakerId": "speaker-bug-colleague",
+        "text": {
+          "surface": "どのような不具合ですか。",
+          "reading": "どのようなふぐあいですか。",
+          "translation": "What kind of problem is it?",
+          "segments": [
+            {
+              "surface": "どのような"
+            },
+            {
+              "surface": "不具合",
+              "reading": "ふぐあい"
+            },
+            {
+              "surface": "ですか。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-bug-reproduction-conversation-follow"
+      },
+      {
+        "type": "prompt",
+        "id": "lesson-bug-reproduction-conversation-follow",
+        "speakerId": "speaker-bug-colleague",
+        "text": {
+          "surface": "再現する手順を教えていただけますか。",
+          "reading": "さいげんするてじゅんをおしえていただけますか。",
+          "translation": "Could you tell me the steps to reproduce it?",
+          "context": "再現 means making the same observed result happen again, not proving its cause.",
+          "segments": [
+            {
+              "surface": "再現",
+              "reading": "さいげん"
+            },
+            {
+              "surface": "する"
+            },
+            {
+              "surface": "手順",
+              "reading": "てじゅん"
+            },
+            {
+              "surface": "を"
+            },
+            {
+              "surface": "教",
+              "reading": "おし"
+            },
+            {
+              "surface": "えていただけますか。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-bug-reproduction-conversation-complete"
+      },
+      {
+        "type": "completionInteraction",
+        "id": "lesson-bug-reproduction-conversation-complete",
+        "exerciseId": "exercise-bug-completion",
+        "feedback": "実際には and 実際は both fit this constrained blank; は is read わ in both. Only these literal surfaces are authored as accepted, not arbitrary free-response variants.",
+        "nextNodeId": "lesson-bug-reproduction-conversation-end"
+      },
+      {
+        "type": "terminal",
+        "id": "lesson-bug-reproduction-conversation-end",
+        "message": "You reached the end of the guided task. Try your own response in the self-assessed role-play."
+      }
+    ]
+  }
 }

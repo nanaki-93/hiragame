@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "contentVersion": 3,
+  "contentVersion": 4,
   "id": "lesson-confirm-meeting-time",
   "topicId": "workplace-clarification",
   "title": "Confirm the meeting time",
@@ -11,38 +11,122 @@
   "prerequisiteLessonIds": [],
   "dialogue": {
     "speakers": [
-      {"id": "speaker-colleague", "name": "Colleague", "role": "Coworker giving the meeting time"},
-      {"id": "speaker-learner", "name": "You", "role": "Coworker checking the time"}
+      {
+        "id": "speaker-colleague",
+        "name": "Colleague",
+        "role": "Coworker giving the meeting time"
+      },
+      {
+        "id": "speaker-learner",
+        "name": "You",
+        "role": "Coworker checking the time"
+      }
     ],
     "turns": [
       {
         "id": "turn-time",
         "speakerId": "speaker-colleague",
-        "text": {"surface": "会議は三時です。", "reading": "かいぎわさんじです。", "translation": "The meeting is at three o'clock.", "context": "The topic particle は is pronounced わ; the reading is phonetic.", "segments": [{"surface": "会議", "reading": "かいぎ"}, {"surface": "は", "reading": "わ"}, {"surface": "三時", "reading": "さんじ"}, {"surface": "です。"}]}
+        "text": {
+          "surface": "会議は三時です。",
+          "reading": "かいぎわさんじです。",
+          "translation": "The meeting is at three o'clock.",
+          "context": "The topic particle は is pronounced わ; the reading is phonetic.",
+          "segments": [
+            {
+              "surface": "会議",
+              "reading": "かいぎ"
+            },
+            {
+              "surface": "は",
+              "reading": "わ"
+            },
+            {
+              "surface": "三時",
+              "reading": "さんじ"
+            },
+            {
+              "surface": "です。"
+            }
+          ]
+        }
       },
       {
         "id": "turn-check",
         "speakerId": "speaker-learner",
-        "text": {"surface": "すみません、三時ですね。", "reading": "すみません、さんじですね。", "translation": "Excuse me, three o'clock, right?", "register": "polite workplace speech", "segments": [{"surface": "すみません、"}, {"surface": "三時", "reading": "さんじ"}, {"surface": "ですね。"}]}
+        "text": {
+          "surface": "すみません、三時ですね。",
+          "reading": "すみません、さんじですね。",
+          "translation": "Excuse me, three o'clock, right?",
+          "register": "polite workplace speech",
+          "segments": [
+            {
+              "surface": "すみません、"
+            },
+            {
+              "surface": "三時",
+              "reading": "さんじ"
+            },
+            {
+              "surface": "ですね。"
+            }
+          ]
+        }
       },
       {
         "id": "turn-confirm",
         "speakerId": "speaker-colleague",
-        "text": {"surface": "はい、三時です。", "reading": "はい、さんじです。", "translation": "Yes, it's three o'clock.", "segments": [{"surface": "はい、"}, {"surface": "三時", "reading": "さんじ"}, {"surface": "です。"}]}
+        "text": {
+          "surface": "はい、三時です。",
+          "reading": "はい、さんじです。",
+          "translation": "Yes, it's three o'clock.",
+          "segments": [
+            {
+              "surface": "はい、"
+            },
+            {
+              "surface": "三時",
+              "reading": "さんじ"
+            },
+            {
+              "surface": "です。"
+            }
+          ]
+        }
       }
     ]
   },
   "phrases": [
     {
       "id": "phrase-three-right",
-      "text": {"surface": "三時ですね。", "reading": "さんじですね。", "translation": "Three o'clock, right?", "context": "Repeat the time you heard to invite confirmation.", "register": "polite workplace speech", "segments": [{"surface": "三時", "reading": "さんじ"}, {"surface": "ですね。"}]},
+      "text": {
+        "surface": "三時ですね。",
+        "reading": "さんじですね。",
+        "translation": "Three o'clock, right?",
+        "context": "Repeat the time you heard to invite confirmation.",
+        "register": "polite workplace speech",
+        "segments": [
+          {
+            "surface": "三時",
+            "reading": "さんじ"
+          },
+          {
+            "surface": "ですね。"
+          }
+        ]
+      },
       "usage": "Use after hearing a time, when checking that you understood it.",
       "register": "polite",
       "sourceTurnId": "turn-check"
     },
     {
       "id": "phrase-excuse-me",
-      "text": {"surface": "すみません。", "reading": "すみません。", "translation": "Excuse me.", "context": "A polite opener before a request for clarification.", "register": "polite workplace speech"},
+      "text": {
+        "surface": "すみません。",
+        "reading": "すみません。",
+        "translation": "Excuse me.",
+        "context": "A polite opener before a request for clarification.",
+        "register": "polite workplace speech"
+      },
       "usage": "Get a colleague's attention before asking them to confirm a detail.",
       "register": "polite"
     }
@@ -51,18 +135,69 @@
     {
       "id": "grammar-confirm-ne",
       "explanation": "After repeating the time, ですね invites confirmation rather than announcing a new time. In 会議は, the topic particle は is pronounced わ.",
-      "examples": [{"surface": "三時ですね。", "reading": "さんじですね。", "translation": "Three o'clock, right?", "segments": [{"surface": "三時", "reading": "さんじ"}, {"surface": "ですね。"}]}]
+      "examples": [
+        {
+          "surface": "三時ですね。",
+          "reading": "さんじですね。",
+          "translation": "Three o'clock, right?",
+          "segments": [
+            {
+              "surface": "三時",
+              "reading": "さんじ"
+            },
+            {
+              "surface": "ですね。"
+            }
+          ]
+        }
+      ]
     }
   ],
   "rolePlay": {
     "task": "A colleague says a meeting is at three. Politely check the time and wait for confirmation.",
-    "criteria": ["Did you politely get the colleague's attention?", "Did you repeat the time as a question rather than assert an unconfirmed change?", "Did you acknowledge the confirmation?"],
-    "hints": ["Start with すみません and use ですね to check what you heard."],
-    "examples": [{"surface": "すみません、三時ですね。", "reading": "すみません、さんじですね。", "translation": "Excuse me, three o'clock, right?", "segments": [{"surface": "すみません、"}, {"surface": "三時", "reading": "さんじ"}, {"surface": "ですね。"}]}]
+    "criteria": [
+      "Did you politely get the colleague's attention?",
+      "Did you repeat the time as a question rather than assert an unconfirmed change?",
+      "Did you acknowledge the confirmation?"
+    ],
+    "hints": [
+      "Start with すみません and use ですね to check what you heard."
+    ],
+    "examples": [
+      {
+        "surface": "すみません、三時ですね。",
+        "reading": "すみません、さんじですね。",
+        "translation": "Excuse me, three o'clock, right?",
+        "segments": [
+          {
+            "surface": "すみません、"
+          },
+          {
+            "surface": "三時",
+            "reading": "さんじ"
+          },
+          {
+            "surface": "ですね。"
+          }
+        ]
+      }
+    ]
   },
   "reviewItems": [
-    {"id": "review-three-right", "targetKind": "phrase", "targetId": "phrase-three-right", "skill": "Confirm a heard meeting time politely", "direction": "heard-time-to-confirmation"},
-    {"id": "review-complete-time", "targetKind": "exercise", "targetId": "exercise-complete-time", "skill": "Complete a constrained time confirmation", "direction": "context-to-utterance"}
+    {
+      "id": "review-three-right",
+      "targetKind": "phrase",
+      "targetId": "phrase-three-right",
+      "skill": "Confirm a heard meeting time politely",
+      "direction": "heard-time-to-confirmation"
+    },
+    {
+      "id": "review-complete-time",
+      "targetKind": "exercise",
+      "targetId": "exercise-complete-time",
+      "skill": "Complete a constrained time confirmation",
+      "direction": "context-to-utterance"
+    }
   ],
   "review": {
     "status": "reviewed",
@@ -79,8 +214,67 @@
       "id": "exercise-check-response",
       "prompt": "Your colleague says the meeting is at three. Which response checks the time rather than changing it?",
       "options": [
-        {"id": "option-check-three", "text": {"surface": "三時ですね。", "reading": "さんじですね。", "translation": "Three o'clock, right?", "segments": [{"surface": "三時", "reading": "さんじ"}, {"surface": "ですね。"}]}},
-        {"id": "option-change-four", "text": {"surface": "四時にします。", "reading": "よじにします。", "translation": "I'll make it four o'clock.", "segments": [{"surface": "四時", "reading": "よじ"}, {"surface": "にします。"}]}}
+        {
+          "id": "option-check-three",
+          "text": {
+            "surface": "三時ですね。",
+            "reading": "さんじですね。",
+            "translation": "Three o'clock, right?",
+            "segments": [
+              {
+                "surface": "三時",
+                "reading": "さんじ"
+              },
+              {
+                "surface": "ですね。"
+              }
+            ]
+          }
+        },
+        {
+          "id": "option-change-four",
+          "text": {
+            "surface": "四時にします。",
+            "reading": "よじにします。",
+            "translation": "I'll make it four o'clock.",
+            "segments": [
+              {
+                "surface": "四時",
+                "reading": "よじ"
+              },
+              {
+                "surface": "にします。"
+              }
+            ]
+          }
+        },
+        {
+          "id": "option-repeat-time",
+          "text": {
+            "surface": "もう一度お願いします。",
+            "reading": "もういちどおねがいします。",
+            "translation": "Please say that once more.",
+            "segments": [
+              {
+                "surface": "もう"
+              },
+              {
+                "surface": "一度",
+                "reading": "いちど"
+              },
+              {
+                "surface": "お"
+              },
+              {
+                "surface": "願",
+                "reading": "ねが"
+              },
+              {
+                "surface": "いします。"
+              }
+            ]
+          }
+        }
       ],
       "correctOptionId": "option-check-three",
       "explanation": "三時ですね repeats the heard time and invites confirmation; 四時にします proposes a different time."
@@ -90,29 +284,178 @@
       "id": "exercise-complete-time",
       "prompt": "Fill the single blank to check that the meeting is at three (not four).",
       "template": "{blank}ですね。",
-      "acceptedAnswers": [{"surface": "三時", "reading": "さんじ", "translation": "three o'clock", "segments": [{"surface": "三時", "reading": "さんじ"}]}],
-      "expectedCompletedExample": {"surface": "三時ですね。", "reading": "さんじですね。", "translation": "Three o'clock, right?", "segments": [{"surface": "三時", "reading": "さんじ"}, {"surface": "ですね。"}]},
+      "acceptedAnswers": [
+        {
+          "surface": "三時",
+          "reading": "さんじ",
+          "translation": "three o'clock",
+          "segments": [
+            {
+              "surface": "三時",
+              "reading": "さんじ"
+            }
+          ]
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "三時ですね。",
+        "reading": "さんじですね。",
+        "translation": "Three o'clock, right?",
+        "segments": [
+          {
+            "surface": "三時",
+            "reading": "さんじ"
+          },
+          {
+            "surface": "ですね。"
+          }
+        ]
+      },
       "explanation": "The authored fill 三時 gives 三時ですね。 Only this fill is listed; no other spelling or time is implicitly accepted."
     },
     {
       "type": "production",
       "id": "exercise-ask-confirmation",
       "prompt": "Your colleague mentions a meeting at three. Say something polite to check the time, then compare your response with the criteria; this is not exact-match graded.",
-      "exampleResponses": [{"surface": "すみません、三時ですね。", "reading": "すみません、さんじですね。", "translation": "Excuse me, three o'clock, right?", "segments": [{"surface": "すみません、"}, {"surface": "三時", "reading": "さんじ"}, {"surface": "ですね。"}]}],
-      "criteria": ["I politely opened the exchange.", "I repeated the heard time and invited confirmation instead of asserting a different time."]
+      "exampleResponses": [
+        {
+          "surface": "すみません、三時ですね。",
+          "reading": "すみません、さんじですね。",
+          "translation": "Excuse me, three o'clock, right?",
+          "segments": [
+            {
+              "surface": "すみません、"
+            },
+            {
+              "surface": "三時",
+              "reading": "さんじ"
+            },
+            {
+              "surface": "ですね。"
+            }
+          ]
+        }
+      ],
+      "criteria": [
+        "I politely opened the exchange.",
+        "I repeated the heard time and invited confirmation instead of asserting a different time."
+      ]
     }
   ],
   "conversationGraph": {
     "entryNodeId": "node-time",
     "nodes": [
-      {"type": "prompt", "id": "node-time", "speakerId": "speaker-colleague", "text": {"surface": "会議は三時です。", "reading": "かいぎわさんじです。", "translation": "The meeting is at three o'clock.", "segments": [{"surface": "会議", "reading": "かいぎ"}, {"surface": "は", "reading": "わ"}, {"surface": "三時", "reading": "さんじ"}, {"surface": "です。"}]}, "nextNodeId": "node-choice"},
-      {"type": "choiceInteraction", "id": "node-choice", "exerciseId": "exercise-check-response", "transitions": [
-        {"optionId": "option-check-three", "feedback": "You repeated three o'clock and invited confirmation. Now complete that confirmation phrase.", "nextNodeId": "node-completion"},
-        {"optionId": "option-change-four", "feedback": "That proposes four o'clock instead of checking the heard time. Repeat three o'clock with ですね to invite confirmation.", "nextNodeId": "node-guidance"}
-      ]},
-      {"type": "prompt", "id": "node-guidance", "speakerId": "speaker-colleague", "text": {"surface": "三時です。", "reading": "さんじです。", "translation": "It's three o'clock.", "segments": [{"surface": "三時", "reading": "さんじ"}, {"surface": "です。"}]}, "nextNodeId": "node-completion"},
-      {"type": "completionInteraction", "id": "node-completion", "exerciseId": "exercise-complete-time", "feedback": "三時ですね checks that the time is three; wait for your colleague's confirmation.", "nextNodeId": "node-end"},
-      {"type": "terminal", "id": "node-end", "message": "Your colleague confirms the time. Try the self-assessed production prompt to practise asking in your own voice."}
+      {
+        "type": "prompt",
+        "id": "node-time",
+        "speakerId": "speaker-colleague",
+        "text": {
+          "surface": "会議は三時です。",
+          "reading": "かいぎわさんじです。",
+          "translation": "The meeting is at three o'clock.",
+          "segments": [
+            {
+              "surface": "会議",
+              "reading": "かいぎ"
+            },
+            {
+              "surface": "は",
+              "reading": "わ"
+            },
+            {
+              "surface": "三時",
+              "reading": "さんじ"
+            },
+            {
+              "surface": "です。"
+            }
+          ]
+        },
+        "nextNodeId": "node-choice"
+      },
+      {
+        "type": "choiceInteraction",
+        "id": "node-choice",
+        "exerciseId": "exercise-check-response",
+        "transitions": [
+          {
+            "optionId": "option-check-three",
+            "feedback": "You repeated three o'clock and invited confirmation. Now complete that confirmation phrase.",
+            "nextNodeId": "node-completion"
+          },
+          {
+            "optionId": "option-change-four",
+            "feedback": "That proposes four o'clock instead of checking the heard time. Repeat three o'clock with ですね to invite confirmation.",
+            "nextNodeId": "node-guidance"
+          },
+          {
+            "optionId": "option-repeat-time",
+            "feedback": "You asked for repetition rather than confirming the time. Listen to the colleague repeat it, then check your understanding.",
+            "nextNodeId": "node-repeat-time"
+          }
+        ]
+      },
+      {
+        "type": "prompt",
+        "id": "node-guidance",
+        "speakerId": "speaker-colleague",
+        "text": {
+          "surface": "三時です。",
+          "reading": "さんじです。",
+          "translation": "It's three o'clock.",
+          "segments": [
+            {
+              "surface": "三時",
+              "reading": "さんじ"
+            },
+            {
+              "surface": "です。"
+            }
+          ]
+        },
+        "nextNodeId": "node-completion"
+      },
+      {
+        "type": "completionInteraction",
+        "id": "node-completion",
+        "exerciseId": "exercise-complete-time",
+        "feedback": "三時ですね checks that the time is three; wait for your colleague's confirmation.",
+        "nextNodeId": "node-end"
+      },
+      {
+        "type": "terminal",
+        "id": "node-end",
+        "message": "Your colleague confirms the time. Try the self-assessed production prompt to practise asking in your own voice."
+      },
+      {
+        "type": "prompt",
+        "id": "node-repeat-time",
+        "speakerId": "speaker-colleague",
+        "text": {
+          "surface": "会議は三時です。",
+          "reading": "かいぎわさんじです。",
+          "translation": "The meeting is at three o'clock.",
+          "context": "The topic particle は is pronounced わ; the reading is phonetic.",
+          "segments": [
+            {
+              "surface": "会議",
+              "reading": "かいぎ"
+            },
+            {
+              "surface": "は",
+              "reading": "わ"
+            },
+            {
+              "surface": "三時",
+              "reading": "さんじ"
+            },
+            {
+              "surface": "です。"
+            }
+          ]
+        },
+        "nextNodeId": "node-completion"
+      }
     ]
   }
 }

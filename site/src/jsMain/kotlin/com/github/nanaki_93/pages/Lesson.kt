@@ -237,6 +237,7 @@ private fun LessonPlayer(
                 else -> Unit
             }
             LessonStage.ROLE_PLAY -> {
+                com.github.nanaki_93.components.widgets.GuidedConversation(lesson, preferences)
                 H3 { Text("Role-play") }
                 P { Text(lesson.rolePlay.task) }
                 if (stage.empty == EmptyLessonStage.ROLE_PLAY_OBJECTIVE_ONLY) {
@@ -418,20 +419,20 @@ private fun LessonPrompt(
                 Label(attrs = { attr("for", "lesson-response") }) { Text("Your response in Japanese") }
                 JapaneseResponseArea(draft, { draft = it }, inputId = "lesson-response")
                 if (lesson.rolePlay.hints.isNotEmpty()) {
-                    if (!hintsVisible) SecondaryButton("Show role-play hints", onClick = { hintsVisible = true })
-                    else lesson.rolePlay.hints.forEach { P { Text("Hint: $it") } }
+                    SecondaryButton(if (hintsVisible) "Hide role-play hints" else "Show role-play hints", onClick = { hintsVisible = !hintsVisible })
+                    if (hintsVisible) lesson.rolePlay.hints.forEach { P { Text("Hint: $it") } }
                 }
                 if (lesson.phrases.isNotEmpty()) {
-                    if (!phrasesVisible) SecondaryButton("Show useful phrases", onClick = { phrasesVisible = true })
-                    else lesson.phrases.forEach { phrase ->
+                    SecondaryButton(if (phrasesVisible) "Hide useful phrases" else "Show useful phrases", onClick = { phrasesVisible = !phrasesVisible })
+                    if (phrasesVisible) lesson.phrases.forEach { phrase ->
                         JapaneseStudyText(phrase.text, preferences)
                         P { Text("Use: ${phrase.usage} · Register: ${phrase.register}") }
                     }
                 }
                 val examples = if (exercise is ProductionExercise) exercise.exampleResponses else lesson.rolePlay.examples
                 if (examples.isNotEmpty()) {
-                    if (!examplesVisible) SecondaryButton("Show possible responses", onClick = { examplesVisible = true })
-                    else examples.forEach { example ->
+                    SecondaryButton(if (examplesVisible) "Hide possible responses" else "Show possible responses", onClick = { examplesVisible = !examplesVisible })
+                    if (examplesVisible) examples.forEach { example ->
                         P { Text("Possible response, not the only valid Japanese:") }
                         JapaneseStudyText(example, preferences)
                     }

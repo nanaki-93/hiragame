@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "contentVersion": 3,
+  "contentVersion": 4,
   "id": "lesson-daily-update-blocker",
   "topicId": "workplace-updates",
   "title": "Give a daily update and explain a blocker",
@@ -53,5 +53,139 @@
     {"id": "review-update-blocker", "targetKind": "phrase", "targetId": "phrase-update-reason", "skill": "Explain a factual access blocker", "direction": "status-to-utterance"},
     {"id": "review-update-reason", "targetKind": "exercise", "targetId": "exercise-update-reason-completion", "skill": "Connect the cause and the blocked task", "direction": "context-to-utterance"}
   ],
-  "review": {"status": "reviewed", "reviewerType": "agent", "reviewDate": "2026-10-02", "reviewNote": "f06-starter-lessons.md", "provenance": "Independently agent-authored F06 daily-update scenario and teaching copy; no mock or legacy text promoted.", "rights": "publishable", "rightsBasis": "Original agent-authored Japanese and English material; no third-party passages or recordings used. Common linguistic forms are not copied material."}
+  "review": {"status": "reviewed", "reviewerType": "agent", "reviewDate": "2026-10-02", "reviewNote": "f06-starter-lessons.md", "provenance": "Independently agent-authored F06 daily-update scenario and teaching copy; no mock or legacy text promoted.", "rights": "publishable", "rightsBasis": "Original agent-authored Japanese and English material; no third-party passages or recordings used. Common linguistic forms are not copied material."},
+  "conversationGraph": {
+    "entryNodeId": "lesson-daily-update-blocker-conversation-start",
+    "nodes": [
+      {
+        "type": "prompt",
+        "id": "lesson-daily-update-blocker-conversation-start",
+        "speakerId": "speaker-update-colleague",
+        "text": {
+          "surface": "ログイン画面の確認はどうですか。",
+          "reading": "ろぐいんがめんのかくにんわどうですか。",
+          "translation": "How is the login-screen check going?",
+          "context": "ログイン is a loanword for signing in; は is pronounced わ here.",
+          "segments": [
+            {
+              "surface": "ログイン"
+            },
+            {
+              "surface": "画面",
+              "reading": "がめん"
+            },
+            {
+              "surface": "の"
+            },
+            {
+              "surface": "確認",
+              "reading": "かくにん"
+            },
+            {
+              "surface": "は",
+              "reading": "わ"
+            },
+            {
+              "surface": "どうですか。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-daily-update-blocker-conversation-choice"
+      },
+      {
+        "type": "choiceInteraction",
+        "id": "lesson-daily-update-blocker-conversation-choice",
+        "exerciseId": "exercise-update-choice",
+        "transitions": [
+          {
+            "optionId": "option-update-accurate",
+            "feedback": "The first reply names what was checked and what is still pending. 全部確認しました would overstate progress here, though it could be true after all checks.",
+            "nextNodeId": "lesson-daily-update-blocker-conversation-follow"
+          },
+          {
+            "optionId": "option-update-overclaim",
+            "feedback": "The first reply names what was checked and what is still pending. 全部確認しました would overstate progress here, though it could be true after all checks.",
+            "nextNodeId": "lesson-daily-update-blocker-conversation-repeat"
+          }
+        ]
+      },
+      {
+        "type": "prompt",
+        "id": "lesson-daily-update-blocker-conversation-repeat",
+        "speakerId": "speaker-update-colleague",
+        "text": {
+          "surface": "ログイン画面の確認はどうですか。",
+          "reading": "ろぐいんがめんのかくにんわどうですか。",
+          "translation": "How is the login-screen check going?",
+          "context": "ログイン is a loanword for signing in; は is pronounced わ here.",
+          "segments": [
+            {
+              "surface": "ログイン"
+            },
+            {
+              "surface": "画面",
+              "reading": "がめん"
+            },
+            {
+              "surface": "の"
+            },
+            {
+              "surface": "確認",
+              "reading": "かくにん"
+            },
+            {
+              "surface": "は",
+              "reading": "わ"
+            },
+            {
+              "surface": "どうですか。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-daily-update-blocker-conversation-follow"
+      },
+      {
+        "type": "prompt",
+        "id": "lesson-daily-update-blocker-conversation-follow",
+        "speakerId": "speaker-update-colleague",
+        "text": {
+          "surface": "はい、担当者に確認します。",
+          "reading": "はい、たんとうしゃにかくにんします。",
+          "translation": "Yes, I'll check with the person responsible.",
+          "segments": [
+            {
+              "surface": "はい、"
+            },
+            {
+              "surface": "担当者",
+              "reading": "たんとうしゃ"
+            },
+            {
+              "surface": "に"
+            },
+            {
+              "surface": "確認",
+              "reading": "かくにん"
+            },
+            {
+              "surface": "します。"
+            }
+          ]
+        },
+        "nextNodeId": "lesson-daily-update-blocker-conversation-complete"
+      },
+      {
+        "type": "completionInteraction",
+        "id": "lesson-daily-update-blocker-conversation-complete",
+        "exerciseId": "exercise-update-reason-completion",
+        "feedback": "Both ため and ので explicitly fit this constrained blank. ため sounds somewhat more formal; neither fill claims a software defect. Other surfaces are not implicitly graded as correct.",
+        "nextNodeId": "lesson-daily-update-blocker-conversation-end"
+      },
+      {
+        "type": "terminal",
+        "id": "lesson-daily-update-blocker-conversation-end",
+        "message": "You reached the end of the guided task. Try your own response in the self-assessed role-play."
+      }
+    ]
+  }
 }
