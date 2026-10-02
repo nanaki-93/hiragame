@@ -10,6 +10,8 @@ import com.github.nanaki_93.content.CompletionExercise
 import com.github.nanaki_93.content.JapaneseText
 import com.github.nanaki_93.content.ProductionExercise
 import com.github.nanaki_93.pages.promptAnswer
+import com.github.nanaki_93.pages.saveStatusMessage
+import com.github.nanaki_93.pages.selectColorMode
 import com.github.nanaki_93.storage.LocalProgressOwner
 import com.github.nanaki_93.storage.MemoryProgressStore
 import com.github.nanaki_93.storage.ProgressStore
@@ -18,7 +20,10 @@ import com.github.nanaki_93.storage.StoreWriteResult
 import com.github.nanaki_93.storage.StoreSubscription
 import com.github.nanaki_93.storage.StoreFailure
 import com.github.nanaki_93.storage.PersistenceStatus
+import com.github.nanaki_93.storage.ProgressMutationResult
 import com.github.nanaki_93.progress.CheckpointView
+import com.github.nanaki_93.progress.SavedColorMode
+import com.github.nanaki_93.progress.SaveProblem
 import com.github.nanaki_93.progress.LessonProgress
 import com.github.nanaki_93.progress.LessonStage
 import com.github.nanaki_93.progress.ProgressUpdate
@@ -275,6 +280,81 @@ class LocalPracticeCoordinatorTest {
         assertNull(assertIs<LocalPracticeState.Ready>(coordinator.state.value).session)
     }
 
+    @Test fun colorModeSelectionWritesOnlyChangesAndAppliesAcceptedChoices() {
+        val store = CountingStore()
+        val progress = owner(store)
+        val applied = mutableListOf<SavedColorMode>()
+        fun select(mode: SavedColorMode): ProgressMutationResult = selectColorMode(progress, mode) {
+            applied += progress.state.value.snapshot.preferences.colorMode
+        }
+        assertEquals(ProgressMutationResult.Unchanged, select(SavedColorMode.SYSTEM))
+        assertEquals(0, store.writes)
+        assertTrue(applied.isEmpty())
+        assertIs<PersistenceStatus.Fresh>(progress.state.value.status)
+        assertEquals(ProgressMutationResult.Accepted, select(SavedColorMode.DARK))
+        assertEquals(1, store.writes)
+        assertEquals(listOf(SavedColorMode.DARK), applied)
+        assertIs<PersistenceStatus.Saved>(progress.state.value.status)
+        assertEquals(ProgressMutationResult.Unchanged, select(SavedColorMode.DARK))
+        assertEquals(1, store.writes)
+        assertEquals(ProgressMutationResult.Accepted, select(SavedColorMode.LIGHT))
+        assertEquals(2, store.writes)
+        assertEquals(ProgressMutationResult.Accepted, select(SavedColorMode.SYSTEM))
+        assertEquals(3, store.writes)
+        assertEquals(listOf(SavedColorMode.DARK, SavedColorMode.LIGHT, SavedColorMode.SYSTEM), applied)
+        assertEquals(SavedColorMode.SYSTEM,
+            assertIs<SaveDecodeResult.Valid>(SaveCodec.decodeSave(store.delegate.backing.raw!!)).snapshot.preferences.colorMode)
+    }
+
+    @Test fun colorModeFailureAndRetryNeverClaimPrematureSave() {
+        val store = CountingStore()
+        val progress = owner(store)
+        store.delegate.writeFailure = StoreFailure.QUOTA
+        var applied = 0
+        assertEquals(ProgressMutationResult.Accepted, selectColorMode(progress, SavedColorMode.DARK) { applied++ })
+        assertEquals(1, applied) // the chosen mode works in this view even if storage rejects it
+        assertEquals(1, store.writes)
+        assertNull(store.delegate.backing.raw)
+        assertEquals(SavedColorMode.DARK, progress.state.value.snapshot.preferences.colorMode)
+        assertTrue("Changes only in memory" in saveStatusMessage(progress.state.value))
+        assertTrue("Saved in this browser" !in saveStatusMessage(progress.state.value))
+        assertEquals(ProgressMutationResult.Unchanged, selectColorMode(progress, SavedColorMode.DARK) { applied++ })
+        assertEquals(1, store.writes)
+        assertEquals(1, applied)
+        store.delegate.writeFailure = null
+        progress.retrySaving()
+        assertEquals(2, store.writes)
+        assertIs<PersistenceStatus.Saved>(progress.state.value.status)
+        assertTrue("Saved in this browser" in saveStatusMessage(progress.state.value))
+        assertTrue("latest change was not retained" in saveStatusMessage(
+            progress.state.value.copy(rejectedUpdate = SaveProblem.OVERSIZED)))
+        assertEquals(SavedColorMode.DARK,
+            assertIs<SaveDecodeResult.Valid>(SaveCodec.decodeSave(store.delegate.backing.raw!!)).snapshot.preferences.colorMode)
+    }
+
+    @Test fun protectedAndConflictedSavesDoNotClaimPersistenceForPreferences() {
+        val protectedStore = CountingStore(MemoryProgressStore(
+            com.github.nanaki_93.storage.MemoryProgressBacking("unreadable save")))
+        val protected = owner(protectedStore)
+        assertTrue("Saving paused" in saveStatusMessage(protected.state.value))
+        assertTrue("unsupported version" in saveStatusMessage(protected.state.value.copy(
+            status = PersistenceStatus.Protected(SaveProblem.UNSUPPORTED_VERSION))))
+        assertEquals(ProgressMutationResult.Accepted, selectColorMode(protected, SavedColorMode.LIGHT) {})
+        assertEquals(0, protectedStore.writes)
+        assertEquals("unreadable save", protectedStore.delegate.backing.raw)
+        val shared = com.github.nanaki_93.storage.MemoryProgressBacking()
+        val store = CountingStore(MemoryProgressStore(shared))
+        val first = owner(store)
+        val second = owner(MemoryProgressStore(shared))
+        second.mutate { com.github.nanaki_93.progress.changePreferences(it, it.preferences.copy(colorMode = SavedColorMode.DARK)) }
+        assertIs<PersistenceStatus.Conflict>(first.state.value.status)
+        assertTrue("Saving paused" in saveStatusMessage(first.state.value))
+        assertEquals(ProgressMutationResult.Accepted, selectColorMode(first, SavedColorMode.LIGHT) {})
+        assertEquals(0, store.writes)
+        assertEquals(SavedColorMode.DARK,
+            assertIs<SaveDecodeResult.Valid>(SaveCodec.decodeSave(shared.raw!!)).snapshot.preferences.colorMode)
+    }
+
     @Test fun homeWiresLocalLoadAndDisposalWithoutLegacyInitialization() {
         val fs: dynamic = js("require('fs')")
         val path: dynamic = js("require('path')")
@@ -323,6 +403,21 @@ class LocalPracticeCoordinatorTest {
             "text.translation?.let", "text.gloss?.let", "Session outcomes", "typed responses are not retained", "not automatically graded")) {
             assertTrue(required in home, "Home missing feedback/navigation feature $required")
         }
+        val saveUi = home.substringAfter("private fun SavePreferencesSection(").substringBefore("/** Keep raw drafts")
+        for (required in listOf("progress.state.collectAsState()", "H2 { Text(\"Save & preferences\") }",
+            "saveStatusMessage(saved)", "PersistenceStatus.MemoryOnly", "progress.retrySaving()",
+            "Fieldset {", "Legend { Text(\"Color mode\") }", "InputType.Radio", "Label(attrs",
+            "SavedColorMode.SYSTEM", "SavedColorMode.LIGHT", "SavedColorMode.DARK",
+            "selectColorMode(progress, mode)", "colorModeState.value = initialSilkMode(progress)")) {
+            assertTrue(required in saveUi, "Home missing save/preference control: $required")
+        }
+        assertTrue(home.indexOf("SavePreferencesSection(progress)") > home.indexOf("when (val current = state)"),
+            "Save status must render independently after every content load state")
+        assertTrue("not saved" !in home && "lost when" !in home, "Home still claims checkpoints are never saved")
+        assertTrue("ColorMode.current == ColorMode.DARK" in home &&
+            "Modifier.backgroundColor(Colors.DarkBackground)" in home &&
+            "Modifier.backgroundColor(Colors.DarkCardBackground).color(Colors.DarkText)" in home,
+            "Selecting a mode must visibly change the opaque Home surfaces, not just the Silk background")
         val reviewUi = home.substringAfter("is SessionView.Review -> {").substringBefore("SessionView.Complete -> {")
         for (forbidden in listOf("PracticeCommand.Submit(", "PracticeCommand.Retry(", "PracticeCommand.Continue(", "PracticeCommand.Skip(", "PracticeCommand.Reveal(")) {
             assertTrue(forbidden !in reviewUi, "History must be read-only: $forbidden")
@@ -330,6 +425,16 @@ class LocalPracticeCoordinatorTest {
         val styles = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/components/styles/JpStyles.kt"), "utf8") as String
         val practiceStyles = styles.substringAfter("registerStyleBase(\".practice-answer\")").substringBefore("registerStyleBase(\".practice-choice\")")
         assertTrue(".outline(" !in practiceStyles, "Native practice fields must retain a visible focus outline")
+        val saveStyles = styles.substringAfter("registerStyleBase(\".save-preferences\")").substringBefore("object Colors")
+        assertTrue("FlexWrap.Wrap" in saveStyles && ".outline(" !in saveStyles,
+            "Native save controls need responsive wrapping and visible focus outlines")
+        val buttons = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/components/widgets/BaseComponents.kt"), "utf8") as String
+        val secondary = buttons.substringAfter("fun SecondaryButton(").substringBefore("// Simplified Action Button")
+        assertTrue("Styles.ButtonSecondary.toModifier().then(" in secondary &&
+            "ColorMode.current == ColorMode.DARK" in secondary &&
+            "Modifier.color(Colors.DarkText).border(2.px, LineStyle.Solid, Colors.DarkBorder)" in secondary &&
+            ".outline(" !in secondary,
+            "Secondary actions, including Retry saving, need legible text/borders on dark cards without removing focus")
     }
 
     @Test fun activePagesAreLocalOnlyAndLegacyConfigurationIsRetired() {
