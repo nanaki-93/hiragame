@@ -3,6 +3,11 @@ package com.github.nanaki_93.content
 import com.github.nanaki_93.progress.LessonProgress
 import com.github.nanaki_93.progress.LessonStage
 import com.github.nanaki_93.progress.SaveEnvelope
+import com.github.nanaki_93.progress.SavePreferences
+import com.github.nanaki_93.progress.PracticeCheckpoint
+import com.github.nanaki_93.progress.CheckpointView
+import com.github.nanaki_93.progress.CheckpointExerciseType
+import com.github.nanaki_93.progress.CompactOutcome
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -123,6 +128,101 @@ class LessonCatalogTest {
         assertTrue(invalid.cards.isEmpty())
         assertEquals(listOf("first", "second"), projectLessonCatalog(catalog, lessons, saved).cards.map { it.lessonId })
         assertEquals(listOf(record()), saved.lessonProgress)
+    }
+
+    @Test fun savedPlaceWinsByUpdateTimeWithCanonicalTieBreakAndUnavailablePlaceSkipped() {
+        val third = lesson.copy(id = "third", title = "Third title")
+        val three = catalog.copy(entries = catalog.entries +
+            ContentEntry("third", DocumentKind.LESSON, "work", "lessons/third.json"))
+        val available = mapOf("first" to lesson, "second" to second, "third" to third)
+        val saved = save(
+            record("first").copy(updatedAtEpochMs = 20),
+            record("second", checkpoint = "gone").copy(updatedAtEpochMs = 100),
+            record("third").copy(updatedAtEpochMs = 20),
+        )
+        val view = projectLessonCatalog(three, available, saved)
+        assertEquals("first", view.recommendation?.lessonId)
+        assertTrue(view.recommendation!!.reason.contains("saved place"))
+        assertFalse(view.recommendation!!.reason.contains("Resume"))
+        assertFalse(view.recommendation!!.revisit)
+        assertEquals(false, view.cards[1].status.checkpointAvailable)
+        assertEquals("gone", saved.lessonProgress[1].checkpointId)
+        assertEquals("third", projectLessonCatalog(three, available,
+            saved.copy(lessonProgress = saved.lessonProgress.map {
+                if (it.lessonId == "third") it.copy(updatedAtEpochMs = 21) else it
+            })).recommendation?.lessonId)
+    }
+
+    @Test fun optionalBeginnerGuidanceDoesNotFilterOrPersistAndSupportIsExplicit() {
+        val seed = lesson.copy(id = "lesson-confirm-meeting-time")
+        val extended = catalog.copy(entries = catalog.entries + ContentEntry(
+            seed.id, DocumentKind.LESSON, "work", "lessons/seed.json"))
+        val resolved = lessons + (seed.id to seed)
+        val noAids = save().copy(preferences = SavePreferences(
+            showReadings = false, showTranslation = false, showRomaji = false))
+        val default = projectLessonCatalog(extended, resolved, noAids)
+        assertTrue(default.beginnerPathCards.isEmpty())
+        assertEquals("first", default.recommendation?.lessonId)
+        assertTrue(default.recommendation!!.reason.contains("catalog order"))
+        val guided = projectLessonCatalog(extended, resolved, noAids,
+            CatalogViewOptions(topicId = "other", beginnerPath = true))
+        assertEquals(listOf("first"), guided.beginnerPathCards.map { it.lessonId })
+        assertEquals(listOf("second"), guided.cards.map { it.lessonId })
+        assertEquals(3, guided.topics.sumOf { it.cards.size })
+        assertFalse(noAids.preferences.showReadings)
+        assertFalse(noAids.preferences.showTranslation)
+        assertFalse(noAids.preferences.showRomaji)
+        listOf(
+            SavePreferences(showReadings = true, showTranslation = false, showRomaji = false),
+            SavePreferences(showReadings = false, showTranslation = true, showRomaji = false),
+            SavePreferences(showReadings = false, showTranslation = false, showRomaji = true),
+        ).forEach { preferences ->
+            val suggestion = projectLessonCatalog(extended, resolved,
+                noAids.copy(preferences = preferences)).recommendation!!
+            assertEquals("first", suggestion.lessonId)
+            assertTrue(suggestion.reason.contains("support is enabled"))
+        }
+    }
+
+    @Test fun missingSavedCheckpointDoesNotWinOverBeginnerOrFallback() {
+        val unavailable = save(record(checkpoint = "removed").copy(updatedAtEpochMs = 999))
+        val guided = projectLessonCatalog(catalog, lessons, unavailable)
+        assertEquals("first", guided.recommendation?.lessonId)
+        assertTrue(guided.recommendation!!.reason.contains("support"))
+        val unaided = projectLessonCatalog(catalog, lessons, unavailable.copy(preferences =
+            SavePreferences(showReadings = false, showTranslation = false)))
+        assertEquals("first", unaided.recommendation?.lessonId)
+        assertTrue(unaided.recommendation!!.reason.contains("catalog order"))
+    }
+
+    @Test fun completedLessonsOfferRevisitWithoutUsingPracticeScores() {
+        val practice = PracticeCheckpoint(
+            "practice", 3, 100, "run", "transition", listOf("exercise"),
+            listOf(CompactOutcome.CORRECT), 1, CheckpointView.COMPLETE,
+            exerciseTypes = listOf(CheckpointExerciseType.CHOICE),
+        )
+        val scored = save().copy(practiceProgress = listOf(practice))
+        assertEquals(projectLessonCatalog(catalog, lessons, save()).recommendation,
+            projectLessonCatalog(catalog, lessons, scored).recommendation)
+        val completed = scored.copy(lessonProgress = listOf(
+            record(completed = 50), record("second", checkpoint = "gone", completed = 60)))
+        val suggestion = projectLessonCatalog(catalog, lessons, completed).recommendation!!
+        assertEquals("first", suggestion.lessonId)
+        assertTrue(suggestion.revisit)
+        assertTrue(suggestion.reason.contains("Revisit"))
+        assertEquals(false, projectLessonCatalog(catalog, lessons, completed).cards[1].status.checkpointAvailable)
+        assertNull(projectLessonCatalog(catalog.copy(entries = emptyList()), emptyMap(), completed).recommendation)
+    }
+
+    @Test fun invalidFilterDoesNotAlterCanonicalRecommendation() {
+        val saved = save(record())
+        val unfiltered = projectLessonCatalog(catalog, lessons, saved)
+        val invalid = projectLessonCatalog(catalog, lessons, saved,
+            CatalogViewOptions("unknown", beginnerPath = true))
+        assertTrue(invalid.invalidTopicFilter)
+        assertTrue(invalid.cards.isEmpty())
+        assertEquals(unfiltered.recommendation, invalid.recommendation)
+        assertEquals(listOf("first"), invalid.beginnerPathCards.map { it.lessonId })
     }
 
     @Test fun missingResolvedDocumentKeepsSavedRecordEvenWhenEntryExists() {
