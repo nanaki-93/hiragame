@@ -102,6 +102,12 @@ class LocalLessonCoordinatorTest {
         val writes = store.writes
         coordinator.finish(summary.session.id, summary.session.revision)
         assertEquals(writes, store.writes)
+        coordinator.dispatch(LessonCommand.Restart(summary.session.id, summary.session.revision, summary.session.id))
+        val revisited = assertIs<LocalLessonState.Active>(coordinator.state.value)
+        assertEquals(LessonStage.SITUATION, revisited.session.stage)
+        assertEquals(false, revisited.finished) // Earlier completion is not this run's Finish.
+        assertTrue(revisited.session.outcomes.isEmpty())
+        assertEquals(2000L, progress.state.value.snapshot.lessonProgress.single().completedAtEpochMs)
         coordinator.dispose()
         progress.dispose()
     }
