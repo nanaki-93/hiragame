@@ -597,6 +597,131 @@ class FoundationalContentTests(unittest.TestCase):
         self.assertIn('practice-hiragana-basic-vowels-k-reading',
                       {e['id'] for e in catalog['entries']})
 
+    def test_katakana_contracted_coverage(self):
+        catalog = read(CONTENT / 'catalog.json')
+        entries = {e['id']: e for e in catalog['entries']
+                   if e['id'].startswith('practice-katakana-contracted-')}
+        self.assertEqual(10, len(entries))
+        self.assertEqual(10, len({e['path'] for e in entries.values()}))
+        # Independently specified inventory and contrasts, not derived from authored answers.
+        rows = {slug: (''.join(chr(ord(c) + 96) for c in bases), prefixes)
+                for slug, (bases, prefixes) in CONTRACTED_ROWS.items()}
+        expected = {base + small for bases, _ in rows.values()
+                    for base in bases for small in 'ャュョ'}
+        examples = {
+            'coat': ('コート', 'コト', 'coat'),
+            'cake': ('ケーキ', 'ケキ', 'cake'),
+            'cup': ('カップ', 'カプ', 'cup'),
+            'shirt': ('シャツ', 'シヤツ', 'shirt'),
+            'cabbage': ('キャベツ', 'キヤベツ', 'cabbage'),
+            'cube': ('キューブ', 'キユーブ', 'cube'),
+            'chocolate': ('チョコ', 'チヨコ', 'chocolate'),
+        }
+        self.assertEqual(33, len(expected))
+        note = (NOTES / 'f05-foundations.md').read_text(encoding='utf-8')
+        targets = {'recognition': {}, 'reading': {}}
+        used_ids = set()
+        for slug in (*rows, 'spelling-examples'):
+            for mode in targets:
+                doc_id = f'practice-katakana-contracted-{slug}-{mode}'
+                entry = entries[doc_id]
+                self.assertEqual(('practice', 'katakana-foundations',
+                                  f'practice/katakana-contracted-{slug}-{mode}.json'),
+                                 (entry['kind'], entry['topicId'], entry['path']))
+                doc = read(CONTENT / entry['path'])
+                self.assertEqual((1, 2, doc_id, 'katakana-foundations'),
+                                 (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))
+                self.assertTrue(doc['title'].startswith(('Contracted katakana:', 'Katakana spelling:')))
+                self.assertEqual('reviewed', doc['review']['status'])
+                self.assertEqual('agent', doc['review']['reviewerType'])
+                self.assertEqual('2026-10-02', doc['review']['reviewDate'])
+                self.assertEqual('publishable', doc['review']['rights'])
+                self.assertEqual('f05-foundations.md', doc['review']['reviewNote'])
+                self.assertIn('Original', doc['review']['rightsBasis'])
+                self.assertTrue(1 <= len(doc['exercises']) <= 10)
+                self.assertEqual(len(doc['exercises']), len(doc['reviewItems']))
+                self.assertEqual({ex['id'] for ex in doc['exercises']},
+                                 {item['targetId'] for item in doc['reviewItems']})
+                location = f'{entry["path"]}:$ ({doc_id})'
+                validator.validate(doc, validator.PRACTICE, location)
+                validator.local(doc, location)
+                validator.references(doc, location)
+                validator.review_document(doc, location, NOTES)
+                heading = f'## {doc["title"]}\n'
+                self.assertEqual(1, note.count(heading))
+                section = note.split(heading, 1)[1].split('\n## ', 1)[0]
+                self.assertIn(f'Scope: document `{doc_id}`', section)
+                self.assertEqual({ex['id'] for ex in doc['exercises']},
+                                 set(re.findall(r'^\| `(exercise-kc-[^`]+)`', section, re.MULTILINE)))
+                items = {item['targetId']: item for item in doc['reviewItems']}
+                for ex in doc['exercises']:
+                    key = ex['id'].removeprefix(f'exercise-kc-example-{mode}-')
+                    if slug == 'spelling-examples':
+                        self.assertIn(key, examples)
+                        form, wrong, meaning = examples[key]
+                        self.assertIn(meaning, ex['prompt'])
+                        self.assertIn(wrong, ex['explanation'])
+                    else:
+                        self.assertTrue(ex['id'].startswith(f'exercise-kc-{mode}-'))
+                        code = ex['id'].removeprefix(f'exercise-kc-{mode}-')
+                        base, small = (chr(int(part, 16)) for part in code.split('-'))
+                        self.assertIn(base, rows[slug][0])
+                        self.assertIn(small, 'ャュョ')
+                        form = base + small
+                        wrong = base + {'ャ': 'ヤ', 'ュ': 'ユ', 'ョ': 'ヨ'}[small]
+                        self.assertNotIn(form, targets[mode], f'duplicate {mode} target {form}')
+                        targets[mode][form] = (doc_id, ex['id'])
+                        self.assertIn('small', ex['prompt'])
+                    item = items[ex['id']]
+                    self.assertIn(form, item['skill'])
+                    self.assertEqual(('exercise', ex['id']),
+                                     (item['targetKind'], item['targetId']))
+                    row = [line for line in section.splitlines()
+                           if line.startswith(f'| `{ex["id"]}`,')]
+                    self.assertEqual(1, len(row))
+                    self.assertIn(f'`{item["id"]}`', row[0])
+                    self.assertIn(f'| {form} / ', row[0])
+                    for id_ in (ex['id'], item['id']):
+                        self.assertNotIn(id_, used_ids)
+                        used_ids.add(id_)
+                    if mode == 'recognition':
+                        self.assertEqual('choice', ex['type'])
+                        options = ex['options']
+                        surfaces = {o['text']['surface'] for o in options}
+                        self.assertEqual(len(options), len(surfaces))
+                        self.assertEqual(2 if slug == 'spelling-examples' else 3, len(options))
+                        self.assertIn(wrong, surfaces)
+                        self.assertEqual(form, next(o['text']['surface'] for o in options
+                                                    if o['id'] == ex['correctOptionId']))
+                        for option in options:
+                            self.assertEqual(option['text']['surface'], option['text']['reading'])
+                            self.assertIn('translation', option['text'])
+                            self.assertNotIn('gloss', option['text'])
+                            self.assertIn(f'`{option["id"]}`', row[0])
+                            self.assertNotIn(option['id'], used_ids)
+                            used_ids.add(option['id'])
+                    else:
+                        self.assertEqual(('reading', 'kana'),
+                                         (ex['type'], ex['answerRepresentation']))
+                        self.assertEqual(['kana'], [a['type'] for a in ex['acceptedAnswers']])
+                        answer = ex['acceptedAnswers'][0]['text']
+                        self.assertEqual(form, answer['surface'])
+                        self.assertEqual(form, answer['reading'])
+                        self.assertIn('translation', answer)
+                        self.assertNotIn('gloss', answer)
+                        self.assertNotIn(form, ex['prompt'] + json.dumps(ex['stimulus'], ensure_ascii=False))
+                        self.assertNotIn(wrong, [a['text']['surface'] for a in ex['acceptedAnswers']])
+                        self.assertNotEqual(unicodedata.normalize('NFC', form),
+                                            unicodedata.normalize('NFC', wrong))
+                        self.assertNotEqual(form, form.translate(str.maketrans(
+                            'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンャュョッ',
+                            'あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんゃゅょっ')))
+        for mode in targets:
+            self.assertEqual(expected, set(targets[mode]))
+        self.assertEqual(80, sum(len(read(CONTENT / e['path'])['exercises']) for e in entries.values()))
+        self.assertIn('practice-katakana-voiced-g-z-reading', {e['id'] for e in catalog['entries']})
+        self.assertIn('practice-hiragana-contracted-k-s-t-reading', {e['id'] for e in catalog['entries']})
+
     def _check_contracted_document(self, doc, entry, note):
         self.assertEqual((1, 2, entry['id'], entry['topicId']),
                          (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))

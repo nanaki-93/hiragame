@@ -1,0 +1,231 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-contracted-spelling-examples-reading",
+  "topicId": "katakana-foundations",
+  "title": "Katakana spelling: long mark and small kana — write the word",
+  "description": "Short loanwords contrast ー, small ッ and small ャ/ュ/ョ with omitted or full-sized spellings.",
+  "reviewItems": [
+    {
+      "id": "review-kc-example-reading-coat",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-reading-coat",
+      "skill": "Write katakana コート (coat)",
+      "direction": "meaning-and-latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-example-reading-cake",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-reading-cake",
+      "skill": "Write katakana ケーキ (cake)",
+      "direction": "meaning-and-latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-example-reading-cup",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-reading-cup",
+      "skill": "Write katakana カップ (cup)",
+      "direction": "meaning-and-latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-example-reading-shirt",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-reading-shirt",
+      "skill": "Write katakana シャツ (shirt)",
+      "direction": "meaning-and-latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-example-reading-cabbage",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-reading-cabbage",
+      "skill": "Write katakana キャベツ (cabbage)",
+      "direction": "meaning-and-latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-example-reading-cube",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-reading-cube",
+      "skill": "Write katakana キューブ (cube)",
+      "direction": "meaning-and-latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-example-reading-chocolate",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-reading-chocolate",
+      "skill": "Write katakana チョコ (chocolate)",
+      "direction": "meaning-and-latin-cue-to-katakana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Original agent-authored katakana spelling cues and short common-loanword examples; no legacy CSV or F00 mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original English questions, explanations and translations; kana spellings and short common-word meanings are linguistic facts. No copied work or audio."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-kc-example-reading-coat",
+      "prompt": "Type “coat” in katakana (kooto). The ー lengthens the o; コト omits it.",
+      "explanation": "コート means coat. The ー lengthens the o; コト omits it. The contrast コト is not accepted.",
+      "stimulus": {
+        "surface": "kooto — coat",
+        "reading": "kooto — coat",
+        "translation": "English meaning and Latin-letter spelling cue; write the katakana word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "コート",
+            "reading": "コート",
+            "translation": "coat",
+            "romaji": "kooto"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-example-reading-cake",
+      "prompt": "Type “cake” in katakana (keeki). The ー lengthens the e; ケキ omits it.",
+      "explanation": "ケーキ means cake. The ー lengthens the e; ケキ omits it. The contrast ケキ is not accepted.",
+      "stimulus": {
+        "surface": "keeki — cake",
+        "reading": "keeki — cake",
+        "translation": "English meaning and Latin-letter spelling cue; write the katakana word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ケーキ",
+            "reading": "ケーキ",
+            "translation": "cake",
+            "romaji": "keeki"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-example-reading-cup",
+      "prompt": "Type “cup” in katakana (kappu). Small ッ marks a doubled following consonant; カプ omits it.",
+      "explanation": "カップ means cup. Small ッ marks a doubled following consonant; カプ omits it. The contrast カプ is not accepted.",
+      "stimulus": {
+        "surface": "kappu — cup",
+        "reading": "kappu — cup",
+        "translation": "English meaning and Latin-letter spelling cue; write the katakana word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "カップ",
+            "reading": "カップ",
+            "translation": "cup",
+            "romaji": "kappu"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-example-reading-shirt",
+      "prompt": "Type “shirt” in katakana (shatsu). Small ャ joins シ; シヤツ uses full-sized ヤ.",
+      "explanation": "シャツ means shirt. Small ャ joins シ; シヤツ uses full-sized ヤ. The contrast シヤツ is not accepted.",
+      "stimulus": {
+        "surface": "shatsu — shirt",
+        "reading": "shatsu — shirt",
+        "translation": "English meaning and Latin-letter spelling cue; write the katakana word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "シャツ",
+            "reading": "シャツ",
+            "translation": "shirt",
+            "romaji": "shatsu"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-example-reading-cabbage",
+      "prompt": "Type “cabbage” in katakana (kyabetsu). Small ャ joins キ; キヤベツ uses full-sized ヤ.",
+      "explanation": "キャベツ means cabbage. Small ャ joins キ; キヤベツ uses full-sized ヤ. The contrast キヤベツ is not accepted.",
+      "stimulus": {
+        "surface": "kyabetsu — cabbage",
+        "reading": "kyabetsu — cabbage",
+        "translation": "English meaning and Latin-letter spelling cue; write the katakana word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "キャベツ",
+            "reading": "キャベツ",
+            "translation": "cabbage",
+            "romaji": "kyabetsu"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-example-reading-cube",
+      "prompt": "Type “cube” in katakana (kyuubu). Small ュ joins キ; キユーブ uses full-sized ユ. The ー lengthens u.",
+      "explanation": "キューブ means cube. Small ュ joins キ; キユーブ uses full-sized ユ. The ー lengthens u. The contrast キユーブ is not accepted.",
+      "stimulus": {
+        "surface": "kyuubu — cube",
+        "reading": "kyuubu — cube",
+        "translation": "English meaning and Latin-letter spelling cue; write the katakana word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "キューブ",
+            "reading": "キューブ",
+            "translation": "cube",
+            "romaji": "kyuubu"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-example-reading-chocolate",
+      "prompt": "Type “chocolate” in katakana (choko). Small ョ joins チ; チヨコ uses full-sized ヨ.",
+      "explanation": "チョコ means chocolate. Small ョ joins チ; チヨコ uses full-sized ヨ. The contrast チヨコ is not accepted.",
+      "stimulus": {
+        "surface": "choko — chocolate",
+        "reading": "choko — chocolate",
+        "translation": "English meaning and Latin-letter spelling cue; write the katakana word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "チョコ",
+            "reading": "チョコ",
+            "translation": "chocolate",
+            "romaji": "choko"
+          }
+        }
+      ]
+    }
+  ]
+}

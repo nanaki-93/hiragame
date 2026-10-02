@@ -1,0 +1,252 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-contracted-spelling-examples-recognition",
+  "topicId": "katakana-foundations",
+  "title": "Katakana spelling: long mark and small kana — find the word",
+  "description": "Short loanwords contrast ー, small ッ and small ャ/ュ/ョ with omitted or full-sized spellings.",
+  "reviewItems": [
+    {
+      "id": "review-kc-example-recognition-coat",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-recognition-coat",
+      "skill": "Recognize katakana コート (coat)",
+      "direction": "meaning-and-spelling-cue-to-word"
+    },
+    {
+      "id": "review-kc-example-recognition-cake",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-recognition-cake",
+      "skill": "Recognize katakana ケーキ (cake)",
+      "direction": "meaning-and-spelling-cue-to-word"
+    },
+    {
+      "id": "review-kc-example-recognition-cup",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-recognition-cup",
+      "skill": "Recognize katakana カップ (cup)",
+      "direction": "meaning-and-spelling-cue-to-word"
+    },
+    {
+      "id": "review-kc-example-recognition-shirt",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-recognition-shirt",
+      "skill": "Recognize katakana シャツ (shirt)",
+      "direction": "meaning-and-spelling-cue-to-word"
+    },
+    {
+      "id": "review-kc-example-recognition-cabbage",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-recognition-cabbage",
+      "skill": "Recognize katakana キャベツ (cabbage)",
+      "direction": "meaning-and-spelling-cue-to-word"
+    },
+    {
+      "id": "review-kc-example-recognition-cube",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-recognition-cube",
+      "skill": "Recognize katakana キューブ (cube)",
+      "direction": "meaning-and-spelling-cue-to-word"
+    },
+    {
+      "id": "review-kc-example-recognition-chocolate",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-example-recognition-chocolate",
+      "skill": "Recognize katakana チョコ (chocolate)",
+      "direction": "meaning-and-spelling-cue-to-word"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Original agent-authored katakana spelling cues and short common-loanword examples; no legacy CSV or F00 mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original English questions, explanations and translations; kana spellings and short common-word meanings are linguistic facts. No copied work or audio."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-kc-example-recognition-coat",
+      "prompt": "Which katakana spelling means “coat” (kooto)? The ー lengthens the o; コト omits it.",
+      "explanation": "コート means coat. The ー lengthens the o; コト omits it. The contrast コト is not accepted.",
+      "options": [
+        {
+          "id": "option-kc-coat-0",
+          "text": {
+            "surface": "コート",
+            "reading": "コート",
+            "translation": "coat",
+            "romaji": "kooto"
+          }
+        },
+        {
+          "id": "option-kc-coat-1",
+          "text": {
+            "surface": "コト",
+            "reading": "コト",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-coat-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-example-recognition-cake",
+      "prompt": "Which katakana spelling means “cake” (keeki)? The ー lengthens the e; ケキ omits it.",
+      "explanation": "ケーキ means cake. The ー lengthens the e; ケキ omits it. The contrast ケキ is not accepted.",
+      "options": [
+        {
+          "id": "option-kc-cake-0",
+          "text": {
+            "surface": "ケーキ",
+            "reading": "ケーキ",
+            "translation": "cake",
+            "romaji": "keeki"
+          }
+        },
+        {
+          "id": "option-kc-cake-1",
+          "text": {
+            "surface": "ケキ",
+            "reading": "ケキ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-cake-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-example-recognition-cup",
+      "prompt": "Which katakana spelling means “cup” (kappu)? Small ッ marks a doubled following consonant; カプ omits it.",
+      "explanation": "カップ means cup. Small ッ marks a doubled following consonant; カプ omits it. The contrast カプ is not accepted.",
+      "options": [
+        {
+          "id": "option-kc-cup-0",
+          "text": {
+            "surface": "カップ",
+            "reading": "カップ",
+            "translation": "cup",
+            "romaji": "kappu"
+          }
+        },
+        {
+          "id": "option-kc-cup-1",
+          "text": {
+            "surface": "カプ",
+            "reading": "カプ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-cup-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-example-recognition-shirt",
+      "prompt": "Which katakana spelling means “shirt” (shatsu)? Small ャ joins シ; シヤツ uses full-sized ヤ.",
+      "explanation": "シャツ means shirt. Small ャ joins シ; シヤツ uses full-sized ヤ. The contrast シヤツ is not accepted.",
+      "options": [
+        {
+          "id": "option-kc-shirt-0",
+          "text": {
+            "surface": "シャツ",
+            "reading": "シャツ",
+            "translation": "shirt",
+            "romaji": "shatsu"
+          }
+        },
+        {
+          "id": "option-kc-shirt-1",
+          "text": {
+            "surface": "シヤツ",
+            "reading": "シヤツ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-shirt-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-example-recognition-cabbage",
+      "prompt": "Which katakana spelling means “cabbage” (kyabetsu)? Small ャ joins キ; キヤベツ uses full-sized ヤ.",
+      "explanation": "キャベツ means cabbage. Small ャ joins キ; キヤベツ uses full-sized ヤ. The contrast キヤベツ is not accepted.",
+      "options": [
+        {
+          "id": "option-kc-cabbage-0",
+          "text": {
+            "surface": "キャベツ",
+            "reading": "キャベツ",
+            "translation": "cabbage",
+            "romaji": "kyabetsu"
+          }
+        },
+        {
+          "id": "option-kc-cabbage-1",
+          "text": {
+            "surface": "キヤベツ",
+            "reading": "キヤベツ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-cabbage-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-example-recognition-cube",
+      "prompt": "Which katakana spelling means “cube” (kyuubu)? Small ュ joins キ; キユーブ uses full-sized ユ. The ー lengthens u.",
+      "explanation": "キューブ means cube. Small ュ joins キ; キユーブ uses full-sized ユ. The ー lengthens u. The contrast キユーブ is not accepted.",
+      "options": [
+        {
+          "id": "option-kc-cube-0",
+          "text": {
+            "surface": "キューブ",
+            "reading": "キューブ",
+            "translation": "cube",
+            "romaji": "kyuubu"
+          }
+        },
+        {
+          "id": "option-kc-cube-1",
+          "text": {
+            "surface": "キユーブ",
+            "reading": "キユーブ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-cube-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-example-recognition-chocolate",
+      "prompt": "Which katakana spelling means “chocolate” (choko)? Small ョ joins チ; チヨコ uses full-sized ヨ.",
+      "explanation": "チョコ means chocolate. Small ョ joins チ; チヨコ uses full-sized ヨ. The contrast チヨコ is not accepted.",
+      "options": [
+        {
+          "id": "option-kc-chocolate-0",
+          "text": {
+            "surface": "チョコ",
+            "reading": "チョコ",
+            "translation": "chocolate",
+            "romaji": "choko"
+          }
+        },
+        {
+          "id": "option-kc-chocolate-1",
+          "text": {
+            "surface": "チヨコ",
+            "reading": "チヨコ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-chocolate-0"
+    }
+  ]
+}

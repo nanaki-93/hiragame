@@ -1,0 +1,201 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-contracted-b-p-reading",
+  "topicId": "katakana-foundations",
+  "title": "Contracted katakana: B and P rows — write in kana",
+  "description": "Use a Latin-letter spelling cue and base sign to distinguish small ャ/ュ/ョ from full-sized kana.",
+  "reviewItems": [
+    {
+      "id": "review-kc-reading-30d3-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30d3-30e3",
+      "skill": "Write katakana ビャ (contracted bya spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30d3-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30d3-30e5",
+      "skill": "Write katakana ビュ (contracted byu spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30d3-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30d3-30e7",
+      "skill": "Write katakana ビョ (contracted byo spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30d4-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30d4-30e3",
+      "skill": "Write katakana ピャ (contracted pya spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30d4-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30d4-30e5",
+      "skill": "Write katakana ピュ (contracted pyu spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30d4-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30d4-30e7",
+      "skill": "Write katakana ピョ (contracted pyo spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Original agent-authored katakana spelling cues and short common-loanword examples; no legacy CSV or F00 mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original English questions, explanations and translations; kana spellings and short common-word meanings are linguistic facts. No copied work or audio."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30d3-30e3",
+      "prompt": "Type the contracted katakana bya using the ビ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ビャ is the contracted bya spelling. Small ャ joins ビ; ビヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "bya — ビ base sign + small kana",
+        "reading": "bya — ビ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ビャ",
+            "reading": "ビャ",
+            "translation": "Contracted katakana bya spelling with small kana.",
+            "romaji": "bya"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30d3-30e5",
+      "prompt": "Type the contracted katakana byu using the ビ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ビュ is the contracted byu spelling. Small ュ joins ビ; ビユ uses full-sized ユ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "byu — ビ base sign + small kana",
+        "reading": "byu — ビ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ビュ",
+            "reading": "ビュ",
+            "translation": "Contracted katakana byu spelling with small kana.",
+            "romaji": "byu"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30d3-30e7",
+      "prompt": "Type the contracted katakana byo using the ビ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ビョ is the contracted byo spelling. Small ョ joins ビ; ビヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "byo — ビ base sign + small kana",
+        "reading": "byo — ビ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ビョ",
+            "reading": "ビョ",
+            "translation": "Contracted katakana byo spelling with small kana.",
+            "romaji": "byo"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30d4-30e3",
+      "prompt": "Type the contracted katakana pya using the ピ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ピャ is the contracted pya spelling. Small ャ joins ピ; ピヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "pya — ピ base sign + small kana",
+        "reading": "pya — ピ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ピャ",
+            "reading": "ピャ",
+            "translation": "Contracted katakana pya spelling with small kana.",
+            "romaji": "pya"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30d4-30e5",
+      "prompt": "Type the contracted katakana pyu using the ピ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ピュ is the contracted pyu spelling. Small ュ joins ピ; ピユ uses full-sized ユ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "pyu — ピ base sign + small kana",
+        "reading": "pyu — ピ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ピュ",
+            "reading": "ピュ",
+            "translation": "Contracted katakana pyu spelling with small kana.",
+            "romaji": "pyu"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30d4-30e7",
+      "prompt": "Type the contracted katakana pyo using the ピ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ピョ is the contracted pyo spelling. Small ョ joins ピ; ピヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "pyo — ピ base sign + small kana",
+        "reading": "pyo — ピ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ピョ",
+            "reading": "ピョ",
+            "translation": "Contracted katakana pyo spelling with small kana.",
+            "romaji": "pyo"
+          }
+        }
+      ]
+    }
+  ]
+}
