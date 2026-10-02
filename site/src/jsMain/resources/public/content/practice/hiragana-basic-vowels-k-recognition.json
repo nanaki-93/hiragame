@@ -1,0 +1,451 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-basic-vowels-k-recognition",
+  "topicId": "kana-foundations",
+  "title": "Basic hiragana: Vowels and K row — find the sign",
+  "description": "Choose the written sign from three visible kana using a basic sound or specified spelling context. 10 independent targets.",
+  "reviewItems": [
+    {
+      "id": "review-hb-recognition-3042",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3042",
+      "skill": "Recognize basic hiragana あ",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3044",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3044",
+      "skill": "Recognize basic hiragana い",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3046",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3046",
+      "skill": "Recognize basic hiragana う",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3048",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3048",
+      "skill": "Recognize basic hiragana え",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-304a",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-304a",
+      "skill": "Recognize basic hiragana お",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-304b",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-304b",
+      "skill": "Recognize basic hiragana か",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-304d",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-304d",
+      "skill": "Recognize basic hiragana き",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-304f",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-304f",
+      "skill": "Recognize basic hiragana く",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3051",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3051",
+      "skill": "Recognize basic hiragana け",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3053",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3053",
+      "skill": "Recognize basic hiragana こ",
+      "direction": "sound-or-context-to-sign"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored F05 sign exercises and explanations; no CSV or mock curriculum reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; basic kana correspondences are linguistic facts. No third-party text, recordings, or audio used."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3042",
+      "prompt": "Which hiragana sign has the basic reading conventionally written a in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3042-for-3042",
+          "text": {
+            "surface": "あ",
+            "reading": "あ",
+            "gloss": "Hiragana sign for the basic a reading.",
+            "romaji": "a"
+          }
+        },
+        {
+          "id": "option-hb-3044-for-3042",
+          "text": {
+            "surface": "い",
+            "reading": "い",
+            "gloss": "Hiragana sign for the basic i reading.",
+            "romaji": "i"
+          }
+        },
+        {
+          "id": "option-hb-3046-for-3042",
+          "text": {
+            "surface": "う",
+            "reading": "う",
+            "gloss": "Hiragana sign for the basic u reading.",
+            "romaji": "u"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3042-for-3042",
+      "explanation": "あ is the hiragana spelling for this target. Hiragana sign for the basic a reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3044",
+      "prompt": "Which hiragana sign has the basic reading conventionally written i in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3046-for-3044",
+          "text": {
+            "surface": "う",
+            "reading": "う",
+            "gloss": "Hiragana sign for the basic u reading.",
+            "romaji": "u"
+          }
+        },
+        {
+          "id": "option-hb-3048-for-3044",
+          "text": {
+            "surface": "え",
+            "reading": "え",
+            "gloss": "Hiragana sign for the basic e reading.",
+            "romaji": "e"
+          }
+        },
+        {
+          "id": "option-hb-3044-for-3044",
+          "text": {
+            "surface": "い",
+            "reading": "い",
+            "gloss": "Hiragana sign for the basic i reading.",
+            "romaji": "i"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3044-for-3044",
+      "explanation": "い is the hiragana spelling for this target. Hiragana sign for the basic i reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3046",
+      "prompt": "Which hiragana sign has the basic reading conventionally written u in romaji?",
+      "options": [
+        {
+          "id": "option-hb-304a-for-3046",
+          "text": {
+            "surface": "お",
+            "reading": "お",
+            "gloss": "Hiragana sign for the basic o reading.",
+            "romaji": "o"
+          }
+        },
+        {
+          "id": "option-hb-3046-for-3046",
+          "text": {
+            "surface": "う",
+            "reading": "う",
+            "gloss": "Hiragana sign for the basic u reading.",
+            "romaji": "u"
+          }
+        },
+        {
+          "id": "option-hb-3048-for-3046",
+          "text": {
+            "surface": "え",
+            "reading": "え",
+            "gloss": "Hiragana sign for the basic e reading.",
+            "romaji": "e"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3046-for-3046",
+      "explanation": "う is the hiragana spelling for this target. Hiragana sign for the basic u reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3048",
+      "prompt": "Which hiragana sign has the basic reading conventionally written e in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3048-for-3048",
+          "text": {
+            "surface": "え",
+            "reading": "え",
+            "gloss": "Hiragana sign for the basic e reading.",
+            "romaji": "e"
+          }
+        },
+        {
+          "id": "option-hb-304a-for-3048",
+          "text": {
+            "surface": "お",
+            "reading": "お",
+            "gloss": "Hiragana sign for the basic o reading.",
+            "romaji": "o"
+          }
+        },
+        {
+          "id": "option-hb-304b-for-3048",
+          "text": {
+            "surface": "か",
+            "reading": "か",
+            "gloss": "Hiragana sign for the basic ka reading.",
+            "romaji": "ka"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3048-for-3048",
+      "explanation": "え is the hiragana spelling for this target. Hiragana sign for the basic e reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-304a",
+      "prompt": "Which hiragana sign has the basic reading conventionally written o in romaji?",
+      "options": [
+        {
+          "id": "option-hb-304b-for-304a",
+          "text": {
+            "surface": "か",
+            "reading": "か",
+            "gloss": "Hiragana sign for the basic ka reading.",
+            "romaji": "ka"
+          }
+        },
+        {
+          "id": "option-hb-304d-for-304a",
+          "text": {
+            "surface": "き",
+            "reading": "き",
+            "gloss": "Hiragana sign for the basic ki reading.",
+            "romaji": "ki"
+          }
+        },
+        {
+          "id": "option-hb-304a-for-304a",
+          "text": {
+            "surface": "お",
+            "reading": "お",
+            "gloss": "Hiragana sign for the basic o reading.",
+            "romaji": "o"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-304a-for-304a",
+      "explanation": "お is the hiragana spelling for this target. Hiragana sign for the basic o reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-304b",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ka in romaji?",
+      "options": [
+        {
+          "id": "option-hb-304f-for-304b",
+          "text": {
+            "surface": "く",
+            "reading": "く",
+            "gloss": "Hiragana sign for the basic ku reading.",
+            "romaji": "ku"
+          }
+        },
+        {
+          "id": "option-hb-304b-for-304b",
+          "text": {
+            "surface": "か",
+            "reading": "か",
+            "gloss": "Hiragana sign for the basic ka reading.",
+            "romaji": "ka"
+          }
+        },
+        {
+          "id": "option-hb-304d-for-304b",
+          "text": {
+            "surface": "き",
+            "reading": "き",
+            "gloss": "Hiragana sign for the basic ki reading.",
+            "romaji": "ki"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-304b-for-304b",
+      "explanation": "か is the hiragana spelling for this target. Hiragana sign for the basic ka reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-304d",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ki in romaji?",
+      "options": [
+        {
+          "id": "option-hb-304d-for-304d",
+          "text": {
+            "surface": "き",
+            "reading": "き",
+            "gloss": "Hiragana sign for the basic ki reading.",
+            "romaji": "ki"
+          }
+        },
+        {
+          "id": "option-hb-304f-for-304d",
+          "text": {
+            "surface": "く",
+            "reading": "く",
+            "gloss": "Hiragana sign for the basic ku reading.",
+            "romaji": "ku"
+          }
+        },
+        {
+          "id": "option-hb-3051-for-304d",
+          "text": {
+            "surface": "け",
+            "reading": "け",
+            "gloss": "Hiragana sign for the basic ke reading.",
+            "romaji": "ke"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-304d-for-304d",
+      "explanation": "き is the hiragana spelling for this target. Hiragana sign for the basic ki reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-304f",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ku in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3051-for-304f",
+          "text": {
+            "surface": "け",
+            "reading": "け",
+            "gloss": "Hiragana sign for the basic ke reading.",
+            "romaji": "ke"
+          }
+        },
+        {
+          "id": "option-hb-3053-for-304f",
+          "text": {
+            "surface": "こ",
+            "reading": "こ",
+            "gloss": "Hiragana sign for the basic ko reading.",
+            "romaji": "ko"
+          }
+        },
+        {
+          "id": "option-hb-304f-for-304f",
+          "text": {
+            "surface": "く",
+            "reading": "く",
+            "gloss": "Hiragana sign for the basic ku reading.",
+            "romaji": "ku"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-304f-for-304f",
+      "explanation": "く is the hiragana spelling for this target. Hiragana sign for the basic ku reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3051",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ke in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3042-for-3051",
+          "text": {
+            "surface": "あ",
+            "reading": "あ",
+            "gloss": "Hiragana sign for the basic a reading.",
+            "romaji": "a"
+          }
+        },
+        {
+          "id": "option-hb-3051-for-3051",
+          "text": {
+            "surface": "け",
+            "reading": "け",
+            "gloss": "Hiragana sign for the basic ke reading.",
+            "romaji": "ke"
+          }
+        },
+        {
+          "id": "option-hb-3053-for-3051",
+          "text": {
+            "surface": "こ",
+            "reading": "こ",
+            "gloss": "Hiragana sign for the basic ko reading.",
+            "romaji": "ko"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3051-for-3051",
+      "explanation": "け is the hiragana spelling for this target. Hiragana sign for the basic ke reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3053",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ko in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3053-for-3053",
+          "text": {
+            "surface": "こ",
+            "reading": "こ",
+            "gloss": "Hiragana sign for the basic ko reading.",
+            "romaji": "ko"
+          }
+        },
+        {
+          "id": "option-hb-3042-for-3053",
+          "text": {
+            "surface": "あ",
+            "reading": "あ",
+            "gloss": "Hiragana sign for the basic a reading.",
+            "romaji": "a"
+          }
+        },
+        {
+          "id": "option-hb-3044-for-3053",
+          "text": {
+            "surface": "い",
+            "reading": "い",
+            "gloss": "Hiragana sign for the basic i reading.",
+            "romaji": "i"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3053-for-3053",
+      "explanation": "こ is the hiragana spelling for this target. Hiragana sign for the basic ko reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    }
+  ]
+}

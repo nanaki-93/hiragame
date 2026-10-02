@@ -1,0 +1,365 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-basic-m-y-recognition",
+  "topicId": "kana-foundations",
+  "title": "Basic hiragana: M and Y rows — find the sign",
+  "description": "Choose the written sign from three visible kana using a basic sound or specified spelling context. 8 independent targets.",
+  "reviewItems": [
+    {
+      "id": "review-hb-recognition-307e",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-307e",
+      "skill": "Recognize basic hiragana ま",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-307f",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-307f",
+      "skill": "Recognize basic hiragana み",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3080",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3080",
+      "skill": "Recognize basic hiragana む",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3081",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3081",
+      "skill": "Recognize basic hiragana め",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3082",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3082",
+      "skill": "Recognize basic hiragana も",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3084",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3084",
+      "skill": "Recognize basic hiragana や",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3086",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3086",
+      "skill": "Recognize basic hiragana ゆ",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3088",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3088",
+      "skill": "Recognize basic hiragana よ",
+      "direction": "sound-or-context-to-sign"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored F05 sign exercises and explanations; no CSV or mock curriculum reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; basic kana correspondences are linguistic facts. No third-party text, recordings, or audio used."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-307e",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ma in romaji?",
+      "options": [
+        {
+          "id": "option-hb-307e-for-307e",
+          "text": {
+            "surface": "ま",
+            "reading": "ま",
+            "gloss": "Hiragana sign for the basic ma reading.",
+            "romaji": "ma"
+          }
+        },
+        {
+          "id": "option-hb-307f-for-307e",
+          "text": {
+            "surface": "み",
+            "reading": "み",
+            "gloss": "Hiragana sign for the basic mi reading.",
+            "romaji": "mi"
+          }
+        },
+        {
+          "id": "option-hb-3080-for-307e",
+          "text": {
+            "surface": "む",
+            "reading": "む",
+            "gloss": "Hiragana sign for the basic mu reading.",
+            "romaji": "mu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-307e-for-307e",
+      "explanation": "ま is the hiragana spelling for this target. Hiragana sign for the basic ma reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-307f",
+      "prompt": "Which hiragana sign has the basic reading conventionally written mi in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3080-for-307f",
+          "text": {
+            "surface": "む",
+            "reading": "む",
+            "gloss": "Hiragana sign for the basic mu reading.",
+            "romaji": "mu"
+          }
+        },
+        {
+          "id": "option-hb-3081-for-307f",
+          "text": {
+            "surface": "め",
+            "reading": "め",
+            "gloss": "Hiragana sign for the basic me reading.",
+            "romaji": "me"
+          }
+        },
+        {
+          "id": "option-hb-307f-for-307f",
+          "text": {
+            "surface": "み",
+            "reading": "み",
+            "gloss": "Hiragana sign for the basic mi reading.",
+            "romaji": "mi"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-307f-for-307f",
+      "explanation": "み is the hiragana spelling for this target. Hiragana sign for the basic mi reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3080",
+      "prompt": "Which hiragana sign has the basic reading conventionally written mu in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3082-for-3080",
+          "text": {
+            "surface": "も",
+            "reading": "も",
+            "gloss": "Hiragana sign for the basic mo reading.",
+            "romaji": "mo"
+          }
+        },
+        {
+          "id": "option-hb-3080-for-3080",
+          "text": {
+            "surface": "む",
+            "reading": "む",
+            "gloss": "Hiragana sign for the basic mu reading.",
+            "romaji": "mu"
+          }
+        },
+        {
+          "id": "option-hb-3081-for-3080",
+          "text": {
+            "surface": "め",
+            "reading": "め",
+            "gloss": "Hiragana sign for the basic me reading.",
+            "romaji": "me"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3080-for-3080",
+      "explanation": "む is the hiragana spelling for this target. Hiragana sign for the basic mu reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3081",
+      "prompt": "Which hiragana sign has the basic reading conventionally written me in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3081-for-3081",
+          "text": {
+            "surface": "め",
+            "reading": "め",
+            "gloss": "Hiragana sign for the basic me reading.",
+            "romaji": "me"
+          }
+        },
+        {
+          "id": "option-hb-3082-for-3081",
+          "text": {
+            "surface": "も",
+            "reading": "も",
+            "gloss": "Hiragana sign for the basic mo reading.",
+            "romaji": "mo"
+          }
+        },
+        {
+          "id": "option-hb-3084-for-3081",
+          "text": {
+            "surface": "や",
+            "reading": "や",
+            "gloss": "Hiragana sign for the basic ya reading.",
+            "romaji": "ya"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3081-for-3081",
+      "explanation": "め is the hiragana spelling for this target. Hiragana sign for the basic me reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3082",
+      "prompt": "Which hiragana sign has the basic reading conventionally written mo in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3084-for-3082",
+          "text": {
+            "surface": "や",
+            "reading": "や",
+            "gloss": "Hiragana sign for the basic ya reading.",
+            "romaji": "ya"
+          }
+        },
+        {
+          "id": "option-hb-3086-for-3082",
+          "text": {
+            "surface": "ゆ",
+            "reading": "ゆ",
+            "gloss": "Hiragana sign for the basic yu reading.",
+            "romaji": "yu"
+          }
+        },
+        {
+          "id": "option-hb-3082-for-3082",
+          "text": {
+            "surface": "も",
+            "reading": "も",
+            "gloss": "Hiragana sign for the basic mo reading.",
+            "romaji": "mo"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3082-for-3082",
+      "explanation": "も is the hiragana spelling for this target. Hiragana sign for the basic mo reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3084",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ya in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3088-for-3084",
+          "text": {
+            "surface": "よ",
+            "reading": "よ",
+            "gloss": "Hiragana sign for the basic yo reading.",
+            "romaji": "yo"
+          }
+        },
+        {
+          "id": "option-hb-3084-for-3084",
+          "text": {
+            "surface": "や",
+            "reading": "や",
+            "gloss": "Hiragana sign for the basic ya reading.",
+            "romaji": "ya"
+          }
+        },
+        {
+          "id": "option-hb-3086-for-3084",
+          "text": {
+            "surface": "ゆ",
+            "reading": "ゆ",
+            "gloss": "Hiragana sign for the basic yu reading.",
+            "romaji": "yu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3084-for-3084",
+      "explanation": "や is the hiragana spelling for this target. Hiragana sign for the basic ya reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3086",
+      "prompt": "Which hiragana sign has the basic reading conventionally written yu in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3086-for-3086",
+          "text": {
+            "surface": "ゆ",
+            "reading": "ゆ",
+            "gloss": "Hiragana sign for the basic yu reading.",
+            "romaji": "yu"
+          }
+        },
+        {
+          "id": "option-hb-3088-for-3086",
+          "text": {
+            "surface": "よ",
+            "reading": "よ",
+            "gloss": "Hiragana sign for the basic yo reading.",
+            "romaji": "yo"
+          }
+        },
+        {
+          "id": "option-hb-307e-for-3086",
+          "text": {
+            "surface": "ま",
+            "reading": "ま",
+            "gloss": "Hiragana sign for the basic ma reading.",
+            "romaji": "ma"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3086-for-3086",
+      "explanation": "ゆ is the hiragana spelling for this target. Hiragana sign for the basic yu reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3088",
+      "prompt": "Which hiragana sign has the basic reading conventionally written yo in romaji?",
+      "options": [
+        {
+          "id": "option-hb-307e-for-3088",
+          "text": {
+            "surface": "ま",
+            "reading": "ま",
+            "gloss": "Hiragana sign for the basic ma reading.",
+            "romaji": "ma"
+          }
+        },
+        {
+          "id": "option-hb-307f-for-3088",
+          "text": {
+            "surface": "み",
+            "reading": "み",
+            "gloss": "Hiragana sign for the basic mi reading.",
+            "romaji": "mi"
+          }
+        },
+        {
+          "id": "option-hb-3088-for-3088",
+          "text": {
+            "surface": "よ",
+            "reading": "よ",
+            "gloss": "Hiragana sign for the basic yo reading.",
+            "romaji": "yo"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3088-for-3088",
+      "explanation": "よ is the hiragana spelling for this target. Hiragana sign for the basic yo reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    }
+  ]
+}

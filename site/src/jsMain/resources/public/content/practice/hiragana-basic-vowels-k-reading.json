@@ -1,0 +1,321 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-basic-vowels-k-reading",
+  "topicId": "kana-foundations",
+  "title": "Basic hiragana: Vowels and K row — write in kana",
+  "description": "Use Latin-letter syllable cues to recall and type the matching hiragana signs. Kana answers only; no sign is displayed in the question.",
+  "reviewItems": [
+    {
+      "id": "review-hb-reading-3042",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-3042",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana あ",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-3044",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-3044",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana い",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-3046",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-3046",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana う",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-3048",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-3048",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana え",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-304a",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-304a",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana お",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-304b",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-304b",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana か",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-304d",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-304d",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana き",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-304f",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-304f",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana く",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-3051",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-3051",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana け",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-3053",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-3053",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana こ",
+      "direction": "romaji-cue-to-kana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored F05 sign exercises and explanations; no CSV or mock curriculum reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; basic kana correspondences are linguistic facts. No third-party text, recordings, or audio used."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-3042",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "a",
+        "reading": "a",
+        "translation": "Latin-letter cue for the basic hiragana a sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "あ",
+            "reading": "あ",
+            "gloss": "Hiragana sign for the basic a reading.",
+            "romaji": "a"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue a is あ. Hiragana sign for the basic a reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-3044",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "i",
+        "reading": "i",
+        "translation": "Latin-letter cue for the basic hiragana i sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "い",
+            "reading": "い",
+            "gloss": "Hiragana sign for the basic i reading.",
+            "romaji": "i"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue i is い. Hiragana sign for the basic i reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-3046",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "u",
+        "reading": "u",
+        "translation": "Latin-letter cue for the basic hiragana u sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "う",
+            "reading": "う",
+            "gloss": "Hiragana sign for the basic u reading.",
+            "romaji": "u"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue u is う. Hiragana sign for the basic u reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-3048",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "e",
+        "reading": "e",
+        "translation": "Latin-letter cue for the basic hiragana e sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "え",
+            "reading": "え",
+            "gloss": "Hiragana sign for the basic e reading.",
+            "romaji": "e"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue e is え. Hiragana sign for the basic e reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-304a",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "o",
+        "reading": "o",
+        "translation": "Latin-letter cue for the basic hiragana o sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "お",
+            "reading": "お",
+            "gloss": "Hiragana sign for the basic o reading.",
+            "romaji": "o"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue o is お. Hiragana sign for the basic o reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-304b",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "ka",
+        "reading": "ka",
+        "translation": "Latin-letter cue for the basic hiragana ka sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "か",
+            "reading": "か",
+            "gloss": "Hiragana sign for the basic ka reading.",
+            "romaji": "ka"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue ka is か. Hiragana sign for the basic ka reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-304d",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "ki",
+        "reading": "ki",
+        "translation": "Latin-letter cue for the basic hiragana ki sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "き",
+            "reading": "き",
+            "gloss": "Hiragana sign for the basic ki reading.",
+            "romaji": "ki"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue ki is き. Hiragana sign for the basic ki reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-304f",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "ku",
+        "reading": "ku",
+        "translation": "Latin-letter cue for the basic hiragana ku sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "く",
+            "reading": "く",
+            "gloss": "Hiragana sign for the basic ku reading.",
+            "romaji": "ku"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue ku is く. Hiragana sign for the basic ku reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-3051",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "ke",
+        "reading": "ke",
+        "translation": "Latin-letter cue for the basic hiragana ke sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "け",
+            "reading": "け",
+            "gloss": "Hiragana sign for the basic ke reading.",
+            "romaji": "ke"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue ke is け. Hiragana sign for the basic ke reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-3053",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "ko",
+        "reading": "ko",
+        "translation": "Latin-letter cue for the basic hiragana ko sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "こ",
+            "reading": "こ",
+            "gloss": "Hiragana sign for the basic ko reading.",
+            "romaji": "ko"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue ko is こ. Hiragana sign for the basic ko reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    }
+  ]
+}

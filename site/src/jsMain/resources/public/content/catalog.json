@@ -1,11 +1,11 @@
 {
   "formatVersion": 1,
-  "contentVersion": 1,
+  "contentVersion": 2,
   "topics": [
     {
       "id": "kana-foundations",
-      "title": "First kana sounds",
-      "description": "A small text-only introduction to two hiragana signs and their sounds."
+      "title": "Hiragana foundations",
+      "description": "Basic hiragana sign recognition and kana spelling, plus a two-sign romaji beginner option."
     },
     {
       "id": "workplace-clarification",
@@ -25,6 +25,66 @@
       "kind": "lesson",
       "topicId": "workplace-clarification",
       "path": "lessons/confirm-meeting-time.json"
+    },
+    {
+      "id": "practice-hiragana-basic-vowels-k-recognition",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-basic-vowels-k-recognition.json"
+    },
+    {
+      "id": "practice-hiragana-basic-vowels-k-reading",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-basic-vowels-k-reading.json"
+    },
+    {
+      "id": "practice-hiragana-basic-s-t-recognition",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-basic-s-t-recognition.json"
+    },
+    {
+      "id": "practice-hiragana-basic-s-t-reading",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-basic-s-t-reading.json"
+    },
+    {
+      "id": "practice-hiragana-basic-n-h-recognition",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-basic-n-h-recognition.json"
+    },
+    {
+      "id": "practice-hiragana-basic-n-h-reading",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-basic-n-h-reading.json"
+    },
+    {
+      "id": "practice-hiragana-basic-m-y-recognition",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-basic-m-y-recognition.json"
+    },
+    {
+      "id": "practice-hiragana-basic-m-y-reading",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-basic-m-y-reading.json"
+    },
+    {
+      "id": "practice-hiragana-basic-r-w-n-recognition",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-basic-r-w-n-recognition.json"
+    },
+    {
+      "id": "practice-hiragana-basic-r-w-n-reading",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-basic-r-w-n-reading.json"
     }
   ]
 }

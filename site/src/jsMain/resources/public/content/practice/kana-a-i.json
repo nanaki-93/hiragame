@@ -1,10 +1,10 @@
 {
   "formatVersion": 1,
-  "contentVersion": 1,
+  "contentVersion": 2,
   "id": "practice-kana-a-i",
   "topicId": "kana-foundations",
-  "title": "Hear it in your head: あ and い",
-  "description": "Match two hiragana signs with their basic sounds. Read the signs aloud if useful; no audio is needed.",
+  "title": "Romaji beginner option: あ and い",
+  "description": "An optional two-sign introduction with a romaji reading answer. The new basic-sign sets use kana answers; no audio is needed.",
   "reviewItems": [
     {
       "id": "review-kana-a-choice",

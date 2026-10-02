@@ -1,0 +1,451 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-basic-n-h-recognition",
+  "topicId": "kana-foundations",
+  "title": "Basic hiragana: N and H rows — find the sign",
+  "description": "Choose the written sign from three visible kana using a basic sound or specified spelling context. 10 independent targets.",
+  "reviewItems": [
+    {
+      "id": "review-hb-recognition-306a",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-306a",
+      "skill": "Recognize basic hiragana な",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-306b",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-306b",
+      "skill": "Recognize basic hiragana に",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-306c",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-306c",
+      "skill": "Recognize basic hiragana ぬ",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-306d",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-306d",
+      "skill": "Recognize basic hiragana ね",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-306e",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-306e",
+      "skill": "Recognize basic hiragana の",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-306f",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-306f",
+      "skill": "Recognize basic hiragana は",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3072",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3072",
+      "skill": "Recognize basic hiragana ひ",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3075",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3075",
+      "skill": "Recognize basic hiragana ふ",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3078",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3078",
+      "skill": "Recognize basic hiragana へ",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-307b",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-307b",
+      "skill": "Recognize basic hiragana ほ",
+      "direction": "sound-or-context-to-sign"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored F05 sign exercises and explanations; no CSV or mock curriculum reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; basic kana correspondences are linguistic facts. No third-party text, recordings, or audio used."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-306a",
+      "prompt": "Which hiragana sign has the basic reading conventionally written na in romaji?",
+      "options": [
+        {
+          "id": "option-hb-306a-for-306a",
+          "text": {
+            "surface": "な",
+            "reading": "な",
+            "gloss": "Hiragana sign for the basic na reading.",
+            "romaji": "na"
+          }
+        },
+        {
+          "id": "option-hb-306b-for-306a",
+          "text": {
+            "surface": "に",
+            "reading": "に",
+            "gloss": "Hiragana sign for the basic ni reading.",
+            "romaji": "ni"
+          }
+        },
+        {
+          "id": "option-hb-306c-for-306a",
+          "text": {
+            "surface": "ぬ",
+            "reading": "ぬ",
+            "gloss": "Hiragana sign for the basic nu reading.",
+            "romaji": "nu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-306a-for-306a",
+      "explanation": "な is the hiragana spelling for this target. Hiragana sign for the basic na reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-306b",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ni in romaji?",
+      "options": [
+        {
+          "id": "option-hb-306c-for-306b",
+          "text": {
+            "surface": "ぬ",
+            "reading": "ぬ",
+            "gloss": "Hiragana sign for the basic nu reading.",
+            "romaji": "nu"
+          }
+        },
+        {
+          "id": "option-hb-306d-for-306b",
+          "text": {
+            "surface": "ね",
+            "reading": "ね",
+            "gloss": "Hiragana sign for the basic ne reading.",
+            "romaji": "ne"
+          }
+        },
+        {
+          "id": "option-hb-306b-for-306b",
+          "text": {
+            "surface": "に",
+            "reading": "に",
+            "gloss": "Hiragana sign for the basic ni reading.",
+            "romaji": "ni"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-306b-for-306b",
+      "explanation": "に is the hiragana spelling for this target. Hiragana sign for the basic ni reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-306c",
+      "prompt": "Which hiragana sign has the basic reading conventionally written nu in romaji?",
+      "options": [
+        {
+          "id": "option-hb-306e-for-306c",
+          "text": {
+            "surface": "の",
+            "reading": "の",
+            "gloss": "Hiragana sign for the basic no reading.",
+            "romaji": "no"
+          }
+        },
+        {
+          "id": "option-hb-306c-for-306c",
+          "text": {
+            "surface": "ぬ",
+            "reading": "ぬ",
+            "gloss": "Hiragana sign for the basic nu reading.",
+            "romaji": "nu"
+          }
+        },
+        {
+          "id": "option-hb-306d-for-306c",
+          "text": {
+            "surface": "ね",
+            "reading": "ね",
+            "gloss": "Hiragana sign for the basic ne reading.",
+            "romaji": "ne"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-306c-for-306c",
+      "explanation": "ぬ is the hiragana spelling for this target. Hiragana sign for the basic nu reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-306d",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ne in romaji?",
+      "options": [
+        {
+          "id": "option-hb-306d-for-306d",
+          "text": {
+            "surface": "ね",
+            "reading": "ね",
+            "gloss": "Hiragana sign for the basic ne reading.",
+            "romaji": "ne"
+          }
+        },
+        {
+          "id": "option-hb-306e-for-306d",
+          "text": {
+            "surface": "の",
+            "reading": "の",
+            "gloss": "Hiragana sign for the basic no reading.",
+            "romaji": "no"
+          }
+        },
+        {
+          "id": "option-hb-306f-for-306d",
+          "text": {
+            "surface": "は",
+            "reading": "は",
+            "gloss": "Hiragana sign for the topic particle は, written ha but pronounced wa in that use.",
+            "romaji": "ha"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-306d-for-306d",
+      "explanation": "ね is the hiragana spelling for this target. Hiragana sign for the basic ne reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-306e",
+      "prompt": "Which hiragana sign has the basic reading conventionally written no in romaji?",
+      "options": [
+        {
+          "id": "option-hb-306f-for-306e",
+          "text": {
+            "surface": "は",
+            "reading": "は",
+            "gloss": "Hiragana sign for the topic particle は, written ha but pronounced wa in that use.",
+            "romaji": "ha"
+          }
+        },
+        {
+          "id": "option-hb-3072-for-306e",
+          "text": {
+            "surface": "ひ",
+            "reading": "ひ",
+            "gloss": "Hiragana sign for the basic hi reading.",
+            "romaji": "hi"
+          }
+        },
+        {
+          "id": "option-hb-306e-for-306e",
+          "text": {
+            "surface": "の",
+            "reading": "の",
+            "gloss": "Hiragana sign for the basic no reading.",
+            "romaji": "no"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-306e-for-306e",
+      "explanation": "の is the hiragana spelling for this target. Hiragana sign for the basic no reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-306f",
+      "prompt": "Choose the hiragana spelling of the topic particle (pronounced /wa/ there), not the independent wa sign.",
+      "options": [
+        {
+          "id": "option-hb-306a-for-306f",
+          "text": {
+            "surface": "な",
+            "reading": "な",
+            "gloss": "Hiragana sign for the basic na reading.",
+            "romaji": "na"
+          }
+        },
+        {
+          "id": "option-hb-306f-for-306f",
+          "text": {
+            "surface": "は",
+            "reading": "は",
+            "gloss": "Hiragana sign for the topic particle は, written ha but pronounced wa in that use.",
+            "romaji": "ha"
+          }
+        },
+        {
+          "id": "option-hb-308f-for-306f",
+          "text": {
+            "surface": "わ",
+            "reading": "わ",
+            "gloss": "Hiragana sign for the basic wa reading.",
+            "romaji": "wa"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-306f-for-306f",
+      "explanation": "は is the hiragana spelling for this target. Hiragana sign for the topic particle は, written ha but pronounced wa in that use. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3072",
+      "prompt": "Which hiragana sign has the basic reading conventionally written hi in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3072-for-3072",
+          "text": {
+            "surface": "ひ",
+            "reading": "ひ",
+            "gloss": "Hiragana sign for the basic hi reading.",
+            "romaji": "hi"
+          }
+        },
+        {
+          "id": "option-hb-3075-for-3072",
+          "text": {
+            "surface": "ふ",
+            "reading": "ふ",
+            "gloss": "Hiragana sign for the basic fu reading.",
+            "romaji": "fu"
+          }
+        },
+        {
+          "id": "option-hb-3078-for-3072",
+          "text": {
+            "surface": "へ",
+            "reading": "へ",
+            "gloss": "Hiragana sign for the direction particle へ, written he but pronounced e in that use.",
+            "romaji": "he"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3072-for-3072",
+      "explanation": "ひ is the hiragana spelling for this target. Hiragana sign for the basic hi reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3075",
+      "prompt": "Which hiragana sign has the basic reading conventionally written fu in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3078-for-3075",
+          "text": {
+            "surface": "へ",
+            "reading": "へ",
+            "gloss": "Hiragana sign for the direction particle へ, written he but pronounced e in that use.",
+            "romaji": "he"
+          }
+        },
+        {
+          "id": "option-hb-307b-for-3075",
+          "text": {
+            "surface": "ほ",
+            "reading": "ほ",
+            "gloss": "Hiragana sign for the basic ho reading.",
+            "romaji": "ho"
+          }
+        },
+        {
+          "id": "option-hb-3075-for-3075",
+          "text": {
+            "surface": "ふ",
+            "reading": "ふ",
+            "gloss": "Hiragana sign for the basic fu reading.",
+            "romaji": "fu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3075-for-3075",
+      "explanation": "ふ is the hiragana spelling for this target. Hiragana sign for the basic fu reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3078",
+      "prompt": "Choose the hiragana spelling of the direction particle (pronounced /e/ there), not the independent e sign.",
+      "options": [
+        {
+          "id": "option-hb-306a-for-3078",
+          "text": {
+            "surface": "な",
+            "reading": "な",
+            "gloss": "Hiragana sign for the basic na reading.",
+            "romaji": "na"
+          }
+        },
+        {
+          "id": "option-hb-3078-for-3078",
+          "text": {
+            "surface": "へ",
+            "reading": "へ",
+            "gloss": "Hiragana sign for the direction particle へ, written he but pronounced e in that use.",
+            "romaji": "he"
+          }
+        },
+        {
+          "id": "option-hb-3048-for-3078",
+          "text": {
+            "surface": "え",
+            "reading": "え",
+            "gloss": "Hiragana sign for the basic e reading.",
+            "romaji": "e"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3078-for-3078",
+      "explanation": "へ is the hiragana spelling for this target. Hiragana sign for the direction particle へ, written he but pronounced e in that use. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-307b",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ho in romaji?",
+      "options": [
+        {
+          "id": "option-hb-307b-for-307b",
+          "text": {
+            "surface": "ほ",
+            "reading": "ほ",
+            "gloss": "Hiragana sign for the basic ho reading.",
+            "romaji": "ho"
+          }
+        },
+        {
+          "id": "option-hb-306a-for-307b",
+          "text": {
+            "surface": "な",
+            "reading": "な",
+            "gloss": "Hiragana sign for the basic na reading.",
+            "romaji": "na"
+          }
+        },
+        {
+          "id": "option-hb-306b-for-307b",
+          "text": {
+            "surface": "に",
+            "reading": "に",
+            "gloss": "Hiragana sign for the basic ni reading.",
+            "romaji": "ni"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-307b-for-307b",
+      "explanation": "ほ is the hiragana spelling for this target. Hiragana sign for the basic ho reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    }
+  ]
+}
