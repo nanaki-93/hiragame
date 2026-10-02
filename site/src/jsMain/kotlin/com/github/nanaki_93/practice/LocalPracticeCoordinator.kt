@@ -112,7 +112,12 @@ class LocalPracticeCoordinator(
                 reconcileOwner()
                 if (token != generation || disposed) return@launch
                 mutableState.value = when (result) {
-                    is CatalogLoad.Ready -> LocalPracticeState.Ready(result.content)
+                    is CatalogLoad.Ready -> when {
+                        result.content.practiceSets.isEmpty() -> LocalPracticeState.Empty(EmptyContentReason.NO_PRACTICE)
+                        result.content.practiceSets.values.none { it.exercises.isNotEmpty() } ->
+                            LocalPracticeState.Empty(EmptyContentReason.EMPTY_PRACTICE_SETS)
+                        else -> LocalPracticeState.Ready(result.content)
+                    }
                     is CatalogLoad.Empty -> LocalPracticeState.Empty(result.reason)
                 }
             } catch (e: CancellationException) {
