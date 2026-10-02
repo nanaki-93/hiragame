@@ -62,11 +62,19 @@ fun validateSave(snapshot: SaveEnvelope) {
         token(record.runToken)
         token(record.lastTransitionToken)
         require(record.exerciseIds.size in 1..SaveBounds.MAX_EXERCISES) { "Invalid practice length" }
+        require(record.exerciseTypes.size == record.exerciseIds.size) { "Invalid practice exercise types" }
         record.exerciseIds.forEach(::id)
         require(record.exerciseIds.size == record.exerciseIds.toSet().size) { "Duplicate exercise ID" }
         val resolved = record.outcomes.size
         val total = record.exerciseIds.size
         require(resolved <= total) { "Too many practice outcomes" }
+        record.outcomes.forEachIndexed { index, outcome ->
+            require(if (record.exerciseTypes[index] == CheckpointExerciseType.PRODUCTION) {
+                outcome != CompactOutcome.CORRECT && outcome != CompactOutcome.INCORRECT
+            } else {
+                outcome != CompactOutcome.SELF_MET_CRITERIA && outcome != CompactOutcome.SELF_NEEDS_PRACTICE
+            }) { "Incompatible practice outcome" }
+        }
         when (record.view) {
             CheckpointView.PROMPT -> require(record.frontier in 0 until total && resolved == record.frontier) {
                 "Invalid prompt frontier"

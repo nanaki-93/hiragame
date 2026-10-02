@@ -9,7 +9,7 @@ class ProgressUpdatesTest {
         lessonProgress = listOf(LessonProgress("lostLesson", 1, 8, LessonStage.DIALOGUE, "lostTurn")),
         practiceProgress = listOf(PracticeCheckpoint(
             "lostSet", 1, 8, "run", "transition", listOf("lostExercise"), emptyList(),
-            0, CheckpointView.PROMPT,
+            0, CheckpointView.PROMPT, exerciseTypes = listOf(CheckpointExerciseType.CHOICE),
         )),
         reviewItems = listOf(ReviewItemProgress("lostReview", "lostDocument", ReviewOutcome.AGAIN, 8,
             lastActionToken = "old")),

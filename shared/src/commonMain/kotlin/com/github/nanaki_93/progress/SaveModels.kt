@@ -94,6 +94,14 @@ enum class CompactOutcome {
     @SerialName("selfNeedsPractice") SELF_NEEDS_PRACTICE,
 }
 
+@Serializable
+enum class CheckpointExerciseType {
+    @SerialName("choice") CHOICE,
+    @SerialName("reading") READING,
+    @SerialName("completion") COMPLETION,
+    @SerialName("production") PRODUCTION,
+}
+
 /** A slot is identified by its position in exerciseIds; no responses or authored feedback. */
 @Serializable
 @SerialName("practiceCheckpoint")
@@ -109,4 +117,5 @@ data class PracticeCheckpoint(
     @SerialName("frontier") val frontier: Int,
     @SerialName("view") val view: CheckpointView,
     @SerialName("lastCompletedAtEpochMs") val lastCompletedAtEpochMs: Long? = null,
+    @SerialName("exerciseTypes") val exerciseTypes: List<CheckpointExerciseType>,
 )

@@ -64,6 +64,7 @@ sealed interface PracticeCommand {
 class PracticeSession private constructor(
     val id: Long,
     val revision: Long,
+    val setId: String,
     private val orderedPlan: List<PlannedExercise>,
     private val slots: List<PracticeOutcome?>,
     val view: SessionView,
@@ -89,7 +90,7 @@ class PracticeSession private constructor(
         if (command.sessionId != id || command.revision != revision || view == SessionView.Left) return this
         if (command is PracticeCommand.Leave) return updated(view = SessionView.Left)
         if (command is PracticeCommand.Restart) return if (command.newSessionId > id) {
-            PracticeSession(command.newSessionId, 0, orderedPlan, List(orderedPlan.size) { null }, SessionView.Prompt(0))
+            PracticeSession(command.newSessionId, 0, setId, orderedPlan, List(orderedPlan.size) { null }, SessionView.Prompt(0))
         } else this
         return when (val current = view) {
             is SessionView.Prompt -> when (command) {
@@ -148,11 +149,19 @@ class PracticeSession private constructor(
     }
 
     private fun updated(slots: List<PracticeOutcome?> = this.slots, view: SessionView): PracticeSession =
-        PracticeSession(id, revision + 1, orderedPlan, slots.toList(), view)
+        PracticeSession(id, revision + 1, setId, orderedPlan, slots.toList(), view)
 
     companion object {
-        internal fun create(id: Long, exercises: List<Exercise>): PracticeSession = PracticeSession(
-            id, 0, exercises.map { PlannedExercise(it.id, it.snapshot()) }, List(exercises.size) { null }, SessionView.Prompt(0),
+        internal fun create(id: Long, setId: String, exercises: List<Exercise>): PracticeSession = PracticeSession(
+            id, 0, setId, exercises.map { PlannedExercise(it.id, it.snapshot()) }, List(exercises.size) { null }, SessionView.Prompt(0),
+        )
+
+        /** Called only after checkpoint validation and content compatibility checks. */
+        internal fun restore(
+            id: Long, setId: String, exercises: List<Exercise>, outcomes: List<PracticeOutcome?>, view: SessionView,
+        ): PracticeSession = PracticeSession(
+            id, 0, setId, exercises.map { PlannedExercise(it.id, it.snapshot()) },
+            outcomes.map { it?.snapshot() }, view,
         )
     }
 }
@@ -213,7 +222,7 @@ fun startSession(sessionId: Long, practiceSet: PracticeSet, limit: Int = 10): Pr
     val exercises = practiceSet.exercises.toList()
     require(exercises.isNotEmpty()) { "Cannot start an empty practice set" }
     require(exercises.map { it.id }.toSet().size == exercises.size) { "Duplicate exercise IDs in practice set" }
-    return PracticeSession.create(sessionId, exercises.take(limit))
+    return PracticeSession.create(sessionId, practiceSet.id, exercises.take(limit))
 }
 
 fun reduce(state: PracticeSession, command: PracticeCommand): PracticeSession = state.transition(command)
