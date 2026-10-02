@@ -12,12 +12,14 @@ SLUGS = ("requirements-clarification", "estimates-deadlines", "incident-report",
 class CurriculumExpansionTest(unittest.TestCase):
     def test_all_nine_scenarios_have_complete_authored_learning_loops(self):
         catalog = json.loads((CONTENT / "catalog.json").read_text())
+        topics = {t["id"]: t for t in catalog["topics"]}
         entries = {e["id"]: e for e in catalog["entries"] if e["kind"] == "lesson"}
         self.assertEqual(15, len(entries))
         for index, slug in enumerate(SLUGS):
             with self.subTest(slug=slug):
                 doc = json.loads((CONTENT / entries["lesson-" + slug]["path"]).read_text())
                 self.assertEqual(13, doc["contentVersion"])
+                self.assertEqual(doc["communicationGoal"], topics[doc["topicId"]]["description"])
                 self.assertLessEqual(doc["durationMinutes"], 10)
                 self.assertEqual(6, len(doc["dialogue"]["turns"]))
                 for turn in doc["dialogue"]["turns"]:
