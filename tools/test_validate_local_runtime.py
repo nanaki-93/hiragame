@@ -27,9 +27,20 @@ class LocalRuntimeTests(unittest.TestCase):
         self.domain = self.base / 'domain'
         self.domain.mkdir()
         (self.domain / 'Session.kt').write_text('fun start() = true', encoding='utf-8')
+        self.progress = self.base / 'progress'
+        self.progress.mkdir()
+        (self.progress / 'SaveCodec.kt').write_text('fun decode() = true', encoding='utf-8')
+        self.storage = self.base / 'storage'
+        self.storage.mkdir()
+        (self.storage / 'BrowserProgressStore.kt').write_text(
+            'fun read() = window.localStorage.getItem("hiragame:state")', encoding='utf-8')
+        (self.storage / 'LegacyColorMode.kt').write_text(
+            'fun read() = window.localStorage.getItem("hiragame:colorMode")', encoding='utf-8')
+        (self.storage / 'LocalProgressOwner.kt').write_text('fun save() = true', encoding='utf-8')
 
     def errors(self):
-        return runtime.validate(self.host, self.canonical, [self.entry], [self.domain])
+        return runtime.validate(self.host, self.canonical, [self.entry],
+                                [self.pages, self.domain, self.progress, self.storage])
 
     def assert_problem(self, fragment):
         self.assertIn(fragment, '\n'.join(self.errors()))
@@ -108,6 +119,45 @@ class LocalRuntimeTests(unittest.TestCase):
         self.assert_problem('missing runtime source:')
         shutil.rmtree(self.domain)
         self.assert_problem('missing runtime source directory:')
+
+    def test_real_runtime_sources_with_fake_hosted_artifacts(self):
+        # Exercise default source lists, not only injected fake Kotlin trees.
+        self.assertEqual([], runtime.validate(self.host))
+
+    def test_progress_and_storage_boundaries(self):
+        self.assertEqual([], self.errors())  # Both isolated adapters may access localStorage.
+        for path in (self.entry, self.domain / 'Session.kt', self.progress / 'SaveCodec.kt',
+                     self.storage / 'LocalProgressOwner.kt'):
+            with self.subTest(path=path):
+                original = path.read_text(encoding='utf-8')
+                for call in ('window.localStorage.getItem("hiragame:state")',
+                             'ColorMode.saveToLocalStorage()',
+                             'window.sessionStorage.setItem("hiragame:state", "x")'):
+                    with self.subTest(call=call):
+                        path.write_text(call, encoding='utf-8')
+                        self.assert_problem('direct browser storage outside isolated adapter in')
+                path.write_text(original, encoding='utf-8')
+        nested = self.pages / 'nested'
+        nested.mkdir()
+        (nested / 'OtherPage.kt').write_text('window.localStorage.clear()', encoding='utf-8')
+        self.assert_problem('direct browser storage outside isolated adapter in')
+        (nested / 'OtherPage.kt').unlink()
+        (self.storage / 'LocalProgressOwner.kt').write_text('AuthService')
+        self.assert_problem('legacy runtime dependency in')
+        (self.storage / 'LocalProgressOwner.kt').write_text('fun save() = true')
+        (self.progress / 'SaveCodec.kt').write_text('import com.github.nanaki_93.service.GameService')
+        self.assert_problem('legacy runtime dependency in')
+
+    def test_new_source_directories_are_required(self):
+        for directory in (self.progress, self.storage):
+            with self.subTest(directory=directory):
+                renamed = directory.with_name(directory.name + '-moved')
+                directory.rename(renamed)
+                self.assert_problem(f'missing runtime source directory: {directory}')
+                renamed.rename(directory)
+        # A legacy dependency cannot hide inside a newly covered directory.
+        (self.storage / 'LocalProgressOwner.kt').write_text('val endpoint = apiUrl')
+        self.assert_problem('legacy runtime dependency in')
 
     def test_cli_missing_root_is_failure(self):
         proc = subprocess.run([sys.executable, str(runtime.REPO / 'tools/validate_local_runtime.py'),
