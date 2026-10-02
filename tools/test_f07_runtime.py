@@ -83,6 +83,38 @@ class LessonRouteTests(unittest.TestCase):
         self.assertIn('property("overflow-wrap", "anywhere")', page)
         self.assertNotIn('innerHTML', page)
 
+    def test_prompt_controls_feedback_and_transient_draft_boundary(self):
+        page = PAGE.read_text(encoding='utf-8')
+        inputs = (ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/components/widgets/JapaneseResponseInput.kt').read_text(encoding='utf-8')
+        renderer = (ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/components/widgets/JapaneseTextPresentation.kt').read_text(encoding='utf-8')
+        for control in ('ChoiceExercise', 'ReadingExercise', 'CompletionExercise', 'ProductionExercise',
+                        'JapaneseAnswerInput(', 'JapaneseResponseArea(', 'JapaneseSubmissionGuard()',
+                        'PracticeAnswer.Choice(', 'PracticeAnswer.Text(', 'PracticeAnswer.SelfAssessment(',
+                        'LessonCommand.Submit(id, revision, answer)', 'LessonCommand.Skip(id, revision)',
+                        'LessonCommand.Reveal(id, revision)', 'LessonCommand.Retry(session.id, session.revision)',
+                        'AuthoredFeedbackContent(it, preferences)', 'InvalidReason.BLANK_INPUT',
+                        'InvalidReason.UNKNOWN_CHOICE', 'InvalidReason.WRONG_ANSWER_TYPE'):
+            self.assertIn(control, page)
+        self.assertIn('key(session.id, session.stage, item.checkpointId, session.outcome != null)', page)
+        self.assertIn('key(session.id, session.stage, "objective", session.outcome != null)', page)
+        self.assertIn('var draft by remember { mutableStateOf("") }', page)
+        self.assertIn('val outcome = session.outcome\n    if (outcome == null)', page)
+        self.assertIn('visibleAids(exercise.stimulus, preferences, answerHidden = true)', page)
+        self.assertIn('visibleAids(it, preferences, answerHidden = true)', page)
+        for reveal in ('Show role-play hints', 'Show useful phrases', 'Show possible responses',
+                       'Possible response, not the only valid Japanese:', 'not automatically graded',
+                       'Choose a self-assessment before submitting.'):
+            self.assertIn(reveal, page)
+        self.assertIn('guard.canSubmit(nativeComposing)', page)
+        self.assertIn('guard.canSubmitOnEnter(', inputs)
+        self.assertIn('if (event.key == "Enter"', inputs)
+        self.assertIn('TextArea(value = draft', inputs)
+        self.assertNotIn('onKeyDown', inputs.split('internal fun JapaneseResponseArea')[1])
+        self.assertIn('JapaneseFeedbackText(feedback.stimulus, preferences)', renderer)
+        for forbidden in ('window.location.href', 'console.log', 'localStorage', 'innerHTML',
+                          'visitLesson(', 'progress.mutate('):
+            self.assertNotIn(forbidden, page)
+
     def test_entry_recovery_and_safe_exits(self):
         page = PAGE.read_text(encoding='utf-8')
         for state in ('Loading', 'Missing', 'Empty', 'Error', 'Entry', 'RecoveryRequired', 'Active'):
