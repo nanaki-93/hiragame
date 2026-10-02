@@ -6,7 +6,7 @@ The application needs no account, database, backend credentials or AI model. Kot
 
 ## Build and verify
 
-Prerequisites: JDK 21, Python 3.11+ and the checked-in Gradle wrapper. Gradle installs its pinned Node/Yarn runtime for compilation and Node tests. The initial dependency download needs Internet; the built app has no JDK requirement.
+Prerequisites: JDK 21, Python 3.11+ and the checked-in Gradle wrapper. Gradle installs its pinned Node/Yarn runtime for compilation and Node tests. The Kotlin compiler daemon has a 2 GiB heap cap for clean production builds. The initial dependency download needs Internet; the built app has no JDK requirement.
 
 From the repository root:
 
