@@ -74,11 +74,21 @@ class TopicsNavigationTests(unittest.TestCase):
                       'exercise.criteria', 'exercise.exampleResponses', 'lesson.rolePlay.task',
                       'lesson.rolePlay.criteria', 'lesson.rolePlay.hints', 'lesson.rolePlay.examples'):
             self.assertIn(field, topics)
-        self.assertIn('attr("lang", "ja")', topics)
-        self.assertIn('TagElement<HTMLElement>("ruby"', topics)
-        self.assertIn('TagElement<HTMLElement>("rt"', topics)
-        self.assertIn('Text(segment.surface)', topics)
-        self.assertIn('property("overflow-wrap", "anywhere")', topics)
+        renderer = (PAGES.parent / 'components' / 'widgets' / 'JapaneseTextPresentation.kt').read_text(encoding='utf-8')
+        self.assertIn('PreviewJapaneseText(turn.text, preferences)', topics)
+        self.assertIn('PreviewJapaneseText(phrase.text, preferences)', topics)
+        preview = renderer.split('internal fun PreviewJapaneseText(', 1)[1].split('/** Shared authored feedback', 1)[0]
+        passage = renderer.split('internal fun JapanesePassage(', 1)[1].split('/** Optional support', 1)[0]
+        self.assertIn('JapanesePassage(text, aids.ruby, practiceTypography = false)', preview)
+        self.assertIn('if (practiceTypography) classes("practice-japanese")', passage)
+        self.assertIn('JapanesePassage(text, aids.ruby)', renderer.split('internal fun JapaneseStudyText(', 1)[1])
+        self.assertIn('attr("lang", "ja")', renderer)
+        self.assertIn('TagElement<HTMLElement>("ruby"', renderer)
+        self.assertIn('TagElement<HTMLElement>("rt"', renderer)
+        self.assertIn('Text(segment.surface)', renderer)
+        self.assertIn('property("overflow-wrap", "anywhere")', renderer)
+        for forbidden in ('innerHTML', 'dangerouslySetInnerHTML'):
+            self.assertNotIn(forbidden, renderer)
         self.assertIn('Staged exercises and actual checkpoint resumption arrive with the future lesson player', topics)
         self.assertIn('The saved checkpoint is unavailable', topics)
         for forbidden in ('innerHTML', 'dangerouslySetInnerHTML', 'visitLesson(', 'completeLesson(',

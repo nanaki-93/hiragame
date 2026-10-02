@@ -17,19 +17,23 @@ import com.github.nanaki_93.content.Topic
 import com.github.nanaki_93.content.ChoiceExercise
 import com.github.nanaki_93.content.CompletionExercise
 import com.github.nanaki_93.content.Exercise
-import com.github.nanaki_93.content.JapaneseText
 import com.github.nanaki_93.content.ProductionExercise
 import com.github.nanaki_93.content.ReadingExercise
 import com.github.nanaki_93.practice.Assessment
-import com.github.nanaki_93.practice.AuthoredFeedback
 import com.github.nanaki_93.practice.PracticeOutcome
-import com.github.nanaki_93.practice.ReadingExpectedAnswer
 import com.github.nanaki_93.practice.InvalidReason
 import com.github.nanaki_93.practice.PracticeAnswer
 import com.github.nanaki_93.practice.PracticeSession
 import com.github.nanaki_93.components.styles.Styles
 import com.github.nanaki_93.components.styles.Colors
 import com.github.nanaki_93.components.widgets.PrimaryButton
+import com.github.nanaki_93.components.widgets.AuthoredFeedbackContent
+import com.github.nanaki_93.components.widgets.JapaneseAnswerInput
+import com.github.nanaki_93.components.widgets.JapaneseResponseArea
+import com.github.nanaki_93.components.widgets.JapaneseSubmissionGuard
+import com.github.nanaki_93.components.widgets.JapanesePassage
+import com.github.nanaki_93.components.widgets.JapaneseStudyText
+import com.github.nanaki_93.components.widgets.visibleAids
 import com.github.nanaki_93.components.widgets.SecondaryButton
 import com.github.nanaki_93.content.BrowserContentTextSource
 import com.github.nanaki_93.content.BundledContentLoader
@@ -86,9 +90,7 @@ import org.jetbrains.compose.web.dom.Label
 import org.jetbrains.compose.web.dom.Legend
 import org.jetbrains.compose.web.dom.TagElement
 import org.jetbrains.compose.web.dom.Span
-import org.jetbrains.compose.web.dom.TextArea
 import org.w3c.dom.HTMLElement
-import org.w3c.dom.events.Event
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.H3
@@ -723,18 +725,6 @@ internal fun replacementMessage(result: ProtectedReplacementResult): String = wh
     is ProtectedReplacementResult.InvalidReplacement -> "Replacement could not be prepared. The unreadable original remains stored."
 }
 
-/** Composition events belong to one prompt, not the save or the session reducer. */
-internal class JapaneseSubmissionGuard {
-    private var composing = false
-
-    fun compositionStarted() { composing = true }
-    fun compositionEnded() { composing = false } // Never submit here; wait for a deliberate action.
-
-    fun canSubmit(nativeComposing: Boolean) = !composing && !nativeComposing
-    fun canSubmitOnEnter(nativeComposing: Boolean, keyCode: Int, repeat: Boolean) =
-        canSubmit(nativeComposing) && keyCode != 229 && !repeat
-}
-
 /** Keep raw drafts local to the prompt. The evaluator, not the UI, judges blank and authored answers. */
 internal fun promptAnswer(
     exercise: Exercise, choiceId: String?, draft: String, assessment: Assessment?, exampleRevealed: Boolean,
@@ -808,12 +798,7 @@ private fun PracticePrompt(
         }
         is ProductionExercise -> {
             Label(attrs = { attr("for", "practice-response") }) { Text("Your response in Japanese") }
-            TextArea(value = draft, attrs = {
-                id("practice-response")
-                classes("practice-answer")
-                attr("maxlength", "1000")
-                onInput { draft = it.value }
-            })
+            JapaneseResponseArea(draft, { draft = it })
             if (!exampleRevealed) {
                 P { Text("Reveal the authored example before assessing your response. This is not automatically graded.") }
                 PrimaryButton("Reveal example and criteria", onClick = { exampleRevealed = true })
@@ -866,45 +851,6 @@ private fun PracticePrompt(
     })
 }
 
-/** The ref attaches native composition listeners to this input alone and removes them on disposal.
- * Compose's key event exposes the native IME/repeat compatibility signals. Do not preventDefault
- * while composing: Enter must remain available to the IME to commit its candidate.
- */
-@Composable
-private fun JapaneseAnswerInput(
-    draft: String, onDraft: (String) -> Unit, guard: JapaneseSubmissionGuard, submit: () -> Unit,
-) {
-    Input(type = InputType.Text, attrs = {
-        id("practice-response")
-        classes("practice-answer")
-        attr("maxlength", "200")
-        value(draft)
-        onInput {
-            if (it.nativeEvent.asDynamic().isComposing == true) guard.compositionStarted()
-            onDraft(it.value)
-        }
-        ref { input ->
-            val started: (Event) -> Unit = { guard.compositionStarted() }
-            val ended: (Event) -> Unit = { guard.compositionEnded() }
-            input.addEventListener("compositionstart", started)
-            input.addEventListener("compositionend", ended)
-            onDispose {
-                input.removeEventListener("compositionstart", started)
-                input.removeEventListener("compositionend", ended)
-            }
-        }
-        onKeyDown { event ->
-            val native = event.nativeEvent.asDynamic()
-            if (event.key == "Enter" && guard.canSubmitOnEnter(
-                    native.isComposing == true, (native.keyCode as? Int) ?: 0, native.repeat == true,
-                )) {
-                event.preventDefault()
-                submit()
-            }
-        }
-    })
-}
-
 @Composable
 private fun SessionCounts(session: PracticeSession) {
     val counts = session.counts
@@ -923,7 +869,7 @@ private fun PracticeFeedback(session: PracticeSession, index: Int, reviewing: Bo
         is CompletionExercise -> exercise.prompt
         is ProductionExercise -> exercise.prompt
     }) }
-    if (exercise is CompletionExercise) P { Span(attrs = { attr("lang", "ja"); classes("practice-japanese") }) {
+    if (exercise is CompletionExercise) P { Span(attrs = { attr("lang", "ja"); classes("practice-japanese"); style { property("overflow-wrap", "anywhere") } }) {
         Text(exercise.template.replace("{blank}", "＿＿＿"))
     } }
     P { Text(when (outcome) {
@@ -936,93 +882,5 @@ private fun PracticeFeedback(session: PracticeSession, index: Int, reviewing: Bo
             Assessment.NEEDS_PRACTICE -> "Self-assessed: needs practice (not automatically graded)"
         }
     }) }
-    when (val feedback = outcome.feedback) {
-        is AuthoredFeedback.Choice -> {
-            P { Text("Correct option:") }
-            val option = feedback.correctOption
-            val japanese = option.text
-            if (japanese != null) JapaneseFeedbackText(japanese, studyAids) else P { Text(option.label.orEmpty()) }
-            P { Text("Explanation: ${feedback.explanation}") }
-        }
-        is AuthoredFeedback.Reading -> {
-            P { Text("Reading stimulus:") }
-            JapaneseFeedbackText(feedback.stimulus, studyAids)
-            for ((number, answer) in feedback.acceptedAnswers.withIndex()) {
-                P { Text("Accepted reading ${number + 1} (${feedback.representation.name.lowercase()}):") }
-                when (answer) {
-                    is ReadingExpectedAnswer.Kana -> JapaneseFeedbackText(answer.text, studyAids)
-                    is ReadingExpectedAnswer.Romaji -> P { Text(answer.text) }
-                }
-            }
-            P { Text("Explanation: ${feedback.explanation}") }
-        }
-        is AuthoredFeedback.Completion -> {
-            for ((number, fill) in feedback.acceptedFills.withIndex()) {
-                P { Text("Accepted fill ${number + 1}:") }
-                JapaneseFeedbackText(fill, studyAids)
-            }
-            P { Text("Completed example:") }
-            JapaneseFeedbackText(feedback.completedExample, studyAids)
-            P { Text("Explanation: ${feedback.explanation}") }
-        }
-        is AuthoredFeedback.Production -> {
-            P { Text("Authored examples, not a unique correct answer:") }
-            for ((number, example) in feedback.examples.withIndex()) {
-                P { Text("${example.label} ${number + 1}:") }
-                JapaneseFeedbackText(example.text, studyAids)
-            }
-            for ((number, criterion) in feedback.criteria.withIndex()) {
-                P { Text("${criterion.label} ${number + 1}: ${criterion.text}") }
-            }
-        }
-    }
-}
-
-/** An unresolved answer-bearing stimulus or choice receives NO aids, regardless of preferences.
- * Revealed or non-answer-bearing support may instead honor the learner's settings.
- */
-internal data class VisibleAids(val ruby: Boolean, val reading: String?, val meaning: String?, val romaji: String?)
-
-internal fun visibleAids(text: JapaneseText, preferences: SavePreferences, answerHidden: Boolean): VisibleAids {
-    if (answerHidden) return VisibleAids(false, null, null, null)
-    return VisibleAids(
-        preferences.showReadings, text.reading.takeIf { preferences.showReadings },
-        (text.translation ?: text.gloss).takeIf { preferences.showTranslation },
-        text.romaji?.takeIf { preferences.showRomaji },
-    )
-}
-
-@Composable
-private fun JapaneseStudyText(text: JapaneseText, preferences: SavePreferences) {
-    val aids = visibleAids(text, preferences, answerHidden = false)
-    P { JapanesePassage(text, aids.ruby) }
-    aids.reading?.let { P { Text("Reading: $it") } }
-    aids.meaning?.let { P { Text("Meaning/gloss: $it") } }
-    aids.romaji?.let { P { Text("Authored romaji: $it") } }
-}
-
-@Composable
-private fun JapaneseFeedbackText(text: JapaneseText, preferences: SavePreferences) {
-    // Feedback is not an optional hint: always give authored reading and meaning when present.
-    P { JapanesePassage(text, showRuby = preferences.showReadings) }
-    P { Text("Reading: ${text.reading}") }
-    text.translation?.let { P { Text("Meaning: $it") } }
-    text.gloss?.let { P { Text("Gloss: $it") } }
-    text.romaji?.takeIf { preferences.showRomaji }?.let { P { Text("Authored romaji: $it") } }
-}
-
-/** Text nodes only: authored segments with readings become real ruby only when permitted. */
-@Composable
-private fun JapanesePassage(text: JapaneseText, showRuby: Boolean) {
-    Span(attrs = { attr("lang", "ja"); classes("practice-japanese"); style { property("overflow-wrap", "anywhere") } }) {
-        if (text.segments.isEmpty() || !showRuby) Text(text.surface)
-        else for (segment in text.segments) {
-            val reading = segment.reading
-            if (reading == null) Text(segment.surface)
-            else TagElement<HTMLElement>("ruby", applyAttrs = null) {
-                Text(segment.surface)
-                TagElement<HTMLElement>("rt", applyAttrs = null) { Text(reading) }
-            }
-        }
-    }
+    AuthoredFeedbackContent(outcome.feedback, studyAids)
 }

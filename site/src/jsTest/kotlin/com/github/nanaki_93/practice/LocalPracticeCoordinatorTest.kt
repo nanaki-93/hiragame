@@ -10,9 +10,9 @@ import com.github.nanaki_93.content.CompletionExercise
 import com.github.nanaki_93.content.JapaneseText
 import com.github.nanaki_93.content.ProductionExercise
 import com.github.nanaki_93.pages.promptAnswer
-import com.github.nanaki_93.pages.JapaneseSubmissionGuard
-import com.github.nanaki_93.pages.visibleAids
-import com.github.nanaki_93.pages.VisibleAids
+import com.github.nanaki_93.components.widgets.JapaneseSubmissionGuard
+import com.github.nanaki_93.components.widgets.visibleAids
+import com.github.nanaki_93.components.widgets.VisibleAids
 import com.github.nanaki_93.pages.practiceTopicGroups
 import com.github.nanaki_93.pages.saveStatusMessage
 import com.github.nanaki_93.pages.selectColorMode
@@ -321,20 +321,26 @@ class LocalPracticeCoordinatorTest {
         var root: String = js("process.cwd()") as String
         while (!(fs.existsSync(path.resolve(root, file)) as Boolean)) root = path.dirname(root) as String
         val home = fs.readFileSync(path.resolve(root, file), "utf8") as String
+        val inputFile = "site/src/jsMain/kotlin/com/github/nanaki_93/components/widgets/JapaneseResponseInput.kt"
+        val controls = fs.readFileSync(path.resolve(root, inputFile), "utf8") as String
         val prompt = home.substringAfter("private fun PracticePrompt(").substringBefore("private fun SessionCounts(")
         assertEquals(2, Regex("JapaneseAnswerInput\\(draft, \\{ draft = it \\}, submissionGuard, ::submitPrompt\\)").findAll(prompt).count())
         for (required in listOf("remember(session.id, exercise.id) { JapaneseSubmissionGuard() }",
-            "submissionGuard.canSubmit(nativeComposing)", "submitPrompt()", "guard.canSubmitOnEnter(",
+            "submissionGuard.canSubmit(nativeComposing)", "submitPrompt()")) {
+            assertTrue(required in prompt, "Missing guarded Japanese submission wiring: $required")
+        }
+        for (required in listOf("guard.canSubmitOnEnter(",
             "native.isComposing == true, (native.keyCode as? Int) ?: 0, native.repeat == true", "event.preventDefault()", "compositionstart",
             "compositionend", "removeEventListener", "onDispose", "if (event.key == \"Enter\"",
             "if (it.nativeEvent.asDynamic().isComposing == true) guard.compositionStarted()")) {
-            assertTrue(required in prompt, "Missing guarded Japanese submission wiring: $required")
+            assertTrue(required in controls, "Missing guarded Japanese input behavior: $required")
         }
-        assertTrue("guard.compositionEnded()" in prompt && "submit()" !in prompt.substringAfter("val ended: (Event)").substringBefore("onDispose"),
+        assertTrue("guard.compositionEnded()" in controls && "submit()" !in controls.substringAfter("val ended: (Event)").substringBefore("onDispose"),
             "Composition-end must never submit")
-        val textarea = prompt.substringAfter("is ProductionExercise -> {").substringBefore("if (exercise is ReadingExercise ||")
+        val textarea = controls.substringAfter("internal fun JapaneseResponseArea(")
+        assertTrue("JapaneseResponseArea(draft, { draft = it })" in prompt)
         assertTrue("TextArea(value = draft" in textarea && "onKeyDown" !in textarea)
-        assertTrue("Form(" !in prompt && "<form" !in prompt, "No unguarded form submit route")
+        assertTrue("Form(" !in prompt && "<form" !in prompt && "Form(" !in controls, "No unguarded form submit route")
         assertTrue("PracticeCommand.Submit(session.id, session.revision, answer)" in home)
     }
 
@@ -877,9 +883,9 @@ class LocalPracticeCoordinatorTest {
             assertTrue(obsolete !in home, "Home still contains $obsolete")
         }
         for (required in listOf("PracticePrompt(session, view, studyAids, send)", "promptAnswer(exercise, selectedChoice, draft, assessment, exampleRevealed)",
-            "PracticeCommand.Submit(session.id, session.revision, answer)", "InputType.Radio", "InputType.Text",
-            "TextArea(value = draft", "Legend {", "Label(attrs", "Input(type =", "attr(\"lang\", \"ja\")",
-            "TagElement<HTMLElement>(\"ruby\"", "TagElement<HTMLElement>(\"rt\"", "remember(session.id, exercise.id)")) {
+            "PracticeCommand.Submit(session.id, session.revision, answer)", "InputType.Radio",
+            "JapaneseResponseArea(draft, { draft = it })", "Legend {", "Label(attrs", "Input(type =",
+            "JapanesePassage(japanese,", "AuthoredFeedbackContent(outcome.feedback, studyAids)", "remember(session.id, exercise.id)")) {
             assertTrue(required in home, "Home missing native prompt feature $required")
         }
         val productionUi = home.substringAfter("is ProductionExercise -> {", "").substringBefore("    val validation = view.validation")
@@ -898,21 +904,36 @@ class LocalPracticeCoordinatorTest {
             "PracticeCommand.Previous(session.id, session.revision)", "PracticeCommand.Next(session.id, session.revision)",
             "PracticeCommand.Return(session.id, session.revision)", "PracticeCommand.Restart(session.id, session.revision, session.id)",
             "PracticeCommand.Leave(session.id, session.revision)", "counts.skipped", "counts.revealed", "counts.selfAssessed",
-            "is AuthoredFeedback.Choice ->", "is AuthoredFeedback.Reading ->", "is AuthoredFeedback.Completion ->",
-            "is AuthoredFeedback.Production ->", "JapaneseFeedbackText(feedback.stimulus, studyAids)", "JapaneseFeedbackText(feedback.completedExample, studyAids)",
-            "text.translation?.let", "text.gloss?.let", "Session outcomes", "typed responses are not retained", "not automatically graded")) {
+            "AuthoredFeedbackContent(outcome.feedback, studyAids)", "Session outcomes", "typed responses are not retained", "not automatically graded")) {
             assertTrue(required in home, "Home missing feedback/navigation feature $required")
         }
         val promptUi = home.substringAfter("private fun PracticePrompt(").substringBefore("private fun SessionCounts(")
-        val feedbackUi = home.substringAfter("private fun PracticeFeedback(").substringBefore("internal data class VisibleAids(")
-        val passageUi = home.substringAfter("internal data class VisibleAids(")
+        val widgetFile = "site/src/jsMain/kotlin/com/github/nanaki_93/components/widgets/JapaneseTextPresentation.kt"
+        val passageUi = fs.readFileSync(path.resolve(root, widgetFile), "utf8") as String
+        val feedbackUi = home.substringAfter("private fun PracticeFeedback(") + passageUi
+        val topicsFile = "site/src/jsMain/kotlin/com/github/nanaki_93/pages/Topics.kt"
+        val topicsUi = fs.readFileSync(path.resolve(root, topicsFile), "utf8") as String
+        assertTrue("PreviewJapaneseText(turn.text, preferences)" in topicsUi && "PreviewJapaneseText(phrase.text, preferences)" in topicsUi)
+        val previewUi = passageUi.substringAfter("internal fun PreviewJapaneseText(").substringBefore("/** Shared authored feedback")
+        val rendererUi = passageUi.substringAfter("internal fun JapanesePassage(").substringBefore("/** Optional support")
+        assertTrue("JapanesePassage(text, aids.ruby, practiceTypography = false)" in previewUi,
+            "Catalog previews must retain their original normal text size")
+        assertTrue("if (practiceTypography) classes(\"practice-japanese\")" in rendererUi,
+            "Only practice passages may opt into large practice typography")
+        assertTrue("JapanesePassage(text, aids.ruby)" in passageUi.substringAfter("internal fun JapaneseStudyText(").substringBefore("/** Feedback"),
+            "Practice support keeps its established typography")
+        for (required in listOf("is AuthoredFeedback.Choice ->", "is AuthoredFeedback.Reading ->",
+            "is AuthoredFeedback.Completion ->", "is AuthoredFeedback.Production ->",
+            "attr(\"lang\", \"ja\")", "overflow-wrap", "visibleAids(text, preferences, answerHidden = false)")) {
+            assertTrue(required in passageUi, "Missing shared Japanese rendering: $required")
+        }
         for (required in listOf("JapanesePassage(japanese, showRuby = visibleAids(japanese, studyAids, answerHidden = true).ruby)",
             "JapanesePassage(exercise.stimulus, showRuby = visibleAids(exercise.stimulus, studyAids, answerHidden = true).ruby)",
             "Answer-identifying study aids are withheld", "JapaneseStudyText(example, studyAids)")) {
             assertTrue(required in promptUi, "Unresolved prompt must not expose an aid: $required")
         }
         assertTrue("japanese.translation" !in promptUi && "stimulus.reading" !in promptUi && "stimulus.romaji" !in promptUi)
-        for (required in listOf("JapaneseFeedbackText(japanese, studyAids)", "Reading: ${'$'}{text.reading}",
+        for (required in listOf("JapaneseFeedbackText(japanese, preferences)", "Reading: ${'$'}{text.reading}",
             "Meaning: ${'$'}it", "Gloss: ${'$'}it", "text.romaji?.takeIf { preferences.showRomaji }",
             "Explanation: ${'$'}{feedback.explanation}", "Authored examples, not a unique correct answer")) {
             assertTrue(required in feedbackUi || required in passageUi, "Feedback missing $required")
@@ -920,6 +941,7 @@ class LocalPracticeCoordinatorTest {
         assertTrue("else P { Text(option.label.orEmpty()) }" in feedbackUi,
             "Label-only choices must not invent Japanese readings")
         assertTrue("if (text.segments.isEmpty() || !showRuby) Text(text.surface)" in passageUi)
+        assertTrue("if (answerHidden) return VisibleAids(false, null, null, null)" in passageUi)
         assertTrue("TagElement<HTMLElement>(\"rt\"" in passageUi && "Text(segment.surface)" in passageUi)
         val saveUi = home.substringAfter("private fun SavePreferencesSection(").substringBefore("/** Keep raw drafts")
         for (required in listOf("progress.state.collectAsState()", "H2 { Text(\"Save & preferences\") }",
