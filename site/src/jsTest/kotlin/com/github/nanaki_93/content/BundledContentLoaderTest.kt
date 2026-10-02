@@ -178,7 +178,7 @@ class BundledContentLoaderTest {
         }
     }
 
-    @Test fun duplicateIdsAcrossPracticeDocumentsAlsoRejectEmptyClassification() = runTest {
+    @Test fun duplicateIdsAcrossPracticeDocumentsRejectWholeSnapshot() = runTest {
         val secondPath = "practice/nested/two.json"
         val manifest = catalog(entry("set", "practice", practicePath) + "," +
             entry("second", "practice", secondPath))
@@ -206,6 +206,21 @@ class BundledContentLoaderTest {
         val missing = Fake(mapOf("catalog.json" to catalog(both), practicePath to practice()))
         assertTrue(failure(missing, lessonPath).message!!.contains("unable to read"))
         assertEquals(listOf("catalog.json", practicePath, lessonPath), missing.reads)
+
+        val secondLessonPath = "lessons/nested/two.json"
+        val lessonsOnly = catalog(entry("lesson", "lesson", lessonPath) + "," +
+            entry("second", "lesson", secondLessonPath))
+        for (bad in listOf("{broken", lesson(id = "second", metadata = review.replace("\"reviewed\"", "\"unreviewed\"")))) {
+            val later = Fake(mapOf("catalog.json" to lessonsOnly, lessonPath to lesson(),
+                secondLessonPath to bad))
+            failure(later, secondLessonPath)
+            assertEquals(listOf("catalog.json", lessonPath, secondLessonPath), later.reads)
+        }
+
+        val emptyPracticeThenBadLesson = fake(practiceDoc = practice(exercises = ""),
+            lessonDoc = lesson(items = item("exercise", "absent")))
+        failure(emptyPracticeThenBadLesson, lessonPath)
+        assertEquals(listOf("catalog.json", practicePath, lessonPath), emptyPracticeThenBadLesson.reads)
     }
 
     @Test fun browserSourceOnlyAddressesOwnedStaticPathsAndRejectsHttpBeforeDecoding() = runTest {
@@ -334,13 +349,31 @@ class BundledContentLoaderTest {
         }
     }
 
-    @Test fun emptyCasesAreDistinctFromMalformedContent() = runTest {
+    @Test fun onlyAnEmptyManifestIsEmpty() = runTest {
+        val empty = fake(manifest = catalog(""))
         assertEquals(EmptyContentReason.EMPTY_CATALOG,
-            assertIs<CatalogLoad.Empty>(BundledContentLoader(fake(manifest = catalog(""))).load()).reason)
-        assertEquals(EmptyContentReason.NO_PRACTICE,
-            assertIs<CatalogLoad.Empty>(BundledContentLoader(fake(manifest = catalog(entry("lesson", "lesson", lessonPath)))).load()).reason)
-        assertEquals(EmptyContentReason.EMPTY_PRACTICE_SETS,
-            assertIs<CatalogLoad.Empty>(BundledContentLoader(fake(practiceDoc = practice(exercises = ""))).load()).reason)
+            assertIs<CatalogLoad.Empty>(BundledContentLoader(empty).load()).reason)
+        assertEquals(listOf("catalog.json"), empty.reads)
+
+        val lessonOnly = fake(manifest = catalog(entry("lesson", "lesson", lessonPath)))
+        val lessonReady = assertIs<CatalogLoad.Ready>(BundledContentLoader(lessonOnly).load())
+        assertTrue(lessonReady.content.practiceSets.isEmpty())
+        assertEquals(listOf("lesson"), lessonReady.content.lessons.keys.toList())
+        assertEquals(listOf("catalog.json", lessonPath), lessonOnly.reads)
+
+        val practiceOnly = fake(manifest = catalog(entry("set", "practice", practicePath)),
+            practiceDoc = practice(exercises = ""))
+        val practiceReady = assertIs<CatalogLoad.Ready>(BundledContentLoader(practiceOnly).load())
+        assertTrue(practiceReady.content.lessons.isEmpty())
+        assertTrue(practiceReady.content.practiceSets.getValue("set").exercises.isEmpty())
+        assertEquals(listOf("catalog.json", practicePath), practiceOnly.reads)
+
+        val mixed = fake(practiceDoc = practice(exercises = ""))
+        val mixedReady = assertIs<CatalogLoad.Ready>(BundledContentLoader(mixed).load())
+        assertTrue(mixedReady.content.practiceSets.getValue("set").exercises.isEmpty())
+        assertEquals(listOf("lesson"), mixedReady.content.lessons.keys.toList())
+        assertEquals(listOf("catalog.json", practicePath, lessonPath), mixed.reads)
+
         val missing = fake(manifest = catalog(both).replace("\"topicId\":\"topic\"", "\"topicId\":\"absent\""))
         assertTrue(failure(missing, practicePath).message!!.contains("topic"))
         assertEquals(listOf("catalog.json"), missing.reads)
