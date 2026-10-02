@@ -1,5 +1,7 @@
 package com.github.nanaki_93.content
 
+import com.github.nanaki_93.content.CompletionExercise
+import com.github.nanaki_93.content.ReadingExercise
 import com.github.nanaki_93.progress.BackupCodec
 import com.github.nanaki_93.progress.BackupDecodeResult
 import com.github.nanaki_93.progress.CheckpointExerciseType
@@ -189,6 +191,7 @@ class TopicCatalogIntegrationTest {
         val seed = content.lessons.getValue(seedId)
         val turn = intro.dialogue.turns.first().id
         val exercise = intro.exercises.first().id
+        val guided = intro.exercises.first { it is ReadingExercise || it is CompletionExercise }.id
         val production = intro.exercises.filterIsInstance<ProductionExercise>().first().id
         val graphNode = seed.conversationGraph!!.nodes.first().id
         val backing = MemoryProgressBacking()
@@ -196,7 +199,8 @@ class TopicCatalogIntegrationTest {
         try {
             val cases = listOf(
                 Triple(LessonStage.DIALOGUE, turn, true), Triple(LessonStage.DIALOGUE, exercise, false),
-                Triple(LessonStage.UNDERSTANDING, exercise, true), Triple(LessonStage.GUIDED_PRACTICE, exercise, true),
+                Triple(LessonStage.UNDERSTANDING, exercise, true), Triple(LessonStage.GUIDED_PRACTICE, exercise, false),
+                Triple(LessonStage.GUIDED_PRACTICE, guided, true), Triple(LessonStage.UNDERSTANDING, guided, false),
                 Triple(LessonStage.UNDERSTANDING, turn, false), Triple(LessonStage.ROLE_PLAY, production, true),
                 Triple(LessonStage.ROLE_PLAY, exercise, false), Triple(LessonStage.SITUATION, turn, false),
                 Triple(LessonStage.SUMMARY, turn, false),
@@ -224,7 +228,7 @@ class TopicCatalogIntegrationTest {
             backing.externalChange(SaveCodec.encodeSave(saved)); progress.reloadSavedState()
             val projected = view(content, progress)
             assertEquals(starterIds[0], projected.recommendation?.lessonId) // tie: canonical order
-            assertTrue(projected.recommendation!!.reason.contains("read-only"))
+            assertTrue(projected.recommendation!!.reason.contains("browsing does not change progress"))
             assertEquals(false, projected.cards[1].status.checkpointAvailable)
             assertEquals(listOf("lesson-retired"), projected.unavailableSavedLessons.map { it.record?.lessonId })
             assertFalse(projected.unavailableSavedLessons.single().documentAvailable)
