@@ -29,6 +29,7 @@ import com.github.nanaki_93.content.BrowserContentTextSource
 import com.github.nanaki_93.content.BundledContentLoader
 import com.github.nanaki_93.content.EmptyContentReason
 import com.github.nanaki_93.practice.LocalPracticeCoordinator
+import com.github.nanaki_93.LocalProgress
 import com.github.nanaki_93.practice.LocalPracticeState
 import com.github.nanaki_93.practice.PracticeCommand
 import com.github.nanaki_93.practice.SessionView
@@ -59,7 +60,8 @@ import org.jetbrains.compose.web.dom.Text
 @Composable
 fun HomePage() {
     val scope = rememberCoroutineScope()
-    val coordinator = remember { LocalPracticeCoordinator(scope, BundledContentLoader(BrowserContentTextSource())) }
+    val progress = LocalProgress.current
+    val coordinator = remember(progress) { LocalPracticeCoordinator(scope, progress, BundledContentLoader(BrowserContentTextSource())) }
     val state by coordinator.state.collectAsState()
 
     DisposableEffect(coordinator) {
@@ -104,7 +106,7 @@ fun HomePage() {
                             SecondaryButton("Back to practice sets", onClick = { coordinator.leave(current.operationError) })
                         } else if (session == null) {
                             H2 { Text("Practice locally") }
-                            P { Text("A short session with reviewed exercises. Answers stay in this session only; reloading starts fresh.") }
+                            P { Text("A short session with reviewed exercises. Progress checkpoints are saved locally when possible; typed responses are not retained.") }
                             // One clear invitation for the seed; extra sets get their own titled actions.
                             val sets = current.availablePracticeSets.values.toList()
                             for (set in sets) {
@@ -149,7 +151,7 @@ fun HomePage() {
                                 }
                                 SessionView.Complete -> {
                                     H2 { Text("Session complete") }
-                                    P { Text("This summary is for this in-memory session only. Answers are not saved; it does not measure mastery or proficiency.") }
+                                    P { Text("This run's checkpoint is saved locally when possible. Typed responses are not retained; this summary does not measure mastery or proficiency.") }
                                     SecondaryButton("Review previous exercise", onClick = {
                                         send(PracticeCommand.Previous(session.id, session.revision))
                                     })
@@ -193,7 +195,7 @@ private fun PracticePrompt(
     var exampleRevealed by remember(session.id, exercise.id) { mutableStateOf(false) }
 
     H2 { Text("Exercise ${view.index + 1} of ${session.plan.size}") }
-    P { Text("In-memory session · ${session.counts.completed} resolved of ${session.plan.size}. Answers are not saved.") }
+    P { Text("${session.counts.completed} resolved of ${session.plan.size}. Checkpoints are saved when possible; typed responses are not retained.") }
     P { Text(when (exercise) {
         is ChoiceExercise -> exercise.prompt
         is ReadingExercise -> exercise.prompt

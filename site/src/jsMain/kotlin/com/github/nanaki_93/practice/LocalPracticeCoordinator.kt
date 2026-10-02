@@ -6,6 +6,10 @@ import com.github.nanaki_93.content.BundledContentLoader
 import com.github.nanaki_93.content.CatalogLoad
 import com.github.nanaki_93.content.EmptyContentReason
 import com.github.nanaki_93.content.ContentHttpException
+import com.github.nanaki_93.progress.ProgressUpdate
+import com.github.nanaki_93.progress.projectPracticeCheckpoint
+import com.github.nanaki_93.storage.LocalProgressOwner
+import kotlin.random.Random
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -39,14 +43,17 @@ enum class PracticeOperation { START, DISPATCH }
 /** Messages are deliberately fixed: never display untrusted exception or response text. */
 data class PracticeOperationError(val operation: PracticeOperation, val safeMessage: String, val token: Long)
 
-/** Owns one load attempt and one session. No browser globals, backend, or persistence. */
+/** Owns one load attempt and one session; only committed reducer frontiers reach the save owner. */
 class LocalPracticeCoordinator(
     private val scope: CoroutineScope,
+    private val progress: LocalProgressOwner,
     private val loadContent: suspend () -> CatalogLoad,
     private val reducer: (PracticeSession, PracticeCommand) -> PracticeSession = ::reduce,
     private val sessionFactory: (Long, com.github.nanaki_93.content.PracticeSet, Int) -> PracticeSession = ::startSession,
+    private val now: () -> Long = { kotlin.js.Date.now().toLong() },
+    private val tokenPrefix: String = "practice_${Random.nextInt().toUInt().toString(16)}_${Random.nextInt().toUInt().toString(16)}",
 ) {
-    constructor(scope: CoroutineScope, loader: BundledContentLoader) : this(scope, loader::load)
+    constructor(scope: CoroutineScope, progress: LocalProgressOwner, loader: BundledContentLoader) : this(scope, progress, loader::load)
 
     private val mutableState = MutableStateFlow<LocalPracticeState>(LocalPracticeState.Loading)
     val state: StateFlow<LocalPracticeState> = mutableState
@@ -54,6 +61,8 @@ class LocalPracticeCoordinator(
     private var loadJob: Job? = null
     private var nextSessionId = 1L
     private var nextErrorToken = 1L
+    private var nextTransition = 0L
+    private var runToken: String? = null
     private var pendingOperation: PendingOperation? = null
     private var disposed = false
 
@@ -159,6 +168,43 @@ class LocalPracticeCoordinator(
                     } else command
                     reducer(current, guarded).also {
                         if (it !== current && guarded is PracticeCommand.Restart) nextSessionId++
+                    }
+                }
+            }
+            // Reducer validation and read-only navigation may change its runtime revision but
+            // not the committed frontier. Never observe the StateFlow as a save trigger.
+            val committed = when (operation) {
+                is PendingOperation.Start -> true
+                is PendingOperation.Command -> updated !== ready.session && when (operation.command) {
+                    is PracticeCommand.Submit -> updated.view is SessionView.Feedback
+                    is PracticeCommand.Skip, is PracticeCommand.Reveal, is PracticeCommand.Retry,
+                    is PracticeCommand.Continue, is PracticeCommand.Restart -> updated.view !is SessionView.Review
+                    else -> false
+                }
+            }
+            if (committed) {
+                val set = ready.availablePracticeSets[updated.setId]
+                if (set != null) {
+                    val newRun = operation is PendingOperation.Start ||
+                        (operation is PendingOperation.Command && operation.command is PracticeCommand.Restart)
+                    if (newRun || runToken == null) runToken = "${tokenPrefix}_run_${++nextTransition}"
+                    val transitionToken = "${tokenPrefix}_transition_${++nextTransition}"
+                    // A rejected bounded mutation leaves the previous valid snapshot in the owner;
+                    // the accepted practice action still remains usable in this runtime session.
+                    val timestamp = now()
+                    progress.mutate { snapshot ->
+                        val previous = snapshot.practiceProgress.firstOrNull { it.setId == set.id }
+                        val checkpoint = projectPracticeCheckpoint(
+                            updated, set, timestamp, runToken!!, transitionToken, previous,
+                        )
+                        if (checkpoint == previous) ProgressUpdate.Unchanged(snapshot)
+                        else {
+                            val records = snapshot.practiceProgress
+                            val index = records.indexOfFirst { it.setId == set.id }
+                            ProgressUpdate.Applied(snapshot.copy(practiceProgress =
+                                if (index < 0) records + checkpoint
+                                else records.toMutableList().also { it[index] = checkpoint }))
+                        }
                     }
                 }
             }
