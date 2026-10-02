@@ -17,12 +17,21 @@ import com.github.nanaki_93.content.BrowserContentTextSource
 import com.github.nanaki_93.content.BundledContentLoader
 import com.github.nanaki_93.content.CatalogEmptyReason
 import com.github.nanaki_93.content.CatalogViewOptions
+import com.github.nanaki_93.content.Lesson
 import com.github.nanaki_93.content.LessonCard
+import com.github.nanaki_93.content.JapaneseText
+import com.github.nanaki_93.content.ChoiceExercise
+import com.github.nanaki_93.content.CompletionExercise
+import com.github.nanaki_93.content.ProductionExercise
+import com.github.nanaki_93.content.ReadingExercise
 import com.github.nanaki_93.content.LessonSavedStatus
 import com.github.nanaki_93.content.LocalCatalogCoordinator
 import com.github.nanaki_93.content.LocalCatalogState
 import com.github.nanaki_93.content.projectLessonCatalog
 import com.github.nanaki_93.progress.LessonStage
+import com.github.nanaki_93.progress.SavePreferences
+import com.github.nanaki_93.storage.LocalProgressOwner
+import com.github.nanaki_93.storage.ProgressMutationResult
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Modifier
@@ -44,7 +53,10 @@ import org.jetbrains.compose.web.dom.Legend
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Section
+import org.jetbrains.compose.web.dom.Span
+import org.jetbrains.compose.web.dom.TagElement
 import org.jetbrains.compose.web.dom.Text
+import org.w3c.dom.HTMLElement
 
 /** Browsing controls belong to this page; the app-scoped save owner remains the only progress source. */
 @Page("/topics")
@@ -58,6 +70,7 @@ fun TopicsPage() {
     var topicId by remember { mutableStateOf<String?>(null) }
     var beginnerPath by remember { mutableStateOf(false) }
     var selectedLessonId by remember { mutableStateOf<String?>(null) }
+    var supportNotice by remember { mutableStateOf<String?>(null) }
     val darkMode = ColorMode.current == ColorMode.DARK
 
     DisposableEffect(coordinator) {
@@ -101,20 +114,16 @@ fun TopicsPage() {
                         P { Text("Saving or recovery controls are on Home. Browsing here never changes lesson or review progress.") }
                         val allCards = view.topics.flatMap { it.cards }
                         if (selectedLessonId != null) {
+                            // Resolve the selected ID against the current validated snapshot, not a cached card.
+                            val lesson = current.content.lessons[selectedLessonId]
+                                ?.takeIf { it.id == selectedLessonId }
                             val card = allCards.firstOrNull { it.lessonId == selectedLessonId }
-                            Section {
-                                if (card == null) {
-                                    H2 { Text("Lesson unavailable") }
-                                    P { Text("This lesson is not in the current validated catalog. Any saved place is retained.") }
-                                } else {
-                                    H2 { Text(card.title) }
-                                    P { Text("Goal: ${card.communicationGoal}") }
-                                    P { Text(card.situation) }
-                                    P { Text(lessonProgressLabel(card.status)) }
-                                    P { Text("This catalog summary is read-only. The full lesson preview and staged exercises are separate steps; opening this summary does not change your saved place.") }
-                                }
+                            if (lesson == null || card == null) Section {
+                                H2 { Text("Lesson unavailable") }
+                                P { Text("This lesson is not in the current validated catalog. Any saved place is retained; viewing another lesson does not repair it.") }
                                 SecondaryButton("Back to catalog", onClick = { selectedLessonId = null })
-                            }
+                            } else LessonPreview(lesson, card, allCards, saved.snapshot.preferences, progress,
+                                supportNotice, onSupportNotice = { supportNotice = it }, onClose = { selectedLessonId = null; supportNotice = null })
                         } else {
                             H2 { Text("Choose a workplace situation") }
                             P { Text("Every lesson is open. Difficulty and prerequisites are suggestions, not requirements; no path or proficiency level is assigned.") }
@@ -161,7 +170,7 @@ fun TopicsPage() {
                                     H3 { Text(if (recommendation.revisit) "Revisit suggestion: ${card.title}" else "Suggested: ${card.title}") }
                                     P { Text(recommendation.reason) }
                                     P { Text("This is guidance, not an assessment or a requirement.") }
-                                    SecondaryButton("Select lesson: ${card.title}", onClick = { selectedLessonId = card.lessonId })
+                                    SecondaryButton("View lesson: ${card.title}", onClick = { selectedLessonId = card.lessonId; supportNotice = null })
                                 }
                             }
                             if (view.cards.isEmpty()) Section {
@@ -176,6 +185,7 @@ fun TopicsPage() {
                                     P { Text(group.topic.description) }
                                     for (card in matching) LessonCatalogCard(card, allCards) {
                                         selectedLessonId = card.lessonId
+                                        supportNotice = null
                                     }
                                 }
                             }
@@ -196,6 +206,136 @@ fun TopicsPage() {
     }
 }
 
+/** The same validated lesson drives every section; no exercise submission or checkpoint writes occur. */
+@Composable
+private fun LessonPreview(
+    lesson: Lesson,
+    card: LessonCard,
+    allCards: List<LessonCard>,
+    preferences: SavePreferences,
+    progress: LocalProgressOwner,
+    supportNotice: String?,
+    onSupportNotice: (String?) -> Unit,
+    onClose: () -> Unit,
+) {
+    Section(attrs = { style { property("overflow-wrap", "anywhere"); property("min-width", "0") } }) {
+        H2 { Text(lesson.title) }
+        P { Text("Read-only lesson preview. Staged exercises and actual checkpoint resumption arrive with the future lesson player; viewing this lesson does not change your saved place.") }
+        P { Text(lessonProgressLabel(card.status)) }
+        if (card.status.checkpointAvailable == false) P(attrs = { attr("role", "status") }) {
+            Text("The saved checkpoint is unavailable. Your saved place is retained; this preview cannot repair or replace it.")
+        }
+        SecondaryButton("Back to catalog", onClick = onClose)
+        H3 { Text("Situation") }
+        P { Text(lesson.situation) }
+        P { Text("Goal: ${lesson.communicationGoal}") }
+        P { Text("Recommended difficulty: ${lesson.difficulty.name.lowercase()}; about ${lesson.durationMinutes} minutes.") }
+        val prerequisites = lesson.prerequisiteLessonIds.map { id ->
+            allCards.firstOrNull { it.lessonId == id }?.title ?: id
+        }
+        P { Text("Suggested prerequisites (not required): ${prerequisites.joinToString().ifEmpty { "none" }}.") }
+
+        Fieldset {
+            Legend { Text("Study aids") }
+            P { Text("Optional support for this preview. These choices use your local preferences; if saving fails, content stays available. Recovery and backup controls are on Home.") }
+            for ((aid, label, enabled) in listOf(
+                Triple(StudyAid.READINGS, "Show readings", preferences.showReadings),
+                Triple(StudyAid.TRANSLATION, "Show translations", preferences.showTranslation),
+                Triple(StudyAid.ROMAJI, "Show authored romaji", preferences.showRomaji),
+            )) {
+                Label(attrs = { classes("save-mode-choice") }) {
+                    Input(type = InputType.Checkbox, attrs = {
+                        checked(enabled)
+                        onChange {
+                            onSupportNotice(when (selectStudyAid(progress, aid, it.value)) {
+                                is ProgressMutationResult.Rejected -> "That support change was not applied. See the save status above and Home for recovery."
+                                else -> null // The owner publishes accepted memory-only and saved status.
+                            })
+                        }
+                    })
+                    Text(label)
+                }
+            }
+        }
+        supportNotice?.let { P(attrs = { attr("role", "status") }) { Text(it) } }
+
+        H3 { Text("Dialogue") }
+        for (turn in lesson.dialogue.turns) {
+            val speaker = lesson.dialogue.speakers.firstOrNull { it.id == turn.speakerId }
+            CatalogCard {
+                P { Text("${speaker?.name ?: turn.speakerId} · ${speaker?.role ?: "Speaker"}") }
+                PreviewJapaneseText(turn.text, preferences)
+            }
+        }
+        H3 { Text("Useful phrases") }
+        for (phrase in lesson.phrases) CatalogCard {
+            PreviewJapaneseText(phrase.text, preferences)
+            P { Text("Use: ${phrase.usage}") }
+            P { Text("Register: ${phrase.register}") }
+        }
+        H3 { Text("Grammar") }
+        for (note in lesson.grammarNotes) CatalogCard {
+            P { Text(note.explanation) }
+            note.examples.forEach { PreviewJapaneseText(it, preferences) }
+        }
+        H3 { Text("Guided exercises · preview only") }
+        P { Text("These prompts are for orientation, not playable exercises. No answers are graded or saved here.") }
+        for (exercise in lesson.exercises) CatalogCard {
+            val type = when (exercise) {
+                is ChoiceExercise -> "Choose a response"
+                is CompletionExercise -> "Complete a phrase"
+                is ReadingExercise -> "Read a phrase"
+                is ProductionExercise -> "Self-assessed response"
+            }
+            val prompt = when (exercise) {
+                is ChoiceExercise -> exercise.prompt
+                is CompletionExercise -> exercise.prompt
+                is ReadingExercise -> exercise.prompt
+                is ProductionExercise -> exercise.prompt
+            }
+            P { Text("$type: $prompt") }
+            if (exercise is ProductionExercise) {
+                P { Text("Self-assessment criteria (examples are not the only valid responses):") }
+                exercise.criteria.forEach { P { Text("• $it") } }
+                exercise.exampleResponses.forEach { PreviewJapaneseText(it, preferences) }
+            }
+        }
+        H3 { Text("Role-play · preview only") }
+        P { Text(lesson.rolePlay.task) }
+        P { Text("Self-assessment criteria:") }
+        lesson.rolePlay.criteria.forEach { P { Text("• $it") } }
+        if (lesson.rolePlay.hints.isNotEmpty()) P { Text("Hints and phrase support:") }
+        lesson.rolePlay.hints.forEach { P { Text("• $it") } }
+        if (lesson.rolePlay.examples.isNotEmpty()) P { Text("Example responses (not the only valid responses):") }
+        lesson.rolePlay.examples.forEach { PreviewJapaneseText(it, preferences) }
+        SecondaryButton("Back to catalog", onClick = onClose)
+    }
+}
+
+/** Only authored segments become ruby; all lesson and saved strings remain escaped text nodes. */
+@Composable
+private fun PreviewJapaneseText(text: JapaneseText, preferences: SavePreferences) {
+    val aids = visibleAids(text, preferences, answerHidden = false)
+    P(attrs = { style { property("overflow-wrap", "anywhere"); property("min-width", "0") } }) {
+        Span(attrs = { attr("lang", "ja"); style { property("overflow-wrap", "anywhere") } }) {
+            if (!aids.ruby || text.segments.isEmpty()) Text(text.surface)
+            else for (segment in text.segments) {
+                val reading = segment.reading
+                if (reading == null) Text(segment.surface)
+                else TagElement<HTMLElement>("ruby", applyAttrs = null) {
+                    Text(segment.surface)
+                    TagElement<HTMLElement>("rt", applyAttrs = null) { Text(reading) }
+                }
+            }
+        }
+    }
+    aids.reading?.let { P { Text("Reading: $it") } }
+    aids.meaning?.let { P { Text("Meaning: $it") } }
+    aids.romaji?.let { P { Text("Authored romaji: $it") } }
+    text.context?.let { P { Text("Context: $it") } }
+    text.register?.let { P { Text("Register: $it") } }
+}
+
 @Composable
 private fun LessonCatalogCard(card: LessonCard, allCards: List<LessonCard>, onSelect: () -> Unit) {
     CatalogCard {
@@ -213,7 +353,7 @@ private fun LessonCatalogCard(card: LessonCard, allCards: List<LessonCard>, onSe
             false -> "unavailable; saved place retained"
             null -> "none"
         }}.") }
-        PrimaryButton("Select lesson: ${card.title}", onClick = onSelect)
+        PrimaryButton("View lesson: ${card.title}", onClick = onSelect)
     }
 }
 
