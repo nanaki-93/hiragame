@@ -1,0 +1,236 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-voiced-p-recognition",
+  "topicId": "katakana-foundations",
+  "title": "Semi-voiced katakana: P row — find the sign",
+  "description": "Identify the written voiced or semi-voiced katakana from spelling cues; same-sound signs specify their base.",
+  "reviewItems": [
+    {
+      "id": "review-kv-recognition-30d1",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30d1",
+      "skill": "Recognize semi-voiced katakana パ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kv-recognition-30d4",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30d4",
+      "skill": "Recognize semi-voiced katakana ピ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kv-recognition-30d7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30d7",
+      "skill": "Recognize semi-voiced katakana プ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kv-recognition-30da",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30da",
+      "skill": "Recognize semi-voiced katakana ペ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kv-recognition-30dd",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30dd",
+      "skill": "Recognize semi-voiced katakana ポ",
+      "direction": "spelling-cue-to-sign"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independent agent-authored voiced and semi-voiced katakana sign cues and feedback; no legacy CSV or mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; katakana correspondences are linguistic facts. No third-party work or audio used."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30d1",
+      "prompt": "Which katakana sign matches the conventional pa spelling cue?",
+      "options": [
+        {
+          "id": "option-kv-30d1-for-30d1",
+          "text": {
+            "surface": "パ",
+            "reading": "パ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pa.",
+            "romaji": "pa"
+          }
+        },
+        {
+          "id": "option-kv-30d4-for-30d1",
+          "text": {
+            "surface": "ピ",
+            "reading": "ピ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pi.",
+            "romaji": "pi"
+          }
+        },
+        {
+          "id": "option-kv-30d7-for-30d1",
+          "text": {
+            "surface": "プ",
+            "reading": "プ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pu.",
+            "romaji": "pu"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30d1-for-30d1",
+      "explanation": "The written target is パ. Katakana semi-voiced sign conventionally cued as pa. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30d4",
+      "prompt": "Which katakana sign matches the conventional pi spelling cue?",
+      "options": [
+        {
+          "id": "option-kv-30d4-for-30d4",
+          "text": {
+            "surface": "ピ",
+            "reading": "ピ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pi.",
+            "romaji": "pi"
+          }
+        },
+        {
+          "id": "option-kv-30d7-for-30d4",
+          "text": {
+            "surface": "プ",
+            "reading": "プ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pu.",
+            "romaji": "pu"
+          }
+        },
+        {
+          "id": "option-kv-30da-for-30d4",
+          "text": {
+            "surface": "ペ",
+            "reading": "ペ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pe.",
+            "romaji": "pe"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30d4-for-30d4",
+      "explanation": "The written target is ピ. Katakana semi-voiced sign conventionally cued as pi. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30d7",
+      "prompt": "Which katakana sign matches the conventional pu spelling cue?",
+      "options": [
+        {
+          "id": "option-kv-30d7-for-30d7",
+          "text": {
+            "surface": "プ",
+            "reading": "プ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pu.",
+            "romaji": "pu"
+          }
+        },
+        {
+          "id": "option-kv-30da-for-30d7",
+          "text": {
+            "surface": "ペ",
+            "reading": "ペ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pe.",
+            "romaji": "pe"
+          }
+        },
+        {
+          "id": "option-kv-30dd-for-30d7",
+          "text": {
+            "surface": "ポ",
+            "reading": "ポ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as po.",
+            "romaji": "po"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30d7-for-30d7",
+      "explanation": "The written target is プ. Katakana semi-voiced sign conventionally cued as pu. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30da",
+      "prompt": "Which katakana sign matches the conventional pe spelling cue?",
+      "options": [
+        {
+          "id": "option-kv-30da-for-30da",
+          "text": {
+            "surface": "ペ",
+            "reading": "ペ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pe.",
+            "romaji": "pe"
+          }
+        },
+        {
+          "id": "option-kv-30dd-for-30da",
+          "text": {
+            "surface": "ポ",
+            "reading": "ポ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as po.",
+            "romaji": "po"
+          }
+        },
+        {
+          "id": "option-kv-30d1-for-30da",
+          "text": {
+            "surface": "パ",
+            "reading": "パ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pa.",
+            "romaji": "pa"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30da-for-30da",
+      "explanation": "The written target is ペ. Katakana semi-voiced sign conventionally cued as pe. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30dd",
+      "prompt": "Which katakana sign matches the conventional po spelling cue?",
+      "options": [
+        {
+          "id": "option-kv-30dd-for-30dd",
+          "text": {
+            "surface": "ポ",
+            "reading": "ポ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as po.",
+            "romaji": "po"
+          }
+        },
+        {
+          "id": "option-kv-30d1-for-30dd",
+          "text": {
+            "surface": "パ",
+            "reading": "パ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pa.",
+            "romaji": "pa"
+          }
+        },
+        {
+          "id": "option-kv-30d4-for-30dd",
+          "text": {
+            "surface": "ピ",
+            "reading": "ピ",
+            "gloss": "Katakana semi-voiced sign conventionally cued as pi.",
+            "romaji": "pi"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30dd-for-30dd",
+      "explanation": "The written target is ポ. Katakana semi-voiced sign conventionally cued as po. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    }
+  ]
+}

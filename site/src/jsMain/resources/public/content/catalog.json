@@ -10,7 +10,7 @@
     {
       "id": "katakana-foundations",
       "title": "Katakana foundations",
-      "description": "Basic katakana recognition and typed-kana spelling in bounded sets."
+      "description": "Basic, voiced and semi-voiced katakana recognition and typed-kana spelling in bounded sets."
     },
     {
       "id": "workplace-clarification",
@@ -246,6 +246,42 @@
       "kind": "practice",
       "topicId": "katakana-foundations",
       "path": "practice/katakana-basic-r-w-n-reading.json"
+    },
+    {
+      "id": "practice-katakana-voiced-g-z-recognition",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-voiced-g-z-recognition.json"
+    },
+    {
+      "id": "practice-katakana-voiced-g-z-reading",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-voiced-g-z-reading.json"
+    },
+    {
+      "id": "practice-katakana-voiced-d-b-recognition",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-voiced-d-b-recognition.json"
+    },
+    {
+      "id": "practice-katakana-voiced-d-b-reading",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-voiced-d-b-reading.json"
+    },
+    {
+      "id": "practice-katakana-voiced-p-recognition",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-voiced-p-recognition.json"
+    },
+    {
+      "id": "practice-katakana-voiced-p-reading",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-voiced-p-reading.json"
     }
   ]
 }

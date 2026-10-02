@@ -1,5 +1,6 @@
 """Focused checks of the checked-in F05 curriculum (not a generated fixture copy)."""
 import json
+import re
 import unicodedata
 import unittest
 from pathlib import Path
@@ -260,6 +261,134 @@ class FoundationalContentTests(unittest.TestCase):
         self.assertEqual(50, len(exercise_ids))
         self.assertEqual(50, len(review_ids))
         self.assertEqual(75, len(option_ids))
+
+    def test_katakana_voiced_coverage(self):
+        catalog = read(CONTENT / 'catalog.json')
+        self.assertEqual((1, 2), (catalog['formatVersion'], catalog['contentVersion']))
+        self.assertIn('katakana-foundations', {t['id'] for t in catalog['topics']})
+        entries = [e for e in catalog['entries'] if e['id'].startswith('practice-katakana-voiced-')]
+        self.assertEqual(6, len(entries))
+        self.assertEqual(6, len({e['id'] for e in entries}))
+        self.assertEqual(6, len({e['path'] for e in entries}))
+        rows = {slug: (''.join(chr(ord(s) + 96) for s in signs), cues)
+                for slug, (signs, cues) in VOICED_ROWS.items()}
+        expected = {s: cue for signs, cues in rows.values() for s, cue in zip(signs, cues.split())}
+        self.assertEqual(25, len(expected))
+        self.assertEqual(20, len(set(expected) - set('パピプペポ')))
+        base = {'ジ': 'shi', 'ヂ': 'chi', 'ズ': 'su', 'ヅ': 'tsu'}
+        twin = {'ジ': 'ヂ', 'ヂ': 'ジ', 'ズ': 'ヅ', 'ヅ': 'ズ'}
+        targets = {'recognition': {}, 'reading': {}}
+        exercise_ids, review_ids, option_ids = set(), set(), set()
+        note = (NOTES / 'f05-foundations.md').read_text(encoding='utf-8')
+        for slug, (signs, _) in rows.items():
+            for mode in targets:
+                doc_id = f'practice-katakana-voiced-{slug}-{mode}'
+                entry = next(e for e in entries if e['id'] == doc_id)
+                self.assertEqual(('practice', 'katakana-foundations',
+                                  f'practice/katakana-voiced-{slug}-{mode}.json'),
+                                 (entry['kind'], entry['topicId'], entry['path']))
+                doc = read(CONTENT / entry['path'])
+                title = ('Semi-voiced' if slug == 'p' else 'Voiced') + ' katakana: ' + {
+                    'g-z': 'G and Z rows', 'd-b': 'D and B rows', 'p': 'P row'
+                }[slug] + (' — find the sign' if mode == 'recognition' else ' — write in kana')
+                self.assertEqual((1, 2, doc_id, entry['topicId'], title),
+                                 (doc['formatVersion'], doc['contentVersion'], doc['id'],
+                                  doc['topicId'], doc['title']))
+                self.assertTrue(doc['description'].strip())
+                self.assertEqual(len(signs), len(doc['exercises']))
+                self.assertTrue(1 <= len(doc['exercises']) <= 10)
+                review = doc['review']
+                self.assertEqual(('reviewed', 'agent', '2026-10-02', 'publishable', 'f05-foundations.md'),
+                                 (review['status'], review['reviewerType'], review['reviewDate'],
+                                  review['rights'], review['reviewNote']))
+                self.assertIn('Original agent-authored', review['rightsBasis'])
+                self.assertIn(f'Scope: document `{doc_id}`', note)
+                heading = f'## {title}\n'
+                self.assertEqual(1, note.count(heading))
+                section = note.split(heading, 1)[1].split('\n## ', 1)[0]
+                location = f'{entry["path"]}:$ ({doc_id})'
+                validator.validate(doc, validator.PRACTICE, location)
+                validator.local(doc, location)
+                validator.references(doc, location)
+                validator.review_document(doc, location, NOTES)
+                items = {item['targetId']: item for item in doc['reviewItems']}
+                self.assertEqual(len(doc['exercises']), len(items))
+                self.assertEqual({ex['id'] for ex in doc['exercises']}, set(items))
+                self.assertEqual({ex['id'] for ex in doc['exercises']},
+                                 set(re.findall(r'^\| `(exercise-kv-[^`]+)`', section, re.MULTILINE)))
+                for ex in doc['exercises']:
+                    sign = chr(int(ex['id'].rsplit('-', 1)[1], 16))
+                    self.assertIn(sign, signs)
+                    self.assertEqual(f'exercise-kv-{mode}-{ord(sign):04x}', ex['id'])
+                    self.assertNotIn(sign, targets[mode], f'duplicate target {mode} {sign}')
+                    targets[mode][sign] = (doc_id, ex['id'])
+                    self.assertNotIn(ex['id'], exercise_ids)
+                    exercise_ids.add(ex['id'])
+                    item = items[ex['id']]
+                    self.assertEqual(('exercise', ex['id'], f'review-kv-{mode}-{ord(sign):04x}'),
+                                     (item['targetKind'], item['targetId'], item['id']))
+                    self.assertIn(sign, item['skill'])
+                    self.assertNotIn(item['id'], review_ids)
+                    review_ids.add(item['id'])
+                    # Check the row's actual target script, not just ID presence in the note.
+                    mapped = [line for line in section.splitlines()
+                              if line.startswith(f'| `{ex["id"]}`,')]
+                    self.assertEqual(1, len(mapped), f'{doc_id}: {ex["id"]} review row')
+                    row = mapped[0]
+                    self.assertIn(f'`{item["id"]}`', row)
+                    self.assertIn(f'| {sign} / {expected[sign]}:', row,
+                                  f'{doc_id}: {ex["id"]} maps to the wrong sign or cue')
+                    self.assertIn('Katakana', row)
+                    self.assertNotIn('Hiragana', row)
+                    # A prose mention of the corresponding hiragana is also a bad mapping.
+                    self.assertFalse(set(row) & {chr(ord(kana) - 96) for kana in expected},
+                                     f'{doc_id}: hiragana used in katakana review row {ex["id"]}')
+                    if sign in twin:
+                        self.assertIn(f'distinguish {twin[sign]} in writing', row)
+                    self.assertTrue(ex['prompt'].strip() and ex['explanation'].strip())
+                    if mode == 'recognition':
+                        self.assertEqual(('choice', 'spelling-cue-to-sign'),
+                                         (ex['type'], item['direction']))
+                        self.assertEqual(3, len(ex['options']))
+                        self.assertEqual(3, len({o['text']['surface'] for o in ex['options']}))
+                        correct = next(o for o in ex['options'] if o['id'] == ex['correctOptionId'])
+                        self.assertEqual(sign, correct['text']['surface'])
+                        for option in ex['options']:
+                            self.assertNotIn(option['id'], option_ids)
+                            option_ids.add(option['id'])
+                            self.assertIn(f'`{option["id"]}`', row)
+                            self.assertEqual(option['text']['surface'], option['text']['reading'])
+                            self.assertIn(option['text']['surface'], expected)
+                        if sign in base:
+                            self.assertIn(twin[sign], {o['text']['surface'] for o in ex['options']})
+                            self.assertIn(base[sign], ex['prompt'])
+                            self.assertIn('spelling', ex['prompt'])
+                        else:
+                            self.assertIn(expected[sign], ex['prompt'])
+                    else:
+                        self.assertEqual(('reading', 'kana', 'latin-and-base-cue-to-katakana'),
+                                         (ex['type'], ex['answerRepresentation'], item['direction']))
+                        stimulus = ex['stimulus']
+                        self.assertEqual(stimulus['surface'], stimulus['reading'])
+                        self.assertTrue(stimulus['surface'].startswith(expected[sign]))
+                        self.assertTrue(stimulus['translation'].strip())
+                        self.assertNotIn(sign, ex['prompt'] + json.dumps(stimulus, ensure_ascii=False))
+                        self.assertNotIn('romaji', stimulus)
+                        if sign in base:
+                            self.assertIn(base[sign], stimulus['surface'])
+                        self.assertEqual(['kana'], [a['type'] for a in ex['acceptedAnswers']])
+                        self.assertEqual([sign], [a['text']['surface'] for a in ex['acceptedAnswers']])
+                        self.assertEqual(sign, ex['acceptedAnswers'][0]['text']['reading'])
+                        self.assertEqual(expected[sign], ex['acceptedAnswers'][0]['text']['romaji'])
+                        if sign in twin:
+                            self.assertNotEqual(unicodedata.normalize('NFC', sign),
+                                                unicodedata.normalize('NFC', twin[sign]))
+        for mode in targets:
+            self.assertEqual(set(expected), set(targets[mode]))
+            self.assertEqual(25, len(targets[mode]))
+        self.assertEqual((50, 50, 75), (len(exercise_ids), len(review_ids), len(option_ids)))
+        self.assertIn('practice-katakana-basic-vowels-k-reading', {e['id'] for e in catalog['entries']})
+        self.assertIn('practice-hiragana-voiced-g-z-reading', {e['id'] for e in catalog['entries']})
 
     def test_hiragana_contracted_coverage(self):
         catalog = read(CONTENT / 'catalog.json')

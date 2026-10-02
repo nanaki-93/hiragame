@@ -1,0 +1,451 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-voiced-d-b-recognition",
+  "topicId": "katakana-foundations",
+  "title": "Voiced katakana: D and B rows — find the sign",
+  "description": "Identify the written voiced or semi-voiced katakana from spelling cues; same-sound signs specify their base.",
+  "reviewItems": [
+    {
+      "id": "review-kv-recognition-30c0",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30c0",
+      "skill": "Recognize voiced katakana ダ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kv-recognition-30c2",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30c2",
+      "skill": "Recognize voiced katakana ヂ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kv-recognition-30c5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30c5",
+      "skill": "Recognize voiced katakana ヅ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kv-recognition-30c7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30c7",
+      "skill": "Recognize voiced katakana デ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kv-recognition-30c9",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30c9",
+      "skill": "Recognize voiced katakana ド",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kv-recognition-30d0",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30d0",
+      "skill": "Recognize voiced katakana バ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kv-recognition-30d3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30d3",
+      "skill": "Recognize voiced katakana ビ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kv-recognition-30d6",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30d6",
+      "skill": "Recognize voiced katakana ブ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kv-recognition-30d9",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30d9",
+      "skill": "Recognize voiced katakana ベ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kv-recognition-30dc",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-recognition-30dc",
+      "skill": "Recognize voiced katakana ボ",
+      "direction": "spelling-cue-to-sign"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independent agent-authored voiced and semi-voiced katakana sign cues and feedback; no legacy CSV or mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; katakana correspondences are linguistic facts. No third-party work or audio used."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30c0",
+      "prompt": "Which katakana sign matches the conventional da spelling cue?",
+      "options": [
+        {
+          "id": "option-kv-30c0-for-30c0",
+          "text": {
+            "surface": "ダ",
+            "reading": "ダ",
+            "gloss": "Katakana voiced sign conventionally cued as da.",
+            "romaji": "da"
+          }
+        },
+        {
+          "id": "option-kv-30c2-for-30c0",
+          "text": {
+            "surface": "ヂ",
+            "reading": "ヂ",
+            "gloss": "Katakana ヂ is the voiced spelling of チ (the chi base sign); sound alone does not fix its spelling.",
+            "romaji": "di"
+          }
+        },
+        {
+          "id": "option-kv-30c5-for-30c0",
+          "text": {
+            "surface": "ヅ",
+            "reading": "ヅ",
+            "gloss": "Katakana ヅ is the voiced spelling of ツ (the tsu base sign); sound alone does not fix its spelling.",
+            "romaji": "du"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30c0-for-30c0",
+      "explanation": "The written target is ダ. Katakana voiced sign conventionally cued as da. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30c2",
+      "prompt": "Which katakana is the voiced spelling of the chi base sign? Choose by written base, not sound alone.",
+      "options": [
+        {
+          "id": "option-kv-30c2-for-30c2",
+          "text": {
+            "surface": "ヂ",
+            "reading": "ヂ",
+            "gloss": "Katakana ヂ is the voiced spelling of チ (the chi base sign); sound alone does not fix its spelling.",
+            "romaji": "di"
+          }
+        },
+        {
+          "id": "option-kv-30b8-for-30c2",
+          "text": {
+            "surface": "ジ",
+            "reading": "ジ",
+            "gloss": "Katakana ジ is the voiced spelling of シ (the shi base sign); sound alone does not fix its spelling.",
+            "romaji": "ji"
+          }
+        },
+        {
+          "id": "option-kv-30c5-for-30c2",
+          "text": {
+            "surface": "ヅ",
+            "reading": "ヅ",
+            "gloss": "Katakana ヅ is the voiced spelling of ツ (the tsu base sign); sound alone does not fix its spelling.",
+            "romaji": "du"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30c2-for-30c2",
+      "explanation": "The written target is ヂ. Katakana ヂ is the voiced spelling of チ (the chi base sign); sound alone does not fix its spelling. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30c5",
+      "prompt": "Which katakana is the voiced spelling of the tsu base sign? Choose by written base, not sound alone.",
+      "options": [
+        {
+          "id": "option-kv-30c5-for-30c5",
+          "text": {
+            "surface": "ヅ",
+            "reading": "ヅ",
+            "gloss": "Katakana ヅ is the voiced spelling of ツ (the tsu base sign); sound alone does not fix its spelling.",
+            "romaji": "du"
+          }
+        },
+        {
+          "id": "option-kv-30ba-for-30c5",
+          "text": {
+            "surface": "ズ",
+            "reading": "ズ",
+            "gloss": "Katakana ズ is the voiced spelling of ス (the su base sign); sound alone does not fix its spelling.",
+            "romaji": "zu"
+          }
+        },
+        {
+          "id": "option-kv-30c7-for-30c5",
+          "text": {
+            "surface": "デ",
+            "reading": "デ",
+            "gloss": "Katakana voiced sign conventionally cued as de.",
+            "romaji": "de"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30c5-for-30c5",
+      "explanation": "The written target is ヅ. Katakana ヅ is the voiced spelling of ツ (the tsu base sign); sound alone does not fix its spelling. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30c7",
+      "prompt": "Which katakana sign matches the conventional de spelling cue?",
+      "options": [
+        {
+          "id": "option-kv-30c7-for-30c7",
+          "text": {
+            "surface": "デ",
+            "reading": "デ",
+            "gloss": "Katakana voiced sign conventionally cued as de.",
+            "romaji": "de"
+          }
+        },
+        {
+          "id": "option-kv-30c9-for-30c7",
+          "text": {
+            "surface": "ド",
+            "reading": "ド",
+            "gloss": "Katakana voiced sign conventionally cued as do.",
+            "romaji": "do"
+          }
+        },
+        {
+          "id": "option-kv-30d0-for-30c7",
+          "text": {
+            "surface": "バ",
+            "reading": "バ",
+            "gloss": "Katakana voiced sign conventionally cued as ba.",
+            "romaji": "ba"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30c7-for-30c7",
+      "explanation": "The written target is デ. Katakana voiced sign conventionally cued as de. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30c9",
+      "prompt": "Which katakana sign matches the conventional do spelling cue?",
+      "options": [
+        {
+          "id": "option-kv-30c9-for-30c9",
+          "text": {
+            "surface": "ド",
+            "reading": "ド",
+            "gloss": "Katakana voiced sign conventionally cued as do.",
+            "romaji": "do"
+          }
+        },
+        {
+          "id": "option-kv-30d0-for-30c9",
+          "text": {
+            "surface": "バ",
+            "reading": "バ",
+            "gloss": "Katakana voiced sign conventionally cued as ba.",
+            "romaji": "ba"
+          }
+        },
+        {
+          "id": "option-kv-30d3-for-30c9",
+          "text": {
+            "surface": "ビ",
+            "reading": "ビ",
+            "gloss": "Katakana voiced sign conventionally cued as bi.",
+            "romaji": "bi"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30c9-for-30c9",
+      "explanation": "The written target is ド. Katakana voiced sign conventionally cued as do. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30d0",
+      "prompt": "Which katakana sign matches the conventional ba spelling cue?",
+      "options": [
+        {
+          "id": "option-kv-30d0-for-30d0",
+          "text": {
+            "surface": "バ",
+            "reading": "バ",
+            "gloss": "Katakana voiced sign conventionally cued as ba.",
+            "romaji": "ba"
+          }
+        },
+        {
+          "id": "option-kv-30d3-for-30d0",
+          "text": {
+            "surface": "ビ",
+            "reading": "ビ",
+            "gloss": "Katakana voiced sign conventionally cued as bi.",
+            "romaji": "bi"
+          }
+        },
+        {
+          "id": "option-kv-30d6-for-30d0",
+          "text": {
+            "surface": "ブ",
+            "reading": "ブ",
+            "gloss": "Katakana voiced sign conventionally cued as bu.",
+            "romaji": "bu"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30d0-for-30d0",
+      "explanation": "The written target is バ. Katakana voiced sign conventionally cued as ba. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30d3",
+      "prompt": "Which katakana sign matches the conventional bi spelling cue?",
+      "options": [
+        {
+          "id": "option-kv-30d3-for-30d3",
+          "text": {
+            "surface": "ビ",
+            "reading": "ビ",
+            "gloss": "Katakana voiced sign conventionally cued as bi.",
+            "romaji": "bi"
+          }
+        },
+        {
+          "id": "option-kv-30d6-for-30d3",
+          "text": {
+            "surface": "ブ",
+            "reading": "ブ",
+            "gloss": "Katakana voiced sign conventionally cued as bu.",
+            "romaji": "bu"
+          }
+        },
+        {
+          "id": "option-kv-30d9-for-30d3",
+          "text": {
+            "surface": "ベ",
+            "reading": "ベ",
+            "gloss": "Katakana voiced sign conventionally cued as be.",
+            "romaji": "be"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30d3-for-30d3",
+      "explanation": "The written target is ビ. Katakana voiced sign conventionally cued as bi. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30d6",
+      "prompt": "Which katakana sign matches the conventional bu spelling cue?",
+      "options": [
+        {
+          "id": "option-kv-30d6-for-30d6",
+          "text": {
+            "surface": "ブ",
+            "reading": "ブ",
+            "gloss": "Katakana voiced sign conventionally cued as bu.",
+            "romaji": "bu"
+          }
+        },
+        {
+          "id": "option-kv-30d9-for-30d6",
+          "text": {
+            "surface": "ベ",
+            "reading": "ベ",
+            "gloss": "Katakana voiced sign conventionally cued as be.",
+            "romaji": "be"
+          }
+        },
+        {
+          "id": "option-kv-30dc-for-30d6",
+          "text": {
+            "surface": "ボ",
+            "reading": "ボ",
+            "gloss": "Katakana voiced sign conventionally cued as bo.",
+            "romaji": "bo"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30d6-for-30d6",
+      "explanation": "The written target is ブ. Katakana voiced sign conventionally cued as bu. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30d9",
+      "prompt": "Which katakana sign matches the conventional be spelling cue?",
+      "options": [
+        {
+          "id": "option-kv-30d9-for-30d9",
+          "text": {
+            "surface": "ベ",
+            "reading": "ベ",
+            "gloss": "Katakana voiced sign conventionally cued as be.",
+            "romaji": "be"
+          }
+        },
+        {
+          "id": "option-kv-30dc-for-30d9",
+          "text": {
+            "surface": "ボ",
+            "reading": "ボ",
+            "gloss": "Katakana voiced sign conventionally cued as bo.",
+            "romaji": "bo"
+          }
+        },
+        {
+          "id": "option-kv-30c0-for-30d9",
+          "text": {
+            "surface": "ダ",
+            "reading": "ダ",
+            "gloss": "Katakana voiced sign conventionally cued as da.",
+            "romaji": "da"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30d9-for-30d9",
+      "explanation": "The written target is ベ. Katakana voiced sign conventionally cued as be. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kv-recognition-30dc",
+      "prompt": "Which katakana sign matches the conventional bo spelling cue?",
+      "options": [
+        {
+          "id": "option-kv-30dc-for-30dc",
+          "text": {
+            "surface": "ボ",
+            "reading": "ボ",
+            "gloss": "Katakana voiced sign conventionally cued as bo.",
+            "romaji": "bo"
+          }
+        },
+        {
+          "id": "option-kv-30c0-for-30dc",
+          "text": {
+            "surface": "ダ",
+            "reading": "ダ",
+            "gloss": "Katakana voiced sign conventionally cued as da.",
+            "romaji": "da"
+          }
+        },
+        {
+          "id": "option-kv-30c2-for-30dc",
+          "text": {
+            "surface": "ヂ",
+            "reading": "ヂ",
+            "gloss": "Katakana ヂ is the voiced spelling of チ (the chi base sign); sound alone does not fix its spelling.",
+            "romaji": "di"
+          }
+        }
+      ],
+      "correctOptionId": "option-kv-30dc-for-30dc",
+      "explanation": "The written target is ボ. Katakana voiced sign conventionally cued as bo. Only this option ID is correct; similar-sounding spellings are not interchangeable."
+    }
+  ]
+}
