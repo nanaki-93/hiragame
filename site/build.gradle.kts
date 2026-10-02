@@ -19,6 +19,21 @@ repositories {
 group = "com.github.nanaki_93"
 version = "1.0-SNAPSHOT"
 
+// The site project's Gradle version is the single source for the JS backup metadata.
+// Generate a source (not a checked-in literal) so exports identify the build that made them.
+val siteVersionText = version.toString()
+val siteVersionSource = layout.buildDirectory.dir("generated/sources/siteVersion/jsMain")
+val generateSiteVersion by tasks.registering {
+    inputs.property("siteVersion", siteVersionText)
+    outputs.dir(siteVersionSource)
+    doLast {
+        val source = siteVersionSource.get().file("com/github/nanaki_93/storage/SiteBuildInfo.kt").asFile
+        source.parentFile.mkdirs()
+        val quoted = siteVersionText.replace("\\", "\\\\").replace("\"", "\\\"")
+        source.writeText("package com.github.nanaki_93.storage\n\ninternal object SiteBuildInfo { const val VERSION = \"$quoted\" }\n")
+    }
+}
+
 kobweb {
     app {
         index {
@@ -48,6 +63,7 @@ kotlin {
             }
         }
         val jsMain by getting {
+            kotlin.srcDir(generateSiteVersion)
             dependencies {
                 implementation(libs.compose.runtime)
                 implementation(libs.compose.html.core)
