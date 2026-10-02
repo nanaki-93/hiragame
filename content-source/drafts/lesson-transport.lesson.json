@@ -1,0 +1,291 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 1,
+  "id": "lesson-transport",
+  "topicId": "life-transport",
+  "title": "Transport questions",
+  "situation": "A fictional everyday service exchange. Confirm a destination and platform in an illustrative station exchange.",
+  "communicationGoal": "Confirm a destination and platform in an illustrative station exchange.",
+  "difficulty": "beginner",
+  "durationMinutes": 8,
+  "prerequisiteLessonIds": [],
+  "dialogue": {
+    "speakers": [
+      {
+        "id": "lesson-transport-colleague",
+        "name": "Partner",
+        "role": "Staff member"
+      },
+      {
+        "id": "lesson-transport-learner",
+        "name": "You",
+        "role": "Learner in an illustrative exchange"
+      }
+    ],
+    "turns": [
+      {
+        "id": "lesson-transport-turn-1",
+        "speakerId": "lesson-transport-colleague",
+        "text": {
+          "surface": "どちらまでですか。",
+          "reading": "どちらまでですか。",
+          "translation": "Where are you heading?"
+        }
+      },
+      {
+        "id": "lesson-transport-turn-2",
+        "speakerId": "lesson-transport-learner",
+        "text": {
+          "surface": "この電車は新宿に行きますか。",
+          "reading": "このでんしゃわしんじゅくにいきますか。",
+          "translation": "Does this train go to Shinjuku?"
+        }
+      },
+      {
+        "id": "lesson-transport-turn-3",
+        "speakerId": "lesson-transport-colleague",
+        "text": {
+          "surface": "はい、新宿に行きます。",
+          "reading": "はい、しんじゅくにいきます。",
+          "translation": "Yes, it goes to Shinjuku."
+        }
+      },
+      {
+        "id": "lesson-transport-turn-4",
+        "speakerId": "lesson-transport-learner",
+        "text": {
+          "surface": "何番線ですか。",
+          "reading": "なんばんせんですか。",
+          "translation": "Which platform is it?"
+        }
+      },
+      {
+        "id": "lesson-transport-turn-5",
+        "speakerId": "lesson-transport-colleague",
+        "text": {
+          "surface": "三番線です。",
+          "reading": "さんばんせんです。",
+          "translation": "Platform three."
+        }
+      },
+      {
+        "id": "lesson-transport-turn-6",
+        "speakerId": "lesson-transport-learner",
+        "text": {
+          "surface": "ありがとうございます。",
+          "reading": "ありがとうございます。",
+          "translation": "Thank you."
+        }
+      }
+    ]
+  },
+  "phrases": [
+    {
+      "id": "lesson-transport-phrase-2",
+      "text": {
+        "surface": "この電車は新宿に行きますか。",
+        "reading": "このでんしゃわしんじゅくにいきますか。",
+        "translation": "Does this train go to Shinjuku?"
+      },
+      "sourceTurnId": "lesson-transport-turn-2",
+      "usage": "Confirm a destination and platform in an illustrative station exchange.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-transport-phrase-4",
+      "text": {
+        "surface": "何番線ですか。",
+        "reading": "なんばんせんですか。",
+        "translation": "Which platform is it?"
+      },
+      "sourceTurnId": "lesson-transport-turn-4",
+      "usage": "Confirm a destination and platform in an illustrative station exchange.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-transport-phrase-6",
+      "text": {
+        "surface": "ありがとうございます。",
+        "reading": "ありがとうございます。",
+        "translation": "Thank you."
+      },
+      "sourceTurnId": "lesson-transport-turn-6",
+      "usage": "Confirm a destination and platform in an illustrative station exchange.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    }
+  ],
+  "grammarNotes": [
+    {
+      "id": "lesson-transport-grammar",
+      "explanation": "行きますか checks a destination; 何番線 asks the platform number. These route/platform details are fictional practice, not a timetable.",
+      "examples": [
+        {
+          "surface": "この電車は新宿に行きますか。",
+          "reading": "このでんしゃわしんじゅくにいきますか。",
+          "translation": "Does this train go to Shinjuku?"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lesson-transport-choice",
+      "type": "choice",
+      "prompt": "Which response directly serves this goal: Confirm a destination and platform in an illustrative station exchange.",
+      "options": [
+        {
+          "id": "lesson-transport-target",
+          "text": {
+            "surface": "この電車は新宿に行きますか。",
+            "reading": "このでんしゃわしんじゅくにいきますか。",
+            "translation": "Does this train go to Shinjuku?"
+          }
+        },
+        {
+          "id": "lesson-transport-acknowledge",
+          "text": {
+            "surface": "分かりました。",
+            "reading": "わかりました。",
+            "translation": "Understood."
+          }
+        }
+      ],
+      "correctOptionId": "lesson-transport-target",
+      "explanation": "The target response states or asks for the specific information. Acknowledgement alone does not express that information. Other natural responses may also work in open conversation."
+    },
+    {
+      "id": "lesson-transport-completion",
+      "type": "completion",
+      "prompt": "Complete the specific response from the dialogue. Use the reviewed word for: Shinjuku.",
+      "template": "この電車は{blank}に行きますか。",
+      "acceptedAnswers": [
+        {
+          "surface": "新宿",
+          "reading": "しんじゅく",
+          "translation": "Shinjuku"
+        },
+        {
+          "surface": "しんじゅく",
+          "reading": "しんじゅく",
+          "translation": "Shinjuku (kana)"
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "この電車は新宿に行きますか。",
+        "reading": "このでんしゃわしんじゅくにいきますか。",
+        "translation": "Does this train go to Shinjuku?"
+      },
+      "explanation": "The accepted forms fill this one constrained blank. 行きますか checks a destination; 何番線 asks the platform number. These route/platform details are fictional practice, not a timetable."
+    },
+    {
+      "id": "lesson-transport-production",
+      "type": "production",
+      "prompt": "Confirm a destination and platform in an illustrative station exchange. Use your own words and truthful or clearly fictional practice details.",
+      "exampleResponses": [
+        {
+          "surface": "この電車は新宿に行きますか。",
+          "reading": "このでんしゃわしんじゅくにいきますか。",
+          "translation": "Does this train go to Shinjuku?"
+        },
+        {
+          "surface": "何番線ですか。",
+          "reading": "なんばんせんですか。",
+          "translation": "Which platform is it?"
+        }
+      ],
+      "criteria": [
+        "I communicated the specific goal politely.",
+        "I separated known information from uncertainty and asked a relevant follow-up.",
+        "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+      ]
+    }
+  ],
+  "rolePlay": {
+    "task": "Confirm a destination and platform in an illustrative station exchange. Respond to a partner, then ask a follow-up.",
+    "criteria": [
+      "I communicated the specific goal politely.",
+      "I separated known information from uncertainty and asked a relevant follow-up.",
+      "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+    ],
+    "hints": [
+      "Use the reviewed phrase bank, then hide it for independent practice.",
+      "Ask for repetition or clarification if you are unsure."
+    ],
+    "examples": [
+      {
+        "surface": "この電車は新宿に行きますか。",
+        "reading": "このでんしゃわしんじゅくにいきますか。",
+        "translation": "Does this train go to Shinjuku?"
+      },
+      {
+        "surface": "何番線ですか。",
+        "reading": "なんばんせんですか。",
+        "translation": "Which platform is it?"
+      }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "lesson-transport-review-phrase",
+      "targetKind": "phrase",
+      "targetId": "lesson-transport-phrase-2",
+      "skill": "Confirm a destination and platform in an illustrative station exchange.",
+      "direction": "meaning-to-japanese"
+    },
+    {
+      "id": "lesson-transport-review-completion",
+      "targetKind": "exercise",
+      "targetId": "lesson-transport-completion",
+      "skill": "Confirm a destination and platform in an illustrative station exchange.",
+      "direction": "context-to-utterance"
+    }
+  ],
+  "conversationGraph": {
+    "entryNodeId": "lesson-transport-prompt",
+    "nodes": [
+      {
+        "id": "lesson-transport-prompt",
+        "type": "prompt",
+        "speakerId": "lesson-transport-colleague",
+        "text": {
+          "surface": "どちらまでですか。",
+          "reading": "どちらまでですか。",
+          "translation": "Where are you heading?"
+        },
+        "nextNodeId": "lesson-transport-reply"
+      },
+      {
+        "id": "lesson-transport-reply",
+        "type": "completionInteraction",
+        "exerciseId": "lesson-transport-completion",
+        "feedback": "You expressed the target intent using the constrained example. Read the partner’s response next.",
+        "nextNodeId": "lesson-transport-follow"
+      },
+      {
+        "id": "lesson-transport-follow",
+        "type": "prompt",
+        "speakerId": "lesson-transport-colleague",
+        "text": {
+          "surface": "はい、新宿に行きます。",
+          "reading": "はい、しんじゅくにいきます。",
+          "translation": "Yes, it goes to Shinjuku."
+        },
+        "nextNodeId": "lesson-transport-end"
+      },
+      {
+        "id": "lesson-transport-end",
+        "type": "terminal",
+        "message": "The partner responded. Try the remaining exchange in your own words and self-assess your communication goal."
+      }
+    ]
+  },
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-03",
+    "reviewNote": "o04-expansion.md",
+    "provenance": "Original agent-authored instructional scenario and text; no external lesson passage or audio copied.",
+    "rights": "publishable",
+    "rightsBasis": "Original project-authored text approved publishable; no third-party passage or recording included."
+  }
+}

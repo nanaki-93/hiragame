@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "contentVersion": 4,
+  "contentVersion": 13,
   "topics": [
     {
       "id": "kana-foundations",
@@ -41,6 +41,51 @@
       "id": "workplace-reviews",
       "title": "Code reviews",
       "description": "Request a focused code review and respond constructively to a teammate's suggestion."
+    },
+    {
+      "id": "workplace-requirements-clarification",
+      "title": "Requirements clarification",
+      "description": "Ask who needs a feature and which part matters first."
+    },
+    {
+      "id": "workplace-estimates-deadlines",
+      "title": "Estimates and deadlines",
+      "description": "Give a provisional estimate and clarify priorities before promising a date."
+    },
+    {
+      "id": "workplace-incident-report",
+      "title": "Incident reports",
+      "description": "Report an observed problem and separate known impact from what is still being checked."
+    },
+    {
+      "id": "workplace-design-tradeoffs",
+      "title": "Design trade-offs",
+      "description": "Describe one benefit and one cost, then ask which priority matters."
+    },
+    {
+      "id": "workplace-technical-interview",
+      "title": "Technical interviews",
+      "description": "Describe a real project and your contribution without inventing experience."
+    },
+    {
+      "id": "life-transport",
+      "title": "Transport questions",
+      "description": "Confirm a destination and platform in an illustrative station exchange."
+    },
+    {
+      "id": "life-housing-viewing",
+      "title": "Housing enquiries",
+      "description": "Ask about viewing a room and confirm a proposed time."
+    },
+    {
+      "id": "life-appointment-change",
+      "title": "Changing an appointment",
+      "description": "Request an appointment change and check availability."
+    },
+    {
+      "id": "life-administration-questions",
+      "title": "Administration questions",
+      "description": "Ask staff what applies to a procedure and clarify how to fill a form."
     }
   ],
   "entries": [
@@ -409,6 +454,60 @@
       "kind": "practice",
       "topicId": "foundational-vocabulary",
       "path": "practice/vocabulary-workplace-reading.json"
+    },
+    {
+      "id": "lesson-requirements-clarification",
+      "topicId": "workplace-requirements-clarification",
+      "kind": "lesson",
+      "path": "lessons/lesson-requirements-clarification.json"
+    },
+    {
+      "id": "lesson-estimates-deadlines",
+      "topicId": "workplace-estimates-deadlines",
+      "kind": "lesson",
+      "path": "lessons/lesson-estimates-deadlines.json"
+    },
+    {
+      "id": "lesson-incident-report",
+      "topicId": "workplace-incident-report",
+      "kind": "lesson",
+      "path": "lessons/lesson-incident-report.json"
+    },
+    {
+      "id": "lesson-design-tradeoffs",
+      "topicId": "workplace-design-tradeoffs",
+      "kind": "lesson",
+      "path": "lessons/lesson-design-tradeoffs.json"
+    },
+    {
+      "id": "lesson-technical-interview",
+      "topicId": "workplace-technical-interview",
+      "kind": "lesson",
+      "path": "lessons/lesson-technical-interview.json"
+    },
+    {
+      "id": "lesson-transport",
+      "topicId": "life-transport",
+      "kind": "lesson",
+      "path": "lessons/lesson-transport.json"
+    },
+    {
+      "id": "lesson-housing-viewing",
+      "topicId": "life-housing-viewing",
+      "kind": "lesson",
+      "path": "lessons/lesson-housing-viewing.json"
+    },
+    {
+      "id": "lesson-appointment-change",
+      "topicId": "life-appointment-change",
+      "kind": "lesson",
+      "path": "lessons/lesson-appointment-change.json"
+    },
+    {
+      "id": "lesson-administration-questions",
+      "topicId": "life-administration-questions",
+      "kind": "lesson",
+      "path": "lessons/lesson-administration-questions.json"
     }
   ]
 }

@@ -583,11 +583,13 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** feedback from completing the five starter lessons.
 
-- [ ] Add requirements clarification, estimates/deadlines, incident reports, design trade-offs, and technical interviews.
-- [ ] Add practical life-in-Japan topics such as transport, housing, appointments, and administration.
-- [ ] Reuse the same learning loop and schemas; add prerequisites and difficulty scaffolding only where useful.
-- [ ] Offer an optional personal glossary and prompts for describing the learner's own projects, without requiring employer-confidential information.
-- [ ] Keep study plans realistic and make clear that JLPT preparation and speaking practice are complementary.
+**Status:** Implemented 2026-10-03; [O04 evidence](content-source/review-notes/o04-validation.md) and [agent review](content-source/review-notes/o04-expansion.md). Expansion is informed by the starter lesson sequences and isolated completion checks; no real-learner feedback or native-speaker certification is claimed.
+
+- [x] Add requirements clarification, estimates/deadlines, incident reports, design trade-offs, and technical interviews.
+- [x] Add practical life-in-Japan topics such as transport, housing, appointments, and administration.
+- [x] Reuse the same learning loop and schemas; add prerequisites and difficulty scaffolding only where useful.
+- [x] Offer an optional personal glossary and prompts for describing the learner's own projects, without requiring employer-confidential information.
+- [x] Keep study plans realistic and make clear that JLPT preparation and speaking practice are complementary.
 
 **Acceptance:** expansion deepens useful communication rather than merely increasing the number of random questions.
 

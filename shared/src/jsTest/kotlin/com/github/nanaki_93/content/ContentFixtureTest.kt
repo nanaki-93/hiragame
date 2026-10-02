@@ -70,7 +70,7 @@ class ContentFixtureTest {
         assertTrue(practiceEntries.size > 11) // seed, both scripts, and introductory vocabulary
         assertEquals(setOf("kana-foundations", "katakana-foundations", "foundational-vocabulary"),
             practiceEntries.map { it.topicId }.toSet())
-        assertEquals(4, catalog.contentVersion)
+        assertEquals(13, catalog.contentVersion)
         val entry = practiceEntries.single { it.id == "practice-kana-a-i" }
         assertEquals(DocumentKind.PRACTICE, entry.kind)
         assertEquals("practice-kana-a-i", entry.id)

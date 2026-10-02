@@ -19,7 +19,7 @@ EXECUTABLE = {'.js', '.mjs', '.cjs'}  # .js.map is source text, not executed
 # and local runtime are scanned. Dormant services and shared backend DTOs
 # source is excluded from the active build; only the two storage adapters are exempted below.
 SOURCE_FILES = [SITE / 'AppEntry.kt', SITE / 'SiteTheme.kt', SITE / 'pages/Index.kt']
-SOURCE_DIRS = [SITE / 'pages', SITE / 'components', SITE / 'content', SITE / 'lesson', SITE / 'practice', SITE / 'storage', SITE / 'review', SITE / 'audio', SITE / 'offline',
+SOURCE_DIRS = [SITE / 'pages', SITE / 'components', SITE / 'content', SITE / 'lesson', SITE / 'practice', SITE / 'storage', SITE / 'review', SITE / 'audio', SITE / 'offline', SITE / 'ai',
                SHARED / 'content', SHARED / 'lesson', SHARED / 'practice', SHARED / 'progress', SHARED / 'conversation', SHARED / 'review', SHARED / 'audio']
 DIRECT_BROWSER_STORAGE = re.compile(
     r'\b(?:localStorage|sessionStorage|loadFromLocalStorage|saveToLocalStorage)\b'

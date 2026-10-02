@@ -12,6 +12,7 @@ fun SettingsPage() {
         H1 { Text("Settings & backup") }
         P { Text("Progress stays in this browser. Export a backup before clearing site data or moving devices.") }
         SavePreferencesSection(LocalProgress.current)
+        com.github.nanaki_93.components.widgets.PersonalGlossary(LocalProgress.current)
         com.github.nanaki_93.offline.OfflineStatus(controls = true)
     }
 }

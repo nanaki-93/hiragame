@@ -1,0 +1,293 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 1,
+  "id": "lesson-requirements-clarification",
+  "topicId": "workplace-requirements-clarification",
+  "title": "Requirements clarification",
+  "situation": "A fictional workplace exchange. Ask who needs a feature and which part matters first.",
+  "communicationGoal": "Ask who needs a feature and which part matters first.",
+  "difficulty": "beginner",
+  "durationMinutes": 8,
+  "prerequisiteLessonIds": [
+    "lesson-clarify-understanding"
+  ],
+  "dialogue": {
+    "speakers": [
+      {
+        "id": "lesson-requirements-clarification-colleague",
+        "name": "Partner",
+        "role": "Coworker"
+      },
+      {
+        "id": "lesson-requirements-clarification-learner",
+        "name": "You",
+        "role": "Learner in an illustrative exchange"
+      }
+    ],
+    "turns": [
+      {
+        "id": "lesson-requirements-clarification-turn-1",
+        "speakerId": "lesson-requirements-clarification-colleague",
+        "text": {
+          "surface": "新しい機能について相談したいです。",
+          "reading": "あたらしいきのうについてそうだんしたいです。",
+          "translation": "I would like to discuss a new feature."
+        }
+      },
+      {
+        "id": "lesson-requirements-clarification-turn-2",
+        "speakerId": "lesson-requirements-clarification-learner",
+        "text": {
+          "surface": "この機能は誰が使いますか。",
+          "reading": "このきのうわだれがつかいますか。",
+          "translation": "Who will use this feature?"
+        }
+      },
+      {
+        "id": "lesson-requirements-clarification-turn-3",
+        "speakerId": "lesson-requirements-clarification-colleague",
+        "text": {
+          "surface": "社内のチームが使います。",
+          "reading": "しゃないのちーむがつかいます。",
+          "translation": "Teams within the company will use it."
+        }
+      },
+      {
+        "id": "lesson-requirements-clarification-turn-4",
+        "speakerId": "lesson-requirements-clarification-learner",
+        "text": {
+          "surface": "最初に必要なのはどの部分ですか。",
+          "reading": "さいしょにひつようなのわどのぶぶんですか。",
+          "translation": "Which part is needed first?"
+        }
+      },
+      {
+        "id": "lesson-requirements-clarification-turn-5",
+        "speakerId": "lesson-requirements-clarification-colleague",
+        "text": {
+          "surface": "まず、一覧を見られるようにしたいです。",
+          "reading": "まず、いちらんをみられるようにしたいです。",
+          "translation": "First, we would like to be able to view a list."
+        }
+      },
+      {
+        "id": "lesson-requirements-clarification-turn-6",
+        "speakerId": "lesson-requirements-clarification-learner",
+        "text": {
+          "surface": "分かりました。対象と優先順位を確認します。",
+          "reading": "わかりました。たいしょうとゆうせんじゅんいをかくにんします。",
+          "translation": "Understood. I will confirm the intended users and priorities."
+        }
+      }
+    ]
+  },
+  "phrases": [
+    {
+      "id": "lesson-requirements-clarification-phrase-2",
+      "text": {
+        "surface": "この機能は誰が使いますか。",
+        "reading": "このきのうわだれがつかいますか。",
+        "translation": "Who will use this feature?"
+      },
+      "sourceTurnId": "lesson-requirements-clarification-turn-2",
+      "usage": "Ask who needs a feature and which part matters first.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-requirements-clarification-phrase-4",
+      "text": {
+        "surface": "最初に必要なのはどの部分ですか。",
+        "reading": "さいしょにひつようなのわどのぶぶんですか。",
+        "translation": "Which part is needed first?"
+      },
+      "sourceTurnId": "lesson-requirements-clarification-turn-4",
+      "usage": "Ask who needs a feature and which part matters first.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-requirements-clarification-phrase-6",
+      "text": {
+        "surface": "分かりました。対象と優先順位を確認します。",
+        "reading": "わかりました。たいしょうとゆうせんじゅんいをかくにんします。",
+        "translation": "Understood. I will confirm the intended users and priorities."
+      },
+      "sourceTurnId": "lesson-requirements-clarification-turn-6",
+      "usage": "Ask who needs a feature and which part matters first.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    }
+  ],
+  "grammarNotes": [
+    {
+      "id": "lesson-requirements-clarification-grammar",
+      "explanation": "誰が asks who performs the action. Confirm users before assuming an implementation.",
+      "examples": [
+        {
+          "surface": "この機能は誰が使いますか。",
+          "reading": "このきのうわだれがつかいますか。",
+          "translation": "Who will use this feature?"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lesson-requirements-clarification-choice",
+      "type": "choice",
+      "prompt": "Which response directly serves this goal: Ask who needs a feature and which part matters first.",
+      "options": [
+        {
+          "id": "lesson-requirements-clarification-target",
+          "text": {
+            "surface": "この機能は誰が使いますか。",
+            "reading": "このきのうわだれがつかいますか。",
+            "translation": "Who will use this feature?"
+          }
+        },
+        {
+          "id": "lesson-requirements-clarification-acknowledge",
+          "text": {
+            "surface": "分かりました。",
+            "reading": "わかりました。",
+            "translation": "Understood."
+          }
+        }
+      ],
+      "correctOptionId": "lesson-requirements-clarification-target",
+      "explanation": "The target response states or asks for the specific information. Acknowledgement alone does not express that information. Other natural responses may also work in open conversation."
+    },
+    {
+      "id": "lesson-requirements-clarification-completion",
+      "type": "completion",
+      "prompt": "Complete the specific response from the dialogue. Use the reviewed word for: who.",
+      "template": "この機能は{blank}が使いますか。",
+      "acceptedAnswers": [
+        {
+          "surface": "誰",
+          "reading": "だれ",
+          "translation": "who"
+        },
+        {
+          "surface": "だれ",
+          "reading": "だれ",
+          "translation": "who (kana)"
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "この機能は誰が使いますか。",
+        "reading": "このきのうわだれがつかいますか。",
+        "translation": "Who will use this feature?"
+      },
+      "explanation": "The accepted forms fill this one constrained blank. 誰が asks who performs the action. Confirm users before assuming an implementation."
+    },
+    {
+      "id": "lesson-requirements-clarification-production",
+      "type": "production",
+      "prompt": "Ask who needs a feature and which part matters first. Use your own words and truthful or clearly fictional practice details.",
+      "exampleResponses": [
+        {
+          "surface": "この機能は誰が使いますか。",
+          "reading": "このきのうわだれがつかいますか。",
+          "translation": "Who will use this feature?"
+        },
+        {
+          "surface": "最初に必要なのはどの部分ですか。",
+          "reading": "さいしょにひつようなのわどのぶぶんですか。",
+          "translation": "Which part is needed first?"
+        }
+      ],
+      "criteria": [
+        "I communicated the specific goal politely.",
+        "I separated known information from uncertainty and asked a relevant follow-up.",
+        "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+      ]
+    }
+  ],
+  "rolePlay": {
+    "task": "Ask who needs a feature and which part matters first. Respond to a partner, then ask a follow-up.",
+    "criteria": [
+      "I communicated the specific goal politely.",
+      "I separated known information from uncertainty and asked a relevant follow-up.",
+      "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+    ],
+    "hints": [
+      "Use the reviewed phrase bank, then hide it for independent practice.",
+      "Ask for repetition or clarification if you are unsure."
+    ],
+    "examples": [
+      {
+        "surface": "この機能は誰が使いますか。",
+        "reading": "このきのうわだれがつかいますか。",
+        "translation": "Who will use this feature?"
+      },
+      {
+        "surface": "最初に必要なのはどの部分ですか。",
+        "reading": "さいしょにひつようなのわどのぶぶんですか。",
+        "translation": "Which part is needed first?"
+      }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "lesson-requirements-clarification-review-phrase",
+      "targetKind": "phrase",
+      "targetId": "lesson-requirements-clarification-phrase-2",
+      "skill": "Ask who needs a feature and which part matters first.",
+      "direction": "meaning-to-japanese"
+    },
+    {
+      "id": "lesson-requirements-clarification-review-completion",
+      "targetKind": "exercise",
+      "targetId": "lesson-requirements-clarification-completion",
+      "skill": "Ask who needs a feature and which part matters first.",
+      "direction": "context-to-utterance"
+    }
+  ],
+  "conversationGraph": {
+    "entryNodeId": "lesson-requirements-clarification-prompt",
+    "nodes": [
+      {
+        "id": "lesson-requirements-clarification-prompt",
+        "type": "prompt",
+        "speakerId": "lesson-requirements-clarification-colleague",
+        "text": {
+          "surface": "新しい機能について相談したいです。",
+          "reading": "あたらしいきのうについてそうだんしたいです。",
+          "translation": "I would like to discuss a new feature."
+        },
+        "nextNodeId": "lesson-requirements-clarification-reply"
+      },
+      {
+        "id": "lesson-requirements-clarification-reply",
+        "type": "completionInteraction",
+        "exerciseId": "lesson-requirements-clarification-completion",
+        "feedback": "You expressed the target intent using the constrained example. Read the partner’s response next.",
+        "nextNodeId": "lesson-requirements-clarification-follow"
+      },
+      {
+        "id": "lesson-requirements-clarification-follow",
+        "type": "prompt",
+        "speakerId": "lesson-requirements-clarification-colleague",
+        "text": {
+          "surface": "社内のチームが使います。",
+          "reading": "しゃないのちーむがつかいます。",
+          "translation": "Teams within the company will use it."
+        },
+        "nextNodeId": "lesson-requirements-clarification-end"
+      },
+      {
+        "id": "lesson-requirements-clarification-end",
+        "type": "terminal",
+        "message": "The partner responded. Try the remaining exchange in your own words and self-assess your communication goal."
+      }
+    ]
+  },
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-03",
+    "reviewNote": "o04-expansion.md",
+    "provenance": "Original agent-authored instructional scenario and text; no external lesson passage or audio copied.",
+    "rights": "publishable",
+    "rightsBasis": "Original project-authored text approved publishable; no third-party passage or recording included."
+  }
+}

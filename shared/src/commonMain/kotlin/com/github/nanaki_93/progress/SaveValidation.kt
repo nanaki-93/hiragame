@@ -6,6 +6,7 @@ object SaveBounds {
     const val MAX_ID_LENGTH = 128
     const val MAX_LEARNING_RECORDS = 1_000
     const val MAX_REVIEW_RECORDS = 5_000
+    const val MAX_GLOSSARY_ENTRIES = 100
     const val MAX_EXERCISES = 10
     const val MAX_SCHEDULE_COUNT = 1_000_000
     const val MAX_JSON_BYTES = 2 * 1024 * 1024
@@ -42,6 +43,16 @@ fun validateSave(snapshot: SaveEnvelope) {
         "Too many learning records"
     }
     require(snapshot.reviewItems.size <= SaveBounds.MAX_REVIEW_RECORDS) { "Too many review records" }
+    require(snapshot.personalGlossary.size <= SaveBounds.MAX_GLOSSARY_ENTRIES) { "Too many glossary entries" }
+    val glossaryIds = HashSet<String>()
+    snapshot.personalGlossary.forEach { entry ->
+        id(entry.id)
+        require(glossaryIds.add(entry.id)) { "Duplicate glossary ID" }
+        require(entry.term.isNotBlank() && entry.term.length <= 256 && entry.term.none { it < ' ' }) { "Invalid glossary term" }
+        require(entry.reading.length <= 256 && entry.reading.none { it < ' ' }) { "Invalid glossary reading" }
+        require(entry.meaning.isNotBlank() && entry.meaning.length <= 500 &&
+            entry.meaning.none { it < ' ' && it != '\n' && it != '\t' }) { "Invalid glossary meaning" }
+    }
 
     val lessons = HashSet<String>()
     snapshot.lessonProgress.forEach { record ->

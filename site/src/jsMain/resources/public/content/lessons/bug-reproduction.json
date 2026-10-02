@@ -1,6 +1,6 @@
 {
   "formatVersion": 1,
-  "contentVersion": 4,
+  "contentVersion": 13,
   "id": "lesson-bug-reproduction",
   "topicId": "workplace-bugs",
   "title": "Report a reproducible bug",

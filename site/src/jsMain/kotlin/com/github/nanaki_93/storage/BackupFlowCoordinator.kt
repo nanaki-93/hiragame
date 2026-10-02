@@ -21,6 +21,7 @@ data class BackupPreview(
     val completedLessonCount: Int,
     val practiceCheckpointCount: Int,
     val reviewItemCount: Int,
+    val glossaryEntryCount: Int = 0,
 )
 
 /** Fixed categories only: no raw input, platform exception or parser diagnostic escapes. */
@@ -232,5 +233,6 @@ class BackupFlowCoordinator(
         completedLessonCount = snapshot.lessonProgress.count { it.completedAtEpochMs != null },
         practiceCheckpointCount = snapshot.practiceProgress.size,
         reviewItemCount = snapshot.reviewItems.size,
+        glossaryEntryCount = snapshot.personalGlossary.size,
     )
 }

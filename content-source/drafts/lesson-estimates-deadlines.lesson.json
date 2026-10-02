@@ -1,0 +1,293 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 1,
+  "id": "lesson-estimates-deadlines",
+  "topicId": "workplace-estimates-deadlines",
+  "title": "Estimates and deadlines",
+  "situation": "A fictional workplace exchange. Give a provisional estimate and clarify its scope before promising a date.",
+  "communicationGoal": "Give a provisional estimate and clarify its scope before promising a date.",
+  "difficulty": "beginner",
+  "durationMinutes": 8,
+  "prerequisiteLessonIds": [
+    "lesson-daily-update-blocker"
+  ],
+  "dialogue": {
+    "speakers": [
+      {
+        "id": "lesson-estimates-deadlines-colleague",
+        "name": "Partner",
+        "role": "Coworker"
+      },
+      {
+        "id": "lesson-estimates-deadlines-learner",
+        "name": "You",
+        "role": "Learner in an illustrative exchange"
+      }
+    ],
+    "turns": [
+      {
+        "id": "lesson-estimates-deadlines-turn-1",
+        "speakerId": "lesson-estimates-deadlines-colleague",
+        "text": {
+          "surface": "いつごろ終わりそうですか。",
+          "reading": "いつごろおわりそうですか。",
+          "translation": "About when do you expect to finish?"
+        }
+      },
+      {
+        "id": "lesson-estimates-deadlines-turn-2",
+        "speakerId": "lesson-estimates-deadlines-learner",
+        "text": {
+          "surface": "金曜日までに終わる見込みです。",
+          "reading": "きんようびまでにおわるみこみです。",
+          "translation": "I expect to finish by Friday."
+        }
+      },
+      {
+        "id": "lesson-estimates-deadlines-turn-3",
+        "speakerId": "lesson-estimates-deadlines-colleague",
+        "text": {
+          "surface": "テストも含めた見込みですか。",
+          "reading": "てすともふくめたみこみですか。",
+          "translation": "Does that estimate include testing?"
+        }
+      },
+      {
+        "id": "lesson-estimates-deadlines-turn-4",
+        "speakerId": "lesson-estimates-deadlines-learner",
+        "text": {
+          "surface": "はい、ただ、確認が必要な点が一つあります。",
+          "reading": "はい、ただ、かくにんがひつようなてんがひとつあります。",
+          "translation": "Yes, though there is one point I still need to check."
+        }
+      },
+      {
+        "id": "lesson-estimates-deadlines-turn-5",
+        "speakerId": "lesson-estimates-deadlines-colleague",
+        "text": {
+          "surface": "分かったら、見込みを更新してください。",
+          "reading": "わかったら、みこみをこうしんしてください。",
+          "translation": "Please update the estimate when you know."
+        }
+      },
+      {
+        "id": "lesson-estimates-deadlines-turn-6",
+        "speakerId": "lesson-estimates-deadlines-learner",
+        "text": {
+          "surface": "分かりました。今日中に連絡します。",
+          "reading": "わかりました。きょうじゅうにれんらくします。",
+          "translation": "Understood. I will contact you by the end of today."
+        }
+      }
+    ]
+  },
+  "phrases": [
+    {
+      "id": "lesson-estimates-deadlines-phrase-2",
+      "text": {
+        "surface": "金曜日までに終わる見込みです。",
+        "reading": "きんようびまでにおわるみこみです。",
+        "translation": "I expect to finish by Friday."
+      },
+      "sourceTurnId": "lesson-estimates-deadlines-turn-2",
+      "usage": "Give a provisional estimate and clarify its scope before promising a date.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-estimates-deadlines-phrase-4",
+      "text": {
+        "surface": "はい、ただ、確認が必要な点が一つあります。",
+        "reading": "はい、ただ、かくにんがひつようなてんがひとつあります。",
+        "translation": "Yes, though there is one point I still need to check."
+      },
+      "sourceTurnId": "lesson-estimates-deadlines-turn-4",
+      "usage": "Give a provisional estimate and clarify its scope before promising a date.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-estimates-deadlines-phrase-6",
+      "text": {
+        "surface": "分かりました。今日中に連絡します。",
+        "reading": "わかりました。きょうじゅうにれんらくします。",
+        "translation": "Understood. I will contact you by the end of today."
+      },
+      "sourceTurnId": "lesson-estimates-deadlines-turn-6",
+      "usage": "Give a provisional estimate and clarify its scope before promising a date.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    }
+  ],
+  "grammarNotes": [
+    {
+      "id": "lesson-estimates-deadlines-grammar",
+      "explanation": "までに marks a completion deadline; 見込み expresses an expectation, not a guarantee. Use only dates and commitments you can support.",
+      "examples": [
+        {
+          "surface": "金曜日までに終わる見込みです。",
+          "reading": "きんようびまでにおわるみこみです。",
+          "translation": "I expect to finish by Friday."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lesson-estimates-deadlines-choice",
+      "type": "choice",
+      "prompt": "Which response directly serves this goal: Give a provisional estimate and clarify its scope before promising a date.",
+      "options": [
+        {
+          "id": "lesson-estimates-deadlines-target",
+          "text": {
+            "surface": "金曜日までに終わる見込みです。",
+            "reading": "きんようびまでにおわるみこみです。",
+            "translation": "I expect to finish by Friday."
+          }
+        },
+        {
+          "id": "lesson-estimates-deadlines-acknowledge",
+          "text": {
+            "surface": "分かりました。",
+            "reading": "わかりました。",
+            "translation": "Understood."
+          }
+        }
+      ],
+      "correctOptionId": "lesson-estimates-deadlines-target",
+      "explanation": "The target response states or asks for the specific information. Acknowledgement alone does not express that information. Other natural responses may also work in open conversation."
+    },
+    {
+      "id": "lesson-estimates-deadlines-completion",
+      "type": "completion",
+      "prompt": "Complete the specific response from the dialogue. Use the reviewed word for: Friday.",
+      "template": "{blank}までに終わる見込みです。",
+      "acceptedAnswers": [
+        {
+          "surface": "金曜日",
+          "reading": "きんようび",
+          "translation": "Friday"
+        },
+        {
+          "surface": "きんようび",
+          "reading": "きんようび",
+          "translation": "Friday (kana)"
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "金曜日までに終わる見込みです。",
+        "reading": "きんようびまでにおわるみこみです。",
+        "translation": "I expect to finish by Friday."
+      },
+      "explanation": "The accepted forms fill this one constrained blank. までに marks a completion deadline; 見込み expresses an expectation, not a guarantee. Use only dates and commitments you can support."
+    },
+    {
+      "id": "lesson-estimates-deadlines-production",
+      "type": "production",
+      "prompt": "Give a provisional estimate and clarify its scope before promising a date. Use your own words and truthful or clearly fictional practice details.",
+      "exampleResponses": [
+        {
+          "surface": "金曜日までに終わる見込みです。",
+          "reading": "きんようびまでにおわるみこみです。",
+          "translation": "I expect to finish by Friday."
+        },
+        {
+          "surface": "はい、ただ、確認が必要な点が一つあります。",
+          "reading": "はい、ただ、かくにんがひつようなてんがひとつあります。",
+          "translation": "Yes, though there is one point I still need to check."
+        }
+      ],
+      "criteria": [
+        "I communicated the specific goal politely.",
+        "I separated known information from uncertainty and asked a relevant follow-up.",
+        "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+      ]
+    }
+  ],
+  "rolePlay": {
+    "task": "Give a provisional estimate and clarify its scope before promising a date. Respond to a partner, then ask a follow-up.",
+    "criteria": [
+      "I communicated the specific goal politely.",
+      "I separated known information from uncertainty and asked a relevant follow-up.",
+      "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+    ],
+    "hints": [
+      "Use the reviewed phrase bank, then hide it for independent practice.",
+      "Ask for repetition or clarification if you are unsure."
+    ],
+    "examples": [
+      {
+        "surface": "金曜日までに終わる見込みです。",
+        "reading": "きんようびまでにおわるみこみです。",
+        "translation": "I expect to finish by Friday."
+      },
+      {
+        "surface": "はい、ただ、確認が必要な点が一つあります。",
+        "reading": "はい、ただ、かくにんがひつようなてんがひとつあります。",
+        "translation": "Yes, though there is one point I still need to check."
+      }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "lesson-estimates-deadlines-review-phrase",
+      "targetKind": "phrase",
+      "targetId": "lesson-estimates-deadlines-phrase-2",
+      "skill": "Give a provisional estimate and clarify its scope before promising a date.",
+      "direction": "meaning-to-japanese"
+    },
+    {
+      "id": "lesson-estimates-deadlines-review-completion",
+      "targetKind": "exercise",
+      "targetId": "lesson-estimates-deadlines-completion",
+      "skill": "Give a provisional estimate and clarify its scope before promising a date.",
+      "direction": "context-to-utterance"
+    }
+  ],
+  "conversationGraph": {
+    "entryNodeId": "lesson-estimates-deadlines-prompt",
+    "nodes": [
+      {
+        "id": "lesson-estimates-deadlines-prompt",
+        "type": "prompt",
+        "speakerId": "lesson-estimates-deadlines-colleague",
+        "text": {
+          "surface": "いつごろ終わりそうですか。",
+          "reading": "いつごろおわりそうですか。",
+          "translation": "About when do you expect to finish?"
+        },
+        "nextNodeId": "lesson-estimates-deadlines-reply"
+      },
+      {
+        "id": "lesson-estimates-deadlines-reply",
+        "type": "completionInteraction",
+        "exerciseId": "lesson-estimates-deadlines-completion",
+        "feedback": "You expressed the target intent using the constrained example. Read the partner’s response next.",
+        "nextNodeId": "lesson-estimates-deadlines-follow"
+      },
+      {
+        "id": "lesson-estimates-deadlines-follow",
+        "type": "prompt",
+        "speakerId": "lesson-estimates-deadlines-colleague",
+        "text": {
+          "surface": "テストも含めた見込みですか。",
+          "reading": "てすともふくめたみこみですか。",
+          "translation": "Does that estimate include testing?"
+        },
+        "nextNodeId": "lesson-estimates-deadlines-end"
+      },
+      {
+        "id": "lesson-estimates-deadlines-end",
+        "type": "terminal",
+        "message": "The partner responded. Try the remaining exchange in your own words and self-assess your communication goal."
+      }
+    ]
+  },
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-03",
+    "reviewNote": "o04-expansion.md",
+    "provenance": "Original agent-authored instructional scenario and text; no external lesson passage or audio copied.",
+    "rights": "publishable",
+    "rightsBasis": "Original project-authored text approved publishable; no third-party passage or recording included."
+  }
+}

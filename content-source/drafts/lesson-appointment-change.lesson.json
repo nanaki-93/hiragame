@@ -1,0 +1,291 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 1,
+  "id": "lesson-appointment-change",
+  "topicId": "life-appointment-change",
+  "title": "Changing an appointment",
+  "situation": "A fictional everyday service exchange. Request an appointment change and check availability.",
+  "communicationGoal": "Request an appointment change and check availability.",
+  "difficulty": "beginner",
+  "durationMinutes": 8,
+  "prerequisiteLessonIds": [],
+  "dialogue": {
+    "speakers": [
+      {
+        "id": "lesson-appointment-change-colleague",
+        "name": "Partner",
+        "role": "Staff member"
+      },
+      {
+        "id": "lesson-appointment-change-learner",
+        "name": "You",
+        "role": "Learner in an illustrative exchange"
+      }
+    ],
+    "turns": [
+      {
+        "id": "lesson-appointment-change-turn-1",
+        "speakerId": "lesson-appointment-change-colleague",
+        "text": {
+          "surface": "どのようなご用件ですか。",
+          "reading": "どのようなごようけんですか。",
+          "translation": "How may I help you?"
+        }
+      },
+      {
+        "id": "lesson-appointment-change-turn-2",
+        "speakerId": "lesson-appointment-change-learner",
+        "text": {
+          "surface": "予約を変更したいのですが。",
+          "reading": "よやくをへんこうしたいのですが。",
+          "translation": "I would like to change my appointment."
+        }
+      },
+      {
+        "id": "lesson-appointment-change-turn-3",
+        "speakerId": "lesson-appointment-change-colleague",
+        "text": {
+          "surface": "ご希望の日時を教えてください。",
+          "reading": "ごきぼうのにちじをおしえてください。",
+          "translation": "Please tell me your preferred date and time."
+        }
+      },
+      {
+        "id": "lesson-appointment-change-turn-4",
+        "speakerId": "lesson-appointment-change-learner",
+        "text": {
+          "surface": "来週の月曜日の午後は空いていますか。",
+          "reading": "らいしゅうのげつようびのごごわあいていますか。",
+          "translation": "Is there an opening next Monday afternoon?"
+        }
+      },
+      {
+        "id": "lesson-appointment-change-turn-5",
+        "speakerId": "lesson-appointment-change-colleague",
+        "text": {
+          "surface": "二時なら空いています。",
+          "reading": "にじならあいています。",
+          "translation": "There is an opening at two."
+        }
+      },
+      {
+        "id": "lesson-appointment-change-turn-6",
+        "speakerId": "lesson-appointment-change-learner",
+        "text": {
+          "surface": "では、二時でお願いします。",
+          "reading": "では、にじでおねがいします。",
+          "translation": "Then two o’clock, please."
+        }
+      }
+    ]
+  },
+  "phrases": [
+    {
+      "id": "lesson-appointment-change-phrase-2",
+      "text": {
+        "surface": "予約を変更したいのですが。",
+        "reading": "よやくをへんこうしたいのですが。",
+        "translation": "I would like to change my appointment."
+      },
+      "sourceTurnId": "lesson-appointment-change-turn-2",
+      "usage": "Request an appointment change and check availability.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-appointment-change-phrase-4",
+      "text": {
+        "surface": "来週の月曜日の午後は空いていますか。",
+        "reading": "らいしゅうのげつようびのごごわあいていますか。",
+        "translation": "Is there an opening next Monday afternoon?"
+      },
+      "sourceTurnId": "lesson-appointment-change-turn-4",
+      "usage": "Request an appointment change and check availability.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-appointment-change-phrase-6",
+      "text": {
+        "surface": "では、二時でお願いします。",
+        "reading": "では、にじでおねがいします。",
+        "translation": "Then two o’clock, please."
+      },
+      "sourceTurnId": "lesson-appointment-change-turn-6",
+      "usage": "Request an appointment change and check availability.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    }
+  ],
+  "grammarNotes": [
+    {
+      "id": "lesson-appointment-change-grammar",
+      "explanation": "〜たいのですが politely opens a request and leaves room for the other person to respond. なら introduces the available condition.",
+      "examples": [
+        {
+          "surface": "予約を変更したいのですが。",
+          "reading": "よやくをへんこうしたいのですが。",
+          "translation": "I would like to change my appointment."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lesson-appointment-change-choice",
+      "type": "choice",
+      "prompt": "Which response directly serves this goal: Request an appointment change and check availability.",
+      "options": [
+        {
+          "id": "lesson-appointment-change-target",
+          "text": {
+            "surface": "予約を変更したいのですが。",
+            "reading": "よやくをへんこうしたいのですが。",
+            "translation": "I would like to change my appointment."
+          }
+        },
+        {
+          "id": "lesson-appointment-change-acknowledge",
+          "text": {
+            "surface": "分かりました。",
+            "reading": "わかりました。",
+            "translation": "Understood."
+          }
+        }
+      ],
+      "correctOptionId": "lesson-appointment-change-target",
+      "explanation": "The target response states or asks for the specific information. Acknowledgement alone does not express that information. Other natural responses may also work in open conversation."
+    },
+    {
+      "id": "lesson-appointment-change-completion",
+      "type": "completion",
+      "prompt": "Complete the specific response from the dialogue. Use the reviewed word for: change.",
+      "template": "予約を{blank}したいのですが。",
+      "acceptedAnswers": [
+        {
+          "surface": "変更",
+          "reading": "へんこう",
+          "translation": "change"
+        },
+        {
+          "surface": "へんこう",
+          "reading": "へんこう",
+          "translation": "change (kana)"
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "予約を変更したいのですが。",
+        "reading": "よやくをへんこうしたいのですが。",
+        "translation": "I would like to change my appointment."
+      },
+      "explanation": "The accepted forms fill this one constrained blank. 〜たいのですが politely opens a request and leaves room for the other person to respond. なら introduces the available condition."
+    },
+    {
+      "id": "lesson-appointment-change-production",
+      "type": "production",
+      "prompt": "Request an appointment change and check availability. Use your own words and truthful or clearly fictional practice details.",
+      "exampleResponses": [
+        {
+          "surface": "予約を変更したいのですが。",
+          "reading": "よやくをへんこうしたいのですが。",
+          "translation": "I would like to change my appointment."
+        },
+        {
+          "surface": "来週の月曜日の午後は空いていますか。",
+          "reading": "らいしゅうのげつようびのごごわあいていますか。",
+          "translation": "Is there an opening next Monday afternoon?"
+        }
+      ],
+      "criteria": [
+        "I communicated the specific goal politely.",
+        "I separated known information from uncertainty and asked a relevant follow-up.",
+        "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+      ]
+    }
+  ],
+  "rolePlay": {
+    "task": "Request an appointment change and check availability. Respond to a partner, then ask a follow-up.",
+    "criteria": [
+      "I communicated the specific goal politely.",
+      "I separated known information from uncertainty and asked a relevant follow-up.",
+      "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+    ],
+    "hints": [
+      "Use the reviewed phrase bank, then hide it for independent practice.",
+      "Ask for repetition or clarification if you are unsure."
+    ],
+    "examples": [
+      {
+        "surface": "予約を変更したいのですが。",
+        "reading": "よやくをへんこうしたいのですが。",
+        "translation": "I would like to change my appointment."
+      },
+      {
+        "surface": "来週の月曜日の午後は空いていますか。",
+        "reading": "らいしゅうのげつようびのごごわあいていますか。",
+        "translation": "Is there an opening next Monday afternoon?"
+      }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "lesson-appointment-change-review-phrase",
+      "targetKind": "phrase",
+      "targetId": "lesson-appointment-change-phrase-2",
+      "skill": "Request an appointment change and check availability.",
+      "direction": "meaning-to-japanese"
+    },
+    {
+      "id": "lesson-appointment-change-review-completion",
+      "targetKind": "exercise",
+      "targetId": "lesson-appointment-change-completion",
+      "skill": "Request an appointment change and check availability.",
+      "direction": "context-to-utterance"
+    }
+  ],
+  "conversationGraph": {
+    "entryNodeId": "lesson-appointment-change-prompt",
+    "nodes": [
+      {
+        "id": "lesson-appointment-change-prompt",
+        "type": "prompt",
+        "speakerId": "lesson-appointment-change-colleague",
+        "text": {
+          "surface": "どのようなご用件ですか。",
+          "reading": "どのようなごようけんですか。",
+          "translation": "How may I help you?"
+        },
+        "nextNodeId": "lesson-appointment-change-reply"
+      },
+      {
+        "id": "lesson-appointment-change-reply",
+        "type": "completionInteraction",
+        "exerciseId": "lesson-appointment-change-completion",
+        "feedback": "You expressed the target intent using the constrained example. Read the partner’s response next.",
+        "nextNodeId": "lesson-appointment-change-follow"
+      },
+      {
+        "id": "lesson-appointment-change-follow",
+        "type": "prompt",
+        "speakerId": "lesson-appointment-change-colleague",
+        "text": {
+          "surface": "ご希望の日時を教えてください。",
+          "reading": "ごきぼうのにちじをおしえてください。",
+          "translation": "Please tell me your preferred date and time."
+        },
+        "nextNodeId": "lesson-appointment-change-end"
+      },
+      {
+        "id": "lesson-appointment-change-end",
+        "type": "terminal",
+        "message": "The partner responded. Try the remaining exchange in your own words and self-assess your communication goal."
+      }
+    ]
+  },
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-03",
+    "reviewNote": "o04-expansion.md",
+    "provenance": "Original agent-authored instructional scenario and text; no external lesson passage or audio copied.",
+    "rights": "publishable",
+    "rightsBasis": "Original project-authored text approved publishable; no third-party passage or recording included."
+  }
+}

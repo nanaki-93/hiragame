@@ -12,4 +12,5 @@ fun resetLearnerState(snapshot: SaveEnvelope, scope: ResetScope): SaveEnvelope =
     lessonProgress = emptyList(),
     practiceProgress = emptyList(),
     reviewItems = emptyList(),
+    personalGlossary = if (scope == ResetScope.PROGRESS_ONLY) snapshot.personalGlossary else emptyList(),
 )

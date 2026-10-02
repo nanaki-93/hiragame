@@ -222,10 +222,10 @@ class F06ContentTest(unittest.TestCase):
              "Request review of a small code change and respond constructively to a teammate's suggestion."),
         )
         entries = [entry for entry in catalog["entries"] if entry["kind"] == "lesson"]
-        self.assertEqual([entry["id"] for entry in entries],
+        self.assertEqual([entry["id"] for entry in entries[:6]],
                          [f"lesson-{name}" for name, _, _ in starters] + ["lesson-confirm-meeting-time"])
-        self.assertEqual(len(entries), 6)
-        self.assertEqual(catalog["contentVersion"], 4)
+        self.assertEqual(len(entries), 15)
+        self.assertEqual(catalog["contentVersion"], 13)
         topics = {topic["id"] for topic in catalog["topics"]}
         note = (ROOT.parents[5] / "content-source/review-notes/f06-starter-lessons.md").read_text(encoding="utf-8")
         documents = {}
@@ -233,7 +233,7 @@ class F06ContentTest(unittest.TestCase):
         for entry in catalog["entries"]:
             doc = load(entry["path"])
             self.assertEqual((doc["formatVersion"], doc["contentVersion"], doc["id"], doc["topicId"]),
-                             (1, 4, entry["id"], entry["topicId"]))
+                             (1, 13, entry["id"], entry["topicId"]))
             self.assertIn(entry["topicId"], topics)
             self.assertNotIn(doc["id"], all_ids)
             all_ids.add(doc["id"])

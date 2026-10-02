@@ -15,6 +15,17 @@ data class SaveEnvelope(
     @SerialName("lessonProgress") val lessonProgress: List<LessonProgress> = emptyList(),
     @SerialName("practiceProgress") val practiceProgress: List<PracticeCheckpoint> = emptyList(),
     @SerialName("reviewItems") val reviewItems: List<ReviewItemProgress> = emptyList(),
+    /** Explicitly saved personal notes, never approved curriculum or automatically graded items. */
+    @SerialName("personalGlossary") val personalGlossary: List<GlossaryEntry> = emptyList(),
+)
+
+@Serializable
+@SerialName("personalGlossaryEntry")
+data class GlossaryEntry(
+    @SerialName("id") val id: String,
+    @SerialName("term") val term: String,
+    @SerialName("reading") val reading: String = "",
+    @SerialName("meaning") val meaning: String,
 )
 
 @Serializable

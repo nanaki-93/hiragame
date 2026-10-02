@@ -69,6 +69,7 @@ class BackupRoundTripIntegrationTest {
         assertIs<SessionView.Feedback>(assertIs<LocalPracticeState.Ready>(first.state.value).session!!.view)
         owner.mutate { changePreferences(it, it.preferences.copy(colorMode = SavedColorMode.DARK, showRomaji = true, showReadings = false)) }
         owner.mutate { snapshot -> ProgressUpdate.Applied(snapshot.copy(
+            personalGlossary = listOf(com.github.nanaki_93.progress.GlossaryEntry("personal_1", "要件", "ようけん", "requirement")),
             lessonProgress = listOf(
                 LessonProgress("unknown_finished", 1, 800, LessonStage.SUMMARY, completedAtEpochMs = 800),
                 LessonProgress("unknown_unfinished", 1, 900, LessonStage.DIALOGUE),
@@ -86,6 +87,7 @@ class BackupRoundTripIntegrationTest {
         assertEquals(ReplacementResult.Replaced, owner.confirmReplacement(reset))
         assertNull(assertIs<LocalPracticeState.Ready>(first.state.value).session)
         assertEquals(emptyList(), owner.state.value.snapshot.practiceProgress)
+        assertEquals(emptyList(), owner.state.value.snapshot.personalGlossary)
         val platform = FilePlatform().apply { bytes = exported.encodeToByteArray() }
         val flow = BackupFlowCoordinator(owner, BackupFileReader(platform))
         flow.select(Unit, "backup.json")
@@ -94,6 +96,7 @@ class BackupRoundTripIntegrationTest {
         assertEquals(1, preview.completedLessonCount)
         assertEquals(1, preview.practiceCheckpointCount)
         assertEquals(1, preview.reviewItemCount)
+        assertEquals(1, preview.glossaryEntryCount)
         flow.requestConfirmation()
         assertIs<BackupFlowState.Confirming>(flow.state.value)
         writeTime = 4000L
@@ -101,6 +104,7 @@ class BackupRoundTripIntegrationTest {
         assertIs<BackupFlowState.Success>(flow.state.value)
         val restored = owner.state.value.snapshot
         assertEquals(payload.preferences, restored.preferences)
+        assertEquals(payload.personalGlossary, restored.personalGlossary)
         assertEquals(payload.lessonProgress, restored.lessonProgress)
         assertEquals(payload.practiceProgress, restored.practiceProgress)
         assertEquals(payload.reviewItems, restored.reviewItems)

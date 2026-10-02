@@ -1,0 +1,291 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 13,
+  "id": "lesson-housing-viewing",
+  "topicId": "life-housing-viewing",
+  "title": "Housing enquiries",
+  "situation": "A fictional everyday service exchange. Ask about viewing a room and confirm a proposed time.",
+  "communicationGoal": "Ask about viewing a room and confirm a proposed time.",
+  "difficulty": "beginner",
+  "durationMinutes": 8,
+  "prerequisiteLessonIds": [],
+  "dialogue": {
+    "speakers": [
+      {
+        "id": "lesson-housing-viewing-colleague",
+        "name": "Partner",
+        "role": "Staff member"
+      },
+      {
+        "id": "lesson-housing-viewing-learner",
+        "name": "You",
+        "role": "Learner in an illustrative exchange"
+      }
+    ],
+    "turns": [
+      {
+        "id": "lesson-housing-viewing-turn-1",
+        "speakerId": "lesson-housing-viewing-colleague",
+        "text": {
+          "surface": "どのようなご用件ですか。",
+          "reading": "どのようなごようけんですか。",
+          "translation": "How may I help you?"
+        }
+      },
+      {
+        "id": "lesson-housing-viewing-turn-2",
+        "speakerId": "lesson-housing-viewing-learner",
+        "text": {
+          "surface": "この部屋を見学できますか。",
+          "reading": "このへやをけんがくできますか。",
+          "translation": "Can I view this room?"
+        }
+      },
+      {
+        "id": "lesson-housing-viewing-turn-3",
+        "speakerId": "lesson-housing-viewing-colleague",
+        "text": {
+          "surface": "はい、土曜日はいかがですか。",
+          "reading": "はい、どようびわいかがですか。",
+          "translation": "Yes. How about Saturday?"
+        }
+      },
+      {
+        "id": "lesson-housing-viewing-turn-4",
+        "speakerId": "lesson-housing-viewing-learner",
+        "text": {
+          "surface": "午後でもいいですか。",
+          "reading": "ごごでもいいですか。",
+          "translation": "Would the afternoon be all right?"
+        }
+      },
+      {
+        "id": "lesson-housing-viewing-turn-5",
+        "speakerId": "lesson-housing-viewing-colleague",
+        "text": {
+          "surface": "三時はいかがですか。",
+          "reading": "さんじわいかがですか。",
+          "translation": "How about three o’clock?"
+        }
+      },
+      {
+        "id": "lesson-housing-viewing-turn-6",
+        "speakerId": "lesson-housing-viewing-learner",
+        "text": {
+          "surface": "はい、お願いします。",
+          "reading": "はい、おねがいします。",
+          "translation": "Yes, please."
+        }
+      }
+    ]
+  },
+  "phrases": [
+    {
+      "id": "lesson-housing-viewing-phrase-2",
+      "text": {
+        "surface": "この部屋を見学できますか。",
+        "reading": "このへやをけんがくできますか。",
+        "translation": "Can I view this room?"
+      },
+      "sourceTurnId": "lesson-housing-viewing-turn-2",
+      "usage": "Ask about viewing a room and confirm a proposed time.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-housing-viewing-phrase-4",
+      "text": {
+        "surface": "午後でもいいですか。",
+        "reading": "ごごでもいいですか。",
+        "translation": "Would the afternoon be all right?"
+      },
+      "sourceTurnId": "lesson-housing-viewing-turn-4",
+      "usage": "Ask about viewing a room and confirm a proposed time.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-housing-viewing-phrase-6",
+      "text": {
+        "surface": "はい、お願いします。",
+        "reading": "はい、おねがいします。",
+        "translation": "Yes, please."
+      },
+      "sourceTurnId": "lesson-housing-viewing-turn-6",
+      "usage": "Ask about viewing a room and confirm a proposed time.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    }
+  ],
+  "grammarNotes": [
+    {
+      "id": "lesson-housing-viewing-grammar",
+      "explanation": "できますか asks whether something is possible. いかがですか is a polite proposal. A viewing is not a rental agreement.",
+      "examples": [
+        {
+          "surface": "この部屋を見学できますか。",
+          "reading": "このへやをけんがくできますか。",
+          "translation": "Can I view this room?"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lesson-housing-viewing-choice",
+      "type": "choice",
+      "prompt": "Which response directly serves this goal: Ask about viewing a room and confirm a proposed time.",
+      "options": [
+        {
+          "id": "lesson-housing-viewing-target",
+          "text": {
+            "surface": "この部屋を見学できますか。",
+            "reading": "このへやをけんがくできますか。",
+            "translation": "Can I view this room?"
+          }
+        },
+        {
+          "id": "lesson-housing-viewing-acknowledge",
+          "text": {
+            "surface": "分かりました。",
+            "reading": "わかりました。",
+            "translation": "Understood."
+          }
+        }
+      ],
+      "correctOptionId": "lesson-housing-viewing-target",
+      "explanation": "The target response states or asks for the specific information. Acknowledgement alone does not express that information. Other natural responses may also work in open conversation."
+    },
+    {
+      "id": "lesson-housing-viewing-completion",
+      "type": "completion",
+      "prompt": "Complete the specific response from the dialogue. Use the reviewed word for: room.",
+      "template": "この{blank}を見学できますか。",
+      "acceptedAnswers": [
+        {
+          "surface": "部屋",
+          "reading": "へや",
+          "translation": "room"
+        },
+        {
+          "surface": "へや",
+          "reading": "へや",
+          "translation": "room (kana)"
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "この部屋を見学できますか。",
+        "reading": "このへやをけんがくできますか。",
+        "translation": "Can I view this room?"
+      },
+      "explanation": "The accepted forms fill this one constrained blank. できますか asks whether something is possible. いかがですか is a polite proposal. A viewing is not a rental agreement."
+    },
+    {
+      "id": "lesson-housing-viewing-production",
+      "type": "production",
+      "prompt": "Ask about viewing a room and confirm a proposed time. Use your own words and truthful or clearly fictional practice details.",
+      "exampleResponses": [
+        {
+          "surface": "この部屋を見学できますか。",
+          "reading": "このへやをけんがくできますか。",
+          "translation": "Can I view this room?"
+        },
+        {
+          "surface": "午後でもいいですか。",
+          "reading": "ごごでもいいですか。",
+          "translation": "Would the afternoon be all right?"
+        }
+      ],
+      "criteria": [
+        "I communicated the specific goal politely.",
+        "I separated known information from uncertainty and asked a relevant follow-up.",
+        "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+      ]
+    }
+  ],
+  "rolePlay": {
+    "task": "Ask about viewing a room and confirm a proposed time. Respond to a partner, then ask a follow-up.",
+    "criteria": [
+      "I communicated the specific goal politely.",
+      "I separated known information from uncertainty and asked a relevant follow-up.",
+      "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+    ],
+    "hints": [
+      "Use the reviewed phrase bank, then hide it for independent practice.",
+      "Ask for repetition or clarification if you are unsure."
+    ],
+    "examples": [
+      {
+        "surface": "この部屋を見学できますか。",
+        "reading": "このへやをけんがくできますか。",
+        "translation": "Can I view this room?"
+      },
+      {
+        "surface": "午後でもいいですか。",
+        "reading": "ごごでもいいですか。",
+        "translation": "Would the afternoon be all right?"
+      }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "lesson-housing-viewing-review-phrase",
+      "targetKind": "phrase",
+      "targetId": "lesson-housing-viewing-phrase-2",
+      "skill": "Ask about viewing a room and confirm a proposed time.",
+      "direction": "meaning-to-japanese"
+    },
+    {
+      "id": "lesson-housing-viewing-review-completion",
+      "targetKind": "exercise",
+      "targetId": "lesson-housing-viewing-completion",
+      "skill": "Ask about viewing a room and confirm a proposed time.",
+      "direction": "context-to-utterance"
+    }
+  ],
+  "conversationGraph": {
+    "entryNodeId": "lesson-housing-viewing-prompt",
+    "nodes": [
+      {
+        "id": "lesson-housing-viewing-prompt",
+        "type": "prompt",
+        "speakerId": "lesson-housing-viewing-colleague",
+        "text": {
+          "surface": "どのようなご用件ですか。",
+          "reading": "どのようなごようけんですか。",
+          "translation": "How may I help you?"
+        },
+        "nextNodeId": "lesson-housing-viewing-reply"
+      },
+      {
+        "id": "lesson-housing-viewing-reply",
+        "type": "completionInteraction",
+        "exerciseId": "lesson-housing-viewing-completion",
+        "feedback": "You expressed the target intent using the constrained example. Read the partner’s response next.",
+        "nextNodeId": "lesson-housing-viewing-follow"
+      },
+      {
+        "id": "lesson-housing-viewing-follow",
+        "type": "prompt",
+        "speakerId": "lesson-housing-viewing-colleague",
+        "text": {
+          "surface": "はい、土曜日はいかがですか。",
+          "reading": "はい、どようびわいかがですか。",
+          "translation": "Yes. How about Saturday?"
+        },
+        "nextNodeId": "lesson-housing-viewing-end"
+      },
+      {
+        "id": "lesson-housing-viewing-end",
+        "type": "terminal",
+        "message": "The partner responded. Try the remaining exchange in your own words and self-assess your communication goal."
+      }
+    ]
+  },
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-03",
+    "reviewNote": "o04-expansion.md",
+    "provenance": "Original agent-authored instructional scenario and text; no external lesson passage or audio copied.",
+    "rights": "publishable",
+    "rightsBasis": "Original project-authored text approved publishable; no third-party passage or recording included."
+  }
+}

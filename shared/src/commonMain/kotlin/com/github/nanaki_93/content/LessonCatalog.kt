@@ -120,7 +120,7 @@ fun projectLessonCatalog(
         beginnerPath = options.beginnerPath,
         beginnerPathCards = if (options.beginnerPath) cards.filter {
             it.difficulty == AdvisoryDifficulty.BEGINNER && it.lessonId != SUPPLEMENTAL_SEED_ID
-        } else emptyList(),
+        }.take(5) else emptyList(), // Keep the starter plan short as the optional curriculum grows.
         recommendation = recommendLesson(cards, snapshot),
         unavailableSavedLessons = snapshot.lessonProgress.filter { it.lessonId !in availableIds }.map {
             LessonSavedStatus(it, documentAvailable = false, checkpointAvailable = false)

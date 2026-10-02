@@ -61,7 +61,7 @@ class FoundationalPracticeIntegrationTest {
     @Test fun everyCanonicalMicroSetIsSelectableAndEveryAuthoredExerciseFitsTheCheckpoint() = runTest {
         val canonical = assertIs<CatalogLoad.Ready>(BundledContentLoader(source).load())
         val sets = canonical.content.practiceSets
-        assertEquals(4, canonical.content.catalog.contentVersion) // pre-bump seed checkpoints still resolve by stable ID
+        assertEquals(13, canonical.content.catalog.contentVersion) // pre-bump seed checkpoints still resolve by stable ID
         assertTrue(sets.size > 3)
         assertTrue(sets.keys.any { it.startsWith("practice-hiragana-") })
         assertTrue(sets.keys.any { it.startsWith("practice-katakana-") })
