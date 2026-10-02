@@ -1,0 +1,7 @@
+# F09 phrase review — 2026-10-03
+
+Completed lessons/practice expose only explicit authored review IDs. A session selects overdue items first, then up to three new items, with ten items maximum and no duplicates. An explicit Practise ahead action permits reviewing early. Introduction is capped per session, not a daily quota. Missing content retains its saved record without creating an unusable card.
+
+Scheduler: Again → ten minutes, Hard → one step shorter (minimum one day), Good → next step. Steps: ten minutes, one, three, seven, fourteen, thirty days. Again increments lapses without erasing repetitions. UTC timestamps are clamped to save bounds, and backward clocks never precede the last rating. Display uses the device's local date with the offset at each timestamp. No streak/mastery claims. Revealing is required before a rating. Full prior-record comparison, per-action tokens and owner generations prevent duplicate/stale commits across clicks, reloads and replacements. Storage failure status remains visible, including memory-only progress.
+
+Validation: `JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home ./gradlew --no-daemon :shared:jsNodeTest :site:jsNodeTest` passed, including compilation, 114 shared tests and 179 site tests. New tests cover initial/repeated success, bounded growth, lapses, hard, duplicate/intervening actions, UTC/local midnight boundaries, backward/end-of-range clocks, selection bounds, serialization round trip, reveal gating, persisted reload and expired owner generation. No running app/browser tests.

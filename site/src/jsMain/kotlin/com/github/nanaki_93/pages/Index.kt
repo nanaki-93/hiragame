@@ -128,6 +128,13 @@ fun HomePage() {
                 verticalArrangement = Arrangement.spacedBy(1.cssRem),
             ) {
                 H1 { Text("Hiragame") }
+                Link(path = "/review") { Text("Phrase review") }
+                val dueCount = saved.snapshot.reviewItems.count { (it.dueAtEpochMs ?: it.lastReviewedAtEpochMs) <= kotlin.js.Date.now().toLong() }
+                P { Text("$dueCount phrases due · ${saved.snapshot.lessonProgress.count { it.completedAtEpochMs != null }} lessons completed") }
+                if (dueCount > 0) Link(path = "/review") { Text("Start due reviews") }
+                else saved.snapshot.lessonProgress.filter { it.completedAtEpochMs == null }.maxByOrNull { it.updatedAtEpochMs }?.let {
+                    Link(path = "/lesson?lessonId=${it.lessonId}") { Text("Continue your lesson") }
+                }
                 // Keep the catalog reachable during loading, empty practice, errors, and active sessions.
                 Link(path = "/topics") { Text("Topics / Learn") }
                 when (val current = state) {

@@ -92,6 +92,7 @@ fun LessonPage() {
                 if (darkMode) Modifier.backgroundColor(Colors.DarkCardBackground).color(Colors.DarkText) else Modifier
             )) {
                 H1 { Text("Workplace lesson") }
+                Link(path = "/review") { Text("Phrase review") }
                 // Logical paths: Kobweb Link applies the configured /hiragame base exactly once.
                 Link(path = "/topics") { Text("Back to Topics") }
                 Link(path = "/") { Text("Back to Home") }

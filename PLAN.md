@@ -367,18 +367,20 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** F01, F02, F03, F07; F05 practice can also supply eligible items.
 
+**Status:** Implemented 2026-10-03; [F09 evidence](content-source/review-notes/f09-validation.md).
+
 ### Implementation tasks
 
-- [ ] Define explicit review items linked to stable phrase/exercise IDs; keep separate items for different directions/skills when necessary.
-- [ ] Introduce a small number of items from studied lessons. Do not enqueue all legacy questions at startup.
-- [ ] Implement a simple, documented scheduler with `Again`, `Hard`, and `Good`; start with bounded intervals rather than a large adaptive algorithm.
-- [ ] Store due time, interval/step, repetitions, and lapses. A lapse should shorten future review, not erase overall progress.
-- [ ] Use injected time in domain logic and UTC timestamps for storage. Define local-day grouping for display and test timezone/clock-boundary behaviour.
-- [ ] Select due items before introducing new ones, cap session length/new items, and prevent immediate duplicate selection except deliberate relearning.
-- [ ] Show the original workplace context, reading, and meaning after recall.
-- [ ] Commit each review once; prevent double clicks and session restarts from accidentally advancing the same scheduling action twice.
-- [ ] Show due count, phrases practised, and lesson completion. Avoid claims that a streak proves fluency.
-- [ ] Provide a friendly no-due-items state with a choice to learn or intentionally practise ahead.
+- [x] Define explicit review items linked to stable phrase/exercise IDs; keep separate items for different directions/skills when necessary.
+- [x] Introduce a small number of items from studied lessons. Do not enqueue all legacy questions at startup.
+- [x] Implement a simple, documented scheduler with `Again`, `Hard`, and `Good`; start with bounded intervals rather than a large adaptive algorithm.
+- [x] Store due time, interval/step, repetitions, and lapses. A lapse should shorten future review, not erase overall progress.
+- [x] Use injected time in domain logic and UTC timestamps for storage. Define local-day grouping for display and test timezone/clock-boundary behaviour.
+- [x] Select due items before introducing new ones, cap session length/new items, and prevent immediate duplicate selection except deliberate relearning.
+- [x] Show the original workplace context, reading, and meaning after recall.
+- [x] Commit each review once; prevent double clicks and session restarts from accidentally advancing the same scheduling action twice.
+- [x] Show due count, phrases practised, and lesson completion. Avoid claims that a streak proves fluency.
+- [x] Provide a friendly no-due-items state with a choice to learn or intentionally practise ahead.
 
 ### Acceptance criteria
 
