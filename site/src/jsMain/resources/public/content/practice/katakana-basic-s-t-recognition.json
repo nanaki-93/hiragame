@@ -1,0 +1,451 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-basic-s-t-recognition",
+  "topicId": "katakana-foundations",
+  "title": "Basic katakana: S and T rows — find the sign",
+  "description": "Choose the written sign from three visible kana using a basic sound or specified spelling context. 10 independent targets.",
+  "reviewItems": [
+    {
+      "id": "review-kb-recognition-30b5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30b5",
+      "skill": "Recognize basic katakana サ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30b7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30b7",
+      "skill": "Recognize basic katakana シ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30b9",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30b9",
+      "skill": "Recognize basic katakana ス",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30bb",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30bb",
+      "skill": "Recognize basic katakana セ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30bd",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30bd",
+      "skill": "Recognize basic katakana ソ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30bf",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30bf",
+      "skill": "Recognize basic katakana タ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30c1",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30c1",
+      "skill": "Recognize basic katakana チ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30c4",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30c4",
+      "skill": "Recognize basic katakana ツ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30c6",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30c6",
+      "skill": "Recognize basic katakana テ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30c8",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30c8",
+      "skill": "Recognize basic katakana ト",
+      "direction": "spelling-cue-to-sign"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independent agent-authored katakana sign cues and feedback; no CSV or mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; katakana correspondences are linguistic facts. No third-party text or audio used."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30b5",
+      "prompt": "Which katakana sign has the basic reading conventionally written sa in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30b5-for-30b5",
+          "text": {
+            "surface": "サ",
+            "reading": "サ",
+            "gloss": "Katakana sign for the basic sa reading.",
+            "romaji": "sa"
+          }
+        },
+        {
+          "id": "option-kb-30b7-for-30b5",
+          "text": {
+            "surface": "シ",
+            "reading": "シ",
+            "gloss": "Katakana sign for the basic shi reading.",
+            "romaji": "shi"
+          }
+        },
+        {
+          "id": "option-kb-30b9-for-30b5",
+          "text": {
+            "surface": "ス",
+            "reading": "ス",
+            "gloss": "Katakana sign for the basic su reading.",
+            "romaji": "su"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30b5-for-30b5",
+      "explanation": "サ is the katakana sign for the written sa cue. Katakana sign for the basic sa reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30b7",
+      "prompt": "Which katakana sign has the basic reading conventionally written shi in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30b9-for-30b7",
+          "text": {
+            "surface": "ス",
+            "reading": "ス",
+            "gloss": "Katakana sign for the basic su reading.",
+            "romaji": "su"
+          }
+        },
+        {
+          "id": "option-kb-30bb-for-30b7",
+          "text": {
+            "surface": "セ",
+            "reading": "セ",
+            "gloss": "Katakana sign for the basic se reading.",
+            "romaji": "se"
+          }
+        },
+        {
+          "id": "option-kb-30b7-for-30b7",
+          "text": {
+            "surface": "シ",
+            "reading": "シ",
+            "gloss": "Katakana sign for the basic shi reading.",
+            "romaji": "shi"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30b7-for-30b7",
+      "explanation": "シ is the katakana sign for the written shi cue. Katakana sign for the basic shi reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30b9",
+      "prompt": "Which katakana sign has the basic reading conventionally written su in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30bd-for-30b9",
+          "text": {
+            "surface": "ソ",
+            "reading": "ソ",
+            "gloss": "Katakana sign for the basic so reading.",
+            "romaji": "so"
+          }
+        },
+        {
+          "id": "option-kb-30b9-for-30b9",
+          "text": {
+            "surface": "ス",
+            "reading": "ス",
+            "gloss": "Katakana sign for the basic su reading.",
+            "romaji": "su"
+          }
+        },
+        {
+          "id": "option-kb-30bb-for-30b9",
+          "text": {
+            "surface": "セ",
+            "reading": "セ",
+            "gloss": "Katakana sign for the basic se reading.",
+            "romaji": "se"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30b9-for-30b9",
+      "explanation": "ス is the katakana sign for the written su cue. Katakana sign for the basic su reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30bb",
+      "prompt": "Which katakana sign has the basic reading conventionally written se in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30bb-for-30bb",
+          "text": {
+            "surface": "セ",
+            "reading": "セ",
+            "gloss": "Katakana sign for the basic se reading.",
+            "romaji": "se"
+          }
+        },
+        {
+          "id": "option-kb-30bd-for-30bb",
+          "text": {
+            "surface": "ソ",
+            "reading": "ソ",
+            "gloss": "Katakana sign for the basic so reading.",
+            "romaji": "so"
+          }
+        },
+        {
+          "id": "option-kb-30bf-for-30bb",
+          "text": {
+            "surface": "タ",
+            "reading": "タ",
+            "gloss": "Katakana sign for the basic ta reading.",
+            "romaji": "ta"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30bb-for-30bb",
+      "explanation": "セ is the katakana sign for the written se cue. Katakana sign for the basic se reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30bd",
+      "prompt": "Which katakana sign has the basic reading conventionally written so in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30bf-for-30bd",
+          "text": {
+            "surface": "タ",
+            "reading": "タ",
+            "gloss": "Katakana sign for the basic ta reading.",
+            "romaji": "ta"
+          }
+        },
+        {
+          "id": "option-kb-30c1-for-30bd",
+          "text": {
+            "surface": "チ",
+            "reading": "チ",
+            "gloss": "Katakana sign for the basic chi reading.",
+            "romaji": "chi"
+          }
+        },
+        {
+          "id": "option-kb-30bd-for-30bd",
+          "text": {
+            "surface": "ソ",
+            "reading": "ソ",
+            "gloss": "Katakana sign for the basic so reading.",
+            "romaji": "so"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30bd-for-30bd",
+      "explanation": "ソ is the katakana sign for the written so cue. Katakana sign for the basic so reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30bf",
+      "prompt": "Which katakana sign has the basic reading conventionally written ta in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30c4-for-30bf",
+          "text": {
+            "surface": "ツ",
+            "reading": "ツ",
+            "gloss": "Katakana sign for the basic tsu reading.",
+            "romaji": "tsu"
+          }
+        },
+        {
+          "id": "option-kb-30bf-for-30bf",
+          "text": {
+            "surface": "タ",
+            "reading": "タ",
+            "gloss": "Katakana sign for the basic ta reading.",
+            "romaji": "ta"
+          }
+        },
+        {
+          "id": "option-kb-30c1-for-30bf",
+          "text": {
+            "surface": "チ",
+            "reading": "チ",
+            "gloss": "Katakana sign for the basic chi reading.",
+            "romaji": "chi"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30bf-for-30bf",
+      "explanation": "タ is the katakana sign for the written ta cue. Katakana sign for the basic ta reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30c1",
+      "prompt": "Which katakana sign has the basic reading conventionally written chi in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30c1-for-30c1",
+          "text": {
+            "surface": "チ",
+            "reading": "チ",
+            "gloss": "Katakana sign for the basic chi reading.",
+            "romaji": "chi"
+          }
+        },
+        {
+          "id": "option-kb-30c4-for-30c1",
+          "text": {
+            "surface": "ツ",
+            "reading": "ツ",
+            "gloss": "Katakana sign for the basic tsu reading.",
+            "romaji": "tsu"
+          }
+        },
+        {
+          "id": "option-kb-30c6-for-30c1",
+          "text": {
+            "surface": "テ",
+            "reading": "テ",
+            "gloss": "Katakana sign for the basic te reading.",
+            "romaji": "te"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30c1-for-30c1",
+      "explanation": "チ is the katakana sign for the written chi cue. Katakana sign for the basic chi reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30c4",
+      "prompt": "Which katakana sign has the basic reading conventionally written tsu in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30c6-for-30c4",
+          "text": {
+            "surface": "テ",
+            "reading": "テ",
+            "gloss": "Katakana sign for the basic te reading.",
+            "romaji": "te"
+          }
+        },
+        {
+          "id": "option-kb-30c8-for-30c4",
+          "text": {
+            "surface": "ト",
+            "reading": "ト",
+            "gloss": "Katakana sign for the basic to reading.",
+            "romaji": "to"
+          }
+        },
+        {
+          "id": "option-kb-30c4-for-30c4",
+          "text": {
+            "surface": "ツ",
+            "reading": "ツ",
+            "gloss": "Katakana sign for the basic tsu reading.",
+            "romaji": "tsu"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30c4-for-30c4",
+      "explanation": "ツ is the katakana sign for the written tsu cue. Katakana sign for the basic tsu reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30c6",
+      "prompt": "Which katakana sign has the basic reading conventionally written te in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30b5-for-30c6",
+          "text": {
+            "surface": "サ",
+            "reading": "サ",
+            "gloss": "Katakana sign for the basic sa reading.",
+            "romaji": "sa"
+          }
+        },
+        {
+          "id": "option-kb-30c6-for-30c6",
+          "text": {
+            "surface": "テ",
+            "reading": "テ",
+            "gloss": "Katakana sign for the basic te reading.",
+            "romaji": "te"
+          }
+        },
+        {
+          "id": "option-kb-30c8-for-30c6",
+          "text": {
+            "surface": "ト",
+            "reading": "ト",
+            "gloss": "Katakana sign for the basic to reading.",
+            "romaji": "to"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30c6-for-30c6",
+      "explanation": "テ is the katakana sign for the written te cue. Katakana sign for the basic te reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30c8",
+      "prompt": "Which katakana sign has the basic reading conventionally written to in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30c8-for-30c8",
+          "text": {
+            "surface": "ト",
+            "reading": "ト",
+            "gloss": "Katakana sign for the basic to reading.",
+            "romaji": "to"
+          }
+        },
+        {
+          "id": "option-kb-30b5-for-30c8",
+          "text": {
+            "surface": "サ",
+            "reading": "サ",
+            "gloss": "Katakana sign for the basic sa reading.",
+            "romaji": "sa"
+          }
+        },
+        {
+          "id": "option-kb-30b7-for-30c8",
+          "text": {
+            "surface": "シ",
+            "reading": "シ",
+            "gloss": "Katakana sign for the basic shi reading.",
+            "romaji": "shi"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30c8-for-30c8",
+      "explanation": "ト is the katakana sign for the written to cue. Katakana sign for the basic to reading. Different written forms are not interchangeable by sound alone."
+    }
+  ]
+}

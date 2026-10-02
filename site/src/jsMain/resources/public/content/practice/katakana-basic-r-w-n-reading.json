@@ -1,0 +1,261 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-basic-r-w-n-reading",
+  "topicId": "katakana-foundations",
+  "title": "Basic katakana: R and W rows and ン — write in kana",
+  "description": "Use Latin-letter syllable cues to recall and type the matching katakana signs. Kana answers only; no sign is displayed in the question.",
+  "reviewItems": [
+    {
+      "id": "review-kb-reading-30e9",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30e9",
+      "skill": "Recall the spelling of basic katakana ラ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30ea",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30ea",
+      "skill": "Recall the spelling of basic katakana リ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30eb",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30eb",
+      "skill": "Recall the spelling of basic katakana ル",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30ec",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30ec",
+      "skill": "Recall the spelling of basic katakana レ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30ed",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30ed",
+      "skill": "Recall the spelling of basic katakana ロ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30ef",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30ef",
+      "skill": "Recall the spelling of basic katakana ワ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30f2",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30f2",
+      "skill": "Recall the spelling of basic katakana ヲ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30f3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30f3",
+      "skill": "Recall the spelling of basic katakana ン",
+      "direction": "latin-cue-to-katakana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independent agent-authored katakana sign cues and feedback; no CSV or mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; katakana correspondences are linguistic facts. No third-party text or audio used."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30e9",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "ra",
+        "reading": "ra",
+        "translation": "Latin-letter cue for the basic katakana ra sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ラ",
+            "reading": "ラ",
+            "gloss": "Katakana sign for the basic ra reading.",
+            "romaji": "ra"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written ra is ラ. Katakana sign for the basic ra reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30ea",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "ri",
+        "reading": "ri",
+        "translation": "Latin-letter cue for the basic katakana ri sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "リ",
+            "reading": "リ",
+            "gloss": "Katakana sign for the basic ri reading.",
+            "romaji": "ri"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written ri is リ. Katakana sign for the basic ri reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30eb",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "ru",
+        "reading": "ru",
+        "translation": "Latin-letter cue for the basic katakana ru sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ル",
+            "reading": "ル",
+            "gloss": "Katakana sign for the basic ru reading.",
+            "romaji": "ru"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written ru is ル. Katakana sign for the basic ru reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30ec",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "re",
+        "reading": "re",
+        "translation": "Latin-letter cue for the basic katakana re sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "レ",
+            "reading": "レ",
+            "gloss": "Katakana sign for the basic re reading.",
+            "romaji": "re"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written re is レ. Katakana sign for the basic re reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30ed",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "ro",
+        "reading": "ro",
+        "translation": "Latin-letter cue for the basic katakana ro sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ロ",
+            "reading": "ロ",
+            "gloss": "Katakana sign for the basic ro reading.",
+            "romaji": "ro"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written ro is ロ. Katakana sign for the basic ro reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30ef",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "wa",
+        "reading": "wa",
+        "translation": "Latin-letter cue for the basic katakana wa sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ワ",
+            "reading": "ワ",
+            "gloss": "Katakana sign for the basic wa reading.",
+            "romaji": "wa"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written wa is ワ. Katakana sign for the basic wa reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30f2",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "wo",
+        "reading": "wo",
+        "translation": "Written wo cue for katakana, not an unspecified /o/ sound."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ヲ",
+            "reading": "ヲ",
+            "gloss": "Katakana sign conventionally written wo (often pronounced o); this is a spelling cue.",
+            "romaji": "wo"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written wo is ヲ. Katakana sign conventionally written wo (often pronounced o); this is a spelling cue. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30f3",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "n",
+        "reading": "n",
+        "translation": "Latin-letter cue for the basic katakana n sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ン",
+            "reading": "ン",
+            "gloss": "Katakana sign for the basic n reading.",
+            "romaji": "n"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written n is ン. Katakana sign for the basic n reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    }
+  ]
+}

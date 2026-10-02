@@ -1,0 +1,261 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-basic-m-y-reading",
+  "topicId": "katakana-foundations",
+  "title": "Basic katakana: M and Y rows — write in kana",
+  "description": "Use Latin-letter syllable cues to recall and type the matching katakana signs. Kana answers only; no sign is displayed in the question.",
+  "reviewItems": [
+    {
+      "id": "review-kb-reading-30de",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30de",
+      "skill": "Recall the spelling of basic katakana マ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30df",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30df",
+      "skill": "Recall the spelling of basic katakana ミ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30e0",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30e0",
+      "skill": "Recall the spelling of basic katakana ム",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30e1",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30e1",
+      "skill": "Recall the spelling of basic katakana メ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30e2",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30e2",
+      "skill": "Recall the spelling of basic katakana モ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30e4",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30e4",
+      "skill": "Recall the spelling of basic katakana ヤ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30e6",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30e6",
+      "skill": "Recall the spelling of basic katakana ユ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30e8",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30e8",
+      "skill": "Recall the spelling of basic katakana ヨ",
+      "direction": "latin-cue-to-katakana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independent agent-authored katakana sign cues and feedback; no CSV or mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; katakana correspondences are linguistic facts. No third-party text or audio used."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30de",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "ma",
+        "reading": "ma",
+        "translation": "Latin-letter cue for the basic katakana ma sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "マ",
+            "reading": "マ",
+            "gloss": "Katakana sign for the basic ma reading.",
+            "romaji": "ma"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written ma is マ. Katakana sign for the basic ma reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30df",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "mi",
+        "reading": "mi",
+        "translation": "Latin-letter cue for the basic katakana mi sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ミ",
+            "reading": "ミ",
+            "gloss": "Katakana sign for the basic mi reading.",
+            "romaji": "mi"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written mi is ミ. Katakana sign for the basic mi reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30e0",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "mu",
+        "reading": "mu",
+        "translation": "Latin-letter cue for the basic katakana mu sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ム",
+            "reading": "ム",
+            "gloss": "Katakana sign for the basic mu reading.",
+            "romaji": "mu"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written mu is ム. Katakana sign for the basic mu reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30e1",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "me",
+        "reading": "me",
+        "translation": "Latin-letter cue for the basic katakana me sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "メ",
+            "reading": "メ",
+            "gloss": "Katakana sign for the basic me reading.",
+            "romaji": "me"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written me is メ. Katakana sign for the basic me reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30e2",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "mo",
+        "reading": "mo",
+        "translation": "Latin-letter cue for the basic katakana mo sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "モ",
+            "reading": "モ",
+            "gloss": "Katakana sign for the basic mo reading.",
+            "romaji": "mo"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written mo is モ. Katakana sign for the basic mo reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30e4",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "ya",
+        "reading": "ya",
+        "translation": "Latin-letter cue for the basic katakana ya sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ヤ",
+            "reading": "ヤ",
+            "gloss": "Katakana sign for the basic ya reading.",
+            "romaji": "ya"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written ya is ヤ. Katakana sign for the basic ya reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30e6",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "yu",
+        "reading": "yu",
+        "translation": "Latin-letter cue for the basic katakana yu sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ユ",
+            "reading": "ユ",
+            "gloss": "Katakana sign for the basic yu reading.",
+            "romaji": "yu"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written yu is ユ. Katakana sign for the basic yu reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30e8",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "yo",
+        "reading": "yo",
+        "translation": "Latin-letter cue for the basic katakana yo sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ヨ",
+            "reading": "ヨ",
+            "gloss": "Katakana sign for the basic yo reading.",
+            "romaji": "yo"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written yo is ヨ. Katakana sign for the basic yo reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    }
+  ]
+}

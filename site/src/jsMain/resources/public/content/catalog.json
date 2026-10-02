@@ -8,6 +8,11 @@
       "description": "Basic, voiced, semi-voiced and contracted hiragana, word-spelling contrasts, and a two-sign romaji beginner option."
     },
     {
+      "id": "katakana-foundations",
+      "title": "Katakana foundations",
+      "description": "Basic katakana recognition and typed-kana spelling in bounded sets."
+    },
+    {
       "id": "workplace-clarification",
       "title": "Workplace clarification",
       "description": "Polite ways to check a meeting time with a colleague."
@@ -181,6 +186,66 @@
       "kind": "practice",
       "topicId": "kana-foundations",
       "path": "practice/hiragana-contracted-spelling-examples-reading.json"
+    },
+    {
+      "id": "practice-katakana-basic-vowels-k-recognition",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-basic-vowels-k-recognition.json"
+    },
+    {
+      "id": "practice-katakana-basic-vowels-k-reading",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-basic-vowels-k-reading.json"
+    },
+    {
+      "id": "practice-katakana-basic-s-t-recognition",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-basic-s-t-recognition.json"
+    },
+    {
+      "id": "practice-katakana-basic-s-t-reading",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-basic-s-t-reading.json"
+    },
+    {
+      "id": "practice-katakana-basic-n-h-recognition",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-basic-n-h-recognition.json"
+    },
+    {
+      "id": "practice-katakana-basic-n-h-reading",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-basic-n-h-reading.json"
+    },
+    {
+      "id": "practice-katakana-basic-m-y-recognition",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-basic-m-y-recognition.json"
+    },
+    {
+      "id": "practice-katakana-basic-m-y-reading",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-basic-m-y-reading.json"
+    },
+    {
+      "id": "practice-katakana-basic-r-w-n-recognition",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-basic-r-w-n-recognition.json"
+    },
+    {
+      "id": "practice-katakana-basic-r-w-n-reading",
+      "kind": "practice",
+      "topicId": "katakana-foundations",
+      "path": "practice/katakana-basic-r-w-n-reading.json"
     }
   ]
 }

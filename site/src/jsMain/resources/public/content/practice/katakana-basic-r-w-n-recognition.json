@@ -1,0 +1,365 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-basic-r-w-n-recognition",
+  "topicId": "katakana-foundations",
+  "title": "Basic katakana: R and W rows and ン — find the sign",
+  "description": "Choose the written sign from three visible kana using a basic sound or specified spelling context. 8 independent targets.",
+  "reviewItems": [
+    {
+      "id": "review-kb-recognition-30e9",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30e9",
+      "skill": "Recognize basic katakana ラ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30ea",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30ea",
+      "skill": "Recognize basic katakana リ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30eb",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30eb",
+      "skill": "Recognize basic katakana ル",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30ec",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30ec",
+      "skill": "Recognize basic katakana レ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30ed",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30ed",
+      "skill": "Recognize basic katakana ロ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30ef",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30ef",
+      "skill": "Recognize basic katakana ワ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30f2",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30f2",
+      "skill": "Recognize basic katakana ヲ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30f3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30f3",
+      "skill": "Recognize basic katakana ン",
+      "direction": "spelling-cue-to-sign"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independent agent-authored katakana sign cues and feedback; no CSV or mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; katakana correspondences are linguistic facts. No third-party text or audio used."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30e9",
+      "prompt": "Which katakana sign has the basic reading conventionally written ra in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30e9-for-30e9",
+          "text": {
+            "surface": "ラ",
+            "reading": "ラ",
+            "gloss": "Katakana sign for the basic ra reading.",
+            "romaji": "ra"
+          }
+        },
+        {
+          "id": "option-kb-30ea-for-30e9",
+          "text": {
+            "surface": "リ",
+            "reading": "リ",
+            "gloss": "Katakana sign for the basic ri reading.",
+            "romaji": "ri"
+          }
+        },
+        {
+          "id": "option-kb-30eb-for-30e9",
+          "text": {
+            "surface": "ル",
+            "reading": "ル",
+            "gloss": "Katakana sign for the basic ru reading.",
+            "romaji": "ru"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30e9-for-30e9",
+      "explanation": "ラ is the katakana sign for the written ra cue. Katakana sign for the basic ra reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30ea",
+      "prompt": "Which katakana sign has the basic reading conventionally written ri in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30eb-for-30ea",
+          "text": {
+            "surface": "ル",
+            "reading": "ル",
+            "gloss": "Katakana sign for the basic ru reading.",
+            "romaji": "ru"
+          }
+        },
+        {
+          "id": "option-kb-30ec-for-30ea",
+          "text": {
+            "surface": "レ",
+            "reading": "レ",
+            "gloss": "Katakana sign for the basic re reading.",
+            "romaji": "re"
+          }
+        },
+        {
+          "id": "option-kb-30ea-for-30ea",
+          "text": {
+            "surface": "リ",
+            "reading": "リ",
+            "gloss": "Katakana sign for the basic ri reading.",
+            "romaji": "ri"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30ea-for-30ea",
+      "explanation": "リ is the katakana sign for the written ri cue. Katakana sign for the basic ri reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30eb",
+      "prompt": "Which katakana sign has the basic reading conventionally written ru in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30ed-for-30eb",
+          "text": {
+            "surface": "ロ",
+            "reading": "ロ",
+            "gloss": "Katakana sign for the basic ro reading.",
+            "romaji": "ro"
+          }
+        },
+        {
+          "id": "option-kb-30eb-for-30eb",
+          "text": {
+            "surface": "ル",
+            "reading": "ル",
+            "gloss": "Katakana sign for the basic ru reading.",
+            "romaji": "ru"
+          }
+        },
+        {
+          "id": "option-kb-30ec-for-30eb",
+          "text": {
+            "surface": "レ",
+            "reading": "レ",
+            "gloss": "Katakana sign for the basic re reading.",
+            "romaji": "re"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30eb-for-30eb",
+      "explanation": "ル is the katakana sign for the written ru cue. Katakana sign for the basic ru reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30ec",
+      "prompt": "Which katakana sign has the basic reading conventionally written re in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30ec-for-30ec",
+          "text": {
+            "surface": "レ",
+            "reading": "レ",
+            "gloss": "Katakana sign for the basic re reading.",
+            "romaji": "re"
+          }
+        },
+        {
+          "id": "option-kb-30ed-for-30ec",
+          "text": {
+            "surface": "ロ",
+            "reading": "ロ",
+            "gloss": "Katakana sign for the basic ro reading.",
+            "romaji": "ro"
+          }
+        },
+        {
+          "id": "option-kb-30ef-for-30ec",
+          "text": {
+            "surface": "ワ",
+            "reading": "ワ",
+            "gloss": "Katakana sign for the basic wa reading.",
+            "romaji": "wa"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30ec-for-30ec",
+      "explanation": "レ is the katakana sign for the written re cue. Katakana sign for the basic re reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30ed",
+      "prompt": "Which katakana sign has the basic reading conventionally written ro in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30ef-for-30ed",
+          "text": {
+            "surface": "ワ",
+            "reading": "ワ",
+            "gloss": "Katakana sign for the basic wa reading.",
+            "romaji": "wa"
+          }
+        },
+        {
+          "id": "option-kb-30f2-for-30ed",
+          "text": {
+            "surface": "ヲ",
+            "reading": "ヲ",
+            "gloss": "Katakana sign conventionally written wo (often pronounced o).",
+            "romaji": "wo"
+          }
+        },
+        {
+          "id": "option-kb-30ed-for-30ed",
+          "text": {
+            "surface": "ロ",
+            "reading": "ロ",
+            "gloss": "Katakana sign for the basic ro reading.",
+            "romaji": "ro"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30ed-for-30ed",
+      "explanation": "ロ is the katakana sign for the written ro cue. Katakana sign for the basic ro reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30ef",
+      "prompt": "Which katakana sign has the basic reading conventionally written wa in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30f3-for-30ef",
+          "text": {
+            "surface": "ン",
+            "reading": "ン",
+            "gloss": "Katakana sign for the basic n reading.",
+            "romaji": "n"
+          }
+        },
+        {
+          "id": "option-kb-30ef-for-30ef",
+          "text": {
+            "surface": "ワ",
+            "reading": "ワ",
+            "gloss": "Katakana sign for the basic wa reading.",
+            "romaji": "wa"
+          }
+        },
+        {
+          "id": "option-kb-30f2-for-30ef",
+          "text": {
+            "surface": "ヲ",
+            "reading": "ヲ",
+            "gloss": "Katakana sign conventionally written wo (often pronounced o).",
+            "romaji": "wo"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30ef-for-30ef",
+      "explanation": "ワ is the katakana sign for the written wa cue. Katakana sign for the basic wa reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30f2",
+      "prompt": "Which katakana sign is conventionally written wo rather than o? Choose by spelling, not sound.",
+      "options": [
+        {
+          "id": "option-kb-30f2-for-30f2",
+          "text": {
+            "surface": "ヲ",
+            "reading": "ヲ",
+            "gloss": "Katakana sign conventionally written wo (often pronounced o).",
+            "romaji": "wo"
+          }
+        },
+        {
+          "id": "option-kb-30aa-for-30f2",
+          "text": {
+            "surface": "オ",
+            "reading": "オ",
+            "gloss": "Katakana sign for the basic o reading.",
+            "romaji": "o"
+          }
+        },
+        {
+          "id": "option-kb-30e9-for-30f2",
+          "text": {
+            "surface": "ラ",
+            "reading": "ラ",
+            "gloss": "Katakana sign for the basic ra reading.",
+            "romaji": "ra"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30f2-for-30f2",
+      "explanation": "ヲ is the katakana sign for the written wo cue. Katakana sign conventionally written wo (often pronounced o); this is a spelling cue. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30f3",
+      "prompt": "Which katakana sign has the basic reading conventionally written n in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30e9-for-30f3",
+          "text": {
+            "surface": "ラ",
+            "reading": "ラ",
+            "gloss": "Katakana sign for the basic ra reading.",
+            "romaji": "ra"
+          }
+        },
+        {
+          "id": "option-kb-30ea-for-30f3",
+          "text": {
+            "surface": "リ",
+            "reading": "リ",
+            "gloss": "Katakana sign for the basic ri reading.",
+            "romaji": "ri"
+          }
+        },
+        {
+          "id": "option-kb-30f3-for-30f3",
+          "text": {
+            "surface": "ン",
+            "reading": "ン",
+            "gloss": "Katakana sign for the basic n reading.",
+            "romaji": "n"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30f3-for-30f3",
+      "explanation": "ン is the katakana sign for the written n cue. Katakana sign for the basic n reading. Different written forms are not interchangeable by sound alone."
+    }
+  ]
+}
