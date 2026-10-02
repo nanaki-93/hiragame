@@ -13,6 +13,12 @@ BASIC = 'あいうえおかきくけこさしすせそたちつてとなにぬ�
 CUES = ('a i u e o ka ki ku ke ko sa shi su se so ta chi tsu te to '
         'na ni nu ne no ha hi fu he ho ma mi mu me mo ya yu yo '
         'ra ri ru re ro wa wo n').split()
+VOICED_ROWS = {
+    'g-z': ('がぎぐげござじずぜぞ', 'ga gi gu ge go za ji zu ze zo'),
+    'd-b': ('だぢづでどばびぶべぼ', 'da di du de do ba bi bu be bo'),
+    'p': ('ぱぴぷぺぽ', 'pa pi pu pe po'),
+}
+SPELLING_BASES = {'じ': 'shi', 'ぢ': 'chi', 'ず': 'su', 'づ': 'tsu'}
 
 
 def read(path):
@@ -130,6 +136,112 @@ class FoundationalContentTests(unittest.TestCase):
         self.assertEqual(2, lesson['contentVersion'])
         self.assertEqual('f01-seed.md', lesson['review']['reviewNote'])
         self.assertEqual('exercise-complete-time', lesson['exercises'][1]['id'])
+
+    def test_hiragana_voiced_coverage(self):
+        catalog = read(CONTENT / 'catalog.json')
+        self.assertEqual((1, 2), (catalog['formatVersion'], catalog['contentVersion']))
+        self.assertIn('kana-foundations', {t['id'] for t in catalog['topics']})
+        entries = [e for e in catalog['entries'] if e['id'].startswith('practice-hiragana-voiced-')]
+        self.assertEqual(6, len(entries))
+        self.assertEqual(6, len({e['id'] for e in entries}))
+        self.assertEqual(6, len({e['path'] for e in entries}))
+        expected = {sign: cue for signs, cues in VOICED_ROWS.values()
+                    for sign, cue in zip(signs, cues.split())}
+        self.assertEqual(25, len(expected))
+        self.assertEqual(20, len(set(expected) - set('ぱぴぷぺぽ')))
+        targets = {'recognition': {}, 'reading': {}}
+        exercise_ids, review_ids, option_ids = set(), set(), set()
+        note = (NOTES / 'f05-foundations.md').read_text(encoding='utf-8')
+        for entry in entries:
+            with self.subTest(document=entry['id']):
+                self.assertEqual(('practice', 'kana-foundations'),
+                                 (entry['kind'], entry['topicId']))
+                slug, mode = next(((slug, mode) for slug in VOICED_ROWS
+                                   for mode in targets if entry['id'] ==
+                                   f'practice-hiragana-voiced-{slug}-{mode}'), (None, None))
+                self.assertIsNotNone(slug)
+                self.assertEqual(f'practice/hiragana-voiced-{slug}-{mode}.json', entry['path'])
+                doc = read(CONTENT / entry['path'])
+                self.assertEqual((1, 2, entry['id'], entry['topicId']),
+                                 (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))
+                label = 'Semi-voiced' if slug == 'p' else 'Voiced'
+                action = 'find the sign' if mode == 'recognition' else 'write in kana'
+                row = {'g-z': 'G and Z rows', 'd-b': 'D and B rows', 'p': 'P row'}[slug]
+                title = f'{label} hiragana: {row} — {action}'
+                self.assertEqual(title, doc['title'])
+                self.assertIn(f'## {title}', note)
+                self.assertTrue(doc['description'].strip())
+                self.assertEqual(len(VOICED_ROWS[slug][0]), len(doc['exercises']))
+                self.assertLessEqual(len(doc['exercises']), 10)
+                review = doc['review']
+                self.assertEqual(('reviewed', 'agent', '2026-10-02', 'publishable', 'f05-foundations.md'),
+                                 (review['status'], review['reviewerType'], review['reviewDate'],
+                                  review['rights'], review['reviewNote']))
+                self.assertIn(f'Scope: document `{doc["id"]}`', note)
+                location = f'{entry["path"]}:$ ({entry["id"]})'
+                validator.validate(doc, validator.PRACTICE, location)
+                validator.local(doc, location)
+                validator.references(doc, location)
+                validator.review_document(doc, location, NOTES)
+                self.assertEqual(len(doc['exercises']), len(doc['reviewItems']))
+                items = {item['targetId']: item for item in doc['reviewItems']}
+                self.assertEqual({ex['id'] for ex in doc['exercises']}, set(items))
+                for ex in doc['exercises']:
+                    sign = chr(int(ex['id'].rsplit('-', 1)[1], 16))
+                    self.assertIn(sign, VOICED_ROWS[slug][0])
+                    self.assertNotIn(sign, targets[mode], f'duplicate target {mode} {sign}')
+                    targets[mode][sign] = (doc['id'], ex['id'])
+                    self.assertEqual(f'exercise-hv-{mode}-{ord(sign):04x}', ex['id'])
+                    self.assertNotIn(ex['id'], exercise_ids)
+                    exercise_ids.add(ex['id'])
+                    item = items[ex['id']]
+                    self.assertEqual(('exercise', ex['id']), (item['targetKind'], item['targetId']))
+                    self.assertEqual(f'review-hv-{mode}-{ord(sign):04x}', item['id'])
+                    self.assertNotIn(item['id'], review_ids)
+                    review_ids.add(item['id'])
+                    self.assertIn(f'`{ex["id"]}`', note)
+                    self.assertIn(f'`{item["id"]}`', note)
+                    self.assertTrue(ex['prompt'].strip() and ex['explanation'].strip())
+                    if mode == 'recognition':
+                        self.assertEqual('choice', ex['type'])
+                        self.assertEqual('spelling-cue-to-sign', item['direction'])
+                        self.assertEqual(3, len(ex['options']))
+                        self.assertEqual(3, len({o['text']['surface'] for o in ex['options']}))
+                        correct = next(o for o in ex['options'] if o['id'] == ex['correctOptionId'])
+                        self.assertEqual(sign, correct['text']['surface'])
+                        for option in ex['options']:
+                            self.assertNotIn(option['id'], option_ids)
+                            option_ids.add(option['id'])
+                            self.assertIn(f'`{option["id"]}`', note)
+                            self.assertEqual(option['text']['surface'], option['text']['reading'])
+                        if sign in SPELLING_BASES:
+                            twin = {'じ': 'ぢ', 'ぢ': 'じ', 'ず': 'づ', 'づ': 'ず'}[sign]
+                            self.assertIn(twin, {o['text']['surface'] for o in ex['options']})
+                            self.assertIn(SPELLING_BASES[sign], ex['prompt'])
+                            self.assertIn('spelling', ex['prompt'])
+                        else:
+                            self.assertIn(expected[sign], ex['prompt'])
+                    else:
+                        self.assertEqual('reading', ex['type'])
+                        self.assertEqual('romaji-and-base-cue-to-kana', item['direction'])
+                        self.assertEqual('kana', ex['answerRepresentation'])
+                        stimulus = ex['stimulus']
+                        self.assertEqual(stimulus['surface'], stimulus['reading'])
+                        self.assertTrue(stimulus['translation'].strip())
+                        self.assertTrue(stimulus['surface'].startswith(expected[sign]))
+                        self.assertNotIn(sign, ex['prompt'] + json.dumps(stimulus, ensure_ascii=False))
+                        self.assertNotIn('romaji', stimulus)
+                        if sign in SPELLING_BASES:
+                            self.assertIn(SPELLING_BASES[sign], stimulus['surface'])
+                        self.assertEqual(['kana'], [a['type'] for a in ex['acceptedAnswers']])
+                        self.assertEqual([sign], [a['text']['surface'] for a in ex['acceptedAnswers']])
+                        self.assertEqual(sign, ex['acceptedAnswers'][0]['text']['reading'])
+        for mode in targets:
+            self.assertEqual(set(expected), set(targets[mode]))
+            self.assertEqual(25, len(targets[mode]))
+        self.assertEqual(50, len(exercise_ids))
+        self.assertEqual(50, len(review_ids))
+        self.assertEqual(75, len(option_ids))
 
 
 if __name__ == '__main__':

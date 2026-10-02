@@ -1,0 +1,451 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-voiced-d-b-recognition",
+  "topicId": "kana-foundations",
+  "title": "Voiced hiragana: D and B rows — find the sign",
+  "description": "Choose the written hiragana from visible spellings; same-sound signs use explicit base-sign context.",
+  "reviewItems": [
+    {
+      "id": "review-hv-recognition-3060",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3060",
+      "skill": "Recognize voiced/semi-voiced hiragana だ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3062",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3062",
+      "skill": "Recognize voiced/semi-voiced hiragana ぢ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3065",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3065",
+      "skill": "Recognize voiced/semi-voiced hiragana づ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3067",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3067",
+      "skill": "Recognize voiced/semi-voiced hiragana で",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3069",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3069",
+      "skill": "Recognize voiced/semi-voiced hiragana ど",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3070",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3070",
+      "skill": "Recognize voiced/semi-voiced hiragana ば",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3073",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3073",
+      "skill": "Recognize voiced/semi-voiced hiragana び",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3076",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3076",
+      "skill": "Recognize voiced/semi-voiced hiragana ぶ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3079",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3079",
+      "skill": "Recognize voiced/semi-voiced hiragana べ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-307c",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-307c",
+      "skill": "Recognize voiced/semi-voiced hiragana ぼ",
+      "direction": "spelling-cue-to-sign"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored F05 voiced and semi-voiced sign exercises, not copied from legacy CSV or mocks.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-written English prompts, feedback and glosses; kana correspondences are linguistic facts. No third-party work, recording or audio used."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3060",
+      "prompt": "Which hiragana sign matches the conventional da cue?",
+      "options": [
+        {
+          "id": "option-hv-3060-for-3060",
+          "text": {
+            "surface": "だ",
+            "reading": "だ",
+            "gloss": "Hiragana sign for the da reading.",
+            "romaji": "da"
+          }
+        },
+        {
+          "id": "option-hv-3062-for-3060",
+          "text": {
+            "surface": "ぢ",
+            "reading": "ぢ",
+            "gloss": "Hiragana ぢ: the voiced spelling of ち, conventionally cued as di; spelling is not inferred from sound alone.",
+            "romaji": "di"
+          }
+        },
+        {
+          "id": "option-hv-3065-for-3060",
+          "text": {
+            "surface": "づ",
+            "reading": "づ",
+            "gloss": "Hiragana づ: the voiced spelling of つ, conventionally cued as du; spelling is not inferred from sound alone.",
+            "romaji": "du"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3060-for-3060",
+      "explanation": "The written target is だ. Hiragana sign for the da reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3062",
+      "prompt": "Which hiragana is the voiced spelling of the chi sign? Compare written forms, not just the sound.",
+      "options": [
+        {
+          "id": "option-hv-3058-for-3062",
+          "text": {
+            "surface": "じ",
+            "reading": "じ",
+            "gloss": "Hiragana じ: the voiced spelling of し, conventionally cued as ji; spelling is not inferred from sound alone.",
+            "romaji": "ji"
+          }
+        },
+        {
+          "id": "option-hv-3065-for-3062",
+          "text": {
+            "surface": "づ",
+            "reading": "づ",
+            "gloss": "Hiragana づ: the voiced spelling of つ, conventionally cued as du; spelling is not inferred from sound alone.",
+            "romaji": "du"
+          }
+        },
+        {
+          "id": "option-hv-3062-for-3062",
+          "text": {
+            "surface": "ぢ",
+            "reading": "ぢ",
+            "gloss": "Hiragana ぢ: the voiced spelling of ち, conventionally cued as di; spelling is not inferred from sound alone.",
+            "romaji": "di"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3062-for-3062",
+      "explanation": "The written target is ぢ. Hiragana ぢ: the voiced spelling of ち, conventionally cued as di; spelling is not inferred from sound alone. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3065",
+      "prompt": "Which hiragana is the voiced spelling of the tsu sign? Compare written forms, not just the sound.",
+      "options": [
+        {
+          "id": "option-hv-3067-for-3065",
+          "text": {
+            "surface": "で",
+            "reading": "で",
+            "gloss": "Hiragana sign for the de reading.",
+            "romaji": "de"
+          }
+        },
+        {
+          "id": "option-hv-3065-for-3065",
+          "text": {
+            "surface": "づ",
+            "reading": "づ",
+            "gloss": "Hiragana づ: the voiced spelling of つ, conventionally cued as du; spelling is not inferred from sound alone.",
+            "romaji": "du"
+          }
+        },
+        {
+          "id": "option-hv-305a-for-3065",
+          "text": {
+            "surface": "ず",
+            "reading": "ず",
+            "gloss": "Hiragana ず: the voiced spelling of す, conventionally cued as zu; spelling is not inferred from sound alone.",
+            "romaji": "zu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3065-for-3065",
+      "explanation": "The written target is づ. Hiragana づ: the voiced spelling of つ, conventionally cued as du; spelling is not inferred from sound alone. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3067",
+      "prompt": "Which hiragana sign matches the conventional de cue?",
+      "options": [
+        {
+          "id": "option-hv-3067-for-3067",
+          "text": {
+            "surface": "で",
+            "reading": "で",
+            "gloss": "Hiragana sign for the de reading.",
+            "romaji": "de"
+          }
+        },
+        {
+          "id": "option-hv-3069-for-3067",
+          "text": {
+            "surface": "ど",
+            "reading": "ど",
+            "gloss": "Hiragana sign for the do reading.",
+            "romaji": "do"
+          }
+        },
+        {
+          "id": "option-hv-3070-for-3067",
+          "text": {
+            "surface": "ば",
+            "reading": "ば",
+            "gloss": "Hiragana sign for the ba reading.",
+            "romaji": "ba"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3067-for-3067",
+      "explanation": "The written target is で. Hiragana sign for the de reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3069",
+      "prompt": "Which hiragana sign matches the conventional do cue?",
+      "options": [
+        {
+          "id": "option-hv-3070-for-3069",
+          "text": {
+            "surface": "ば",
+            "reading": "ば",
+            "gloss": "Hiragana sign for the ba reading.",
+            "romaji": "ba"
+          }
+        },
+        {
+          "id": "option-hv-3073-for-3069",
+          "text": {
+            "surface": "び",
+            "reading": "び",
+            "gloss": "Hiragana sign for the bi reading.",
+            "romaji": "bi"
+          }
+        },
+        {
+          "id": "option-hv-3069-for-3069",
+          "text": {
+            "surface": "ど",
+            "reading": "ど",
+            "gloss": "Hiragana sign for the do reading.",
+            "romaji": "do"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3069-for-3069",
+      "explanation": "The written target is ど. Hiragana sign for the do reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3070",
+      "prompt": "Which hiragana sign matches the conventional ba cue?",
+      "options": [
+        {
+          "id": "option-hv-3076-for-3070",
+          "text": {
+            "surface": "ぶ",
+            "reading": "ぶ",
+            "gloss": "Hiragana sign for the bu reading.",
+            "romaji": "bu"
+          }
+        },
+        {
+          "id": "option-hv-3070-for-3070",
+          "text": {
+            "surface": "ば",
+            "reading": "ば",
+            "gloss": "Hiragana sign for the ba reading.",
+            "romaji": "ba"
+          }
+        },
+        {
+          "id": "option-hv-3073-for-3070",
+          "text": {
+            "surface": "び",
+            "reading": "び",
+            "gloss": "Hiragana sign for the bi reading.",
+            "romaji": "bi"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3070-for-3070",
+      "explanation": "The written target is ば. Hiragana sign for the ba reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3073",
+      "prompt": "Which hiragana sign matches the conventional bi cue?",
+      "options": [
+        {
+          "id": "option-hv-3073-for-3073",
+          "text": {
+            "surface": "び",
+            "reading": "び",
+            "gloss": "Hiragana sign for the bi reading.",
+            "romaji": "bi"
+          }
+        },
+        {
+          "id": "option-hv-3076-for-3073",
+          "text": {
+            "surface": "ぶ",
+            "reading": "ぶ",
+            "gloss": "Hiragana sign for the bu reading.",
+            "romaji": "bu"
+          }
+        },
+        {
+          "id": "option-hv-3079-for-3073",
+          "text": {
+            "surface": "べ",
+            "reading": "べ",
+            "gloss": "Hiragana sign for the be reading.",
+            "romaji": "be"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3073-for-3073",
+      "explanation": "The written target is び. Hiragana sign for the bi reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3076",
+      "prompt": "Which hiragana sign matches the conventional bu cue?",
+      "options": [
+        {
+          "id": "option-hv-3079-for-3076",
+          "text": {
+            "surface": "べ",
+            "reading": "べ",
+            "gloss": "Hiragana sign for the be reading.",
+            "romaji": "be"
+          }
+        },
+        {
+          "id": "option-hv-307c-for-3076",
+          "text": {
+            "surface": "ぼ",
+            "reading": "ぼ",
+            "gloss": "Hiragana sign for the bo reading.",
+            "romaji": "bo"
+          }
+        },
+        {
+          "id": "option-hv-3076-for-3076",
+          "text": {
+            "surface": "ぶ",
+            "reading": "ぶ",
+            "gloss": "Hiragana sign for the bu reading.",
+            "romaji": "bu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3076-for-3076",
+      "explanation": "The written target is ぶ. Hiragana sign for the bu reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3079",
+      "prompt": "Which hiragana sign matches the conventional be cue?",
+      "options": [
+        {
+          "id": "option-hv-3060-for-3079",
+          "text": {
+            "surface": "だ",
+            "reading": "だ",
+            "gloss": "Hiragana sign for the da reading.",
+            "romaji": "da"
+          }
+        },
+        {
+          "id": "option-hv-3079-for-3079",
+          "text": {
+            "surface": "べ",
+            "reading": "べ",
+            "gloss": "Hiragana sign for the be reading.",
+            "romaji": "be"
+          }
+        },
+        {
+          "id": "option-hv-307c-for-3079",
+          "text": {
+            "surface": "ぼ",
+            "reading": "ぼ",
+            "gloss": "Hiragana sign for the bo reading.",
+            "romaji": "bo"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3079-for-3079",
+      "explanation": "The written target is べ. Hiragana sign for the be reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-307c",
+      "prompt": "Which hiragana sign matches the conventional bo cue?",
+      "options": [
+        {
+          "id": "option-hv-307c-for-307c",
+          "text": {
+            "surface": "ぼ",
+            "reading": "ぼ",
+            "gloss": "Hiragana sign for the bo reading.",
+            "romaji": "bo"
+          }
+        },
+        {
+          "id": "option-hv-3060-for-307c",
+          "text": {
+            "surface": "だ",
+            "reading": "だ",
+            "gloss": "Hiragana sign for the da reading.",
+            "romaji": "da"
+          }
+        },
+        {
+          "id": "option-hv-3062-for-307c",
+          "text": {
+            "surface": "ぢ",
+            "reading": "ぢ",
+            "gloss": "Hiragana ぢ: the voiced spelling of ち, conventionally cued as di; spelling is not inferred from sound alone.",
+            "romaji": "di"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-307c-for-307c",
+      "explanation": "The written target is ぼ. Hiragana sign for the bo reading. Similar-sounding signs are not interchangeable spellings."
+    }
+  ]
+}

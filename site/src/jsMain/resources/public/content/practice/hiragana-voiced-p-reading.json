@@ -1,0 +1,171 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-voiced-p-reading",
+  "topicId": "kana-foundations",
+  "title": "Semi-voiced hiragana: P row — write in kana",
+  "description": "Type the hiragana spelling from a Latin-letter cue; same-sound signs specify their base sign. Kana answers only.",
+  "reviewItems": [
+    {
+      "id": "review-hv-reading-3071",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-3071",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana ぱ",
+      "direction": "romaji-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hv-reading-3074",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-3074",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana ぴ",
+      "direction": "romaji-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hv-reading-3077",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-3077",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana ぷ",
+      "direction": "romaji-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hv-reading-307a",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-307a",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana ぺ",
+      "direction": "romaji-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hv-reading-307d",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-307d",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana ぽ",
+      "direction": "romaji-and-base-cue-to-kana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored F05 voiced and semi-voiced sign exercises, not copied from legacy CSV or mocks.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-written English prompts, feedback and glosses; kana correspondences are linguistic facts. No third-party work, recording or audio used."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-3071",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "pa",
+        "reading": "pa",
+        "translation": "Latin-letter spelling cue for the semi-voiced sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ぱ",
+            "reading": "ぱ",
+            "gloss": "Hiragana sign for the semi-voiced pa reading.",
+            "romaji": "pa"
+          }
+        }
+      ],
+      "explanation": "pa is written ぱ. Hiragana sign for the semi-voiced pa reading. Only this authored kana spelling is accepted, not a sound-alike."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-3074",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "pi",
+        "reading": "pi",
+        "translation": "Latin-letter spelling cue for the semi-voiced sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ぴ",
+            "reading": "ぴ",
+            "gloss": "Hiragana sign for the semi-voiced pi reading.",
+            "romaji": "pi"
+          }
+        }
+      ],
+      "explanation": "pi is written ぴ. Hiragana sign for the semi-voiced pi reading. Only this authored kana spelling is accepted, not a sound-alike."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-3077",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "pu",
+        "reading": "pu",
+        "translation": "Latin-letter spelling cue for the semi-voiced sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ぷ",
+            "reading": "ぷ",
+            "gloss": "Hiragana sign for the semi-voiced pu reading.",
+            "romaji": "pu"
+          }
+        }
+      ],
+      "explanation": "pu is written ぷ. Hiragana sign for the semi-voiced pu reading. Only this authored kana spelling is accepted, not a sound-alike."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-307a",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "pe",
+        "reading": "pe",
+        "translation": "Latin-letter spelling cue for the semi-voiced sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ぺ",
+            "reading": "ぺ",
+            "gloss": "Hiragana sign for the semi-voiced pe reading.",
+            "romaji": "pe"
+          }
+        }
+      ],
+      "explanation": "pe is written ぺ. Hiragana sign for the semi-voiced pe reading. Only this authored kana spelling is accepted, not a sound-alike."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-307d",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "po",
+        "reading": "po",
+        "translation": "Latin-letter spelling cue for the semi-voiced sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ぽ",
+            "reading": "ぽ",
+            "gloss": "Hiragana sign for the semi-voiced po reading.",
+            "romaji": "po"
+          }
+        }
+      ],
+      "explanation": "po is written ぽ. Hiragana sign for the semi-voiced po reading. Only this authored kana spelling is accepted, not a sound-alike."
+    }
+  ]
+}
