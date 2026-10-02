@@ -30,6 +30,19 @@ private fun <T> List<T>.replaceById(id: String, key: (T) -> String, value: T): L
 fun changePreferences(snapshot: SaveEnvelope, preferences: SavePreferences): ProgressUpdate =
     update(snapshot) { snapshot.copy(preferences = preferences) }
 
+/** Compare the reviewed entry before editing; stale callbacks cannot overwrite later personal work. */
+fun saveGlossaryEntry(snapshot: SaveEnvelope, entry: GlossaryEntry, expected: GlossaryEntry? = null): ProgressUpdate =
+    update(snapshot) {
+        require(snapshot.personalGlossary.firstOrNull { it.id == entry.id } == expected) { "Glossary entry changed" }
+        snapshot.copy(personalGlossary = snapshot.personalGlossary.replaceById(entry.id, GlossaryEntry::id, entry))
+    }
+
+fun removeGlossaryEntry(snapshot: SaveEnvelope, expected: GlossaryEntry): ProgressUpdate = update(snapshot) {
+    val current = snapshot.personalGlossary.firstOrNull { it.id == expected.id }
+    require(current == expected) { "Glossary entry changed" }
+    snapshot.copy(personalGlossary = snapshot.personalGlossary.filterNot { it.id == expected.id })
+}
+
 /** A visit changes the active stage/checkpoint, but never implicitly clears completion. */
 fun visitLesson(
     snapshot: SaveEnvelope,

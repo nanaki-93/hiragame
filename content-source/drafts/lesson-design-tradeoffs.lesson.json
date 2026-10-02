@@ -1,0 +1,293 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 1,
+  "id": "lesson-design-tradeoffs",
+  "topicId": "workplace-design-tradeoffs",
+  "title": "Design trade-offs",
+  "situation": "A fictional workplace exchange. Describe one benefit and one cost, then ask which priority matters.",
+  "communicationGoal": "Describe one benefit and one cost, then ask which priority matters.",
+  "difficulty": "intermediate",
+  "durationMinutes": 8,
+  "prerequisiteLessonIds": [
+    "lesson-code-review-request"
+  ],
+  "dialogue": {
+    "speakers": [
+      {
+        "id": "lesson-design-tradeoffs-colleague",
+        "name": "Partner",
+        "role": "Coworker"
+      },
+      {
+        "id": "lesson-design-tradeoffs-learner",
+        "name": "You",
+        "role": "Learner in an illustrative exchange"
+      }
+    ],
+    "turns": [
+      {
+        "id": "lesson-design-tradeoffs-turn-1",
+        "speakerId": "lesson-design-tradeoffs-colleague",
+        "text": {
+          "surface": "この方法の利点と欠点を教えてください。",
+          "reading": "このほうほうのりてんとけってんをおしえてください。",
+          "translation": "Please explain the benefits and drawbacks of this approach."
+        }
+      },
+      {
+        "id": "lesson-design-tradeoffs-turn-2",
+        "speakerId": "lesson-design-tradeoffs-learner",
+        "text": {
+          "surface": "この方法は簡単ですが、処理に時間がかかります。",
+          "reading": "このほうほうわかんたんですが、しょりにじかんがかかります。",
+          "translation": "This approach is simple, but processing takes time."
+        }
+      },
+      {
+        "id": "lesson-design-tradeoffs-turn-3",
+        "speakerId": "lesson-design-tradeoffs-colleague",
+        "text": {
+          "surface": "速さを優先する方法もありますか。",
+          "reading": "はやさをゆうせんするほうほうもありますか。",
+          "translation": "Is there also an approach that prioritizes speed?"
+        }
+      },
+      {
+        "id": "lesson-design-tradeoffs-turn-4",
+        "speakerId": "lesson-design-tradeoffs-learner",
+        "text": {
+          "surface": "はい、ただ、実装が複雑になります。",
+          "reading": "はい、ただ、じっそうがふくざつになります。",
+          "translation": "Yes, though the implementation becomes more complex."
+        }
+      },
+      {
+        "id": "lesson-design-tradeoffs-turn-5",
+        "speakerId": "lesson-design-tradeoffs-colleague",
+        "text": {
+          "surface": "今回はどちらを優先しましょうか。",
+          "reading": "こんかいわどちらをゆうせんしましょうか。",
+          "translation": "Which should we prioritize this time?"
+        }
+      },
+      {
+        "id": "lesson-design-tradeoffs-turn-6",
+        "speakerId": "lesson-design-tradeoffs-learner",
+        "text": {
+          "surface": "利用者への影響を確認してから決めたいです。",
+          "reading": "りようしゃへのえいきょうをかくにんしてからきめたいです。",
+          "translation": "I would like to decide after checking the impact on users."
+        }
+      }
+    ]
+  },
+  "phrases": [
+    {
+      "id": "lesson-design-tradeoffs-phrase-2",
+      "text": {
+        "surface": "この方法は簡単ですが、処理に時間がかかります。",
+        "reading": "このほうほうわかんたんですが、しょりにじかんがかかります。",
+        "translation": "This approach is simple, but processing takes time."
+      },
+      "sourceTurnId": "lesson-design-tradeoffs-turn-2",
+      "usage": "Describe one benefit and one cost, then ask which priority matters.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-design-tradeoffs-phrase-4",
+      "text": {
+        "surface": "はい、ただ、実装が複雑になります。",
+        "reading": "はい、ただ、じっそうがふくざつになります。",
+        "translation": "Yes, though the implementation becomes more complex."
+      },
+      "sourceTurnId": "lesson-design-tradeoffs-turn-4",
+      "usage": "Describe one benefit and one cost, then ask which priority matters.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-design-tradeoffs-phrase-6",
+      "text": {
+        "surface": "利用者への影響を確認してから決めたいです。",
+        "reading": "りようしゃへのえいきょうをかくにんしてからきめたいです。",
+        "translation": "I would like to decide after checking the impact on users."
+      },
+      "sourceTurnId": "lesson-design-tradeoffs-turn-6",
+      "usage": "Describe one benefit and one cost, then ask which priority matters.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    }
+  ],
+  "grammarNotes": [
+    {
+      "id": "lesson-design-tradeoffs-grammar",
+      "explanation": "ですが connects contrasting points politely. The stated trade-off is an illustrative assumption, not a universal engineering rule.",
+      "examples": [
+        {
+          "surface": "この方法は簡単ですが、処理に時間がかかります。",
+          "reading": "このほうほうわかんたんですが、しょりにじかんがかかります。",
+          "translation": "This approach is simple, but processing takes time."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lesson-design-tradeoffs-choice",
+      "type": "choice",
+      "prompt": "Which response directly serves this goal: Describe one benefit and one cost, then ask which priority matters.",
+      "options": [
+        {
+          "id": "lesson-design-tradeoffs-target",
+          "text": {
+            "surface": "この方法は簡単ですが、処理に時間がかかります。",
+            "reading": "このほうほうわかんたんですが、しょりにじかんがかかります。",
+            "translation": "This approach is simple, but processing takes time."
+          }
+        },
+        {
+          "id": "lesson-design-tradeoffs-acknowledge",
+          "text": {
+            "surface": "分かりました。",
+            "reading": "わかりました。",
+            "translation": "Understood."
+          }
+        }
+      ],
+      "correctOptionId": "lesson-design-tradeoffs-target",
+      "explanation": "The target response states or asks for the specific information. Acknowledgement alone does not express that information. Other natural responses may also work in open conversation."
+    },
+    {
+      "id": "lesson-design-tradeoffs-completion",
+      "type": "completion",
+      "prompt": "Complete the specific response from the dialogue. Use the reviewed word for: simple.",
+      "template": "この方法は{blank}ですが、処理に時間がかかります。",
+      "acceptedAnswers": [
+        {
+          "surface": "簡単",
+          "reading": "かんたん",
+          "translation": "simple"
+        },
+        {
+          "surface": "かんたん",
+          "reading": "かんたん",
+          "translation": "simple (kana)"
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "この方法は簡単ですが、処理に時間がかかります。",
+        "reading": "このほうほうわかんたんですが、しょりにじかんがかかります。",
+        "translation": "This approach is simple, but processing takes time."
+      },
+      "explanation": "The accepted forms fill this one constrained blank. ですが connects contrasting points politely. The stated trade-off is an illustrative assumption, not a universal engineering rule."
+    },
+    {
+      "id": "lesson-design-tradeoffs-production",
+      "type": "production",
+      "prompt": "Describe one benefit and one cost, then ask which priority matters. Use your own words and truthful or clearly fictional practice details.",
+      "exampleResponses": [
+        {
+          "surface": "この方法は簡単ですが、処理に時間がかかります。",
+          "reading": "このほうほうわかんたんですが、しょりにじかんがかかります。",
+          "translation": "This approach is simple, but processing takes time."
+        },
+        {
+          "surface": "はい、ただ、実装が複雑になります。",
+          "reading": "はい、ただ、じっそうがふくざつになります。",
+          "translation": "Yes, though the implementation becomes more complex."
+        }
+      ],
+      "criteria": [
+        "I communicated the specific goal politely.",
+        "I separated known information from uncertainty and asked a relevant follow-up.",
+        "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+      ]
+    }
+  ],
+  "rolePlay": {
+    "task": "Describe one benefit and one cost, then ask which priority matters. Respond to a partner, then ask a follow-up.",
+    "criteria": [
+      "I communicated the specific goal politely.",
+      "I separated known information from uncertainty and asked a relevant follow-up.",
+      "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+    ],
+    "hints": [
+      "Use the reviewed phrase bank, then hide it for independent practice.",
+      "Ask for repetition or clarification if you are unsure."
+    ],
+    "examples": [
+      {
+        "surface": "この方法は簡単ですが、処理に時間がかかります。",
+        "reading": "このほうほうわかんたんですが、しょりにじかんがかかります。",
+        "translation": "This approach is simple, but processing takes time."
+      },
+      {
+        "surface": "はい、ただ、実装が複雑になります。",
+        "reading": "はい、ただ、じっそうがふくざつになります。",
+        "translation": "Yes, though the implementation becomes more complex."
+      }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "lesson-design-tradeoffs-review-phrase",
+      "targetKind": "phrase",
+      "targetId": "lesson-design-tradeoffs-phrase-2",
+      "skill": "Describe one benefit and one cost, then ask which priority matters.",
+      "direction": "meaning-to-japanese"
+    },
+    {
+      "id": "lesson-design-tradeoffs-review-completion",
+      "targetKind": "exercise",
+      "targetId": "lesson-design-tradeoffs-completion",
+      "skill": "Describe one benefit and one cost, then ask which priority matters.",
+      "direction": "context-to-utterance"
+    }
+  ],
+  "conversationGraph": {
+    "entryNodeId": "lesson-design-tradeoffs-prompt",
+    "nodes": [
+      {
+        "id": "lesson-design-tradeoffs-prompt",
+        "type": "prompt",
+        "speakerId": "lesson-design-tradeoffs-colleague",
+        "text": {
+          "surface": "この方法の利点と欠点を教えてください。",
+          "reading": "このほうほうのりてんとけってんをおしえてください。",
+          "translation": "Please explain the benefits and drawbacks of this approach."
+        },
+        "nextNodeId": "lesson-design-tradeoffs-reply"
+      },
+      {
+        "id": "lesson-design-tradeoffs-reply",
+        "type": "completionInteraction",
+        "exerciseId": "lesson-design-tradeoffs-completion",
+        "feedback": "You expressed the target intent using the constrained example. Read the partner’s response next.",
+        "nextNodeId": "lesson-design-tradeoffs-follow"
+      },
+      {
+        "id": "lesson-design-tradeoffs-follow",
+        "type": "prompt",
+        "speakerId": "lesson-design-tradeoffs-colleague",
+        "text": {
+          "surface": "速さを優先する方法もありますか。",
+          "reading": "はやさをゆうせんするほうほうもありますか。",
+          "translation": "Is there also an approach that prioritizes speed?"
+        },
+        "nextNodeId": "lesson-design-tradeoffs-end"
+      },
+      {
+        "id": "lesson-design-tradeoffs-end",
+        "type": "terminal",
+        "message": "The partner responded. Try the remaining exchange in your own words and self-assess your communication goal."
+      }
+    ]
+  },
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-03",
+    "reviewNote": "o04-expansion.md",
+    "provenance": "Original agent-authored instructional scenario and text; no external lesson passage or audio copied.",
+    "rights": "publishable",
+    "rightsBasis": "Original project-authored text approved publishable; no third-party passage or recording included."
+  }
+}

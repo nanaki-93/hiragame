@@ -98,15 +98,15 @@ class TopicCatalogIntegrationTest {
         options: CatalogViewOptions = CatalogViewOptions()) =
         projectLessonCatalog(content.catalog, content.lessons, owner.state.value.snapshot, options)
 
-    @Test fun canonicalSixObjectivesRemainSelectableAndMetadataComesFromValidatedDocuments() = runTest {
+    @Test fun canonicalObjectivesRemainSelectableAndMetadataComesFromValidatedDocuments() = runTest {
         val content = loaded()
-        assertEquals(4, content.catalog.contentVersion)
-        assertEquals(starterIds + seedId, content.lessons.keys.toList())
+        assertEquals(13, content.catalog.contentVersion)
+        assertEquals(starterIds + seedId, content.lessons.keys.toList().take(6))
         val progress = owner(MemoryProgressStore())
         try {
             val initial = view(content, progress)
-            assertEquals(starterIds + seedId, initial.cards.map { it.lessonId })
-            assertEquals(6, initial.topics.sumOf { it.cards.size })
+            assertEquals(starterIds + seedId, initial.cards.take(6).map { it.lessonId })
+            assertEquals(15, initial.topics.sumOf { it.cards.size })
             assertEquals(listOf(
                 "Introduce yourself, your engineering role, and relevant experience, then invite a colleague to share their work.",
                 "Request clarification and confirm an interpretation of a teammate's request without assuming the task is to make a change.",
@@ -114,7 +114,7 @@ class TopicCatalogIntegrationTest {
                 "Report expected versus actual behavior and reproducible steps for a test-screen bug without assuming its cause.",
                 "Request review of a small code change and respond constructively to a teammate's suggestion.",
                 "Politely clarify and confirm a meeting time without assuming an unclear detail.",
-            ), initial.cards.map { it.communicationGoal })
+            ), initial.cards.take(6).map { it.communicationGoal })
             assertTrue(initial.beginnerPathCards.isEmpty())
             assertEquals(starterIds, view(content, progress, CatalogViewOptions(beginnerPath = true))
                 .beginnerPathCards.map { it.lessonId })
@@ -131,7 +131,7 @@ class TopicCatalogIntegrationTest {
             val before = progress.state.value.snapshot
             val filtered = view(content, progress, CatalogViewOptions("workplace-clarification", true))
             assertEquals(listOf(starterIds[1], seedId), filtered.cards.map { it.lessonId })
-            assertEquals((starterIds + seedId).toSet(), filtered.topics.flatMap { it.cards }.map { it.lessonId }.toSet())
+            assertEquals(content.lessons.keys, filtered.topics.flatMap { it.cards }.map { it.lessonId }.toSet())
             val invalid = view(content, progress, CatalogViewOptions("unknown-topic"))
             assertTrue(invalid.invalidTopicFilter)
             assertTrue(invalid.cards.isEmpty())
@@ -144,7 +144,7 @@ class TopicCatalogIntegrationTest {
 
     @Test fun manifestKindsAndLaterInvalidDocumentsNeverPublishPartialContent() = runTest {
         val lessonOnly = loaded(source(manifestFor(entries.filter { it.getValue("kind").jsonPrimitive.content == "lesson" })))
-        assertEquals(6, lessonOnly.lessons.size)
+        assertEquals(15, lessonOnly.lessons.size)
         assertTrue(lessonOnly.practiceSets.isEmpty())
         val practiceOnly = assertIs<CatalogLoad.Ready>(BundledContentLoader(source(
             manifestFor(entries.filter { it.getValue("kind").jsonPrimitive.content == "practice" }))).load()).content
@@ -165,7 +165,7 @@ class TopicCatalogIntegrationTest {
             } finally { noLessons.dispose() }
         }
         val mixed = loaded()
-        assertTrue(mixed.practiceSets.isNotEmpty() && mixed.lessons.size == 6)
+        assertTrue(mixed.practiceSets.isNotEmpty() && mixed.lessons.size == 15)
         val last = entries.last().getValue("path").jsonPrimitive.content
         val broken = source(overrides = mapOf(last to "<html>not a document</html>"))
         val coordinator = LocalCatalogCoordinator(this, BundledContentLoader(broken))
@@ -178,7 +178,7 @@ class TopicCatalogIntegrationTest {
             malformedManifest.load(); runCurrent()
             assertIs<LocalCatalogState.Error>(malformedManifest.state.value)
         } finally { malformedManifest.dispose() }
-        val wrongVersion = canonical(path(seedId)).replace("\"contentVersion\": 4", "\"contentVersion\": 2")
+        val wrongVersion = canonical(path(seedId)).replace("\"contentVersion\": 13", "\"contentVersion\": 2")
         val invalid = source(overrides = mapOf(path(seedId) to wrongVersion))
         assertEquals(path(seedId), assertIs<BundledContentException>(runCatching {
             BundledContentLoader(invalid).load()
@@ -268,6 +268,11 @@ class TopicCatalogIntegrationTest {
             backing.externalChange(SaveCodec.encodeSave(save(*(starterIds + seedId).map {
                 record(it, LessonStage.SUMMARY, completed = 700)
             }.toTypedArray()))); progress.reloadSavedState()
+            assertFalse(view(content, progress).recommendation!!.revisit)
+            assertEquals("lesson-requirements-clarification", view(content, progress).recommendation?.lessonId)
+            backing.externalChange(SaveCodec.encodeSave(save(*content.lessons.keys.map {
+                record(it, LessonStage.SUMMARY, completed = 700)
+            }.toTypedArray()))); progress.reloadSavedState()
             assertTrue(view(content, progress).recommendation!!.revisit)
             assertEquals(starterIds[0], view(content, progress).recommendation?.lessonId)
         } finally { progress.dispose() }
@@ -288,7 +293,7 @@ class TopicCatalogIntegrationTest {
         try {
             assertEquals(ProgressAvailability.AVAILABLE, practiceAvailability(oldPractice,
                 mapOf(set.id to set.exercises.map { it.id }.toSet())))
-            assertEquals(true, view(content, progress).cards.last().status.checkpointAvailable)
+            assertEquals(true, view(content, progress).cards.single { it.lessonId == seedId }.status.checkpointAvailable)
             val backup = BackupCodec.encodeBackup(progress.state.value.snapshot, "1.0", 200)
             val candidate = assertIs<BackupDecodeResult.Valid>(BackupCodec.decodeBackup(backup)).backup
             assertEquals(original, candidate.snapshot)
@@ -305,7 +310,7 @@ class TopicCatalogIntegrationTest {
             assertEquals(listOf("lesson-retired"), view(content, progress).unavailableSavedLessons.map { it.record?.lessonId })
             val saved = backing.raw
             assertTrue(progress.reloadSavedState())
-            assertEquals(true, view(content, progress).cards.last().status.checkpointAvailable)
+            assertEquals(true, view(content, progress).cards.single { it.lessonId == seedId }.status.checkpointAvailable)
             assertEquals(ProgressAvailability.AVAILABLE, practiceAvailability(
                 progress.state.value.snapshot.practiceProgress.single(), mapOf(set.id to set.exercises.map { it.id }.toSet())))
             assertEquals(saved, backing.raw)
@@ -326,7 +331,7 @@ class TopicCatalogIntegrationTest {
             assertIs<PersistenceStatus.MemoryOnly>(progress.state.value.status)
             assertNull(backing.raw)
             assertFalse(progress.state.value.snapshot.preferences.showTranslation)
-            assertEquals(6, view(content, progress).cards.size)
+            assertEquals(15, view(content, progress).cards.size)
         } finally { progress.dispose() }
 
         val protectedBacking = MemoryProgressBacking("invalid original")
@@ -335,7 +340,7 @@ class TopicCatalogIntegrationTest {
             protected.mutate { changePreferences(it, it.preferences.copy(showRomaji = true)) }
             assertIs<PersistenceStatus.Protected>(protected.state.value.status)
             assertEquals("invalid original", protectedBacking.raw)
-            assertEquals(6, view(content, protected).cards.size)
+            assertEquals(15, view(content, protected).cards.size)
             assertEquals(ReplacementPreparation.Blocked, protected.beginReset(ResetScope.PROGRESS_ONLY))
         } finally { protected.dispose() }
 
@@ -348,7 +353,7 @@ class TopicCatalogIntegrationTest {
             val stored = shared.raw
             stale.mutate { changePreferences(it, it.preferences.copy(showReadings = false)) }
             assertEquals(stored, shared.raw)
-            assertEquals(6, view(content, stale).cards.size)
+            assertEquals(15, view(content, stale).cards.size)
             assertEquals(ReplacementPreparation.Blocked, stale.beginReset(ResetScope.FULL_LEARNER_STATE))
             assertTrue(stale.reloadSavedState())
             assertTrue(stale.state.value.snapshot.preferences.showRomaji)
@@ -376,7 +381,7 @@ class TopicCatalogIntegrationTest {
         }
         coordinator.load(); runCurrent()
         coordinator.retryLoad(); runCurrent()
-        assertEquals(6, assertIs<LocalCatalogState.Ready>(coordinator.state.value).content.lessons.size)
+        assertEquals(15, assertIs<LocalCatalogState.Ready>(coordinator.state.value).content.lessons.size)
         late.complete(CatalogLoad.Empty(EmptyContentReason.EMPTY_CATALOG)); runCurrent()
         assertIs<LocalCatalogState.Ready>(coordinator.state.value)
         coordinator.dispose()

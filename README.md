@@ -2,7 +2,7 @@
 
 A local-first Japanese trainer for everyday engineering conversations. Study a workplace situation, read the dialogue, practise a response, try a guided conversation, self-assess a role-play and review useful phrases later. Kana and practical vocabulary are also included. Difficulty labels are suggestions, never gates or certifications.
 
-The application needs no account, database, backend credentials or AI model. Kotlin/JS and Kobweb 0.23.0 render the interface; `shared` contains pure models, answer checking, conversations, scheduling and save validation. Reviewed JSON is bundled once under `site/src/jsMain/resources/public/content`. Small progress/preferences live in browser `localStorage`; Cache API stores release assets separately.
+The application needs no account, database, backend credentials or AI model. Kotlin/JS and Kobweb 0.23.0 render the interface; `shared` contains pure models, answer checking, conversations, scheduling and save validation. Reviewed JSON is bundled once under `site/src/jsMain/resources/public/content`. Small progress/preferences and optional personal glossary notes live in browser `localStorage`; Cache API stores release assets separately.
 
 ## Build and verify
 
@@ -46,7 +46,7 @@ Open `/hiragame/` on that server. Python's simple server has no SPA route rewrit
 
 ## Study, review and sound
 
-- Home offers due reviews or your most recent unfinished lesson; Topics has the workplace catalog. Settings/Backup is always reachable.
+- Home offers due reviews or your most recent unfinished lesson; Topics has fifteen lessons: the five workplace starters, a meeting-time mini-lesson, five deeper workplace situations, and transport, housing, appointments and administration. Settings/Backup is always reachable.
 - Lesson completion records traversal of the sequence, not mastery. Multiple-choice/constrained answers have reviewed variants; open role-play is self-assessed, with examples explicitly labelled as examples. Say a response aloud or type it. Hints and phrase banks can be hidden. Responses and conversation history stay session-local.
 - Review introduces up to three items per session from completed lessons/practice. Due items come first; sessions stop at ten items. Again schedules ten minutes; Hard moves one step earlier (minimum one day); Good advances one step. The bounded ladder is ten minutes, one, three, seven, fourteen and thirty days. Lapses keep lifetime repetitions. Practise ahead is deliberate; all ratings require reveal and commit once.
 - Review timestamps are UTC; display uses local time and the offset at that timestamp. Backward clocks do not move history before its previous rating. Counts describe practice, not fluency.
@@ -56,7 +56,7 @@ Open `/hiragame/` on that server. Python's simple server has no SPA route rewrit
 
 Settings exports the current validated progress as JSON and previews replacements before importing. Export before switching browser/device, clearing site data or uninstalling. Private mode, quota failures, storage denial, corruption and conflicting tabs have explicit recovery paths. A failed write may leave progress in memory only; the status tells you and export remains available. Cross-tab handling is best-effort comparison, not a transactional database.
 
-Backups contain preferences, stable lesson checkpoints/completion and compact review/practice outcomes. They contain no conversation transcript, audio, typed responses or credentials. Import replaces rather than merges; confirmation expires if the underlying state changes. Progress-only reset preserves preferences; full reset is separate. Unsupported/malformed saves are preserved until explicit recovery. [Save contract](shared/src/commonMain/kotlin/com/github/nanaki_93/progress/CONTRACT.md) documents schema 1, schema 0 migration, structural limits and retained unavailable-content records. Backup wrapper format is 1. Content versions are separate from save schema versions.
+Backups contain preferences, stable lesson checkpoints/completion, compact review/practice outcomes and explicitly saved personal glossary entries. They contain no conversation transcript, audio, lesson response drafts or credentials. Import replaces rather than merges; confirmation expires if the underlying state changes. Progress-only reset preserves preferences and personal glossary entries; full reset removes both. Unsupported/malformed saves are preserved until explicit recovery. [Save contract](shared/src/commonMain/kotlin/com/github/nanaki_93/progress/CONTRACT.md) documents schema 1, schema 0 migration, structural limits and retained unavailable-content records. Backup wrapper format is 1. Content versions are separate from save schema versions.
 
 ## Offline and updates
 
@@ -95,3 +95,9 @@ python3 tools/local_ai_helper.py
 Open `http://127.0.0.1:8765/hiragame/`, then select endpoint `http://127.0.0.1:8765/ollama` in the lesson. This requires a separately installed, running Ollama with a downloaded local model and cloud features disabled. It is not part of static deployment or the required app. API contracts were checked against [Ollama chat](https://docs.ollama.com/api/chat), [installed-model listing](https://docs.ollama.com/api/tags) and [local configuration](https://docs.ollama.com/faq).
 
 Optional recording in Role-play requests microphone permission only on Record. A take is capped at thirty seconds/five MiB, held in memory and released on cancel, replacement or leaving the activity. Playback shares the audio controller with examples, so starting another source stops the previous one. It is never uploaded, transcribed or included in backups. Permission denial and unsupported recording leave typing/speaking without recording available. Comparison is voluntary and has no automatic pronunciation score.
+
+## Expanded curriculum and personal glossary
+
+The nine expansion lessons cover requirements clarification, estimates/deadlines, incident reports, design trade-offs, technical interviews, transport, housing, appointment changes and administration questions. Each uses the same learning loop, a short dialogue, three useful phrases, guided conversation and self-assessment; suggested prerequisites remain advisory. These are original agent-reviewed examples, with fictional transit/administrative details and no native-speaker or learner-feedback certification.
+
+Settings offers an optional personal glossary: up to 100 terms with readings and meanings/examples. Entries remain clearly personal and unreviewed, are never used as approved answers, and travel in backups. Drafts wait for an explicit Save action; keep project examples public or fictional. A realistic starting routine is one short lesson, a few due phrases and a repeated role-play with less support. JLPT study and speaking practice are complementary, without a fluency guarantee.

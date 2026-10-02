@@ -1,0 +1,291 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 13,
+  "id": "lesson-administration-questions",
+  "topicId": "life-administration-questions",
+  "title": "Administration questions",
+  "situation": "A fictional everyday service exchange. Ask staff what applies to a procedure and clarify how to fill a form.",
+  "communicationGoal": "Ask staff what applies to a procedure and clarify how to fill a form.",
+  "difficulty": "beginner",
+  "durationMinutes": 8,
+  "prerequisiteLessonIds": [],
+  "dialogue": {
+    "speakers": [
+      {
+        "id": "lesson-administration-questions-colleague",
+        "name": "Partner",
+        "role": "Staff member"
+      },
+      {
+        "id": "lesson-administration-questions-learner",
+        "name": "You",
+        "role": "Learner in an illustrative exchange"
+      }
+    ],
+    "turns": [
+      {
+        "id": "lesson-administration-questions-turn-1",
+        "speakerId": "lesson-administration-questions-colleague",
+        "text": {
+          "surface": "何かご不明な点はありますか。",
+          "reading": "なにかごふめいなてんわありますか。",
+          "translation": "Is anything unclear?"
+        }
+      },
+      {
+        "id": "lesson-administration-questions-turn-2",
+        "speakerId": "lesson-administration-questions-learner",
+        "text": {
+          "surface": "この手続きに何が必要ですか。",
+          "reading": "このてつづきになにがひつようですか。",
+          "translation": "What is needed for this procedure?"
+        }
+      },
+      {
+        "id": "lesson-administration-questions-turn-3",
+        "speakerId": "lesson-administration-questions-colleague",
+        "text": {
+          "surface": "この書類が必要です。",
+          "reading": "このしょるいがひつようです。",
+          "translation": "This document is needed."
+        }
+      },
+      {
+        "id": "lesson-administration-questions-turn-4",
+        "speakerId": "lesson-administration-questions-learner",
+        "text": {
+          "surface": "ここに記入すればいいですか。",
+          "reading": "ここにきにゅうすればいいですか。",
+          "translation": "Should I fill this in here?"
+        }
+      },
+      {
+        "id": "lesson-administration-questions-turn-5",
+        "speakerId": "lesson-administration-questions-colleague",
+        "text": {
+          "surface": "はい、分からないところがあれば聞いてください。",
+          "reading": "はい、わからないところがあればきいてください。",
+          "translation": "Yes. Please ask if there is anything you do not understand."
+        }
+      },
+      {
+        "id": "lesson-administration-questions-turn-6",
+        "speakerId": "lesson-administration-questions-learner",
+        "text": {
+          "surface": "ありがとうございます。",
+          "reading": "ありがとうございます。",
+          "translation": "Thank you."
+        }
+      }
+    ]
+  },
+  "phrases": [
+    {
+      "id": "lesson-administration-questions-phrase-2",
+      "text": {
+        "surface": "この手続きに何が必要ですか。",
+        "reading": "このてつづきになにがひつようですか。",
+        "translation": "What is needed for this procedure?"
+      },
+      "sourceTurnId": "lesson-administration-questions-turn-2",
+      "usage": "Ask staff what applies to a procedure and clarify how to fill a form.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-administration-questions-phrase-4",
+      "text": {
+        "surface": "ここに記入すればいいですか。",
+        "reading": "ここにきにゅうすればいいですか。",
+        "translation": "Should I fill this in here?"
+      },
+      "sourceTurnId": "lesson-administration-questions-turn-4",
+      "usage": "Ask staff what applies to a procedure and clarify how to fill a form.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-administration-questions-phrase-6",
+      "text": {
+        "surface": "ありがとうございます。",
+        "reading": "ありがとうございます。",
+        "translation": "Thank you."
+      },
+      "sourceTurnId": "lesson-administration-questions-turn-6",
+      "usage": "Ask staff what applies to a procedure and clarify how to fill a form.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    }
+  ],
+  "grammarNotes": [
+    {
+      "id": "lesson-administration-questions-grammar",
+      "explanation": "何が必要ですか asks for requirements; 〜すればいいですか checks what to do. This fictional exchange does not list actual administrative requirements.",
+      "examples": [
+        {
+          "surface": "この手続きに何が必要ですか。",
+          "reading": "このてつづきになにがひつようですか。",
+          "translation": "What is needed for this procedure?"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lesson-administration-questions-choice",
+      "type": "choice",
+      "prompt": "Which response directly serves this goal: Ask staff what applies to a procedure and clarify how to fill a form.",
+      "options": [
+        {
+          "id": "lesson-administration-questions-target",
+          "text": {
+            "surface": "この手続きに何が必要ですか。",
+            "reading": "このてつづきになにがひつようですか。",
+            "translation": "What is needed for this procedure?"
+          }
+        },
+        {
+          "id": "lesson-administration-questions-acknowledge",
+          "text": {
+            "surface": "分かりました。",
+            "reading": "わかりました。",
+            "translation": "Understood."
+          }
+        }
+      ],
+      "correctOptionId": "lesson-administration-questions-target",
+      "explanation": "The target response states or asks for the specific information. Acknowledgement alone does not express that information. Other natural responses may also work in open conversation."
+    },
+    {
+      "id": "lesson-administration-questions-completion",
+      "type": "completion",
+      "prompt": "Complete the specific response from the dialogue. Use the reviewed word for: necessary.",
+      "template": "この手続きに何が{blank}ですか。",
+      "acceptedAnswers": [
+        {
+          "surface": "必要",
+          "reading": "ひつよう",
+          "translation": "necessary"
+        },
+        {
+          "surface": "ひつよう",
+          "reading": "ひつよう",
+          "translation": "necessary (kana)"
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "この手続きに何が必要ですか。",
+        "reading": "このてつづきになにがひつようですか。",
+        "translation": "What is needed for this procedure?"
+      },
+      "explanation": "The accepted forms fill this one constrained blank. 何が必要ですか asks for requirements; 〜すればいいですか checks what to do. This fictional exchange does not list actual administrative requirements."
+    },
+    {
+      "id": "lesson-administration-questions-production",
+      "type": "production",
+      "prompt": "Ask staff what applies to a procedure and clarify how to fill a form. Use your own words and truthful or clearly fictional practice details.",
+      "exampleResponses": [
+        {
+          "surface": "この手続きに何が必要ですか。",
+          "reading": "このてつづきになにがひつようですか。",
+          "translation": "What is needed for this procedure?"
+        },
+        {
+          "surface": "ここに記入すればいいですか。",
+          "reading": "ここにきにゅうすればいいですか。",
+          "translation": "Should I fill this in here?"
+        }
+      ],
+      "criteria": [
+        "I communicated the specific goal politely.",
+        "I separated known information from uncertainty and asked a relevant follow-up.",
+        "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+      ]
+    }
+  ],
+  "rolePlay": {
+    "task": "Ask staff what applies to a procedure and clarify how to fill a form. Respond to a partner, then ask a follow-up.",
+    "criteria": [
+      "I communicated the specific goal politely.",
+      "I separated known information from uncertainty and asked a relevant follow-up.",
+      "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+    ],
+    "hints": [
+      "Use the reviewed phrase bank, then hide it for independent practice.",
+      "Ask for repetition or clarification if you are unsure."
+    ],
+    "examples": [
+      {
+        "surface": "この手続きに何が必要ですか。",
+        "reading": "このてつづきになにがひつようですか。",
+        "translation": "What is needed for this procedure?"
+      },
+      {
+        "surface": "ここに記入すればいいですか。",
+        "reading": "ここにきにゅうすればいいですか。",
+        "translation": "Should I fill this in here?"
+      }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "lesson-administration-questions-review-phrase",
+      "targetKind": "phrase",
+      "targetId": "lesson-administration-questions-phrase-2",
+      "skill": "Ask staff what applies to a procedure and clarify how to fill a form.",
+      "direction": "meaning-to-japanese"
+    },
+    {
+      "id": "lesson-administration-questions-review-completion",
+      "targetKind": "exercise",
+      "targetId": "lesson-administration-questions-completion",
+      "skill": "Ask staff what applies to a procedure and clarify how to fill a form.",
+      "direction": "context-to-utterance"
+    }
+  ],
+  "conversationGraph": {
+    "entryNodeId": "lesson-administration-questions-prompt",
+    "nodes": [
+      {
+        "id": "lesson-administration-questions-prompt",
+        "type": "prompt",
+        "speakerId": "lesson-administration-questions-colleague",
+        "text": {
+          "surface": "何かご不明な点はありますか。",
+          "reading": "なにかごふめいなてんわありますか。",
+          "translation": "Is anything unclear?"
+        },
+        "nextNodeId": "lesson-administration-questions-reply"
+      },
+      {
+        "id": "lesson-administration-questions-reply",
+        "type": "completionInteraction",
+        "exerciseId": "lesson-administration-questions-completion",
+        "feedback": "You expressed the target intent using the constrained example. Read the partner’s response next.",
+        "nextNodeId": "lesson-administration-questions-follow"
+      },
+      {
+        "id": "lesson-administration-questions-follow",
+        "type": "prompt",
+        "speakerId": "lesson-administration-questions-colleague",
+        "text": {
+          "surface": "この書類が必要です。",
+          "reading": "このしょるいがひつようです。",
+          "translation": "This document is needed."
+        },
+        "nextNodeId": "lesson-administration-questions-end"
+      },
+      {
+        "id": "lesson-administration-questions-end",
+        "type": "terminal",
+        "message": "The partner responded. Try the remaining exchange in your own words and self-assess your communication goal."
+      }
+    ]
+  },
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-03",
+    "reviewNote": "o04-expansion.md",
+    "provenance": "Original agent-authored instructional scenario and text; no external lesson passage or audio copied.",
+    "rights": "publishable",
+    "rightsBasis": "Original project-authored text approved publishable; no third-party passage or recording included."
+  }
+}

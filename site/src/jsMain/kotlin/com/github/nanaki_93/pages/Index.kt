@@ -360,7 +360,7 @@ internal fun saveStatusMessage(state: LocalProgressState): String = when (val st
     PersistenceStatus.Fresh -> "No local snapshot yet. Progress checkpoints will be saved in this browser when possible."
     PersistenceStatus.Saved -> if (state.rejectedUpdate != null)
         "Earlier progress is saved in this browser. The latest change was not retained."
-    else "Saved in this browser. Progress checkpoints and preferences are stored locally; typed responses are not retained."
+    else "Saved in this browser. Progress, preferences and explicitly saved glossary notes stay locally; lesson responses are not retained."
     is PersistenceStatus.MemoryOnly -> when (status.reason) {
         StoreFailure.DENIED -> "Changes only in memory: browser storage is unavailable or denied. Unsaved work may be lost on reload."
         StoreFailure.QUOTA -> "Changes only in memory: storage is full. The earlier stored snapshot was not replaced; unsaved work may be lost on reload."
@@ -569,10 +569,10 @@ private fun ResetSection(
         val pending = review!!
         when (pending.scope) {
             ResetScope.PROGRESS_ONLY -> P(attrs = { attr("role", "alert") }) {
-                Text("Confirm Reset progress? All lessons (including completed ones), practice checkpoints, and review items, even for unavailable content, will be removed. Every current preference is kept: color mode, readings, translation, and romaji. Unsaved work in this view and the active practice session/draft will be lost only if this reset succeeds. This is not reversible here.")
+                Text("Confirm Reset progress? All lessons (including completed ones), practice checkpoints, and review items, even for unavailable content, will be removed. Every current preference is kept: color mode, readings, translation, and romaji. Your personal glossary is also kept. Unsaved work in this view and the active practice session/draft will be lost only if this reset succeeds. This is not reversible here.")
             }
             ResetScope.FULL_LEARNER_STATE -> P(attrs = { attr("role", "alert") }) {
-                Text("Confirm Reset all learner data and preferences? All lessons (including completed ones), practice checkpoints, and review items, even for unavailable content, will be removed. Color mode returns to system, readings and translation are shown, and romaji is hidden (the default preferences). Unsaved work in this view and the active practice session/draft will be lost only if this reset succeeds. An unreadable protected original will be replaced and cannot be recovered from this browser afterward. This is not reversible here.")
+                Text("Confirm Reset all learner data and preferences? All lessons (including completed ones), practice checkpoints, and review items, even for unavailable content, will be removed. Personal glossary entries are removed. Color mode returns to system, readings and translation are shown, and romaji is hidden (the default preferences). Unsaved work in this view and the active practice session/draft will be lost only if this reset succeeds. An unreadable protected original will be replaced and cannot be recovered from this browser afterward. This is not reversible here.")
             }
         }
         P { Text("Export the current validated memory before resetting. If the original is unreadable, download the separate unvalidated recovery text above as well. Offline content is not cleared.") }
@@ -677,7 +677,7 @@ private fun RestoreSection(
             H2 { Text("Review replacement") }
             RestorePreview(details)
             P(attrs = { attr("role", "alert") }) {
-                Text("Replace, not merge. This replaces all current learner progress and preferences, including work only in this view's memory and any active practice or draft. This cannot be undone here. Offline content is not cleared.")
+                Text("Replace, not merge. This replaces all current learner progress, preferences and personal glossary entries, including work only in this view's memory and any active practice or draft. This cannot be undone here. Offline content is not cleared.")
             }
             P { Text("Export your current validated memory before replacing it. If the stored original is unreadable, download its separate unvalidated recovery text above as well.") }
             SecondaryButton("Export current progress before restore", onClick = {
@@ -714,7 +714,7 @@ private fun RestorePreview(details: BackupPreview) {
     details.migratedFrom?.let { P { Text("Migrated from save schema $it in memory before review.") } }
     val prefs = details.preferences
     P { Text("Preferences: color mode ${prefs.colorMode.name.lowercase()}, readings ${prefs.showReadings}, translation ${prefs.showTranslation}, romaji ${prefs.showRomaji}.") }
-    P { Text("Lessons: ${details.lessonCount} (${details.completedLessonCount} completed); practice checkpoints: ${details.practiceCheckpointCount}; review items: ${details.reviewItemCount}.") }
+    P { Text("Lessons: ${details.lessonCount} (${details.completedLessonCount} completed); practice checkpoints: ${details.practiceCheckpointCount}; review items: ${details.reviewItemCount}; personal glossary entries: ${details.glossaryEntryCount}.") }
     P { Text("Unknown content IDs are retained. Availability against the current catalog was not checked; some saved records or checkpoints may not be usable until matching content returns. No due-review count was calculated.") }
 }
 

@@ -87,7 +87,7 @@ fun TopicsPage() {
                 Link(path = "/") { Text("Back to Home") }
                 when (val current = state) {
                     LocalCatalogState.Loading -> Section(attrs = { attr("aria-live", "polite") }) {
-                        H2 { Text("Loading workplace lessons") }
+                        H2 { Text("Loading lessons") }
                         P(attrs = { attr("role", "status") }) { Text("Reading reviewed lessons bundled with this site.") }
                     }
                     is LocalCatalogState.Empty -> Section {
@@ -156,8 +156,8 @@ fun TopicsPage() {
                             }
                             P { Text("Filter and beginner path are temporary to this page; they are not saved preferences. All lessons remain selectable.") }
                             if (view.beginnerPath) Section {
-                                H3 { Text("Suggested beginner order") }
-                                P { Text("Use readings, translations and phrase support if helpful, or explore independently. This order does not unlock lessons.") }
+                                H3 { Text("Suggested starter order") }
+                                P { Text("Start with up to five short lessons, one at a time. Use readings, translations and phrase support if helpful, or explore independently. This order does not unlock lessons.") }
                                 view.beginnerPathCards.forEachIndexed { index, card ->
                                     P { Text("${index + 1}. ${card.title}") }
                                 }
@@ -174,7 +174,7 @@ fun TopicsPage() {
                             }
                             if (view.cards.isEmpty()) Section {
                                 H3 { Text("No lessons match this topic") }
-                                P { Text("Other workplace lessons remain available. Your saved progress has not changed.") }
+                                P { Text("Other lessons remain available. Your saved progress has not changed.") }
                                 SecondaryButton("Clear filter", onClick = { topicId = null })
                             }
                             for (group in view.topics) {

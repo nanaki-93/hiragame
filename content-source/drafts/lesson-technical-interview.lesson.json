@@ -1,0 +1,293 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 1,
+  "id": "lesson-technical-interview",
+  "topicId": "workplace-technical-interview",
+  "title": "Technical interviews",
+  "situation": "A fictional workplace exchange. Describe a real project and your contribution without inventing experience.",
+  "communicationGoal": "Describe a real project and your contribution without inventing experience.",
+  "difficulty": "intermediate",
+  "durationMinutes": 8,
+  "prerequisiteLessonIds": [
+    "lesson-engineering-introduction"
+  ],
+  "dialogue": {
+    "speakers": [
+      {
+        "id": "lesson-technical-interview-colleague",
+        "name": "Partner",
+        "role": "Coworker"
+      },
+      {
+        "id": "lesson-technical-interview-learner",
+        "name": "You",
+        "role": "Learner in an illustrative exchange"
+      }
+    ],
+    "turns": [
+      {
+        "id": "lesson-technical-interview-turn-1",
+        "speakerId": "lesson-technical-interview-colleague",
+        "text": {
+          "surface": "どんなプロジェクトに参加しましたか。",
+          "reading": "どんなぷろじぇくとにさんかしましたか。",
+          "translation": "What kind of project did you participate in?"
+        }
+      },
+      {
+        "id": "lesson-technical-interview-turn-2",
+        "speakerId": "lesson-technical-interview-learner",
+        "text": {
+          "surface": "学習用のアプリを作りました。",
+          "reading": "がくしゅうようのあぷりをつくりました。",
+          "translation": "I built an app for learning."
+        }
+      },
+      {
+        "id": "lesson-technical-interview-turn-3",
+        "speakerId": "lesson-technical-interview-colleague",
+        "text": {
+          "surface": "担当した部分を教えてください。",
+          "reading": "たんとうしたぶぶんをおしえてください。",
+          "translation": "Please tell me which part you were responsible for."
+        }
+      },
+      {
+        "id": "lesson-technical-interview-turn-4",
+        "speakerId": "lesson-technical-interview-learner",
+        "text": {
+          "surface": "画面の実装とテストを担当しました。",
+          "reading": "がめんのじっそうとてすとをたんとうしました。",
+          "translation": "I was responsible for implementing the screens and testing."
+        }
+      },
+      {
+        "id": "lesson-technical-interview-turn-5",
+        "speakerId": "lesson-technical-interview-colleague",
+        "text": {
+          "surface": "どんなことを学びましたか。",
+          "reading": "どんなことをまなびましたか。",
+          "translation": "What did you learn?"
+        }
+      },
+      {
+        "id": "lesson-technical-interview-turn-6",
+        "speakerId": "lesson-technical-interview-learner",
+        "text": {
+          "surface": "早い段階で動作を確認する大切さを学びました。",
+          "reading": "はやいだんかいでどうさをかくにんするたいせつさをまなびました。",
+          "translation": "I learned the importance of checking behavior early."
+        }
+      }
+    ]
+  },
+  "phrases": [
+    {
+      "id": "lesson-technical-interview-phrase-2",
+      "text": {
+        "surface": "学習用のアプリを作りました。",
+        "reading": "がくしゅうようのあぷりをつくりました。",
+        "translation": "I built an app for learning."
+      },
+      "sourceTurnId": "lesson-technical-interview-turn-2",
+      "usage": "Describe a real project and your contribution without inventing experience.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-technical-interview-phrase-4",
+      "text": {
+        "surface": "画面の実装とテストを担当しました。",
+        "reading": "がめんのじっそうとてすとをたんとうしました。",
+        "translation": "I was responsible for implementing the screens and testing."
+      },
+      "sourceTurnId": "lesson-technical-interview-turn-4",
+      "usage": "Describe a real project and your contribution without inventing experience.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-technical-interview-phrase-6",
+      "text": {
+        "surface": "早い段階で動作を確認する大切さを学びました。",
+        "reading": "はやいだんかいでどうさをかくにんするたいせつさをまなびました。",
+        "translation": "I learned the importance of checking behavior early."
+      },
+      "sourceTurnId": "lesson-technical-interview-turn-6",
+      "usage": "Describe a real project and your contribution without inventing experience.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    }
+  ],
+  "grammarNotes": [
+    {
+      "id": "lesson-technical-interview-grammar",
+      "explanation": "〜を担当しました identifies responsibility. These sample project facts are fictional; replace them with your actual contribution.",
+      "examples": [
+        {
+          "surface": "学習用のアプリを作りました。",
+          "reading": "がくしゅうようのあぷりをつくりました。",
+          "translation": "I built an app for learning."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lesson-technical-interview-choice",
+      "type": "choice",
+      "prompt": "Which response directly serves this goal: Describe a real project and your contribution without inventing experience.",
+      "options": [
+        {
+          "id": "lesson-technical-interview-target",
+          "text": {
+            "surface": "学習用のアプリを作りました。",
+            "reading": "がくしゅうようのあぷりをつくりました。",
+            "translation": "I built an app for learning."
+          }
+        },
+        {
+          "id": "lesson-technical-interview-acknowledge",
+          "text": {
+            "surface": "分かりました。",
+            "reading": "わかりました。",
+            "translation": "Understood."
+          }
+        }
+      ],
+      "correctOptionId": "lesson-technical-interview-target",
+      "explanation": "The target response states or asks for the specific information. Acknowledgement alone does not express that information. Other natural responses may also work in open conversation."
+    },
+    {
+      "id": "lesson-technical-interview-completion",
+      "type": "completion",
+      "prompt": "Complete the specific response from the dialogue. Use the reviewed word for: app.",
+      "template": "学習用の{blank}を作りました。",
+      "acceptedAnswers": [
+        {
+          "surface": "アプリ",
+          "reading": "あぷり",
+          "translation": "app"
+        },
+        {
+          "surface": "あぷり",
+          "reading": "あぷり",
+          "translation": "app (hiragana practice spelling)"
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "学習用のアプリを作りました。",
+        "reading": "がくしゅうようのあぷりをつくりました。",
+        "translation": "I built an app for learning."
+      },
+      "explanation": "The accepted forms fill this one constrained blank. 〜を担当しました identifies responsibility. These sample project facts are fictional; replace them with your actual contribution."
+    },
+    {
+      "id": "lesson-technical-interview-production",
+      "type": "production",
+      "prompt": "Describe a real project and your contribution without inventing experience. Use your own words and truthful or clearly fictional practice details.",
+      "exampleResponses": [
+        {
+          "surface": "学習用のアプリを作りました。",
+          "reading": "がくしゅうようのあぷりをつくりました。",
+          "translation": "I built an app for learning."
+        },
+        {
+          "surface": "画面の実装とテストを担当しました。",
+          "reading": "がめんのじっそうとてすとをたんとうしました。",
+          "translation": "I was responsible for implementing the screens and testing."
+        }
+      ],
+      "criteria": [
+        "I communicated the specific goal politely.",
+        "I separated known information from uncertainty and asked a relevant follow-up.",
+        "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+      ]
+    }
+  ],
+  "rolePlay": {
+    "task": "Describe a real project and your contribution without inventing experience. Respond to a partner, then ask a follow-up.",
+    "criteria": [
+      "I communicated the specific goal politely.",
+      "I separated known information from uncertainty and asked a relevant follow-up.",
+      "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+    ],
+    "hints": [
+      "Use the reviewed phrase bank, then hide it for independent practice.",
+      "Ask for repetition or clarification if you are unsure."
+    ],
+    "examples": [
+      {
+        "surface": "学習用のアプリを作りました。",
+        "reading": "がくしゅうようのあぷりをつくりました。",
+        "translation": "I built an app for learning."
+      },
+      {
+        "surface": "画面の実装とテストを担当しました。",
+        "reading": "がめんのじっそうとてすとをたんとうしました。",
+        "translation": "I was responsible for implementing the screens and testing."
+      }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "lesson-technical-interview-review-phrase",
+      "targetKind": "phrase",
+      "targetId": "lesson-technical-interview-phrase-2",
+      "skill": "Describe a real project and your contribution without inventing experience.",
+      "direction": "meaning-to-japanese"
+    },
+    {
+      "id": "lesson-technical-interview-review-completion",
+      "targetKind": "exercise",
+      "targetId": "lesson-technical-interview-completion",
+      "skill": "Describe a real project and your contribution without inventing experience.",
+      "direction": "context-to-utterance"
+    }
+  ],
+  "conversationGraph": {
+    "entryNodeId": "lesson-technical-interview-prompt",
+    "nodes": [
+      {
+        "id": "lesson-technical-interview-prompt",
+        "type": "prompt",
+        "speakerId": "lesson-technical-interview-colleague",
+        "text": {
+          "surface": "どんなプロジェクトに参加しましたか。",
+          "reading": "どんなぷろじぇくとにさんかしましたか。",
+          "translation": "What kind of project did you participate in?"
+        },
+        "nextNodeId": "lesson-technical-interview-reply"
+      },
+      {
+        "id": "lesson-technical-interview-reply",
+        "type": "completionInteraction",
+        "exerciseId": "lesson-technical-interview-completion",
+        "feedback": "You expressed the target intent using the constrained example. Read the partner’s response next.",
+        "nextNodeId": "lesson-technical-interview-follow"
+      },
+      {
+        "id": "lesson-technical-interview-follow",
+        "type": "prompt",
+        "speakerId": "lesson-technical-interview-colleague",
+        "text": {
+          "surface": "担当した部分を教えてください。",
+          "reading": "たんとうしたぶぶんをおしえてください。",
+          "translation": "Please tell me which part you were responsible for."
+        },
+        "nextNodeId": "lesson-technical-interview-end"
+      },
+      {
+        "id": "lesson-technical-interview-end",
+        "type": "terminal",
+        "message": "The partner responded. Try the remaining exchange in your own words and self-assess your communication goal."
+      }
+    ]
+  },
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-03",
+    "reviewNote": "o04-expansion.md",
+    "provenance": "Original agent-authored instructional scenario and text; no external lesson passage or audio copied.",
+    "rights": "publishable",
+    "rightsBasis": "Original project-authored text approved publishable; no third-party passage or recording included."
+  }
+}

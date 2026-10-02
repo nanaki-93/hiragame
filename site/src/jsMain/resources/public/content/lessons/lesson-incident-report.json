@@ -1,0 +1,293 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 13,
+  "id": "lesson-incident-report",
+  "topicId": "workplace-incident-report",
+  "title": "Incident reports",
+  "situation": "A fictional workplace exchange. Report an observed problem and separate known impact from what is still being checked.",
+  "communicationGoal": "Report an observed problem and separate known impact from what is still being checked.",
+  "difficulty": "beginner",
+  "durationMinutes": 8,
+  "prerequisiteLessonIds": [
+    "lesson-bug-reproduction"
+  ],
+  "dialogue": {
+    "speakers": [
+      {
+        "id": "lesson-incident-report-colleague",
+        "name": "Partner",
+        "role": "Coworker"
+      },
+      {
+        "id": "lesson-incident-report-learner",
+        "name": "You",
+        "role": "Learner in an illustrative exchange"
+      }
+    ],
+    "turns": [
+      {
+        "id": "lesson-incident-report-turn-1",
+        "speakerId": "lesson-incident-report-colleague",
+        "text": {
+          "surface": "どのような問題ですか。",
+          "reading": "どのようなもんだいですか。",
+          "translation": "What kind of problem is it?"
+        }
+      },
+      {
+        "id": "lesson-incident-report-turn-2",
+        "speakerId": "lesson-incident-report-learner",
+        "text": {
+          "surface": "十時からサービスにつながりません。",
+          "reading": "じゅうじからさーびすにつながりません。",
+          "translation": "I have been unable to connect to the service since ten."
+        }
+      },
+      {
+        "id": "lesson-incident-report-turn-3",
+        "speakerId": "lesson-incident-report-colleague",
+        "text": {
+          "surface": "影響の範囲は分かりますか。",
+          "reading": "えいきょうのはんいわわかりますか。",
+          "translation": "Do you know the scope of the impact?"
+        }
+      },
+      {
+        "id": "lesson-incident-report-turn-4",
+        "speakerId": "lesson-incident-report-learner",
+        "text": {
+          "surface": "まだ確認中です。",
+          "reading": "まだかくにんちゅうです。",
+          "translation": "I am still checking."
+        }
+      },
+      {
+        "id": "lesson-incident-report-turn-5",
+        "speakerId": "lesson-incident-report-colleague",
+        "text": {
+          "surface": "分かり次第、教えてください。",
+          "reading": "わかりしだい、おしえてください。",
+          "translation": "Please let me know as soon as you find out."
+        }
+      },
+      {
+        "id": "lesson-incident-report-turn-6",
+        "speakerId": "lesson-incident-report-learner",
+        "text": {
+          "surface": "確認して連絡します。",
+          "reading": "かくにんしてれんらくします。",
+          "translation": "I will check and get in touch."
+        }
+      }
+    ]
+  },
+  "phrases": [
+    {
+      "id": "lesson-incident-report-phrase-2",
+      "text": {
+        "surface": "十時からサービスにつながりません。",
+        "reading": "じゅうじからさーびすにつながりません。",
+        "translation": "I have been unable to connect to the service since ten."
+      },
+      "sourceTurnId": "lesson-incident-report-turn-2",
+      "usage": "Report an observed problem and separate known impact from what is still being checked.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-incident-report-phrase-4",
+      "text": {
+        "surface": "まだ確認中です。",
+        "reading": "まだかくにんちゅうです。",
+        "translation": "I am still checking."
+      },
+      "sourceTurnId": "lesson-incident-report-turn-4",
+      "usage": "Report an observed problem and separate known impact from what is still being checked.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-incident-report-phrase-6",
+      "text": {
+        "surface": "確認して連絡します。",
+        "reading": "かくにんしてれんらくします。",
+        "translation": "I will check and get in touch."
+      },
+      "sourceTurnId": "lesson-incident-report-turn-6",
+      "usage": "Report an observed problem and separate known impact from what is still being checked.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    }
+  ],
+  "grammarNotes": [
+    {
+      "id": "lesson-incident-report-grammar",
+      "explanation": "から marks the observed starting point. 確認中 means checking is in progress; it does not establish a cause or total outage.",
+      "examples": [
+        {
+          "surface": "十時からサービスにつながりません。",
+          "reading": "じゅうじからさーびすにつながりません。",
+          "translation": "I have been unable to connect to the service since ten."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lesson-incident-report-choice",
+      "type": "choice",
+      "prompt": "Which response directly serves this goal: Report an observed problem and separate known impact from what is still being checked.",
+      "options": [
+        {
+          "id": "lesson-incident-report-target",
+          "text": {
+            "surface": "十時からサービスにつながりません。",
+            "reading": "じゅうじからさーびすにつながりません。",
+            "translation": "I have been unable to connect to the service since ten."
+          }
+        },
+        {
+          "id": "lesson-incident-report-acknowledge",
+          "text": {
+            "surface": "分かりました。",
+            "reading": "わかりました。",
+            "translation": "Understood."
+          }
+        }
+      ],
+      "correctOptionId": "lesson-incident-report-target",
+      "explanation": "The target response states or asks for the specific information. Acknowledgement alone does not express that information. Other natural responses may also work in open conversation."
+    },
+    {
+      "id": "lesson-incident-report-completion",
+      "type": "completion",
+      "prompt": "Complete the specific response from the dialogue. Use the reviewed word for: ten o’clock.",
+      "template": "{blank}からサービスにつながりません。",
+      "acceptedAnswers": [
+        {
+          "surface": "十時",
+          "reading": "じゅうじ",
+          "translation": "ten o’clock"
+        },
+        {
+          "surface": "じゅうじ",
+          "reading": "じゅうじ",
+          "translation": "ten o’clock (kana)"
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "十時からサービスにつながりません。",
+        "reading": "じゅうじからさーびすにつながりません。",
+        "translation": "I have been unable to connect to the service since ten."
+      },
+      "explanation": "The accepted forms fill this one constrained blank. から marks the observed starting point. 確認中 means checking is in progress; it does not establish a cause or total outage."
+    },
+    {
+      "id": "lesson-incident-report-production",
+      "type": "production",
+      "prompt": "Report an observed problem and separate known impact from what is still being checked. Use your own words and truthful or clearly fictional practice details.",
+      "exampleResponses": [
+        {
+          "surface": "十時からサービスにつながりません。",
+          "reading": "じゅうじからさーびすにつながりません。",
+          "translation": "I have been unable to connect to the service since ten."
+        },
+        {
+          "surface": "まだ確認中です。",
+          "reading": "まだかくにんちゅうです。",
+          "translation": "I am still checking."
+        }
+      ],
+      "criteria": [
+        "I communicated the specific goal politely.",
+        "I separated known information from uncertainty and asked a relevant follow-up.",
+        "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+      ]
+    }
+  ],
+  "rolePlay": {
+    "task": "Report an observed problem and separate known impact from what is still being checked. Respond to a partner, then ask a follow-up.",
+    "criteria": [
+      "I communicated the specific goal politely.",
+      "I separated known information from uncertainty and asked a relevant follow-up.",
+      "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+    ],
+    "hints": [
+      "Use the reviewed phrase bank, then hide it for independent practice.",
+      "Ask for repetition or clarification if you are unsure."
+    ],
+    "examples": [
+      {
+        "surface": "十時からサービスにつながりません。",
+        "reading": "じゅうじからさーびすにつながりません。",
+        "translation": "I have been unable to connect to the service since ten."
+      },
+      {
+        "surface": "まだ確認中です。",
+        "reading": "まだかくにんちゅうです。",
+        "translation": "I am still checking."
+      }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "lesson-incident-report-review-phrase",
+      "targetKind": "phrase",
+      "targetId": "lesson-incident-report-phrase-2",
+      "skill": "Report an observed problem and separate known impact from what is still being checked.",
+      "direction": "meaning-to-japanese"
+    },
+    {
+      "id": "lesson-incident-report-review-completion",
+      "targetKind": "exercise",
+      "targetId": "lesson-incident-report-completion",
+      "skill": "Report an observed problem and separate known impact from what is still being checked.",
+      "direction": "context-to-utterance"
+    }
+  ],
+  "conversationGraph": {
+    "entryNodeId": "lesson-incident-report-prompt",
+    "nodes": [
+      {
+        "id": "lesson-incident-report-prompt",
+        "type": "prompt",
+        "speakerId": "lesson-incident-report-colleague",
+        "text": {
+          "surface": "どのような問題ですか。",
+          "reading": "どのようなもんだいですか。",
+          "translation": "What kind of problem is it?"
+        },
+        "nextNodeId": "lesson-incident-report-reply"
+      },
+      {
+        "id": "lesson-incident-report-reply",
+        "type": "completionInteraction",
+        "exerciseId": "lesson-incident-report-completion",
+        "feedback": "You expressed the target intent using the constrained example. Read the partner’s response next.",
+        "nextNodeId": "lesson-incident-report-follow"
+      },
+      {
+        "id": "lesson-incident-report-follow",
+        "type": "prompt",
+        "speakerId": "lesson-incident-report-colleague",
+        "text": {
+          "surface": "影響の範囲は分かりますか。",
+          "reading": "えいきょうのはんいわわかりますか。",
+          "translation": "Do you know the scope of the impact?"
+        },
+        "nextNodeId": "lesson-incident-report-end"
+      },
+      {
+        "id": "lesson-incident-report-end",
+        "type": "terminal",
+        "message": "The partner responded. Try the remaining exchange in your own words and self-assess your communication goal."
+      }
+    ]
+  },
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-03",
+    "reviewNote": "o04-expansion.md",
+    "provenance": "Original agent-authored instructional scenario and text; no external lesson passage or audio copied.",
+    "rights": "publishable",
+    "rightsBasis": "Original project-authored text approved publishable; no third-party passage or recording included."
+  }
+}
