@@ -12,6 +12,7 @@ import com.github.nanaki_93.LocalProgress
 import com.github.nanaki_93.components.styles.Colors
 import com.github.nanaki_93.components.styles.Styles
 import com.github.nanaki_93.components.widgets.PrimaryButton
+import com.github.nanaki_93.components.widgets.PreviewJapaneseText
 import com.github.nanaki_93.components.widgets.SecondaryButton
 import com.github.nanaki_93.content.BrowserContentTextSource
 import com.github.nanaki_93.content.BundledContentLoader
@@ -19,7 +20,6 @@ import com.github.nanaki_93.content.CatalogEmptyReason
 import com.github.nanaki_93.content.CatalogViewOptions
 import com.github.nanaki_93.content.Lesson
 import com.github.nanaki_93.content.LessonCard
-import com.github.nanaki_93.content.JapaneseText
 import com.github.nanaki_93.content.ChoiceExercise
 import com.github.nanaki_93.content.CompletionExercise
 import com.github.nanaki_93.content.ProductionExercise
@@ -53,10 +53,7 @@ import org.jetbrains.compose.web.dom.Legend
 import org.jetbrains.compose.web.dom.Main
 import org.jetbrains.compose.web.dom.P
 import org.jetbrains.compose.web.dom.Section
-import org.jetbrains.compose.web.dom.Span
-import org.jetbrains.compose.web.dom.TagElement
 import org.jetbrains.compose.web.dom.Text
-import org.w3c.dom.HTMLElement
 
 /** Browsing controls belong to this page; the app-scoped save owner remains the only progress source. */
 @Page("/topics")
@@ -310,30 +307,6 @@ private fun LessonPreview(
         lesson.rolePlay.examples.forEach { PreviewJapaneseText(it, preferences) }
         SecondaryButton("Back to catalog", onClick = onClose)
     }
-}
-
-/** Only authored segments become ruby; all lesson and saved strings remain escaped text nodes. */
-@Composable
-private fun PreviewJapaneseText(text: JapaneseText, preferences: SavePreferences) {
-    val aids = visibleAids(text, preferences, answerHidden = false)
-    P(attrs = { style { property("overflow-wrap", "anywhere"); property("min-width", "0") } }) {
-        Span(attrs = { attr("lang", "ja"); style { property("overflow-wrap", "anywhere") } }) {
-            if (!aids.ruby || text.segments.isEmpty()) Text(text.surface)
-            else for (segment in text.segments) {
-                val reading = segment.reading
-                if (reading == null) Text(segment.surface)
-                else TagElement<HTMLElement>("ruby", applyAttrs = null) {
-                    Text(segment.surface)
-                    TagElement<HTMLElement>("rt", applyAttrs = null) { Text(reading) }
-                }
-            }
-        }
-    }
-    aids.reading?.let { P { Text("Reading: $it") } }
-    aids.meaning?.let { P { Text("Meaning: $it") } }
-    aids.romaji?.let { P { Text("Authored romaji: $it") } }
-    text.context?.let { P { Text("Context: $it") } }
-    text.register?.let { P { Text("Register: $it") } }
 }
 
 @Composable
