@@ -227,17 +227,19 @@ Build non-interactive tests into each feature rather than deferring them to the 
 
 **Depends on:** F03.
 
+Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-source/review-notes/f04-validation.md`. Browser/manual/visual/live-offline checks remain out of scope.
+
 ### Implementation tasks
 
-- [ ] Add one-action JSON export with app/save version information and a dated filename.
-- [ ] Validate imported files before changing state: size bounds, shape, version, field types, IDs, dates, numeric ranges, and text lengths.
-- [ ] Preview the backup's date and summary, warn that restore replaces current progress, and offer export of the current state first.
-- [ ] Use replace semantics for the first release; do not implement ambiguous progress merging.
-- [ ] Apply supported migrations before restoring. Retain unknown content IDs for future availability.
-- [ ] Persist the validated replacement before changing the active state. If persistence fails, preserve the current save and report the failure.
-- [ ] Render imported strings as text, never as trusted HTML.
-- [ ] Provide separately confirmed progress reset and full reset; distinguish clearing progress from clearing offline asset caches.
-- [ ] Explain origin/device limitations and recommend regular exports. Manual restore is the first-release way to move between devices.
+- [x] Add one-action JSON export with app/save version information and a dated filename.
+- [x] Validate imported files before changing state: size bounds, shape, version, field types, IDs, dates, numeric ranges, and text lengths.
+- [x] Preview the backup's date and summary, warn that restore replaces current progress, and offer export of the current state first.
+- [x] Use replace semantics for the first release; do not implement ambiguous progress merging.
+- [x] Apply supported migrations before restoring. Retain unknown content IDs for future availability.
+- [x] Persist the validated replacement before changing the active state. If persistence fails, preserve the current save and report the failure.
+- [x] Render imported strings as text, never as trusted HTML.
+- [x] Provide separately confirmed progress reset and full reset; distinguish clearing progress from clearing offline asset caches.
+- [x] Explain origin/device limitations and recommend regular exports. Manual restore is the first-release way to move between devices.
 
 ### Acceptance criteria
 

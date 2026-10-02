@@ -142,6 +142,15 @@ class PracticeSessionTest {
         assertEquals(2, state.outcomes.size)
     }
 
+    // JS may expose mutable copies; JVM may expose immutable copies. Both must leave stored data unchanged.
+    private fun <T> attemptExposedListMutation(values: List<T>) {
+        try {
+            (values as MutableList<T>).clear()
+        } catch (_: UnsupportedOperationException) {
+            // An immutable copy is also safe.
+        }
+    }
+
     @Test fun returnedFeedbackCannotMutateTheStoredPlanOrOutcome() {
         val text = JapaneseText("あ", "あ", gloss = "a", segments = mutableListOf(TextSegment("あ")))
         val reading = ReadingExercise("read", "Read this", text, AnswerRepresentation.KANA,
@@ -149,10 +158,10 @@ class PracticeSessionTest {
         val state = reduce(startSession(20, set(1).copy(exercises = listOf(reading))),
             PracticeCommand.Submit(20, 0, PracticeAnswer.Text("あ")))
         val feedback = assertIs<AuthoredFeedback.Reading>(assertIs<PracticeOutcome.Correct>(state.outcomes[0]).feedback)
-        (feedback.stimulus.segments as MutableList).clear()
-        (assertIs<ReadingExpectedAnswer.Kana>(feedback.acceptedAnswers[0]).text.segments as MutableList).clear()
-        (feedback.acceptedAnswers as MutableList).clear()
-        (state.outcomes as MutableList).clear()
+        attemptExposedListMutation(feedback.stimulus.segments)
+        attemptExposedListMutation(assertIs<ReadingExpectedAnswer.Kana>(feedback.acceptedAnswers[0]).text.segments)
+        attemptExposedListMutation(feedback.acceptedAnswers)
+        attemptExposedListMutation(state.outcomes)
         val stored = assertIs<AuthoredFeedback.Reading>(assertIs<PracticeOutcome.Correct>(state.outcomes[0]).feedback)
         assertEquals(listOf(TextSegment("あ")), stored.stimulus.segments)
         assertEquals(listOf(TextSegment("あ")), assertIs<ReadingExpectedAnswer.Kana>(stored.acceptedAnswers.single()).text.segments)
@@ -180,7 +189,7 @@ class PracticeSessionTest {
                 is AuthoredFeedback.Production -> exposed.examples[0].text.segments
                 else -> error("Unexpected feedback")
             }
-            (segments as MutableList).clear()
+            attemptExposedListMutation(segments)
             val retained = state.outcomes.single()!!.feedback
             val retainedSegments = when (retained) {
                 is AuthoredFeedback.Choice -> retained.correctOption.text!!.segments
