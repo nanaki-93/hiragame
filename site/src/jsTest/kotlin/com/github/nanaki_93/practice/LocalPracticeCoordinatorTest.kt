@@ -12,9 +12,14 @@ import com.github.nanaki_93.content.ProductionExercise
 import com.github.nanaki_93.pages.promptAnswer
 import com.github.nanaki_93.pages.saveStatusMessage
 import com.github.nanaki_93.pages.selectColorMode
+import com.github.nanaki_93.pages.downloadMessage
+import com.github.nanaki_93.pages.replacementMessage
 import com.github.nanaki_93.storage.LocalProgressOwner
 import com.github.nanaki_93.storage.MemoryProgressStore
 import com.github.nanaki_93.storage.ProgressStore
+import com.github.nanaki_93.storage.ProgressDownloads
+import com.github.nanaki_93.storage.DownloadResult
+import com.github.nanaki_93.storage.ProtectedReplacementResult
 import com.github.nanaki_93.storage.StoreReadResult
 import com.github.nanaki_93.storage.StoreWriteResult
 import com.github.nanaki_93.storage.StoreSubscription
@@ -355,6 +360,45 @@ class LocalPracticeCoordinatorTest {
             assertIs<SaveDecodeResult.Valid>(SaveCodec.decodeSave(shared.raw!!)).snapshot.preferences.colorMode)
     }
 
+    @Test fun homeRecoveryActionsPreserveOriginalUntilExplicitConfirmation() {
+        val store = CountingStore(MemoryProgressStore(
+            com.github.nanaki_93.storage.MemoryProgressBacking("unreadable save")))
+        val progress = owner(store)
+        val downloads = mutableListOf<Triple<String, String, String>>()
+        val exporter = ProgressDownloads(progress, { filename, type, text ->
+            downloads += Triple(filename, type, text)
+        }, { 1_000L })
+        assertTrue(downloadMessage(exporter.exportCurrent()).contains("Validated progress export"))
+        assertEquals("application/json;charset=utf-8", downloads.last().second)
+        assertTrue(downloads.last().third != "unreadable save")
+        assertTrue(downloadMessage(exporter.downloadProtectedOriginal()).contains("Unvalidated original recovery text"))
+        assertEquals("unreadable save", downloads.last().third)
+        assertEquals("text/plain;charset=utf-8", downloads.last().second)
+        val cancelled = progress.beginProtectedReplacement()!!
+        assertTrue(progress.cancelProtectedReplacement(cancelled))
+        assertEquals(ProtectedReplacementResult.Stale, progress.confirmProtectedReplacement(cancelled))
+        assertEquals(0, store.writes)
+        assertEquals("unreadable save", store.delegate.backing.raw)
+        val confirmed = progress.beginProtectedReplacement()!!
+        assertTrue(replacementMessage(progress.confirmProtectedReplacement(confirmed)).contains("replaced"))
+        assertEquals(1, store.writes)
+        assertIs<PersistenceStatus.Saved>(progress.state.value.status)
+        assertEquals(DownloadResult.OriginalUnavailable, exporter.downloadProtectedOriginal())
+
+        val backing = com.github.nanaki_93.storage.MemoryProgressBacking()
+        val staleStore = CountingStore(MemoryProgressStore(backing))
+        val stale = owner(staleStore)
+        val other = owner(MemoryProgressStore(backing))
+        other.mutate { com.github.nanaki_93.progress.changePreferences(it,
+            it.preferences.copy(colorMode = SavedColorMode.DARK)) }
+        assertIs<PersistenceStatus.Conflict>(stale.state.value.status)
+        assertIs<PersistenceStatus.Conflict>(stale.keepThisView())
+        assertEquals(0, staleStore.writes)
+        assertTrue(stale.reloadSavedState())
+        assertEquals(0, staleStore.writes)
+        assertEquals(SavedColorMode.DARK, stale.state.value.snapshot.preferences.colorMode)
+    }
+
     @Test fun homeWiresLocalLoadAndDisposalWithoutLegacyInitialization() {
         val fs: dynamic = js("require('fs')")
         val path: dynamic = js("require('path')")
@@ -414,6 +458,23 @@ class LocalPracticeCoordinatorTest {
         assertTrue(home.indexOf("SavePreferencesSection(progress)") > home.indexOf("when (val current = state)"),
             "Save status must render independently after every content load state")
         assertTrue("not saved" !in home && "lost when" !in home, "Home still claims checkpoints are never saved")
+        val launchUi = home.substringAfter("val checkpoints = coordinator.savedCheckpoints()").substringBefore("} else {\n                            // Commands capture")
+        for (required in listOf("PracticeCheckpointResolution.Available", "PracticeCheckpointResolution.Unavailable",
+            "CheckpointView.COMPLETE", "coordinator.resume(set.id)", "coordinator.start(set.id)",
+            "coordinator.startFreshAfterUnavailable(setId)", "resolution.missingSet", "checkpoint is preserved")) {
+            assertTrue(required in launchUi, "Home missing guarded resume/start: $required")
+        }
+        val recoveryUi = home.substringAfter("H2 { Text(\"Local progress actions\") }").substringBefore("Fieldset {")
+        for (required in listOf("downloads.exportCurrent()", "downloads.downloadProtectedOriginal()",
+            "progress.originalProtectedRaw != null", "progress.beginProtectedReplacement()",
+            "progress.cancelProtectedReplacement(it)", "progress.confirmProtectedReplacement(token)",
+            "progress.keepThisView()", "progress.reloadSavedState()", "Cancel reload", "Cancel replacement",
+            "Confirm discard and reload", "Confirm replace unreadable save", "unvalidated", "unsaved changes and drafts")) {
+            assertTrue(required in recoveryUi, "Home missing safe recovery control: $required")
+        }
+        assertTrue("localStorage" !in recoveryUi && "innerHTML" !in recoveryUi)
+        assertTrue(home.indexOf("SavePreferencesSection(progress)") > home.indexOf("when (val current = state)"),
+            "Recovery controls must be available even on content load failure")
         assertTrue("ColorMode.current == ColorMode.DARK" in home &&
             "Modifier.backgroundColor(Colors.DarkBackground)" in home &&
             "Modifier.backgroundColor(Colors.DarkCardBackground).color(Colors.DarkText)" in home,
