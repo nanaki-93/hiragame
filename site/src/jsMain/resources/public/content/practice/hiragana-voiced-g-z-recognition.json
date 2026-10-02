@@ -1,0 +1,451 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-voiced-g-z-recognition",
+  "topicId": "kana-foundations",
+  "title": "Voiced hiragana: G and Z rows — find the sign",
+  "description": "Choose the written hiragana from visible spellings; same-sound signs use explicit base-sign context.",
+  "reviewItems": [
+    {
+      "id": "review-hv-recognition-304c",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-304c",
+      "skill": "Recognize voiced/semi-voiced hiragana が",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-304e",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-304e",
+      "skill": "Recognize voiced/semi-voiced hiragana ぎ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3050",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3050",
+      "skill": "Recognize voiced/semi-voiced hiragana ぐ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3052",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3052",
+      "skill": "Recognize voiced/semi-voiced hiragana げ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3054",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3054",
+      "skill": "Recognize voiced/semi-voiced hiragana ご",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3056",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3056",
+      "skill": "Recognize voiced/semi-voiced hiragana ざ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3058",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3058",
+      "skill": "Recognize voiced/semi-voiced hiragana じ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-305a",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-305a",
+      "skill": "Recognize voiced/semi-voiced hiragana ず",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-305c",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-305c",
+      "skill": "Recognize voiced/semi-voiced hiragana ぜ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-305e",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-305e",
+      "skill": "Recognize voiced/semi-voiced hiragana ぞ",
+      "direction": "spelling-cue-to-sign"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored F05 voiced and semi-voiced sign exercises, not copied from legacy CSV or mocks.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-written English prompts, feedback and glosses; kana correspondences are linguistic facts. No third-party work, recording or audio used."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-304c",
+      "prompt": "Which hiragana sign matches the conventional ga cue?",
+      "options": [
+        {
+          "id": "option-hv-304c-for-304c",
+          "text": {
+            "surface": "が",
+            "reading": "が",
+            "gloss": "Hiragana sign for the ga reading.",
+            "romaji": "ga"
+          }
+        },
+        {
+          "id": "option-hv-304e-for-304c",
+          "text": {
+            "surface": "ぎ",
+            "reading": "ぎ",
+            "gloss": "Hiragana sign for the gi reading.",
+            "romaji": "gi"
+          }
+        },
+        {
+          "id": "option-hv-3050-for-304c",
+          "text": {
+            "surface": "ぐ",
+            "reading": "ぐ",
+            "gloss": "Hiragana sign for the gu reading.",
+            "romaji": "gu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-304c-for-304c",
+      "explanation": "The written target is が. Hiragana sign for the ga reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-304e",
+      "prompt": "Which hiragana sign matches the conventional gi cue?",
+      "options": [
+        {
+          "id": "option-hv-3050-for-304e",
+          "text": {
+            "surface": "ぐ",
+            "reading": "ぐ",
+            "gloss": "Hiragana sign for the gu reading.",
+            "romaji": "gu"
+          }
+        },
+        {
+          "id": "option-hv-3052-for-304e",
+          "text": {
+            "surface": "げ",
+            "reading": "げ",
+            "gloss": "Hiragana sign for the ge reading.",
+            "romaji": "ge"
+          }
+        },
+        {
+          "id": "option-hv-304e-for-304e",
+          "text": {
+            "surface": "ぎ",
+            "reading": "ぎ",
+            "gloss": "Hiragana sign for the gi reading.",
+            "romaji": "gi"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-304e-for-304e",
+      "explanation": "The written target is ぎ. Hiragana sign for the gi reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3050",
+      "prompt": "Which hiragana sign matches the conventional gu cue?",
+      "options": [
+        {
+          "id": "option-hv-3054-for-3050",
+          "text": {
+            "surface": "ご",
+            "reading": "ご",
+            "gloss": "Hiragana sign for the go reading.",
+            "romaji": "go"
+          }
+        },
+        {
+          "id": "option-hv-3050-for-3050",
+          "text": {
+            "surface": "ぐ",
+            "reading": "ぐ",
+            "gloss": "Hiragana sign for the gu reading.",
+            "romaji": "gu"
+          }
+        },
+        {
+          "id": "option-hv-3052-for-3050",
+          "text": {
+            "surface": "げ",
+            "reading": "げ",
+            "gloss": "Hiragana sign for the ge reading.",
+            "romaji": "ge"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3050-for-3050",
+      "explanation": "The written target is ぐ. Hiragana sign for the gu reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3052",
+      "prompt": "Which hiragana sign matches the conventional ge cue?",
+      "options": [
+        {
+          "id": "option-hv-3052-for-3052",
+          "text": {
+            "surface": "げ",
+            "reading": "げ",
+            "gloss": "Hiragana sign for the ge reading.",
+            "romaji": "ge"
+          }
+        },
+        {
+          "id": "option-hv-3054-for-3052",
+          "text": {
+            "surface": "ご",
+            "reading": "ご",
+            "gloss": "Hiragana sign for the go reading.",
+            "romaji": "go"
+          }
+        },
+        {
+          "id": "option-hv-3056-for-3052",
+          "text": {
+            "surface": "ざ",
+            "reading": "ざ",
+            "gloss": "Hiragana sign for the za reading.",
+            "romaji": "za"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3052-for-3052",
+      "explanation": "The written target is げ. Hiragana sign for the ge reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3054",
+      "prompt": "Which hiragana sign matches the conventional go cue?",
+      "options": [
+        {
+          "id": "option-hv-3056-for-3054",
+          "text": {
+            "surface": "ざ",
+            "reading": "ざ",
+            "gloss": "Hiragana sign for the za reading.",
+            "romaji": "za"
+          }
+        },
+        {
+          "id": "option-hv-3058-for-3054",
+          "text": {
+            "surface": "じ",
+            "reading": "じ",
+            "gloss": "Hiragana じ: the voiced spelling of し, conventionally cued as ji; spelling is not inferred from sound alone.",
+            "romaji": "ji"
+          }
+        },
+        {
+          "id": "option-hv-3054-for-3054",
+          "text": {
+            "surface": "ご",
+            "reading": "ご",
+            "gloss": "Hiragana sign for the go reading.",
+            "romaji": "go"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3054-for-3054",
+      "explanation": "The written target is ご. Hiragana sign for the go reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3056",
+      "prompt": "Which hiragana sign matches the conventional za cue?",
+      "options": [
+        {
+          "id": "option-hv-305a-for-3056",
+          "text": {
+            "surface": "ず",
+            "reading": "ず",
+            "gloss": "Hiragana ず: the voiced spelling of す, conventionally cued as zu; spelling is not inferred from sound alone.",
+            "romaji": "zu"
+          }
+        },
+        {
+          "id": "option-hv-3056-for-3056",
+          "text": {
+            "surface": "ざ",
+            "reading": "ざ",
+            "gloss": "Hiragana sign for the za reading.",
+            "romaji": "za"
+          }
+        },
+        {
+          "id": "option-hv-3058-for-3056",
+          "text": {
+            "surface": "じ",
+            "reading": "じ",
+            "gloss": "Hiragana じ: the voiced spelling of し, conventionally cued as ji; spelling is not inferred from sound alone.",
+            "romaji": "ji"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3056-for-3056",
+      "explanation": "The written target is ざ. Hiragana sign for the za reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3058",
+      "prompt": "Which hiragana is the voiced spelling of the shi sign? Compare written forms, not just the sound.",
+      "options": [
+        {
+          "id": "option-hv-3058-for-3058",
+          "text": {
+            "surface": "じ",
+            "reading": "じ",
+            "gloss": "Hiragana じ: the voiced spelling of し, conventionally cued as ji; spelling is not inferred from sound alone.",
+            "romaji": "ji"
+          }
+        },
+        {
+          "id": "option-hv-3062-for-3058",
+          "text": {
+            "surface": "ぢ",
+            "reading": "ぢ",
+            "gloss": "Hiragana ぢ: the voiced spelling of ち, conventionally cued as di; spelling is not inferred from sound alone.",
+            "romaji": "di"
+          }
+        },
+        {
+          "id": "option-hv-305a-for-3058",
+          "text": {
+            "surface": "ず",
+            "reading": "ず",
+            "gloss": "Hiragana ず: the voiced spelling of す, conventionally cued as zu; spelling is not inferred from sound alone.",
+            "romaji": "zu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3058-for-3058",
+      "explanation": "The written target is じ. Hiragana じ: the voiced spelling of し, conventionally cued as ji; spelling is not inferred from sound alone. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-305a",
+      "prompt": "Which hiragana is the voiced spelling of the su sign? Compare written forms, not just the sound.",
+      "options": [
+        {
+          "id": "option-hv-3065-for-305a",
+          "text": {
+            "surface": "づ",
+            "reading": "づ",
+            "gloss": "Hiragana づ: the voiced spelling of つ, conventionally cued as du; spelling is not inferred from sound alone.",
+            "romaji": "du"
+          }
+        },
+        {
+          "id": "option-hv-305c-for-305a",
+          "text": {
+            "surface": "ぜ",
+            "reading": "ぜ",
+            "gloss": "Hiragana sign for the ze reading.",
+            "romaji": "ze"
+          }
+        },
+        {
+          "id": "option-hv-305a-for-305a",
+          "text": {
+            "surface": "ず",
+            "reading": "ず",
+            "gloss": "Hiragana ず: the voiced spelling of す, conventionally cued as zu; spelling is not inferred from sound alone.",
+            "romaji": "zu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-305a-for-305a",
+      "explanation": "The written target is ず. Hiragana ず: the voiced spelling of す, conventionally cued as zu; spelling is not inferred from sound alone. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-305c",
+      "prompt": "Which hiragana sign matches the conventional ze cue?",
+      "options": [
+        {
+          "id": "option-hv-304c-for-305c",
+          "text": {
+            "surface": "が",
+            "reading": "が",
+            "gloss": "Hiragana sign for the ga reading.",
+            "romaji": "ga"
+          }
+        },
+        {
+          "id": "option-hv-305c-for-305c",
+          "text": {
+            "surface": "ぜ",
+            "reading": "ぜ",
+            "gloss": "Hiragana sign for the ze reading.",
+            "romaji": "ze"
+          }
+        },
+        {
+          "id": "option-hv-305e-for-305c",
+          "text": {
+            "surface": "ぞ",
+            "reading": "ぞ",
+            "gloss": "Hiragana sign for the zo reading.",
+            "romaji": "zo"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-305c-for-305c",
+      "explanation": "The written target is ぜ. Hiragana sign for the ze reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-305e",
+      "prompt": "Which hiragana sign matches the conventional zo cue?",
+      "options": [
+        {
+          "id": "option-hv-305e-for-305e",
+          "text": {
+            "surface": "ぞ",
+            "reading": "ぞ",
+            "gloss": "Hiragana sign for the zo reading.",
+            "romaji": "zo"
+          }
+        },
+        {
+          "id": "option-hv-304c-for-305e",
+          "text": {
+            "surface": "が",
+            "reading": "が",
+            "gloss": "Hiragana sign for the ga reading.",
+            "romaji": "ga"
+          }
+        },
+        {
+          "id": "option-hv-304e-for-305e",
+          "text": {
+            "surface": "ぎ",
+            "reading": "ぎ",
+            "gloss": "Hiragana sign for the gi reading.",
+            "romaji": "gi"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-305e-for-305e",
+      "explanation": "The written target is ぞ. Hiragana sign for the zo reading. Similar-sounding signs are not interchangeable spellings."
+    }
+  ]
+}

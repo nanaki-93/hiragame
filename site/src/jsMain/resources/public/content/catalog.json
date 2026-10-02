@@ -5,7 +5,7 @@
     {
       "id": "kana-foundations",
       "title": "Hiragana foundations",
-      "description": "Basic hiragana sign recognition and kana spelling, plus a two-sign romaji beginner option."
+      "description": "Basic, voiced and semi-voiced hiragana sign recognition and kana spelling, plus a two-sign romaji beginner option."
     },
     {
       "id": "workplace-clarification",
@@ -85,6 +85,42 @@
       "kind": "practice",
       "topicId": "kana-foundations",
       "path": "practice/hiragana-basic-r-w-n-reading.json"
+    },
+    {
+      "id": "practice-hiragana-voiced-g-z-recognition",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-voiced-g-z-recognition.json"
+    },
+    {
+      "id": "practice-hiragana-voiced-g-z-reading",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-voiced-g-z-reading.json"
+    },
+    {
+      "id": "practice-hiragana-voiced-d-b-recognition",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-voiced-d-b-recognition.json"
+    },
+    {
+      "id": "practice-hiragana-voiced-d-b-reading",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-voiced-d-b-reading.json"
+    },
+    {
+      "id": "practice-hiragana-voiced-p-recognition",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-voiced-p-recognition.json"
+    },
+    {
+      "id": "practice-hiragana-voiced-p-reading",
+      "kind": "practice",
+      "topicId": "kana-foundations",
+      "path": "practice/hiragana-voiced-p-reading.json"
     }
   ]
 }

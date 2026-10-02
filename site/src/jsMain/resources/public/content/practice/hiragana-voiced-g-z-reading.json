@@ -1,0 +1,321 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-voiced-g-z-reading",
+  "topicId": "kana-foundations",
+  "title": "Voiced hiragana: G and Z rows — write in kana",
+  "description": "Type the hiragana spelling from a Latin-letter cue; same-sound signs specify their base sign. Kana answers only.",
+  "reviewItems": [
+    {
+      "id": "review-hv-reading-304c",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-304c",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana が",
+      "direction": "romaji-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hv-reading-304e",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-304e",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana ぎ",
+      "direction": "romaji-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hv-reading-3050",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-3050",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana ぐ",
+      "direction": "romaji-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hv-reading-3052",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-3052",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana げ",
+      "direction": "romaji-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hv-reading-3054",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-3054",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana ご",
+      "direction": "romaji-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hv-reading-3056",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-3056",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana ざ",
+      "direction": "romaji-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hv-reading-3058",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-3058",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana じ",
+      "direction": "romaji-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hv-reading-305a",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-305a",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana ず",
+      "direction": "romaji-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hv-reading-305c",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-305c",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana ぜ",
+      "direction": "romaji-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hv-reading-305e",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-reading-305e",
+      "skill": "Recall the written spelling of voiced/semi-voiced hiragana ぞ",
+      "direction": "romaji-and-base-cue-to-kana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored F05 voiced and semi-voiced sign exercises, not copied from legacy CSV or mocks.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-written English prompts, feedback and glosses; kana correspondences are linguistic facts. No third-party work, recording or audio used."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-304c",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "ga",
+        "reading": "ga",
+        "translation": "Latin-letter spelling cue for the voiced sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "が",
+            "reading": "が",
+            "gloss": "Hiragana sign for the ga reading.",
+            "romaji": "ga"
+          }
+        }
+      ],
+      "explanation": "ga is written が. Hiragana sign for the ga reading. Only this authored kana spelling is accepted, not a sound-alike."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-304e",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "gi",
+        "reading": "gi",
+        "translation": "Latin-letter spelling cue for the voiced sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ぎ",
+            "reading": "ぎ",
+            "gloss": "Hiragana sign for the gi reading.",
+            "romaji": "gi"
+          }
+        }
+      ],
+      "explanation": "gi is written ぎ. Hiragana sign for the gi reading. Only this authored kana spelling is accepted, not a sound-alike."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-3050",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "gu",
+        "reading": "gu",
+        "translation": "Latin-letter spelling cue for the voiced sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ぐ",
+            "reading": "ぐ",
+            "gloss": "Hiragana sign for the gu reading.",
+            "romaji": "gu"
+          }
+        }
+      ],
+      "explanation": "gu is written ぐ. Hiragana sign for the gu reading. Only this authored kana spelling is accepted, not a sound-alike."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-3052",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "ge",
+        "reading": "ge",
+        "translation": "Latin-letter spelling cue for the voiced sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "げ",
+            "reading": "げ",
+            "gloss": "Hiragana sign for the ge reading.",
+            "romaji": "ge"
+          }
+        }
+      ],
+      "explanation": "ge is written げ. Hiragana sign for the ge reading. Only this authored kana spelling is accepted, not a sound-alike."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-3054",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "go",
+        "reading": "go",
+        "translation": "Latin-letter spelling cue for the voiced sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ご",
+            "reading": "ご",
+            "gloss": "Hiragana sign for the go reading.",
+            "romaji": "go"
+          }
+        }
+      ],
+      "explanation": "go is written ご. Hiragana sign for the go reading. Only this authored kana spelling is accepted, not a sound-alike."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-3056",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "za",
+        "reading": "za",
+        "translation": "Latin-letter spelling cue for the voiced sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ざ",
+            "reading": "ざ",
+            "gloss": "Hiragana sign for the za reading.",
+            "romaji": "za"
+          }
+        }
+      ],
+      "explanation": "za is written ざ. Hiragana sign for the za reading. Only this authored kana spelling is accepted, not a sound-alike."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-3058",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "ji (the voiced spelling of shi)",
+        "reading": "ji (the voiced spelling of shi)",
+        "translation": "Latin-letter spelling cue for the voiced sign formed from the shi base sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "じ",
+            "reading": "じ",
+            "gloss": "Hiragana じ: the voiced spelling of し, conventionally cued as ji; spelling is not inferred from sound alone.",
+            "romaji": "ji"
+          }
+        }
+      ],
+      "explanation": "ji (the voiced spelling of shi) is written じ. Hiragana じ: the voiced spelling of し, conventionally cued as ji; spelling is not inferred from sound alone. Only this authored kana spelling is accepted, not a sound-alike."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-305a",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "zu (the voiced spelling of su)",
+        "reading": "zu (the voiced spelling of su)",
+        "translation": "Latin-letter spelling cue for the voiced sign formed from the su base sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ず",
+            "reading": "ず",
+            "gloss": "Hiragana ず: the voiced spelling of す, conventionally cued as zu; spelling is not inferred from sound alone.",
+            "romaji": "zu"
+          }
+        }
+      ],
+      "explanation": "zu (the voiced spelling of su) is written ず. Hiragana ず: the voiced spelling of す, conventionally cued as zu; spelling is not inferred from sound alone. Only this authored kana spelling is accepted, not a sound-alike."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-305c",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "ze",
+        "reading": "ze",
+        "translation": "Latin-letter spelling cue for the voiced sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ぜ",
+            "reading": "ぜ",
+            "gloss": "Hiragana sign for the ze reading.",
+            "romaji": "ze"
+          }
+        }
+      ],
+      "explanation": "ze is written ぜ. Hiragana sign for the ze reading. Only this authored kana spelling is accepted, not a sound-alike."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hv-reading-305e",
+      "prompt": "From the Latin-letter cue below, type its hiragana spelling (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "zo",
+        "reading": "zo",
+        "translation": "Latin-letter spelling cue for the voiced sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ぞ",
+            "reading": "ぞ",
+            "gloss": "Hiragana sign for the zo reading.",
+            "romaji": "zo"
+          }
+        }
+      ],
+      "explanation": "zo is written ぞ. Hiragana sign for the zo reading. Only this authored kana spelling is accepted, not a sound-alike."
+    }
+  ]
+}

@@ -1,0 +1,236 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-voiced-p-recognition",
+  "topicId": "kana-foundations",
+  "title": "Semi-voiced hiragana: P row — find the sign",
+  "description": "Choose the written hiragana from visible spellings; same-sound signs use explicit base-sign context.",
+  "reviewItems": [
+    {
+      "id": "review-hv-recognition-3071",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3071",
+      "skill": "Recognize voiced/semi-voiced hiragana ぱ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3074",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3074",
+      "skill": "Recognize voiced/semi-voiced hiragana ぴ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-3077",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-3077",
+      "skill": "Recognize voiced/semi-voiced hiragana ぷ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-307a",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-307a",
+      "skill": "Recognize voiced/semi-voiced hiragana ぺ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-hv-recognition-307d",
+      "targetKind": "exercise",
+      "targetId": "exercise-hv-recognition-307d",
+      "skill": "Recognize voiced/semi-voiced hiragana ぽ",
+      "direction": "spelling-cue-to-sign"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored F05 voiced and semi-voiced sign exercises, not copied from legacy CSV or mocks.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-written English prompts, feedback and glosses; kana correspondences are linguistic facts. No third-party work, recording or audio used."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3071",
+      "prompt": "Which hiragana sign matches the conventional pa cue with the semi-voiced mark?",
+      "options": [
+        {
+          "id": "option-hv-3071-for-3071",
+          "text": {
+            "surface": "ぱ",
+            "reading": "ぱ",
+            "gloss": "Hiragana sign for the semi-voiced pa reading.",
+            "romaji": "pa"
+          }
+        },
+        {
+          "id": "option-hv-3074-for-3071",
+          "text": {
+            "surface": "ぴ",
+            "reading": "ぴ",
+            "gloss": "Hiragana sign for the semi-voiced pi reading.",
+            "romaji": "pi"
+          }
+        },
+        {
+          "id": "option-hv-3077-for-3071",
+          "text": {
+            "surface": "ぷ",
+            "reading": "ぷ",
+            "gloss": "Hiragana sign for the semi-voiced pu reading.",
+            "romaji": "pu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3071-for-3071",
+      "explanation": "The written target is ぱ. Hiragana sign for the semi-voiced pa reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3074",
+      "prompt": "Which hiragana sign matches the conventional pi cue with the semi-voiced mark?",
+      "options": [
+        {
+          "id": "option-hv-3077-for-3074",
+          "text": {
+            "surface": "ぷ",
+            "reading": "ぷ",
+            "gloss": "Hiragana sign for the semi-voiced pu reading.",
+            "romaji": "pu"
+          }
+        },
+        {
+          "id": "option-hv-307a-for-3074",
+          "text": {
+            "surface": "ぺ",
+            "reading": "ぺ",
+            "gloss": "Hiragana sign for the semi-voiced pe reading.",
+            "romaji": "pe"
+          }
+        },
+        {
+          "id": "option-hv-3074-for-3074",
+          "text": {
+            "surface": "ぴ",
+            "reading": "ぴ",
+            "gloss": "Hiragana sign for the semi-voiced pi reading.",
+            "romaji": "pi"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3074-for-3074",
+      "explanation": "The written target is ぴ. Hiragana sign for the semi-voiced pi reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-3077",
+      "prompt": "Which hiragana sign matches the conventional pu cue with the semi-voiced mark?",
+      "options": [
+        {
+          "id": "option-hv-307d-for-3077",
+          "text": {
+            "surface": "ぽ",
+            "reading": "ぽ",
+            "gloss": "Hiragana sign for the semi-voiced po reading.",
+            "romaji": "po"
+          }
+        },
+        {
+          "id": "option-hv-3077-for-3077",
+          "text": {
+            "surface": "ぷ",
+            "reading": "ぷ",
+            "gloss": "Hiragana sign for the semi-voiced pu reading.",
+            "romaji": "pu"
+          }
+        },
+        {
+          "id": "option-hv-307a-for-3077",
+          "text": {
+            "surface": "ぺ",
+            "reading": "ぺ",
+            "gloss": "Hiragana sign for the semi-voiced pe reading.",
+            "romaji": "pe"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-3077-for-3077",
+      "explanation": "The written target is ぷ. Hiragana sign for the semi-voiced pu reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-307a",
+      "prompt": "Which hiragana sign matches the conventional pe cue with the semi-voiced mark?",
+      "options": [
+        {
+          "id": "option-hv-307a-for-307a",
+          "text": {
+            "surface": "ぺ",
+            "reading": "ぺ",
+            "gloss": "Hiragana sign for the semi-voiced pe reading.",
+            "romaji": "pe"
+          }
+        },
+        {
+          "id": "option-hv-307d-for-307a",
+          "text": {
+            "surface": "ぽ",
+            "reading": "ぽ",
+            "gloss": "Hiragana sign for the semi-voiced po reading.",
+            "romaji": "po"
+          }
+        },
+        {
+          "id": "option-hv-3071-for-307a",
+          "text": {
+            "surface": "ぱ",
+            "reading": "ぱ",
+            "gloss": "Hiragana sign for the semi-voiced pa reading.",
+            "romaji": "pa"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-307a-for-307a",
+      "explanation": "The written target is ぺ. Hiragana sign for the semi-voiced pe reading. Similar-sounding signs are not interchangeable spellings."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hv-recognition-307d",
+      "prompt": "Which hiragana sign matches the conventional po cue with the semi-voiced mark?",
+      "options": [
+        {
+          "id": "option-hv-3071-for-307d",
+          "text": {
+            "surface": "ぱ",
+            "reading": "ぱ",
+            "gloss": "Hiragana sign for the semi-voiced pa reading.",
+            "romaji": "pa"
+          }
+        },
+        {
+          "id": "option-hv-3074-for-307d",
+          "text": {
+            "surface": "ぴ",
+            "reading": "ぴ",
+            "gloss": "Hiragana sign for the semi-voiced pi reading.",
+            "romaji": "pi"
+          }
+        },
+        {
+          "id": "option-hv-307d-for-307d",
+          "text": {
+            "surface": "ぽ",
+            "reading": "ぽ",
+            "gloss": "Hiragana sign for the semi-voiced po reading.",
+            "romaji": "po"
+          }
+        }
+      ],
+      "correctOptionId": "option-hv-307d-for-307d",
+      "explanation": "The written target is ぽ. Hiragana sign for the semi-voiced po reading. Similar-sounding signs are not interchangeable spellings."
+    }
+  ]
+}
