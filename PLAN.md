@@ -254,6 +254,8 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** F00, F01, F02, F03, shared UI primitives from F11.
 
+**Status:** F05 complete at the CLI/static and isolated-adapter scope. [F05 validation evidence](content-source/review-notes/f05-validation.md) records full test suites, reviewed canonical coverage, artifact byte parity and cleanup. Browser, visual, accessibility, native IME and deployment verification remain out of scope; this status does not imply F06 workplace lessons are playable.
+
 ### Implementation tasks
 
 - [ ] Provide reviewed hiragana and katakana sets, including voiced/semi-voiced kana and contracted sounds. Teach long vowels and small `っ` in appropriate examples.

@@ -67,8 +67,9 @@ class ContentFixtureTest {
         assertTrue(catalog.topics.any { it.id == "kana-foundations" })
         assertTrue(catalog.audioAssets.isEmpty())
         val practiceEntries = catalog.entries.filter { it.kind == DocumentKind.PRACTICE }
-        assertEquals(11, practiceEntries.size) // seed + ten independently selectable basic-sign sets
-        assertTrue(practiceEntries.all { it.topicId == "kana-foundations" })
+        assertTrue(practiceEntries.size > 11) // seed, both scripts, and introductory vocabulary
+        assertEquals(setOf("kana-foundations", "katakana-foundations", "foundational-vocabulary"),
+            practiceEntries.map { it.topicId }.toSet())
         assertEquals(2, catalog.contentVersion)
         val entry = practiceEntries.single { it.id == "practice-kana-a-i" }
         assertEquals(DocumentKind.PRACTICE, entry.kind)
@@ -125,7 +126,8 @@ class ContentFixtureTest {
             directory = parent
         }
         val catalog = ContentCodec.decodeCatalog(fs.readFileSync(path.join(root, "catalog.json"), "utf8") as String)
-        assertEquals(12, catalog.entries.size)
+        assertEquals(1, catalog.entries.count { it.kind == DocumentKind.LESSON })
+        assertTrue(catalog.entries.size > 12)
         val entry = catalog.entries.single { it.kind == DocumentKind.LESSON }
         assertTrue(catalog.topics.any { it.id == entry.topicId })
         val lesson = ContentCodec.decodeLesson(fs.readFileSync(path.join(root, entry.path), "utf8") as String)
