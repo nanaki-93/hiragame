@@ -7,7 +7,7 @@ const PREFIX = 'hiragame-release-';
 const CACHE = PREFIX + RELEASE;
 const paths = new Map(ASSETS.map(asset => [asset.url, asset]));
 
-function owned(url) { return url.origin === self.location.origin && url.pathname.startsWith('/hiragame/'); }
+function owned(url) { return url.origin === self.location.origin && (url.pathname === '/hiragame' || url.pathname.startsWith('/hiragame/')); }
 function requestKind(request) {
   const url = new URL(request.url);
   if (request.method !== 'GET' || !owned(url)) return 'network';
@@ -45,9 +45,10 @@ async function cleanOldCaches() {
 }
 
 const votes = new Map();
+let voteSequence = 0;
 async function safeClients() {
   const clients = (await self.clients.matchAll({ type: 'window', includeUncontrolled: true })).filter(c => owned(new URL(c.url)));
-  const nonce = RELEASE + '-' + Date.now();
+  const nonce = RELEASE + '-' + Date.now() + '-' + (++voteSequence);
   const waiting = new Set(clients.map(c => c.id));
   let finish;
   const answer = new Promise(resolve => { finish = resolve; });
@@ -79,19 +80,25 @@ self.addEventListener('message', event => {
     catch (_) { event.source.postMessage({ type: 'CACHE_READY', complete: false }); }
   })());
   if (data.type === 'CACHE_STATUS' && event.source && owned(new URL(event.source.url))) event.waitUntil((async () => {
-    const cache = await caches.open(CACHE);
-    const present = await Promise.all(ASSETS.map(asset => cache.match(asset.url)));
-    event.source.postMessage({ type: 'CACHE_READY', complete: present.every(Boolean) });
+    try {
+      const cache = await caches.open(CACHE);
+      const present = await Promise.all(ASSETS.map(asset => cache.match(asset.url)));
+      event.source.postMessage({ type: 'CACHE_READY', complete: present.every(Boolean) });
+    } catch (_) { event.source.postMessage({ type: 'OFFLINE_ERROR' }); }
   })());
   if (data.type === 'CLEAR_ASSETS' && event.source && owned(new URL(event.source.url))) event.waitUntil((async () => {
-    if (await safeClients()) {
-      await self.registration.unregister();
-      for (const key of await caches.keys()) if (key.startsWith(PREFIX)) await caches.delete(key);
-      event.source.postMessage({ type: 'ASSETS_CLEARED' });
-    } else event.source.postMessage({ type: 'UPDATE_DEFERRED' });
+    try {
+      if (await safeClients()) {
+        await self.registration.unregister();
+        for (const key of await caches.keys()) if (key.startsWith(PREFIX)) await caches.delete(key);
+        event.source.postMessage({ type: 'ASSETS_CLEARED' });
+      } else event.source.postMessage({ type: 'UPDATE_DEFERRED' });
+    } catch (_) { event.source.postMessage({ type: 'OFFLINE_ERROR' }); }
   })());
   if (data.type === 'APPLY_UPDATE' && event.source && owned(new URL(event.source.url))) event.waitUntil((async () => {
-    if (await safeClients()) await self.skipWaiting();
-    else event.source.postMessage({ type: 'UPDATE_DEFERRED' });
+    try {
+      if (await safeClients()) await self.skipWaiting();
+      else event.source.postMessage({ type: 'UPDATE_DEFERRED' });
+    } catch (_) { event.source.postMessage({ type: 'OFFLINE_ERROR' }); }
   })());
 });

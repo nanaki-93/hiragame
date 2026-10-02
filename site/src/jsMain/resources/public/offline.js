@@ -62,6 +62,10 @@
         emit('Downloaded assets removed; progress retained. Reconnect and reload, then download again.');
       }
       if (event.data?.type === 'UPDATE_DEFERRED') emit('Update deferred: another tab is active, unsaved or not responding. Close or finish it, then retry.');
+      if (event.data?.type === 'OFFLINE_ERROR') {
+        document.body.inert = false;
+        emit('Offline storage or the update action is unavailable. Check browser storage permissions, reconnect and retry. Learner progress was not changed.');
+      }
     });
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       // All open clients voted before activation. A last-moment activity still prevents a forced reload.
