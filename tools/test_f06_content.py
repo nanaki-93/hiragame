@@ -100,6 +100,63 @@ class F06ContentTest(unittest.TestCase):
         self.assertFalse(any("audioId" in turn for turn in lesson["dialogue"]["turns"]))
         self.assertFalse(any("audioId" in phrase for phrase in lesson["phrases"]))
 
+    def test_daily_update_is_third_starter_with_reviewed_blocker_material(self):
+        catalog = load("catalog.json")
+        lesson = load("lessons/daily-update-blocker.json")
+        entry = catalog["entries"][3]
+        self.assertEqual((entry["id"], entry["kind"], entry["topicId"], entry["path"]),
+                         ("lesson-daily-update-blocker", "lesson", "workplace-updates",
+                          "lessons/daily-update-blocker.json"))
+        self.assertEqual((lesson["id"], lesson["topicId"], lesson["contentVersion"]),
+                         (entry["id"], entry["topicId"], catalog["contentVersion"]))
+        self.assertEqual(lesson["communicationGoal"],
+                         "Give a concise update and explain a blocker, including the help needed and a conditional next step.")
+        self.assertEqual(lesson["prerequisiteLessonIds"], ["lesson-clarify-understanding"])
+        self.assertTrue(lesson["title"] and lesson["situation"] and lesson["durationMinutes"] > 0)
+        self.assertTrue(6 <= len(lesson["dialogue"]["turns"]) <= 10)
+        self.assertTrue(5 <= len(lesson["phrases"]) <= 8)
+        self.assertTrue(1 <= len(lesson["grammarNotes"]) <= 2)
+        self.assertEqual({ex["type"] for ex in lesson["exercises"]}, {"choice", "completion", "production"})
+        self.assertTrue(lesson["rolePlay"]["task"] and lesson["rolePlay"]["criteria"]
+                        and lesson["rolePlay"]["hints"] and lesson["rolePlay"]["examples"])
+        turns = {turn["id"] for turn in lesson["dialogue"]["turns"]}
+        targets = {item["id"] for item in lesson["phrases"] + lesson["exercises"]}
+        self.assertTrue(all(phrase.get("sourceTurnId") in turns for phrase in lesson["phrases"]))
+        self.assertTrue(all(item["targetId"] in targets for item in lesson["reviewItems"]))
+        for turn in lesson["dialogue"]["turns"]:
+            text = turn["text"]
+            self.assertTrue(text["reading"] and text["translation"])
+            self.assertEqual("".join(s["surface"] for s in text["segments"]), text["surface"])
+        completion = next(ex for ex in lesson["exercises"] if ex["type"] == "completion")
+        self.assertEqual({answer["surface"] for answer in completion["acceptedAnswers"]}, {"ため", "ので"})
+        production = next(ex for ex in lesson["exercises"] if ex["type"] == "production")
+        self.assertTrue(production["criteria"] and production["exampleResponses"])
+        request = next(turn["text"] for turn in lesson["dialogue"]["turns"]
+                       if turn["id"] == "turn-update-help")
+        phrase = next(item["text"] for item in lesson["phrases"]
+                      if item["id"] == "phrase-update-request")
+        for key in ("surface", "reading", "translation", "segments"):
+            self.assertEqual(phrase[key], request[key], key)
+        self.assertEqual(request["surface"], "テスト用アカウントの利用申請方法を教えていただけますか。")
+        for example in production["exampleResponses"] + lesson["rolePlay"]["examples"]:
+            self.assertIn(request["surface"], example["surface"])
+            self.assertIn(request["reading"], example["reading"])
+            self.assertIn(request["translation"], example["translation"])
+            self.assertEqual("".join(segment["surface"] for segment in example["segments"]),
+                             example["surface"])
+            for segment in request["segments"]:
+                if "reading" in segment:
+                    self.assertIn(segment, example["segments"])
+        self.assertEqual((lesson["review"]["status"], lesson["review"]["reviewerType"],
+                          lesson["review"]["rights"], lesson["review"]["reviewNote"]),
+                         ("reviewed", "agent", "publishable", "f06-starter-lessons.md"))
+        previous = [load("lessons/engineering-introduction.json"),
+                    load("lessons/clarify-understanding.json"), load("lessons/confirm-meeting-time.json")]
+        for field in ("phrases", "exercises", "reviewItems"):
+            ids = [item["id"] for doc in [lesson] + previous for item in doc[field]]
+            self.assertEqual(len(ids), len(set(ids)), field)
+        self.assertFalse(any("audioId" in item for item in lesson["dialogue"]["turns"] + lesson["phrases"]))
+
 
 if __name__ == "__main__":
     unittest.main()

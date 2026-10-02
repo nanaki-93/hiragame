@@ -26,6 +26,11 @@
       "id": "workplace-introductions",
       "title": "Workplace introductions",
       "description": "Introduce your engineering role and relevant work when meeting a teammate."
+    },
+    {
+      "id": "workplace-updates",
+      "title": "Workplace updates",
+      "description": "Give a concise team update, explain a factual blocker, and agree on the next step."
     }
   ],
   "entries": [
@@ -46,6 +51,12 @@
       "kind": "lesson",
       "topicId": "workplace-clarification",
       "path": "lessons/clarify-understanding.json"
+    },
+    {
+      "id": "lesson-daily-update-blocker",
+      "kind": "lesson",
+      "topicId": "workplace-updates",
+      "path": "lessons/daily-update-blocker.json"
     },
     {
       "id": "lesson-confirm-meeting-time",
