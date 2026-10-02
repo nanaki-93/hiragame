@@ -6,7 +6,9 @@ import com.github.nanaki_93.progress.SaveCodec
 import com.github.nanaki_93.progress.SaveDecodeResult
 import com.github.nanaki_93.progress.SaveEncodeException
 import com.github.nanaki_93.progress.SaveEnvelope
+import com.github.nanaki_93.progress.SavePreferences
 import com.github.nanaki_93.progress.SaveProblem
+import com.github.nanaki_93.progress.SavedColorMode
 import com.github.nanaki_93.progress.encodeSave
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -50,11 +52,13 @@ class LocalProgressOwner(
     private val store: ProgressStore,
     private val clock: () -> Long,
     private val newSnapshotId: () -> String,
+    private val legacyColorMode: () -> SavedColorMode? = { null },
 ) {
-    constructor(store: ProgressStore) : this(
+    constructor(store: ProgressStore, legacyColorMode: () -> SavedColorMode? = { null }) : this(
         store,
         { kotlin.js.Date.now().toLong() },
         { "snapshot_${Random.nextInt().toUInt().toString(16)}_${Random.nextInt().toUInt().toString(16)}" },
+        legacyColorMode,
     )
 
     private var acknowledgedRaw: String? = null
@@ -84,7 +88,10 @@ class LocalProgressOwner(
         val initial = when (val read = store.read()) {
             StoreReadResult.Missing -> {
                 baselineKnown = true
-                LocalProgressState(fresh(), PersistenceStatus.Fresh)
+                // Only a confirmed missing main key may import the old preference. This is
+                // memory-only; startup never writes or removes either storage key.
+                val mode = try { legacyColorMode() } catch (_: Throwable) { null }
+                LocalProgressState(fresh(mode), PersistenceStatus.Fresh)
             }
             is StoreReadResult.Failure -> LocalProgressState(fresh(), PersistenceStatus.MemoryOnly(read.reason))
             is StoreReadResult.Raw -> {
@@ -164,9 +171,12 @@ class LocalProgressOwner(
         subscription = null
     }
 
-    private fun fresh() = SaveEnvelope(savedAtEpochMs = clock(), snapshotId = newSnapshotId(), revision = 0).also {
-        encodeSave(it)
-    }
+    private fun fresh(colorMode: SavedColorMode? = null) = SaveEnvelope(
+        savedAtEpochMs = clock(),
+        snapshotId = newSnapshotId(),
+        revision = 0,
+        preferences = SavePreferences(colorMode = colorMode ?: SavedColorMode.SYSTEM),
+    ).also { encodeSave(it) }
 
     /** Transform only the current validated snapshot. Rejected candidates leave it unchanged. */
     fun mutate(transform: (SaveEnvelope) -> ProgressUpdate): ProgressMutationResult {
