@@ -127,7 +127,7 @@ tasks.register<Sync>("reorganizeOutput") {
         into("hiragame")
     }
     doLast {
-        exec { commandLine("python3", rootProject.file("tools/build_offline.py"), destinationDir) }
+        providers.exec { commandLine("python3", rootProject.file("tools/build_offline.py"), destinationDir) }.result.get()
     }
 }
 
@@ -137,4 +137,14 @@ tasks.named("build") {
 // Copy the canonical selected tokens; never maintain a second authored palette.
 tasks.named<ProcessResources>("jsProcessResources") {
     from(rootProject.file(".mockups/design-system/tokens.css")) { into("public") }
+}
+
+// Reuse Gradle's pinned Node runtime for isolated worker/cache tests on developer machines and CI.
+tasks.register<Exec>("offlinePolicyTest") {
+    dependsOn(rootProject.tasks.named("kotlinNodeJsSetup"))
+    workingDir(rootProject.projectDir)
+    doFirst {
+        val node = rootProject.extensions.getByType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec>()
+        commandLine(node.executable.get(), "tools/test_offline_policy.cjs")
+    }
 }

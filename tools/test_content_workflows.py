@@ -7,16 +7,7 @@ from pathlib import Path
 
 WORKFLOW = Path(__file__).resolve().parent.parent / ".github/workflows/content-check.yml"
 DEPLOY_WORKFLOW = WORKFLOW.with_name("firebase-deploy.yml")
-EXPECTED_RUNS = [
-    "cmp backend/migration/question.csv content-source/legacy/question.csv",
-    "python3 tools/convert_legacy_content.py --input content-source/legacy/question.csv --topic-map content-source/topic-map.json --output content-source/drafts/legacy",
-    "python3 -m unittest discover -s tools -p 'test_*content*.py'",
-    "python3 tools/validate_content.py site/src/jsMain/resources/public/content --review-root content-source/review-notes",
-    "python3 -m unittest discover -s tools -p 'test_*runtime*.py'",
-    "./gradlew :shared:jsNodeTest :site:jsNodeTest",
-    "./gradlew :site:reorganizeOutput",
-    "python3 tools/validate_local_runtime.py --artifact-root site/build/dist/js/productionExecutable/public",
-]
+EXPECTED_RUNS = ['cmp backend/migration/question.csv content-source/legacy/question.csv', 'python3 tools/convert_legacy_content.py --input content-source/legacy/question.csv --topic-map content-source/topic-map.json --output content-source/drafts/legacy', "python3 -m unittest discover -s tools -p 'test_*.py'", 'python3 tools/validate_content.py site/src/jsMain/resources/public/content --review-root content-source/review-notes', 'python3 tools/validate_mockups.py .mockups --stage complete', './gradlew :shared:jsNodeTest :site:jsNodeTest :site:offlinePolicyTest', './gradlew :site:reorganizeOutput', 'python3 tools/validate_local_runtime.py --artifact-root site/build/dist/js/productionExecutable/public', 'python3 tools/validate_release.py site/build/dist/js/productionExecutable/public']
 EXPECTED_ACTIONS = [
     "actions/checkout@v5",
     "actions/setup-python@v5",
@@ -82,21 +73,14 @@ class FirebaseDeployWorkflowTests(unittest.TestCase):
             "site/**", "shared/**", "tools/**", "content-source/**",
             "backend/migration/question.csv", "gradle/**", "gradlew", "gradle.properties", "build.gradle.kts",
             "settings.gradle.kts", ".github/workflows/firebase-deploy.yml",
-            ".github/workflows/content-check.yml", "firebase.json",
+            ".github/workflows/content-check.yml", "firebase.json", ".mockups/design-system/tokens.css",
         })
         self.assertEqual(len(paths), len(set(paths)))
         self.assertNotRegex(trigger, r"(?m)^\s*(?:paths-ignore|branches-ignore):")
 
     def test_gates_run_in_deploy_job_before_deployment(self):
         names = [step.splitlines()[0] for step in self.steps]
-        self.assertEqual(names, [
-            "Checkout code", "Make gradlew executable", "Set up Python 3.11",
-            "Set up JDK 21", "Setup Gradle", "Verify preserved CSV bytes",
-            "Verify deterministic legacy drafts", "Test content tooling and workflow gates",
-            "Validate reviewed canonical content", "Test local runtime tooling",
-            "Test shared and site on Node", "Assemble production hosting tree",
-            "Validate local runtime artifact", "Deploy to Firebase",
-        ])
+        self.assertEqual(names, ['Checkout code', 'Make gradlew executable', 'Set up Python 3.11', 'Set up JDK 21', 'Setup Gradle', 'Verify preserved CSV bytes', 'Verify deterministic legacy drafts', 'Test all Python tooling', 'Validate reviewed canonical content', 'Validate selected mock artifacts', 'Test Kotlin and offline policy on Node', 'Assemble production hosting tree', 'Validate local runtime artifact', 'Validate offline release', 'Deploy to Firebase'])
         self.assertIn("uses: actions/setup-python@v5", self.steps[2])
         self.assertIn("python-version: '3.11'", self.steps[2])
         self.assertIn("uses: actions/setup-java@v5", self.steps[3])
