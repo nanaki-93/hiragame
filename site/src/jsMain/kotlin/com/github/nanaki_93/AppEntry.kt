@@ -77,6 +77,7 @@ fun AppEntry(content: @Composable () -> Unit) {
             Surface(Modifier.fillMaxHeight()) {
                 com.github.nanaki_93.components.widgets.LearningNavigation()
                 com.github.nanaki_93.components.widgets.LocalSaveStatus()
+                com.github.nanaki_93.offline.OfflineStatus()
                 content()
             }
         }

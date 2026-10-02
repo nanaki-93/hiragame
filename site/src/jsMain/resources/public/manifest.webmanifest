@@ -1,0 +1,14 @@
+{
+  "id": "/hiragame/",
+  "name": "Hiragame — Japanese for work",
+  "short_name": "Hiragame",
+  "start_url": "/hiragame/",
+  "scope": "/hiragame/",
+  "display": "standalone",
+  "background_color": "#f5f0ff",
+  "theme_color": "#7130a5",
+  "icons": [
+    {"src": "/hiragame/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "/hiragame/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

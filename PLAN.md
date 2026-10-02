@@ -449,19 +449,21 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** F02–F11, verified static build output from F14.
 
+**Status:** Implemented 2026-10-03; [F12 evidence](content-source/review-notes/f12-validation.md). Offline behavior is verified through generated artifacts and fake worker/cache policies, without a running browser.
+
 ### Implementation tasks
 
-- [ ] Add a web app manifest, suitable icons, and service-worker registration using the existing `/hiragame` base path. Support installation where the browser permits it.
-- [ ] Precache the app shell and core catalog/lessons. Cache starter audio deliberately; provide explicit download/status controls if some audio is optional.
-- [ ] Generate a versioned asset list from the actual production output. Cache only owned same-origin assets; do not add third-party API caching.
-- [ ] Handle navigation fallback and nested lesson routes without swallowing missing asset requests as HTML.
-- [ ] Treat lesson catalog/data and application assets as a coherent release; avoid mixing incompatible old and new schemas during updates.
-- [ ] Notify about an available update and apply it at a safe time after saving progress, rather than forcibly reloading an active lesson.
-- [ ] Clean up only this app's obsolete caches. Never clear `localStorage` as part of service-worker updates.
-- [ ] Explain cold-start limitations: an uncached first visit needs a connection; a locally served distribution also works without Internet.
-- [ ] Handle unsupported service workers, cache failure, partial downloads, and uncached audio with clear fallback/status information.
-- [ ] Keep service workers disabled or isolated in ordinary development to avoid stale-code debugging problems.
-- [ ] Add cache-management controls distinct from learner-progress reset.
+- [x] Add a web app manifest, suitable icons, and service-worker registration using the existing `/hiragame` base path. Support installation where the browser permits it.
+- [x] Precache the app shell and core catalog/lessons. Cache starter audio deliberately; provide explicit download/status controls if some audio is optional.
+- [x] Generate a versioned asset list from the actual production output. Cache only owned same-origin assets; do not add third-party API caching.
+- [x] Handle navigation fallback and nested lesson routes without swallowing missing asset requests as HTML.
+- [x] Treat lesson catalog/data and application assets as a coherent release; avoid mixing incompatible old and new schemas during updates.
+- [x] Notify about an available update and apply it at a safe time after saving progress, rather than forcibly reloading an active lesson.
+- [x] Clean up only this app's obsolete caches. Never clear `localStorage` as part of service-worker updates.
+- [x] Explain cold-start limitations: an uncached first visit needs a connection; a locally served distribution also works without Internet.
+- [x] Handle unsupported service workers, cache failure, partial downloads, and uncached audio with clear fallback/status information.
+- [x] Keep service workers disabled or isolated in ordinary development to avoid stale-code debugging problems.
+- [x] Add cache-management controls distinct from learner-progress reset.
 
 ### Acceptance criteria
 

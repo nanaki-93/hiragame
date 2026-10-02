@@ -116,6 +116,7 @@ private fun LessonEntry(lessonId: String) {
     }
     val state by coordinator.state.collectAsState()
     val saved by progress.state.collectAsState()
+    com.github.nanaki_93.offline.SessionActivity((state as? LocalLessonState.Active)?.let { !it.finished } == true)
     DisposableEffect(coordinator, lessonId) {
         coordinator.load(lessonId)
         onDispose { coordinator.dispose() }

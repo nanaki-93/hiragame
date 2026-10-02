@@ -22,6 +22,7 @@ fun ReviewPage() {
     var load by remember { mutableStateOf(0) }
     var session by remember { mutableStateOf<LocalReviewSession?>(null) }
     var tick by remember { mutableStateOf(0) }
+    com.github.nanaki_93.offline.SessionActivity(session != null && session?.complete != true && session?.expired != true)
     LaunchedEffect(load) {
         error = null
         try { bundle = (BundledContentLoader(BrowserContentTextSource()).load() as? CatalogLoad.Ready)?.content
