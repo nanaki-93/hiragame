@@ -13,6 +13,8 @@ import com.github.nanaki_93.pages.promptAnswer
 import com.github.nanaki_93.pages.practiceTopicGroups
 import com.github.nanaki_93.pages.saveStatusMessage
 import com.github.nanaki_93.pages.selectColorMode
+import com.github.nanaki_93.pages.selectStudyAid
+import com.github.nanaki_93.pages.StudyAid
 import com.github.nanaki_93.pages.reloadSavedAndApplyMode
 import com.github.nanaki_93.pages.replaceProtectedAndApplyMode
 import com.github.nanaki_93.initialSilkMode
@@ -73,6 +75,55 @@ import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+
+// Separate acceptance scenario: compiled with the focused suite, executed at the final gate.
+@OptIn(ExperimentalCoroutinesApi::class)
+class StudyAidActiveSessionIntegrationTest {
+    @Test fun changingAidsDuringPromptPreservesSessionCheckpointAndDoesNotResolveDraft() = runTest {
+        val source = object : ContentTextSource {
+            override suspend fun readText(relativePath: String): String {
+                val fs: dynamic = js("require('fs')")
+                val path: dynamic = js("require('path')")
+                var root: String = js("process.cwd()") as String
+                val contentRoot = "site/src/jsMain/resources/public/content/"
+                while (!(fs.existsSync(path.resolve(root, contentRoot, "catalog.json")) as Boolean)) {
+                    val parent = path.dirname(root) as String
+                    check(parent != root)
+                    root = parent
+                }
+                return fs.readFileSync(path.resolve(root, contentRoot, relativePath), "utf8") as String
+            }
+        }
+        val store = MemoryProgressStore()
+        var sequence = 0
+        val progress = LocalProgressOwner(store, { 1_000L }, { "snapshot_${++sequence}" })
+        val practice = LocalPracticeCoordinator(this, progress, BundledContentLoader(source))
+        try {
+            practice.load()
+            runCurrent()
+            practice.start("practice-kana-a-i")
+            fun session() = assertIs<LocalPracticeState.Ready>(practice.state.value).session!!
+            val initial = session()
+            val checkpoint = progress.state.value.snapshot.practiceProgress
+            // Drafts live in PracticePrompt's remember(session.id, exercise.id), not in the save.
+            assertEquals(ProgressMutationResult.Accepted, selectStudyAid(progress, StudyAid.READINGS, false))
+            assertEquals(ProgressMutationResult.Accepted, selectStudyAid(progress, StudyAid.TRANSLATION, false))
+            assertEquals(ProgressMutationResult.Accepted, selectStudyAid(progress, StudyAid.ROMAJI, true))
+            assertSame(initial, session())
+            assertEquals(SessionView.Prompt(0), session().view)
+            assertEquals(0, session().counts.completed)
+            assertEquals(checkpoint, progress.state.value.snapshot.practiceProgress)
+            assertEquals(initial.id, session().id)
+            assertEquals(initial.revision, session().revision)
+            val decoded = assertIs<SaveDecodeResult.Valid>(SaveCodec.decodeSave(store.backing.raw!!)).snapshot
+            assertEquals(progress.state.value.snapshot.preferences, decoded.preferences)
+            assertEquals(checkpoint, decoded.practiceProgress)
+        } finally {
+            practice.dispose()
+            progress.dispose()
+        }
+    }
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LocalPracticeCoordinatorTest {
@@ -334,6 +385,72 @@ class LocalPracticeCoordinatorTest {
         assertIs<LocalPracticeState.Loading>(coordinator.state.value)
         runCurrent()
         assertNull(assertIs<LocalPracticeState.Ready>(coordinator.state.value).session)
+    }
+
+    @Test fun studyAidsMutateOnlyExplicitlyChangedFieldsThroughOwner() {
+        val store = CountingStore()
+        val progress = owner(store)
+        val defaults = progress.state.value.snapshot.preferences
+        assertTrue(defaults.showReadings && defaults.showTranslation && !defaults.showRomaji)
+        assertEquals(ProgressMutationResult.Unchanged, selectStudyAid(progress, StudyAid.READINGS, true))
+        assertEquals(0, store.writes)
+        assertEquals(ProgressMutationResult.Accepted, selectStudyAid(progress, StudyAid.READINGS, false))
+        assertEquals(ProgressMutationResult.Accepted, selectStudyAid(progress, StudyAid.TRANSLATION, false))
+        assertEquals(ProgressMutationResult.Accepted, selectStudyAid(progress, StudyAid.ROMAJI, true))
+        assertEquals(3, store.writes)
+        assertEquals(ProgressMutationResult.Unchanged, selectStudyAid(progress, StudyAid.ROMAJI, true))
+        assertEquals(3, store.writes)
+        val current = progress.state.value.snapshot.preferences
+        assertEquals(defaults.copy(showReadings = false, showTranslation = false, showRomaji = true), current)
+        assertEquals(current, assertIs<SaveDecodeResult.Valid>(
+            SaveCodec.decodeSave(store.delegate.backing.raw!!)).snapshot.preferences)
+        assertIs<PersistenceStatus.Saved>(progress.state.value.status)
+        val reset = assertIs<ReplacementPreparation.Ready>(progress.beginReset(ResetScope.FULL_LEARNER_STATE)).token
+        assertEquals(ReplacementResult.Replaced, progress.confirmReplacement(reset))
+        assertEquals(defaults, progress.state.value.snapshot.preferences)
+    }
+
+    @Test fun studyAidWriteFailuresAndProtectedOrConflictedSavesRemainTruthful() {
+        val store = CountingStore()
+        val progress = owner(store)
+        store.delegate.writeFailure = StoreFailure.QUOTA
+        assertEquals(ProgressMutationResult.Accepted, selectStudyAid(progress, StudyAid.ROMAJI, true))
+        assertEquals(1, store.writes)
+        assertNull(store.delegate.backing.raw)
+        assertTrue(progress.state.value.snapshot.preferences.showRomaji)
+        assertIs<PersistenceStatus.MemoryOnly>(progress.state.value.status)
+        assertTrue("Changes only in memory" in saveStatusMessage(progress.state.value))
+        assertEquals(ProgressMutationResult.Accepted, selectStudyAid(progress, StudyAid.READINGS, false))
+        assertEquals(1, store.writes) // no automatic retry after failure
+        store.delegate.writeFailure = null
+        progress.retrySaving()
+        assertIs<PersistenceStatus.Saved>(progress.state.value.status)
+        assertEquals(progress.state.value.snapshot.preferences, assertIs<SaveDecodeResult.Valid>(
+            SaveCodec.decodeSave(store.delegate.backing.raw!!)).snapshot.preferences)
+
+        val protectedStore = CountingStore(MemoryProgressStore(
+            com.github.nanaki_93.storage.MemoryProgressBacking("unreadable save")))
+        val protected = owner(protectedStore)
+        assertEquals(ProgressMutationResult.Accepted, selectStudyAid(protected, StudyAid.TRANSLATION, false))
+        assertIs<PersistenceStatus.Protected>(protected.state.value.status)
+        assertTrue("Saving paused" in saveStatusMessage(protected.state.value))
+        assertEquals("unreadable save", protectedStore.delegate.backing.raw)
+        assertEquals(0, protectedStore.writes)
+
+        val backing = com.github.nanaki_93.storage.MemoryProgressBacking()
+        val conflictedStore = CountingStore(MemoryProgressStore(backing))
+        val conflicted = owner(conflictedStore)
+        val other = owner(MemoryProgressStore(backing))
+        assertEquals(ProgressMutationResult.Accepted, selectStudyAid(other, StudyAid.ROMAJI, true))
+        assertIs<PersistenceStatus.Conflict>(conflicted.state.value.status)
+        assertEquals(ProgressMutationResult.Accepted, selectStudyAid(conflicted, StudyAid.READINGS, false))
+        assertEquals(0, conflictedStore.writes)
+        assertTrue("Saving paused" in saveStatusMessage(conflicted.state.value))
+        assertTrue(conflicted.state.value.snapshot.preferences.showRomaji.not())
+        assertTrue(assertIs<SaveDecodeResult.Valid>(SaveCodec.decodeSave(backing.raw!!)).snapshot.preferences.showRomaji)
+        assertTrue(conflicted.reloadSavedState())
+        assertTrue(conflicted.state.value.snapshot.preferences.showRomaji)
+        assertTrue(conflicted.state.value.snapshot.preferences.showReadings)
     }
 
     @Test fun colorModeSelectionWritesOnlyChangesAndAppliesAcceptedChoices() {
@@ -712,6 +829,13 @@ class LocalPracticeCoordinatorTest {
             assertTrue(required in recoveryUi, "Home missing safe recovery control: $required")
         }
         assertTrue("localStorage" !in recoveryUi && "innerHTML" !in recoveryUi)
+        val aidUi = saveUi.substringAfter("Legend { Text(\"Study aids\") }").substringBefore("Legend { Text(\"Color mode\") }")
+        for (required in listOf("InputType.Checkbox", "Label(attrs", "saved.snapshot.preferences.showReadings",
+            "saved.snapshot.preferences.showTranslation", "saved.snapshot.preferences.showRomaji",
+            "selectStudyAid(progress, aid, it.value)", "Some hints stay hidden")) {
+            assertTrue(required in aidUi, "Home missing owner-backed study control: $required")
+        }
+        assertTrue("localStorage" !in aidUi && "coordinator." !in aidUi)
         val restoreUi = home.substringAfter("private fun RestoreSection(").substringBefore("internal fun downloadMessage(")
         for (required in listOf("InputType.File", "Label(attrs", "restore.select(file", "input.value = \"\"",
             "onClick { restore.cancel() }",

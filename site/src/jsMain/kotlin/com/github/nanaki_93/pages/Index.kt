@@ -277,6 +277,19 @@ internal fun selectColorMode(
     return result
 }
 
+internal enum class StudyAid { READINGS, TRANSLATION, ROMAJI }
+
+/** The owner is the only writer; unchanged choices do not create a new save. */
+internal fun selectStudyAid(progress: LocalProgressOwner, aid: StudyAid, enabled: Boolean): ProgressMutationResult =
+    progress.mutate { snapshot ->
+        val preferences = snapshot.preferences
+        changePreferences(snapshot, when (aid) {
+            StudyAid.READINGS -> preferences.copy(showReadings = enabled)
+            StudyAid.TRANSLATION -> preferences.copy(showTranslation = enabled)
+            StudyAid.ROMAJI -> preferences.copy(showRomaji = enabled)
+        })
+    }
+
 /** Recovery can change the saved preference without going through the radio control. */
 internal fun replaceProtectedAndApplyMode(
     progress: LocalProgressOwner,
@@ -438,6 +451,23 @@ private fun SavePreferencesSection(progress: LocalProgressOwner) {
             }
         }
         actionMessage?.let { message -> P(attrs = { attr("role", "status") }) { Text(message) } }
+        Fieldset {
+            Legend { Text("Study aids") }
+            P { Text("Choose which optional help to show where available. Some hints stay hidden until you check or reveal an answer.") }
+            for ((aid, label, enabled) in listOf(
+                Triple(StudyAid.READINGS, "Show readings", saved.snapshot.preferences.showReadings),
+                Triple(StudyAid.TRANSLATION, "Show translations", saved.snapshot.preferences.showTranslation),
+                Triple(StudyAid.ROMAJI, "Show authored romaji", saved.snapshot.preferences.showRomaji),
+            )) {
+                Label(attrs = { classes("save-mode-choice") }) {
+                    Input(type = InputType.Checkbox, attrs = {
+                        checked(enabled)
+                        onChange { selectStudyAid(progress, aid, it.value) }
+                    })
+                    Text(label)
+                }
+            }
+        }
         Fieldset {
             Legend { Text("Color mode") }
             Span(attrs = { classes("save-color-options") }) {
