@@ -123,7 +123,7 @@ class PracticeResumeTest {
 
         val current = progress.state.value.snapshot.practiceProgress.single()
         val noSet = coordinator(this, progress) {
-            CatalogLoad.Ready(full.content.copy(practiceSets = emptyMap()))
+            CatalogLoad.Ready(full.content.copy(practiceSets = full.content.practiceSets - setId))
         }
         noSet.load(); runCurrent()
         val before = backing.raw
@@ -151,7 +151,7 @@ class PracticeResumeTest {
         first.dispose()
         var missing = true
         val second = coordinator(this, progress) {
-            if (missing) CatalogLoad.Ready(full.content.copy(practiceSets = emptyMap())) else full
+            if (missing) CatalogLoad.Ready(full.content.copy(practiceSets = full.content.practiceSets - setId)) else full
         }
         second.load(); runCurrent()
         assertTrue(assertIs<PracticeCheckpointResolution.Unavailable>(second.savedCheckpoints()[setId]).missingSet)

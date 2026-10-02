@@ -40,7 +40,7 @@ class TopicsNavigationTests(unittest.TestCase):
     def test_catalog_controls_and_cards_are_read_only_and_view_local(self):
         topics = (PAGES / 'Topics.kt').read_text(encoding='utf-8')
         for local in ('topicId', 'beginnerPath', 'selectedLessonId'):
-            self.assertRegex(topics, rf'var {local} by remember \{{ mutableStateOf\(')
+            self.assertRegex(topics, rf'var {local} by remember \{{ mutableStateOf(?:<[^>]+>)?\(')
         self.assertIn('view.topics', topics)
         self.assertIn('view.cards', topics)
         self.assertIn('view.beginnerPathCards', topics)

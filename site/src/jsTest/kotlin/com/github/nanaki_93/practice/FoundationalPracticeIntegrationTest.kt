@@ -255,7 +255,7 @@ class FoundationalPracticeIntegrationTest {
             practice.leave()
             val saved = backing.raw
             val unavailable = coordinator(this, progress) {
-                CatalogLoad.Ready(canonical.content.copy(practiceSets = emptyMap()))
+                CatalogLoad.Ready(canonical.content.copy(practiceSets = canonical.content.practiceSets - "practice-vocabulary-daily-reading"))
             }
             try {
                 unavailable.load(); runCurrent()

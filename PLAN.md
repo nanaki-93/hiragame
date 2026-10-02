@@ -281,6 +281,8 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** F00, F01, F03, F11.
 
+**Status:** F06 complete at the CLI/static and isolated-adapter scope. [F06 validation evidence](content-source/review-notes/f06-validation.md) records the full suites, item-scoped content review, six-lesson packaging parity, route checks, and cleanup. Topics provides read-only previews and saved-place indicators; F07 still owns the playable lesson stages and actual resumption. Browser, native, visual, accessibility, live-offline, deployment, and native-speaker certification are not claimed.
+
 ### Implementation tasks
 
 - [ ] Build a topic/lesson catalog with communication goals, recommended difficulty, approximate duration, prerequisites, and completion/resume status.
