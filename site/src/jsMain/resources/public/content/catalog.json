@@ -36,6 +36,11 @@
       "id": "workplace-bugs",
       "title": "Bug reports",
       "description": "Describe expected and actual test behavior and give reproducible steps without guessing a cause."
+    },
+    {
+      "id": "workplace-reviews",
+      "title": "Code reviews",
+      "description": "Request a focused code review and respond constructively to a teammate's suggestion."
     }
   ],
   "entries": [
@@ -68,6 +73,12 @@
       "kind": "lesson",
       "topicId": "workplace-bugs",
       "path": "lessons/bug-reproduction.json"
+    },
+    {
+      "id": "lesson-code-review-request",
+      "kind": "lesson",
+      "topicId": "workplace-reviews",
+      "path": "lessons/code-review-request.json"
     },
     {
       "id": "lesson-confirm-meeting-time",
