@@ -1,0 +1,365 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-basic-m-y-recognition",
+  "topicId": "katakana-foundations",
+  "title": "Basic katakana: M and Y rows — find the sign",
+  "description": "Choose the written sign from three visible kana using a basic sound or specified spelling context. 8 independent targets.",
+  "reviewItems": [
+    {
+      "id": "review-kb-recognition-30de",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30de",
+      "skill": "Recognize basic katakana マ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30df",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30df",
+      "skill": "Recognize basic katakana ミ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30e0",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30e0",
+      "skill": "Recognize basic katakana ム",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30e1",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30e1",
+      "skill": "Recognize basic katakana メ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30e2",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30e2",
+      "skill": "Recognize basic katakana モ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30e4",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30e4",
+      "skill": "Recognize basic katakana ヤ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30e6",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30e6",
+      "skill": "Recognize basic katakana ユ",
+      "direction": "spelling-cue-to-sign"
+    },
+    {
+      "id": "review-kb-recognition-30e8",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-recognition-30e8",
+      "skill": "Recognize basic katakana ヨ",
+      "direction": "spelling-cue-to-sign"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independent agent-authored katakana sign cues and feedback; no CSV or mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; katakana correspondences are linguistic facts. No third-party text or audio used."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30de",
+      "prompt": "Which katakana sign has the basic reading conventionally written ma in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30de-for-30de",
+          "text": {
+            "surface": "マ",
+            "reading": "マ",
+            "gloss": "Katakana sign for the basic ma reading.",
+            "romaji": "ma"
+          }
+        },
+        {
+          "id": "option-kb-30df-for-30de",
+          "text": {
+            "surface": "ミ",
+            "reading": "ミ",
+            "gloss": "Katakana sign for the basic mi reading.",
+            "romaji": "mi"
+          }
+        },
+        {
+          "id": "option-kb-30e0-for-30de",
+          "text": {
+            "surface": "ム",
+            "reading": "ム",
+            "gloss": "Katakana sign for the basic mu reading.",
+            "romaji": "mu"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30de-for-30de",
+      "explanation": "マ is the katakana sign for the written ma cue. Katakana sign for the basic ma reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30df",
+      "prompt": "Which katakana sign has the basic reading conventionally written mi in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30e0-for-30df",
+          "text": {
+            "surface": "ム",
+            "reading": "ム",
+            "gloss": "Katakana sign for the basic mu reading.",
+            "romaji": "mu"
+          }
+        },
+        {
+          "id": "option-kb-30e1-for-30df",
+          "text": {
+            "surface": "メ",
+            "reading": "メ",
+            "gloss": "Katakana sign for the basic me reading.",
+            "romaji": "me"
+          }
+        },
+        {
+          "id": "option-kb-30df-for-30df",
+          "text": {
+            "surface": "ミ",
+            "reading": "ミ",
+            "gloss": "Katakana sign for the basic mi reading.",
+            "romaji": "mi"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30df-for-30df",
+      "explanation": "ミ is the katakana sign for the written mi cue. Katakana sign for the basic mi reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30e0",
+      "prompt": "Which katakana sign has the basic reading conventionally written mu in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30e2-for-30e0",
+          "text": {
+            "surface": "モ",
+            "reading": "モ",
+            "gloss": "Katakana sign for the basic mo reading.",
+            "romaji": "mo"
+          }
+        },
+        {
+          "id": "option-kb-30e0-for-30e0",
+          "text": {
+            "surface": "ム",
+            "reading": "ム",
+            "gloss": "Katakana sign for the basic mu reading.",
+            "romaji": "mu"
+          }
+        },
+        {
+          "id": "option-kb-30e1-for-30e0",
+          "text": {
+            "surface": "メ",
+            "reading": "メ",
+            "gloss": "Katakana sign for the basic me reading.",
+            "romaji": "me"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30e0-for-30e0",
+      "explanation": "ム is the katakana sign for the written mu cue. Katakana sign for the basic mu reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30e1",
+      "prompt": "Which katakana sign has the basic reading conventionally written me in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30e1-for-30e1",
+          "text": {
+            "surface": "メ",
+            "reading": "メ",
+            "gloss": "Katakana sign for the basic me reading.",
+            "romaji": "me"
+          }
+        },
+        {
+          "id": "option-kb-30e2-for-30e1",
+          "text": {
+            "surface": "モ",
+            "reading": "モ",
+            "gloss": "Katakana sign for the basic mo reading.",
+            "romaji": "mo"
+          }
+        },
+        {
+          "id": "option-kb-30e4-for-30e1",
+          "text": {
+            "surface": "ヤ",
+            "reading": "ヤ",
+            "gloss": "Katakana sign for the basic ya reading.",
+            "romaji": "ya"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30e1-for-30e1",
+      "explanation": "メ is the katakana sign for the written me cue. Katakana sign for the basic me reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30e2",
+      "prompt": "Which katakana sign has the basic reading conventionally written mo in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30e4-for-30e2",
+          "text": {
+            "surface": "ヤ",
+            "reading": "ヤ",
+            "gloss": "Katakana sign for the basic ya reading.",
+            "romaji": "ya"
+          }
+        },
+        {
+          "id": "option-kb-30e6-for-30e2",
+          "text": {
+            "surface": "ユ",
+            "reading": "ユ",
+            "gloss": "Katakana sign for the basic yu reading.",
+            "romaji": "yu"
+          }
+        },
+        {
+          "id": "option-kb-30e2-for-30e2",
+          "text": {
+            "surface": "モ",
+            "reading": "モ",
+            "gloss": "Katakana sign for the basic mo reading.",
+            "romaji": "mo"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30e2-for-30e2",
+      "explanation": "モ is the katakana sign for the written mo cue. Katakana sign for the basic mo reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30e4",
+      "prompt": "Which katakana sign has the basic reading conventionally written ya in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30e8-for-30e4",
+          "text": {
+            "surface": "ヨ",
+            "reading": "ヨ",
+            "gloss": "Katakana sign for the basic yo reading.",
+            "romaji": "yo"
+          }
+        },
+        {
+          "id": "option-kb-30e4-for-30e4",
+          "text": {
+            "surface": "ヤ",
+            "reading": "ヤ",
+            "gloss": "Katakana sign for the basic ya reading.",
+            "romaji": "ya"
+          }
+        },
+        {
+          "id": "option-kb-30e6-for-30e4",
+          "text": {
+            "surface": "ユ",
+            "reading": "ユ",
+            "gloss": "Katakana sign for the basic yu reading.",
+            "romaji": "yu"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30e4-for-30e4",
+      "explanation": "ヤ is the katakana sign for the written ya cue. Katakana sign for the basic ya reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30e6",
+      "prompt": "Which katakana sign has the basic reading conventionally written yu in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30e6-for-30e6",
+          "text": {
+            "surface": "ユ",
+            "reading": "ユ",
+            "gloss": "Katakana sign for the basic yu reading.",
+            "romaji": "yu"
+          }
+        },
+        {
+          "id": "option-kb-30e8-for-30e6",
+          "text": {
+            "surface": "ヨ",
+            "reading": "ヨ",
+            "gloss": "Katakana sign for the basic yo reading.",
+            "romaji": "yo"
+          }
+        },
+        {
+          "id": "option-kb-30de-for-30e6",
+          "text": {
+            "surface": "マ",
+            "reading": "マ",
+            "gloss": "Katakana sign for the basic ma reading.",
+            "romaji": "ma"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30e6-for-30e6",
+      "explanation": "ユ is the katakana sign for the written yu cue. Katakana sign for the basic yu reading. Different written forms are not interchangeable by sound alone."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kb-recognition-30e8",
+      "prompt": "Which katakana sign has the basic reading conventionally written yo in Latin letters?",
+      "options": [
+        {
+          "id": "option-kb-30de-for-30e8",
+          "text": {
+            "surface": "マ",
+            "reading": "マ",
+            "gloss": "Katakana sign for the basic ma reading.",
+            "romaji": "ma"
+          }
+        },
+        {
+          "id": "option-kb-30df-for-30e8",
+          "text": {
+            "surface": "ミ",
+            "reading": "ミ",
+            "gloss": "Katakana sign for the basic mi reading.",
+            "romaji": "mi"
+          }
+        },
+        {
+          "id": "option-kb-30e8-for-30e8",
+          "text": {
+            "surface": "ヨ",
+            "reading": "ヨ",
+            "gloss": "Katakana sign for the basic yo reading.",
+            "romaji": "yo"
+          }
+        }
+      ],
+      "correctOptionId": "option-kb-30e8-for-30e8",
+      "explanation": "ヨ is the katakana sign for the written yo cue. Katakana sign for the basic yo reading. Different written forms are not interchangeable by sound alone."
+    }
+  ]
+}

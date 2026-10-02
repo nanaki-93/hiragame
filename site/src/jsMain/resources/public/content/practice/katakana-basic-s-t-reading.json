@@ -1,0 +1,321 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-basic-s-t-reading",
+  "topicId": "katakana-foundations",
+  "title": "Basic katakana: S and T rows — write in kana",
+  "description": "Use Latin-letter syllable cues to recall and type the matching katakana signs. Kana answers only; no sign is displayed in the question.",
+  "reviewItems": [
+    {
+      "id": "review-kb-reading-30b5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30b5",
+      "skill": "Recall the spelling of basic katakana サ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30b7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30b7",
+      "skill": "Recall the spelling of basic katakana シ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30b9",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30b9",
+      "skill": "Recall the spelling of basic katakana ス",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30bb",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30bb",
+      "skill": "Recall the spelling of basic katakana セ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30bd",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30bd",
+      "skill": "Recall the spelling of basic katakana ソ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30bf",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30bf",
+      "skill": "Recall the spelling of basic katakana タ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30c1",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30c1",
+      "skill": "Recall the spelling of basic katakana チ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30c4",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30c4",
+      "skill": "Recall the spelling of basic katakana ツ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30c6",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30c6",
+      "skill": "Recall the spelling of basic katakana テ",
+      "direction": "latin-cue-to-katakana"
+    },
+    {
+      "id": "review-kb-reading-30c8",
+      "targetKind": "exercise",
+      "targetId": "exercise-kb-reading-30c8",
+      "skill": "Recall the spelling of basic katakana ト",
+      "direction": "latin-cue-to-katakana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independent agent-authored katakana sign cues and feedback; no CSV or mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; katakana correspondences are linguistic facts. No third-party text or audio used."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30b5",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "sa",
+        "reading": "sa",
+        "translation": "Latin-letter cue for the basic katakana sa sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "サ",
+            "reading": "サ",
+            "gloss": "Katakana sign for the basic sa reading.",
+            "romaji": "sa"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written sa is サ. Katakana sign for the basic sa reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30b7",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "shi",
+        "reading": "shi",
+        "translation": "Latin-letter cue for the basic katakana shi sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "シ",
+            "reading": "シ",
+            "gloss": "Katakana sign for the basic shi reading.",
+            "romaji": "shi"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written shi is シ. Katakana sign for the basic shi reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30b9",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "su",
+        "reading": "su",
+        "translation": "Latin-letter cue for the basic katakana su sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ス",
+            "reading": "ス",
+            "gloss": "Katakana sign for the basic su reading.",
+            "romaji": "su"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written su is ス. Katakana sign for the basic su reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30bb",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "se",
+        "reading": "se",
+        "translation": "Latin-letter cue for the basic katakana se sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "セ",
+            "reading": "セ",
+            "gloss": "Katakana sign for the basic se reading.",
+            "romaji": "se"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written se is セ. Katakana sign for the basic se reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30bd",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "so",
+        "reading": "so",
+        "translation": "Latin-letter cue for the basic katakana so sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ソ",
+            "reading": "ソ",
+            "gloss": "Katakana sign for the basic so reading.",
+            "romaji": "so"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written so is ソ. Katakana sign for the basic so reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30bf",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "ta",
+        "reading": "ta",
+        "translation": "Latin-letter cue for the basic katakana ta sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "タ",
+            "reading": "タ",
+            "gloss": "Katakana sign for the basic ta reading.",
+            "romaji": "ta"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written ta is タ. Katakana sign for the basic ta reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30c1",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "chi",
+        "reading": "chi",
+        "translation": "Latin-letter cue for the basic katakana chi sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "チ",
+            "reading": "チ",
+            "gloss": "Katakana sign for the basic chi reading.",
+            "romaji": "chi"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written chi is チ. Katakana sign for the basic chi reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30c4",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "tsu",
+        "reading": "tsu",
+        "translation": "Latin-letter cue for the basic katakana tsu sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ツ",
+            "reading": "ツ",
+            "gloss": "Katakana sign for the basic tsu reading.",
+            "romaji": "tsu"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written tsu is ツ. Katakana sign for the basic tsu reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30c6",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "te",
+        "reading": "te",
+        "translation": "Latin-letter cue for the basic katakana te sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "テ",
+            "reading": "テ",
+            "gloss": "Katakana sign for the basic te reading.",
+            "romaji": "te"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written te is テ. Katakana sign for the basic te reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kb-reading-30c8",
+      "prompt": "From the Latin-letter spelling cue below, recall and type its katakana sign (not romaji).",
+      "stimulus": {
+        "surface": "to",
+        "reading": "to",
+        "translation": "Latin-letter cue for the basic katakana to sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ト",
+            "reading": "ト",
+            "gloss": "Katakana sign for the basic to reading.",
+            "romaji": "to"
+          }
+        }
+      ],
+      "explanation": "The katakana spelling for written to is ト. Katakana sign for the basic to reading. Only the authored katakana spelling is accepted; hiragana is not an alias."
+    }
+  ]
+}
