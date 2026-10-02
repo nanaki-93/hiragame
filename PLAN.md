@@ -313,6 +313,8 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** F02, F03, F06, F11. Audio from F10 enhances it but is not required.
 
+**Implementation scope (final integration pending):** Topics retains read-only previews and links to a six-stage text-only lesson player for all six bundled lessons, including the supplemental seed. Situation and Summary use stage-entry checkpoints; dialogue turns, choice items, reading/completion items and self-assessed production map to the intervening stages. The authored role-play objective is the fallback when there is no production item; F08's branching conversation graph is not executed. Start and deliberate navigation save only a local stage/item checkpoint; Resume reads that place without restoring answers or feedback. Invalid or moved item IDs require explicit recovery to Situation; missing documents remain unavailable without clearing their saves. Entering Summary is not completion: accepted Finish records completion there without claiming mastery or scheduling review. Session outcomes are transient; saves may be memory-only or rejected, not guaranteed durable or synchronized. No audio, AI, account or backend is required. This describes implementation, **not** a passed F07 final acceptance gate; see `.pi/PLAN.md` Step 4.1 for pending verification.
+
 ### Implementation tasks
 
 - [ ] Implement the approved stages: Situation → Dialogue → Understanding → Guided Practice → Role-play → Summary.

@@ -2,6 +2,8 @@
 import unittest
 from pathlib import Path
 
+import validate_local_runtime as runtime
+
 ROOT = Path(__file__).resolve().parents[1]
 PAGE = ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/pages/Lesson.kt'
 COORDINATOR = ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/lesson/LocalLessonCoordinator.kt'
@@ -10,6 +12,14 @@ CATALOG = ROOT / 'shared/src/commonMain/kotlin/com/github/nanaki_93/content/Less
 
 
 class LessonRouteTests(unittest.TestCase):
+    def test_lesson_sources_are_in_local_only_boundary(self):
+        for directory in (runtime.SITE / 'lesson', runtime.SHARED / 'lesson'):
+            with self.subTest(directory=directory):
+                self.assertIn(directory, runtime.SOURCE_DIRS)
+                self.assertTrue(directory.is_dir())
+                self.assertTrue(list(directory.glob('*.kt')))
+        self.assertEqual({'BrowserProgressStore.kt', 'LegacyColorMode.kt'}, runtime.BROWSER_STORAGE_ADAPTERS)
+
     def test_logical_route_and_app_owned_lifecycle(self):
         page = PAGE.read_text(encoding='utf-8')
         config = (ROOT / 'site/build.gradle.kts').read_text(encoding='utf-8')
