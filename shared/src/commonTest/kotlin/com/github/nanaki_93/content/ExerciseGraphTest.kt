@@ -98,6 +98,48 @@ class ExerciseGraphTest {
         assertFailsWith<Exception> { json.decodeFromString<GraphNode>(nodeWire.replace("\"terminal\"", "\"unknown\"")) }
     }
 
+    @Test fun normalizedReadingDuplicatesAreRejectedOnConstructionAndDecode() {
+        val kana = KanaReadingAnswer(JapaneseText("が", "が", gloss = "ga"))
+        val decomposed = KanaReadingAnswer(JapaneseText("か\u3099", "か\u3099", translation = "ga"))
+        val distinct = KanaReadingAnswer(JapaneseText("か", "か", gloss = "ka"))
+        val base = reading.copy(acceptedAnswers = listOf(kana, distinct))
+        assertEquals(base, json.decodeFromString<Exercise>(json.encodeToString<Exercise>(base)))
+        for (duplicate in listOf(decomposed, KanaReadingAnswer(kana.text.copy(surface = " が ", translation = "ga", gloss = null)))) {
+            assertFailsWith<IllegalArgumentException> { reading.copy(acceptedAnswers = listOf(kana, duplicate)) }
+            val wire = json.encodeToString<Exercise>(base).replace(
+                json.encodeToString<ReadingAnswer>(distinct), json.encodeToString<ReadingAnswer>(duplicate),
+            )
+            assertFailsWith<Exception> { json.decodeFromString<Exercise>(wire) }
+        }
+        val romaji = reading.copy(answerRepresentation = AnswerRepresentation.ROMAJI,
+            acceptedAnswers = listOf(RomajiReadingAnswer("gā"), RomajiReadingAnswer("ga")))
+        assertEquals(romaji, json.decodeFromString<Exercise>(json.encodeToString<Exercise>(romaji)))
+        val duplicateRomaji = RomajiReadingAnswer(" ga\u0304 ")
+        assertFailsWith<IllegalArgumentException> {
+            romaji.copy(acceptedAnswers = listOf(RomajiReadingAnswer("gā"), duplicateRomaji))
+        }
+        val romajiWire = json.encodeToString<Exercise>(romaji).replace(
+            json.encodeToString<ReadingAnswer>(RomajiReadingAnswer("ga")),
+            json.encodeToString<ReadingAnswer>(duplicateRomaji),
+        )
+        assertFailsWith<Exception> { json.decodeFromString<Exercise>(romajiWire) }
+        // No width, script, case, or small-kana folding, and completion keeps exact surfaces.
+        for ((first, second) in listOf("きゃ" to "きや", "じ" to "ぢ", "が" to "ガ", "が" to "ｶﾞ")) {
+            reading.copy(acceptedAnswers = listOf(
+                KanaReadingAnswer(JapaneseText(first, first, translation = "first")),
+                KanaReadingAnswer(JapaneseText(second, second, translation = "second")),
+            ))
+        }
+        romaji.copy(acceptedAnswers = listOf(RomajiReadingAnswer("Ga"), RomajiReadingAnswer("ga")))
+        val exactFills = completion.copy(acceptedAnswers = listOf(fill, fill.copy(surface = " 確認 ")))
+        assertEquals(exactFills, json.decodeFromString<Exercise>(json.encodeToString<Exercise>(exactFills)))
+        val kanaFills = completion.copy(template = "{blank}します。", acceptedAnswers = listOf(
+            JapaneseText("が", "が", gloss = "ga"),
+            JapaneseText("か\u3099", "か\u3099", translation = "ga"),
+        ), expectedCompletedExample = JapaneseText("がします。", "がします。", translation = "example"))
+        assertEquals(kanaFills, json.decodeFromString<Exercise>(json.encodeToString<Exercise>(kanaFills)))
+    }
+
     @Test fun localExerciseAndGraphInvariants() {
         assertFailsWith<IllegalArgumentException> { choice.copy(options = listOf(choice.options[0], choice.options[0])) }
         assertFailsWith<IllegalArgumentException> { choice.copy(correctOptionId = "missing") }

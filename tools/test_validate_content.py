@@ -124,6 +124,52 @@ class ContentValidationTests(unittest.TestCase):
                 with self.assertRaisesRegex(validator.Invalid, rf'\.{field}: expected array'):
                     validator.validate(practice | {field: None}, validator.PRACTICE)
 
+    def test_normalized_reading_duplicates(self):
+        self.catalog([{'id': 'practice_1', 'kind': 'practice', 'topicId': 'topic_1',
+                       'path': 'practice/one.json'}])
+        doc = json.loads((FIXTURES / 'practice-valid.json').read_text())
+        reading = doc['exercises'][1]
+        original = reading['acceptedAnswers'][0]
+        for representation, first, duplicate, distinct in (
+            ('kana', 'が', 'か\u3099', 'か'),
+            ('kana', 'ぱ', 'は\u309a', 'ば'),
+            ('romaji', 'gā', 'ga\u0304', 'ga'),
+        ):
+            with self.subTest(representation=representation, first=first):
+                reading['answerRepresentation'] = representation
+                def answer(surface):
+                    if representation == 'romaji':
+                        return {'type': 'romaji', 'text': surface}
+                    return {'type': 'kana', 'text': {**original['text'], 'surface': surface}}
+                reading['acceptedAnswers'] = [answer(first), answer(distinct)]
+                self.put('practice/one.json', doc)
+                self.run_cli(0)
+                for second in (duplicate, f' {first} '):
+                    reading['acceptedAnswers'][1] = answer(second)
+                    self.put('practice/one.json', doc)
+                    error = self.run_cli(1)
+                    self.assertIn('practice/one.json:$ (practice_1).exercises[1].acceptedAnswers[1]', error)
+                    self.assertIn('duplicate accepted answer in exercise ex_reading', error)
+                reading['acceptedAnswers'][1] = answer(distinct)
+        # Case, script, width, and small-kana differences are never folded.
+        reading['answerRepresentation'] = 'kana'
+        for first, second in (('きゃ', 'きや'), ('じ', 'ぢ'), ('が', 'ガ'), ('が', 'ｶﾞ')):
+            with self.subTest(first=first, second=second):
+                reading['acceptedAnswers'] = [{'type': 'kana', 'text': {**original['text'], 'surface': value}}
+                                              for value in (first, second)]
+                self.put('practice/one.json', doc)
+                self.run_cli(0)
+        reading['answerRepresentation'] = 'romaji'
+        reading['acceptedAnswers'] = [{'type': 'romaji', 'text': value} for value in ('Ga', 'ga')]
+        self.put('practice/one.json', doc)
+        self.run_cli(0)
+        # Completion duplicates still compare raw surfaces, not normalized readings.
+        doc['exercises'][2]['acceptedAnswers'] = [
+            {**doc['exercises'][2]['acceptedAnswers'][0], 'surface': value}
+            for value in ('確認', ' 確認 ')]
+        self.put('practice/one.json', doc)
+        self.run_cli(0)
+
     def test_completion_example_matches_an_authored_fill(self):
         self.catalog([{'id': 'practice_1', 'kind': 'practice', 'topicId': 'topic_1',
                        'path': 'practice/one.json'}])
@@ -411,6 +457,142 @@ class ContentValidationTests(unittest.TestCase):
         (self.review / 'escape.md').symlink_to(external)
         self.put('practice/one.json', doc | {'review': doc['review'] | {'reviewNote': 'escape.md'}})
         self.assertIn('symlink escapes', self.run_cli(1))
+
+    def test_review_decisions_are_scoped_attributable_and_item_specific(self):
+        self.catalog([{'id': 'practice_1', 'kind': 'practice', 'topicId': 'topic_1',
+                       'path': 'practice/one.json'}])
+        doc = json.loads((FIXTURES / 'practice-valid.json').read_text())
+        self.put('practice/one.json', doc)
+        self.run_cli(0)
+        approved = (self.review / 'seed.md').read_text()
+        self.manual_review = True
+        for note, expected in (
+            # An ID mentioned outside a scoped decision, or in the explanation
+            # column of a different item's row, is not item coverage.
+            (approved.replace('| `ex_choice` | reviewed |', '| `other` | see `ex_choice`; reviewed |'),
+             'missing review-note coverage for ex_choice'),
+            (approved.replace('| `ex_choice` | reviewed |', 'See `ex_choice` in draft notes.'),
+             'missing review-note coverage for ex_choice'),
+            (approved.replace('| `ex_choice` | reviewed |', '| `ex_choice` |  |'),
+             'missing review-note coverage for ex_choice'),
+            (approved.replace('| `ex_choice` | reviewed |', '| `ex_choice` | see notes |'),
+             'missing review-note coverage for ex_choice'),
+            (approved.replace('| `ex_choice` | reviewed |', '| `ex_choice` | arbitrary text | arbitrary text |'),
+             'missing review-note coverage for ex_choice'),
+            # A negative item disposition is not affirmative coverage, even when
+            # the document-level decision grants inherited review and rights.
+            *[(approved.replace('| `ex_choice` | reviewed |', f'| `ex_choice` | {decision} |'),
+               'conflicting nested-item review decision')
+              for decision in ('draft', 'denied', 'rejected')],
+            *[(approved.replace('| `ex_choice` | reviewed |', f'| `ex_choice` | {decision} |'),
+               'rejected or restricted decision')
+              for decision in ('rights unknown', 'not approved')],
+            (approved.replace('| `no` | reviewed |', '| `no` | unreviewed |'),
+             'conflicting nested-item review decision'),
+            (approved + '\n| `ex_choice` | draft |', 'conflicting nested-item review decision'),
+            (approved + '\n| `ex_choice` | denied |', 'conflicting nested-item review decision'),
+            (approved + '\nReviewed `ex_choice`: draft.', 'conflicting nested-item review decision'),
+            (approved + '\nReviewed `ex_choice`: denied.', 'conflicting nested-item review decision'),
+            (approved + '\nDecision for `ex_choice`: draft; requires further review.',
+             'conflicting nested-item review decision'),
+            (approved + '\n`ex_choice` is denied publication.',
+             'conflicting nested-item review decision'),
+            (approved + '\n`ex_choice` is pending approval.',
+             'conflicting nested-item review decision'),
+            (approved + '\nReview of `ex_choice` is pending.',
+             'conflicting nested-item review decision'),
+            (approved + '\nReview for `ex_choice` remains pending.',
+             'conflicting nested-item review decision'),
+            (approved + '\n`ex_choice` review remains pending.',
+             'conflicting nested-item review decision'),
+            (approved + '\nFor `ex_choice`, status pending.',
+             'conflicting nested-item review decision'),
+            (approved.replace('inherited by every nested item', 'not inherited by every nested item'),
+             'conflicting nested-item review decision'),
+            (approved.replace('Scope: `practice_1`', 'Scope: `other_doc`; unrelated document `practice_1`'),
+             'missing affirmative document-specific review'),
+            (approved.replace('by an agent', 'by a human'), 'reviewer attribution conflicts'),
+            (approved + '\nThis material was reviewed by a human.', 'reviewer attribution conflicts'),
+            (approved.replace('Reviewed on 2026-10-01', 'Reviewed on 2026-10-02'),
+             'review date conflicts'),
+            (approved + '\n\nReviewed on 2026-10-01 by a human. Scope: `practice_1`.\n\n'
+             'Provenance original. Original text marked publishable.\n',
+             'reviewer attribution conflicts'),
+        ):
+            with self.subTest(expected=expected, note=note[:100]):
+                (self.review / 'seed.md').write_text(note)
+                self.assertIn(expected, self.run_cli(1))
+        (self.review / 'seed.md').write_text(approved + '\n`unrelated_item` is a draft.')
+        self.run_cli(0)  # Decisions about other IDs do not revoke this document.
+        (self.review / 'seed.md').write_text(approved)
+        self.run_cli(0)
+        # The seed's alternative convention explicitly says the reviewer checked
+        # each row in the ID-covered table; a generic inheritance claim cannot
+        # substitute for that scoped affirmative declaration.
+        table_note = approved.replace(
+            'Review metadata inherited by every nested item listed below.',
+            'Review metadata inherited by every nested item listed below. '
+            'The agent checked each item for meaning, reading and rights.')
+        table_note = table_note.replace('| `ex_choice` | reviewed |',
+                                        '| `ex_choice` | meaning checked | variants checked |')
+        table_note = table_note.replace('Provenance: original. Original text marked publishable.',
+                                        'Provenance: original. Original text marked publishable.\n\n'
+                                        '| IDs covered | Meaning | Variants |\n| --- | --- | --- |')
+        (self.review / 'seed.md').write_text(table_note)
+        self.run_cli(0)
+        (self.review / 'seed.md').write_text(table_note.replace(
+            'The agent checked each item for meaning, reading and rights.', ''))
+        self.assertIn('missing review-note coverage for ex_choice', self.run_cli(1))
+
+    def test_canonical_table_coverage_requires_scoped_checked_declaration(self):
+        # The production lesson uses prose to affirm review of every table row,
+        # rather than a `reviewed` cell in each row. Losing that declaration must
+        # not leave its multi-column descriptions counted as decisions.
+        lesson = json.loads((CANONICAL / 'lessons/confirm-meeting-time.json').read_text())
+        note = (ROOT / 'content-source/review-notes/f01-seed.md').read_text()
+        self.assertIn('The agent checked meanings, readings, translations, register, variants, provenance and rights for each row.', note)
+        (self.review / 'f01-seed.md').write_text(note)
+        validator.review_document(lesson, 'lessons/confirm-meeting-time.json:$', self.review)
+        (self.review / 'f01-seed.md').write_text(note.replace(
+            'The agent checked meanings, readings, translations, register, variants, provenance and rights for each row.',
+            'The table describes meanings, readings, translations, variants and provenance.'))
+        with self.assertRaisesRegex(validator.Invalid, 'missing review-note coverage'):
+            validator.review_document(lesson, 'lessons/confirm-meeting-time.json:$', self.review)
+
+    def test_linked_directories_cannot_hide_release_material_or_evidence(self):
+        self.catalog()
+        self.run_cli(0)
+        hidden = Path(self.temp.name) / 'hidden'
+        hidden.mkdir()
+        (hidden / 'extra.json').write_text('{}')
+        (hidden / 'question.csv').write_text('unreviewed')
+        (hidden / 'drafts').mkdir()
+        (hidden / 'drafts' / 'seed.json').write_text('{}')
+        for base in (self.root, self.review):
+            for target, label in ((hidden, 'external'), (base, 'internal')):
+                with self.subTest(tree=base.name, target=label):
+                    link = base / 'linked'
+                    link.symlink_to(target, target_is_directory=True)
+                    self.assertIn('symlink', self.run_cli(1))
+                    link.unlink()
+        # A review-note directory link is unsafe even when it points to an
+        # otherwise affirmative note; an unlisted JSON in a content link is too.
+        (hidden / 'seed.md').write_text('Reviewed on 2026-10-01 by an agent. Scope: `practice_1`.')
+        (self.review / 'linked').symlink_to(hidden, target_is_directory=True)
+        self.assertIn('symlink', self.run_cli(1))
+        self.assertEqual((hidden / 'question.csv').read_text(), 'unreviewed')
+        self.assertEqual((hidden / 'drafts/seed.json').read_text(), '{}')
+        (self.review / 'linked').unlink()
+        for attr in ('root', 'review'):
+            with self.subTest(linked_root=attr):
+                original = getattr(self, attr)
+                alias = Path(self.temp.name) / f'{attr}_alias'
+                alias.symlink_to(original, target_is_directory=True)
+                try:
+                    setattr(self, attr, alias)
+                    self.assertIn('symlink root', self.run_cli(1))
+                finally:
+                    setattr(self, attr, original)
 
     def test_audio_permission_transcript_review_and_paths(self):
         catalog = self.catalog([{'id': 'practice_1', 'kind': 'practice', 'topicId': 'topic_1',
