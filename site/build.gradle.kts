@@ -1,5 +1,6 @@
 import com.varabyte.kobweb.gradle.application.util.configAsKobwebApplication
 import kotlinx.html.meta
+import kotlinx.html.link
 import org.gradle.kotlin.dsl.kotlin
 
 plugins {
@@ -34,13 +35,37 @@ val generateSiteVersion by tasks.registering {
     }
 }
 
+// Generate Silk's required numeric palette values from the accepted CSS token source.
+val generateThemeTokens by tasks.registering {
+    val tokens = rootProject.file(".mockups/design-system/tokens.css")
+    val output = layout.buildDirectory.dir("generated/sources/theme/jsMain")
+    inputs.file(tokens)
+    outputs.dir(output)
+    doLast {
+        val css = tokens.readText()
+        val light = css.substringBefore("[data-theme=\"dark\"] {")
+        val dark = css.substringAfter("[data-theme=\"dark\"] {")
+        fun color(block: String, name: String) = Regex("--color-$name: #([0-9a-fA-F]{6});").find(block)!!.groupValues[1]
+        val file = output.get().file("com/github/nanaki_93/ThemeTokens.kt").asFile
+        file.parentFile.mkdirs()
+        file.writeText("""package com.github.nanaki_93
+internal object ThemeTokens {
+    const val LIGHT_BG = 0x${color(light, "bg-primary")}
+    const val LIGHT_TEXT = 0x${color(light, "text-primary")}
+    const val DARK_BG = 0x${color(dark, "bg-primary")}
+    const val DARK_TEXT = 0x${color(dark, "text-primary")}
+}
+""")
+    }
+}
+
 kobweb {
     app {
         index {
-            description.set("Learn Hiragana with gamification!")
+            description.set("Local-first Japanese for everyday engineering conversations")
             head.add {
-                meta(name = "viewport", content = "width=device-width, initial-scale=1.0")
-                meta(name = "description", content = "Interactive Hiragana learning game with gamification elements")
+                link(rel = "stylesheet", href = "/hiragame/tokens.css")
+                link(rel = "stylesheet", href = "/hiragame/learning.css")
                 meta(name = "keywords", content = "hiragana, japanese, learning, game, education")
             }
         }
@@ -64,13 +89,13 @@ kotlin {
         }
         val jsMain by getting {
             kotlin.srcDir(generateSiteVersion)
+            kotlin.srcDir(generateThemeTokens)
             dependencies {
                 implementation(libs.compose.runtime)
                 implementation(libs.compose.html.core)
                 implementation(libs.kobweb.core)
                 implementation(libs.kobweb.silk)
                 implementation(libs.kobwebx.markdown)
-                implementation(libs.silk.icons.fa)
                 // Shared models/logic
                 implementation(project(":shared"))
                 // Ktor client for JS
@@ -102,7 +127,7 @@ tasks.register<Sync>("reorganizeOutput") {
         include("index.html")
     }
     from(processedPublic) {
-        include("*.ico", "*.png", "*.svg")
+        include("*.ico", "*.png", "*.svg", "*.css")
         into("hiragame")
     }
     from("src/jsMain/resources/public/content") {
@@ -112,4 +137,8 @@ tasks.register<Sync>("reorganizeOutput") {
 
 tasks.named("build") {
     finalizedBy("reorganizeOutput")
+}
+// Copy the canonical selected tokens; never maintain a second authored palette.
+tasks.named<ProcessResources>("jsProcessResources") {
+    from(rootProject.file(".mockups/design-system/tokens.css")) { into("public") }
 }

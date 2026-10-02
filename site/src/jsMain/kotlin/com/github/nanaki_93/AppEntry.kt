@@ -1,6 +1,7 @@
 package com.github.nanaki_93
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -56,7 +57,6 @@ fun initColorMode(ctx: InitSilkContext) {
 fun initStyles(ctx: InitSilkContext) {
     ctx.stylesheet.apply {
         registerStyleBase("html, body") { Modifier.fillMaxHeight() }
-        registerStyleBase("body") { Modifier.scrollBehavior(ScrollBehavior.Smooth) }
     }
 }
 
@@ -72,7 +72,11 @@ fun AppEntry(content: @Composable () -> Unit) {
     }
     SilkApp {
         CompositionLocalProvider(LocalProgress provides owner) {
-            Surface(SmoothColorStyle.toModifier().fillMaxHeight()) {
+            val mode = ColorMode.current
+            SideEffect { kotlinx.browser.document.documentElement?.setAttribute("data-theme", if (mode == ColorMode.DARK) "dark" else "light") }
+            Surface(Modifier.fillMaxHeight()) {
+                com.github.nanaki_93.components.widgets.LearningNavigation()
+                com.github.nanaki_93.components.widgets.LocalSaveStatus()
                 content()
             }
         }

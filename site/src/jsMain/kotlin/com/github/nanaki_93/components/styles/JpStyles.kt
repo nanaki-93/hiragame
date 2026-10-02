@@ -23,16 +23,16 @@ fun initSiteStyles(ctx: InitSilkContext) {
         }
     }
     ctx.stylesheet.registerStyleBase("body") {
-        Modifier.fontFamily("Noto Sans Japanese", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif")
-            .fontSize(18.px)
-            .lineHeight(1.5)
+        Modifier.fontFamily("var(--font-body)")
+            .fontSize(20.px)
+            .lineHeight(2.0)
     }
     ctx.theme.modifyStyleBase(HorizontalDividerStyle) { Modifier.fillMaxWidth() }
     // Native practice fields retain the browser's visible focus outline (unlike the legacy inputs).
     ctx.stylesheet.registerStyleBase(".practice-answer") {
-        Modifier.fillMaxWidth().padding(0.8.cssRem).border(2.px, LineStyle.Solid, Color("#cdbcdb"))
-            .borderRadius(8.px).fontSize(1.cssRem).color(Color("#2e1747"))
-            .backgroundColor(Color("#fffbff"))
+        Modifier.fillMaxWidth().padding(0.8.cssRem).border(2.px, LineStyle.Solid, Colors.Border)
+            .borderRadius(8.px).fontSize(1.cssRem).color(Colors.Text)
+            .backgroundColor(Colors.CardBackground)
     }
     ctx.stylesheet.registerStyleBase(".practice-choice") {
         Modifier.display(DisplayStyle.Block).padding(0.5.cssRem).textAlign(TextAlign.Start)
@@ -55,20 +55,20 @@ fun initSiteStyles(ctx: InitSilkContext) {
 }
 
 object Colors {
-    val Background = Color("#F8F5F2") // Lighter, warmer off-white
-    // Accepted Reading Desk dark surfaces and text; the Home card must respond to Silk mode.
-    val DarkBackground = Color("#23122f")
-    val DarkCardBackground = Color("#301b40")
-    val DarkText = Color("#f5f0ff")
-    val DarkBorder = Color("#b28aca")
-    val CardBackground = Color("#FFFFFF")
-    val Primary = Color("#E3B09C") // Muted Sakura pink / Peach
-    val Secondary = Color("#9EB89B") // Muted Forest green / Moss green
-    val Text = Color("#3B3B3B") // Slightly softer dark gray
-    val TextSubtle = Color("#8C8684") // Warmer subtle gray
-    val Border = Color("#D4C7B8") // A warmer, subtle border color
-    val Error = Color("#E07D7D") // Muted red for errors
-    val Success = Color("#7DAE7D") // Muted green for success
+    val Background = Color("var(--color-bg-primary)")
+    val DarkBackground = Color("var(--color-bg-primary)")
+    val DarkCardBackground = Color("var(--color-bg-secondary)")
+    val DarkText = Color("var(--color-text-primary)")
+    val DarkBorder = Color("var(--color-border-strong)")
+    val CardBackground = Color("var(--color-bg-secondary)")
+    val Primary = Color("var(--color-accent)")
+    val Secondary = Color("var(--color-accent)")
+    val Text = Color("var(--color-text-primary)")
+    val TextSubtle = Color("var(--color-text-secondary)")
+    val Border = Color("var(--color-border)")
+    val Error = Color("var(--color-danger)")
+    val Success = Color("var(--color-success)")
+    val Inverse = Color("var(--color-text-inverse)")
 }
 
 object Base {
@@ -94,9 +94,9 @@ object Base {
         .padding(0.8.cssRem)
         .borderRadius(8.px)
         .border(2.px, LineStyle.Solid, Colors.Border) // Slightly thicker, more modern border
-        .backgroundColor(Color.white)
+        .backgroundColor(Colors.CardBackground)
         .color(Colors.Text)
-        .outline(0.px) // Remove default outline
+
 
     fun text(size: CSSLengthValue = 1.cssRem, weight: FontWeight = FontWeight.Normal,style: FontStyle = FontStyle.Normal) = Modifier
         .fontSize(size)
@@ -104,15 +104,15 @@ object Base {
         .fontStyle(style)
         .color(Colors.Text)
 
-    fun headingText() = Modifier.fontFamily("'Zen Old Mincho', serif", "Noto Sans Japanese", "sans-serif").fontWeight(FontWeight.Bold)
-    fun bodyText() = Modifier.fontFamily("'Noto Sans Japanese', sans-serif").fontWeight(FontWeight.Normal)
+    fun headingText() = Modifier.fontFamily("var(--font-heading)").fontWeight(FontWeight.Bold)
+    fun bodyText() = Modifier.fontFamily("var(--font-body)").fontWeight(FontWeight.Normal)
 }
 
 object Styles {
     val GameContainer = CssStyle.base {
         Modifier.fillMaxWidth().background(Colors.Background).minHeight(100.vh)
             .display(DisplayStyle.Flex).justifyContent(JustifyContent.Center)
-            .alignItems(AlignItems.FlexStart).fontFamily("Noto Sans Japanese", "sans-serif")
+            .alignItems(AlignItems.FlexStart).fontFamily("var(--font-body)")
             .padding(2.cssRem, 1.cssRem)
     }
 
@@ -129,8 +129,8 @@ object Styles {
     val NoValue = CssStyle.base { Base.text(1.2.cssRem).color(Colors.Text) }
 
     val Value = CssStyle.base { Base.text(1.2.cssRem, FontWeight.Bold) }
-    val Error = CssStyle.base { Base.text(0.9.cssRem, FontWeight.Bold).textAlign(TextAlign.Center).backgroundColor(Colors.Error).color(Color.white).borderRadius(8.px).padding(0.5.cssRem).boxShadow(0.px, 2.px, 8.px, color =  rgba(0, 0, 0, 0.08)) }
-    val ButtonPrimary = CssStyle.base { Base.button().backgroundColor(Colors.Primary).color(Color.white).boxShadow(0.px, 4.px, 15.px, color = rgba(0, 0, 0, 0.2)) }
+    val Error = CssStyle.base { Base.text(0.9.cssRem, FontWeight.Bold).textAlign(TextAlign.Center).backgroundColor(Colors.Error).color(Colors.Inverse).borderRadius(8.px).padding(0.5.cssRem).boxShadow(0.px, 2.px, 8.px, color =  rgba(0, 0, 0, 0.08)) }
+    val ButtonPrimary = CssStyle.base { Base.button().backgroundColor(Colors.Primary).color(Colors.Inverse).boxShadow(0.px, 4.px, 15.px, color = rgba(0, 0, 0, 0.2)) }
     val ButtonSecondary = CssStyle.base { Base.button().backgroundColor(Color.transparent).color(Colors.Text).border(2.px, LineStyle.Solid, Colors.Border)  }
     val ButtonSmall = CssStyle.base { Base.button().padding(0.5.cssRem, 0.8.cssRem).fontSize(0.9.cssRem).minWidth(80.px) }
     val ButtonLink = CssStyle.base { Modifier.backgroundColor(Color.transparent).color(Colors.Primary).textDecorationLine(TextDecorationLine.Underline).fontSize(0.9.cssRem).cursor(Cursor.Pointer) }
@@ -155,8 +155,8 @@ object StyleHelpers {
     }
 
     fun getSelectionStyle(isSelected: Boolean) = if (isSelected) {
-        Modifier.backgroundColor(Colors.Secondary).color(Color.white).border(2.px, LineStyle.Solid, Colors.Secondary).fontWeight(FontWeight.Bold)
+        Modifier.backgroundColor(Colors.Secondary).color(Colors.Inverse).border(2.px, LineStyle.Solid, Colors.Secondary).fontWeight(FontWeight.Bold)
     } else {
-        Modifier.backgroundColor(Color.white).color(Colors.Text).border(1.px, LineStyle.Solid, Colors.Border).fontWeight(FontWeight.Normal)
+        Modifier.backgroundColor(Colors.CardBackground).color(Colors.Text).border(1.px, LineStyle.Solid, Colors.Border).fontWeight(FontWeight.Normal)
     }
 }

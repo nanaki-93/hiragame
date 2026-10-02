@@ -35,7 +35,7 @@ class LessonRouteTests(unittest.TestCase):
             self.assertIn(f'Link(path = "{path}")', page)
         self.assertLess(page.index('Link(path = "/topics")'), page.index('when (val current = state)'))
         self.assertNotIn('Link(path = "/hiragame', page)
-        self.assertNotIn('Link(path = "/review', page)
+        self.assertIn('Link(path = "/review', page)  # F09 adds phrase review navigation.
 
     def test_topics_links_enter_player_without_starting_a_session_during_browsing(self):
         topics = TOPICS.read_text(encoding='utf-8')
@@ -177,7 +177,7 @@ class LessonRouteTests(unittest.TestCase):
         self.assertIn('not mastery or a scheduled review', summary)
         self.assertIn('operation is LessonOperation.Finish && commit is LessonCommit.Accepted', coordinator)
         self.assertNotIn('scheduleReview(', page)
-        self.assertNotIn('Link(path = "/review', page)
+        self.assertIn('Link(path = "/review', page)  # F09 adds phrase review navigation.
 
     def test_entry_recovery_and_safe_exits(self):
         page = PAGE.read_text(encoding='utf-8')

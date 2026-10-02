@@ -1,0 +1,16 @@
+/* Layout only. All selected colors and typography come from canonical tokens.css. */
+html { background: var(--color-bg-primary); color: var(--color-text-primary); }
+body { margin: 0; font-family: var(--font-body); line-height: var(--line-height-base); }
+*, *::before, *::after { box-sizing: border-box; }
+.learning-nav { display: flex; flex-wrap: wrap; gap: var(--space-6); padding: var(--space-4) var(--space-6); border-bottom: 1px solid var(--color-border); font-family: var(--font-ui); }
+.learning-page { max-width: 880px; margin: auto; padding: var(--space-6); overflow-wrap: anywhere; }
+.learning-page section { margin-block: var(--space-6); padding: var(--space-4); background: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+.local-save-status { margin: 0; padding: var(--space-2) var(--space-6); font: var(--font-size-sm)/1.5 var(--font-ui); }
+button, input, select, textarea { font-family: var(--font-ui); max-width: 100%; }
+button { white-space: normal; overflow-wrap: anywhere; margin: var(--space-1); }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: var(--focus-width) var(--focus-style) var(--color-focus); outline-offset: var(--focus-offset); }
+a { color: var(--color-text-link); }
+section, p, [lang="ja"] { min-width: 0; overflow-wrap: anywhere; }
+ruby { ruby-position: over; } rt { font-size: 0.6em; }
+@media (max-width: 560px) { .learning-page { padding: var(--space-3); } .learning-nav { gap: var(--space-3); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
