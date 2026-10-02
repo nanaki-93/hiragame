@@ -10,6 +10,7 @@ import com.github.nanaki_93.content.KanaReadingAnswer
 import com.github.nanaki_93.content.ProductionExercise
 import com.github.nanaki_93.content.ReadingExercise
 import com.github.nanaki_93.content.RomajiReadingAnswer
+import com.github.nanaki_93.text.normalizeNfc
 
 /** Inputs are session-local; only the authored exercise determines what can be graded. */
 sealed interface PracticeAnswer {
@@ -80,7 +81,14 @@ fun authoredFeedback(exercise: Exercise): AuthoredFeedback = when (exercise) {
     )
 }
 
-/** Only surrounding whitespace is trimmed. Never infer spelling, kana, case, or punctuation variants. */
+/** Reading comparison accepts canonical equivalence, never inferred spellings or transliteration. */
+internal enum class AnswerNormalization { KANA_READING, ROMAJI_READING, EXACT_FILL }
+
+internal fun normalizeAnswer(value: String, policy: AnswerNormalization): String = when (policy) {
+    AnswerNormalization.KANA_READING, AnswerNormalization.ROMAJI_READING -> normalizeNfc(value.trim())
+    AnswerNormalization.EXACT_FILL -> value.trim()
+}
+
 fun evaluate(exercise: Exercise, answer: PracticeAnswer): EvaluationResult = when (exercise) {
     is ChoiceExercise -> when (answer) {
         is PracticeAnswer.Choice -> when {
@@ -93,12 +101,20 @@ fun evaluate(exercise: Exercise, answer: PracticeAnswer): EvaluationResult = whe
     is ReadingExercise -> when (answer) {
         is PracticeAnswer.Text -> when {
             answer.value.isBlank() -> EvaluationResult.Invalid(InvalidReason.BLANK_INPUT)
-            else -> EvaluationResult.Objective(exercise.acceptedAnswers.any {
-                when (it) {
-                    is KanaReadingAnswer -> it.text.surface == answer.value.trim()
-                    is RomajiReadingAnswer -> it.text == answer.value.trim()
+            else -> {
+                val policy = when (exercise.answerRepresentation) {
+                    AnswerRepresentation.KANA -> AnswerNormalization.KANA_READING
+                    AnswerRepresentation.ROMAJI -> AnswerNormalization.ROMAJI_READING
                 }
-            }, authoredFeedback(exercise))
+                val submitted = normalizeAnswer(answer.value, policy)
+                EvaluationResult.Objective(exercise.acceptedAnswers.any {
+                    val authored = when (it) {
+                        is KanaReadingAnswer -> it.text.surface
+                        is RomajiReadingAnswer -> it.text
+                    }
+                    normalizeAnswer(authored, policy) == submitted
+                }, authoredFeedback(exercise))
+            }
         }
         else -> EvaluationResult.Invalid(InvalidReason.WRONG_ANSWER_TYPE)
     }
@@ -106,7 +122,10 @@ fun evaluate(exercise: Exercise, answer: PracticeAnswer): EvaluationResult = whe
         is PracticeAnswer.Text -> when {
             answer.value.isBlank() -> EvaluationResult.Invalid(InvalidReason.BLANK_INPUT)
             else -> EvaluationResult.Objective(
-                exercise.acceptedAnswers.any { it.surface == answer.value.trim() }, authoredFeedback(exercise),
+                exercise.acceptedAnswers.any {
+                    normalizeAnswer(it.surface, AnswerNormalization.EXACT_FILL) ==
+                        normalizeAnswer(answer.value, AnswerNormalization.EXACT_FILL)
+                }, authoredFeedback(exercise),
             )
         }
         else -> EvaluationResult.Invalid(InvalidReason.WRONG_ANSWER_TYPE)
