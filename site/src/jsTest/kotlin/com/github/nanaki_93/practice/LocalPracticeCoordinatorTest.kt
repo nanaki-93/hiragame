@@ -19,6 +19,8 @@ import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import com.github.nanaki_93.pages.downloadMessage
 import com.github.nanaki_93.pages.replacementMessage
 import com.github.nanaki_93.pages.confirmRestoreAndApplyMode
+import com.github.nanaki_93.pages.confirmResetAndApplyMode
+import com.github.nanaki_93.pages.resetResultMessage
 import com.github.nanaki_93.pages.restoreErrorMessage
 import com.github.nanaki_93.pages.restoreFailureMessage
 import com.github.nanaki_93.storage.BackupFlowCoordinator
@@ -31,12 +33,15 @@ import com.github.nanaki_93.storage.BackupReadError
 import com.github.nanaki_93.storage.BackupConfirmationError
 import com.github.nanaki_93.progress.BackupCodec
 import com.github.nanaki_93.progress.BackupProblem
+import com.github.nanaki_93.progress.ResetScope
 import com.github.nanaki_93.storage.LocalProgressOwner
 import com.github.nanaki_93.storage.MemoryProgressStore
 import com.github.nanaki_93.storage.ProgressStore
 import com.github.nanaki_93.storage.ProgressDownloads
 import com.github.nanaki_93.storage.DownloadResult
 import com.github.nanaki_93.storage.ProtectedReplacementResult
+import com.github.nanaki_93.storage.ReplacementPreparation
+import com.github.nanaki_93.storage.ReplacementResult
 import com.github.nanaki_93.storage.StoreReadResult
 import com.github.nanaki_93.storage.StoreWriteResult
 import com.github.nanaki_93.storage.StoreSubscription
@@ -523,6 +528,77 @@ class LocalPracticeCoordinatorTest {
         practice.dispose()
     }
 
+    @Test fun homeResetConfirmationCancelFailureAndBothScopesApplyModeOnlyOnSuccess() = runTest {
+        val store = CountingStore()
+        val progress = owner(store)
+        selectColorMode(progress, SavedColorMode.DARK) {}
+        val practice = coordinator(this, BundledContentLoader(seedSource()), progress)
+        practice.load()
+        runCurrent()
+        practice.start("practice-kana-a-i")
+        val session = assertIs<LocalPracticeState.Ready>(practice.state.value).session!!
+        val before = progress.state.value.snapshot
+        val raw = store.delegate.backing.raw
+        val generation = progress.generation
+        var applications = 0
+        var visibleMode = SavedColorMode.DARK
+        val apply = { applications++; visibleMode = progress.state.value.snapshot.preferences.colorMode; Unit }
+        val canceled = assertIs<ReplacementPreparation.Ready>(progress.beginReset(ResetScope.PROGRESS_ONLY)).token
+        assertTrue(progress.cancelReplacement(canceled))
+        assertEquals(ReplacementResult.Stale, confirmResetAndApplyMode(progress, canceled, apply))
+        assertEquals(raw, store.delegate.backing.raw)
+        assertEquals(before, progress.state.value.snapshot)
+        assertEquals(generation, progress.generation)
+        assertSame(session, assertIs<LocalPracticeState.Ready>(practice.state.value).session)
+        assertEquals(0, applications)
+
+        val failed = assertIs<ReplacementPreparation.Ready>(progress.beginReset(ResetScope.PROGRESS_ONLY)).token
+        store.delegate.writeFailure = StoreFailure.QUOTA
+        val failure = confirmResetAndApplyMode(progress, failed, apply)
+        assertEquals(ReplacementResult.Failure(StoreFailure.QUOTA), failure)
+        assertTrue("Current progress and preferences remain active" in resetResultMessage(ResetScope.PROGRESS_ONLY, failure))
+        assertEquals(raw, store.delegate.backing.raw)
+        assertEquals(before, progress.state.value.snapshot)
+        assertEquals(generation, progress.generation)
+        assertSame(session, assertIs<LocalPracticeState.Ready>(practice.state.value).session)
+        assertEquals(SavedColorMode.DARK, visibleMode)
+        assertEquals(0, applications)
+        store.delegate.writeFailure = null
+
+        val progressToken = assertIs<ReplacementPreparation.Ready>(progress.beginReset(ResetScope.PROGRESS_ONLY)).token
+        assertEquals(ReplacementResult.Replaced, confirmResetAndApplyMode(progress, progressToken, apply))
+        assertTrue("Progress reset saved" in resetResultMessage(ResetScope.PROGRESS_ONLY, ReplacementResult.Replaced))
+        assertEquals(1, applications)
+        assertEquals(SavedColorMode.DARK, visibleMode)
+        assertTrue(progress.state.value.snapshot.lessonProgress.isEmpty())
+        assertTrue(progress.state.value.snapshot.practiceProgress.isEmpty())
+        assertTrue(progress.state.value.snapshot.reviewItems.isEmpty())
+        assertNull(assertIs<LocalPracticeState.Ready>(practice.state.value).session)
+        assertEquals(ReplacementResult.Stale, confirmResetAndApplyMode(progress, progressToken, apply))
+        assertEquals(1, applications)
+
+        val fullToken = assertIs<ReplacementPreparation.Ready>(progress.beginReset(ResetScope.FULL_LEARNER_STATE)).token
+        assertEquals(ReplacementResult.Replaced, confirmResetAndApplyMode(progress, fullToken, apply))
+        assertTrue("Full learner reset saved" in resetResultMessage(ResetScope.FULL_LEARNER_STATE, ReplacementResult.Replaced))
+        assertEquals(SavedColorMode.SYSTEM, visibleMode)
+        assertEquals(2, applications)
+        practice.dispose()
+    }
+
+    @Test fun homeProtectedResetEligibilityAndFailedFullResetKeepOriginalAndMode() {
+        val store = MemoryProgressStore(com.github.nanaki_93.storage.MemoryProgressBacking("unreadable save"))
+        val progress = owner(store)
+        assertEquals(ReplacementPreparation.Blocked, progress.beginReset(ResetScope.PROGRESS_ONLY))
+        val token = assertIs<ReplacementPreparation.Ready>(progress.beginReset(ResetScope.FULL_LEARNER_STATE)).token
+        store.writeFailure = StoreFailure.DENIED
+        var applied = 0
+        assertEquals(ReplacementResult.Failure(StoreFailure.DENIED), confirmResetAndApplyMode(progress, token) { applied++ })
+        assertEquals(0, applied)
+        assertEquals("unreadable save", store.backing.raw)
+        assertEquals("unreadable save", progress.originalProtectedRaw)
+        assertIs<PersistenceStatus.Protected>(progress.state.value.status)
+    }
+
     @Test fun restoreMessagesAreFixedAndDoNotContainImportedOrPlatformData() {
         assertTrue("timed out" in restoreErrorMessage(BackupFlowError.Read(BackupReadError.TIMED_OUT)))
         assertTrue("not supported" in restoreErrorMessage(BackupFlowError.Validation(BackupProblem.UNSUPPORTED_FORMAT)))
@@ -616,6 +692,18 @@ class LocalPracticeCoordinatorTest {
         assertTrue("Text(\"File: ${'$'}{details.filename}\")" in restoreUi)
         assertTrue("if (wasConfirming && it is BackupFlowState.Success) apply()" in home)
         assertTrue("replaceProtectedAndApplyMode(progress, token) {\n                        colorModeState.value = initialSilkMode(progress)" in recoveryUi)
+        val resetUi = home.substringAfter("private fun ResetSection(").substringBefore("private fun utcDate(")
+        for (required in listOf("Reset progress…", "Reset all learner data and preferences…",
+            "ResetScope.PROGRESS_ONLY", "ResetScope.FULL_LEARNER_STATE", "progress.beginReset(",
+            "progress.cancelReplacement(it.token)", "Confirm Reset progress", "Confirm Reset all learner data and preferences",
+            "Cancel progress reset", "Cancel full reset", "Export current progress before reset",
+            "saved.status !is PersistenceStatus.Protected", "unreadable", "romaji is hidden",
+            "browser, device, and site origin", "manually transfer", "Offline content is not cleared",
+            "confirmResetAndApplyMode(progress, pending.token, applyMode)")) {
+            assertTrue(required in resetUi, "Home missing safe reset control: $required")
+        }
+        assertTrue("localStorage" !in resetUi && "innerHTML" !in resetUi && "clear()" !in resetUi)
+        assertTrue("if (it == ReplacementResult.Replaced) apply()" in home)
         assertTrue("reloadSavedAndApplyMode(progress) { colorModeState.value = initialSilkMode(progress) }" in recoveryUi)
         assertTrue(home.indexOf("SavePreferencesSection(progress)") > home.indexOf("when (val current = state)"),
             "Recovery controls must be available even on content load failure")
