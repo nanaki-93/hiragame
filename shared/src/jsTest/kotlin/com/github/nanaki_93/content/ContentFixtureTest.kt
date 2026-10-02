@@ -64,10 +64,13 @@ class ContentFixtureTest {
             directory = parent
         }
         val catalog = ContentCodec.decodeCatalog(fs.readFileSync(path.join(root, "catalog.json"), "utf8") as String)
-        assertEquals(2, catalog.topics.size)
         assertTrue(catalog.topics.any { it.id == "kana-foundations" })
         assertTrue(catalog.audioAssets.isEmpty())
-        val entry = catalog.entries.single { it.kind == DocumentKind.PRACTICE }
+        val practiceEntries = catalog.entries.filter { it.kind == DocumentKind.PRACTICE }
+        assertEquals(11, practiceEntries.size) // seed + ten independently selectable basic-sign sets
+        assertTrue(practiceEntries.all { it.topicId == "kana-foundations" })
+        assertEquals(2, catalog.contentVersion)
+        val entry = practiceEntries.single { it.id == "practice-kana-a-i" }
         assertEquals(DocumentKind.PRACTICE, entry.kind)
         assertEquals("practice-kana-a-i", entry.id)
         assertEquals("practice/kana-a-i.json", entry.path)
@@ -94,6 +97,20 @@ class ContentFixtureTest {
         assertEquals(listOf("i"), reading.acceptedAnswers.map { (it as RomajiReadingAnswer).text })
         assertEquals(practice.exercises.map { it.id }.toSet(), practice.reviewItems.map { it.targetId }.toSet())
         assertTrue(practice.reviewItems.all { it.targetKind == ReviewTargetKind.EXERCISE })
+        for (microEntry in practiceEntries.filter { it.id != entry.id }) {
+            val micro = ContentCodec.decodePracticeSet(fs.readFileSync(path.join(root, microEntry.path), "utf8") as String)
+            assertEquals(microEntry.id, micro.id)
+            assertEquals(microEntry.topicId, micro.topicId)
+            assertEquals(catalog.formatVersion, micro.formatVersion)
+            assertEquals(catalog.contentVersion, micro.contentVersion)
+            assertTrue(micro.exercises.size in 1..10)
+            assertEquals(ReviewStatus.REVIEWED, micro.review.status)
+            assertEquals(ReviewerType.AGENT, micro.review.reviewerType)
+            assertEquals(RightsStatus.PUBLISHABLE, micro.review.rights)
+            assertEquals("f05-foundations.md", micro.review.reviewNote)
+            assertEquals(micro.exercises.map { it.id }.toSet(), micro.reviewItems.map { it.targetId }.toSet())
+            assertEquals(micro, ContentCodec.decodePracticeSet(Json.encodeToString(micro)))
+        }
     }
 
     /** Canonical lesson and practice live in the public tree; exercise and graph wire types round-trip. */
@@ -108,7 +125,7 @@ class ContentFixtureTest {
             directory = parent
         }
         val catalog = ContentCodec.decodeCatalog(fs.readFileSync(path.join(root, "catalog.json"), "utf8") as String)
-        assertEquals(2, catalog.entries.size)
+        assertEquals(12, catalog.entries.size)
         val entry = catalog.entries.single { it.kind == DocumentKind.LESSON }
         assertTrue(catalog.topics.any { it.id == entry.topicId })
         val lesson = ContentCodec.decodeLesson(fs.readFileSync(path.join(root, entry.path), "utf8") as String)
@@ -170,7 +187,7 @@ class ContentFixtureTest {
         }
         val catalog = ContentCodec.decodeCatalog(fs.readFileSync(path.join(root, "catalog.json"), "utf8") as String)
         val lessonEntry = catalog.entries.single { it.kind == DocumentKind.LESSON }
-        val practiceEntry = catalog.entries.single { it.kind == DocumentKind.PRACTICE }
+        val practiceEntry = catalog.entries.single { it.id == "practice-kana-a-i" && it.kind == DocumentKind.PRACTICE }
         val lesson = ContentCodec.decodeLesson(fs.readFileSync(path.join(root, lessonEntry.path), "utf8") as String)
         val practice = ContentCodec.decodePracticeSet(fs.readFileSync(path.join(root, practiceEntry.path), "utf8") as String)
         assertEquals(lessonEntry.id, lesson.id)

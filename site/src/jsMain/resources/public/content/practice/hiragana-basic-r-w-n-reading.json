@@ -1,0 +1,261 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-basic-r-w-n-reading",
+  "topicId": "kana-foundations",
+  "title": "Basic hiragana: R and W rows and ん — write in kana",
+  "description": "Use Latin-letter syllable cues to recall and type the matching hiragana signs. Kana answers only; no sign is displayed in the question.",
+  "reviewItems": [
+    {
+      "id": "review-hb-reading-3089",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-3089",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana ら",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-308a",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-308a",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana り",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-308b",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-308b",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana る",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-308c",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-308c",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana れ",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-308d",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-308d",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana ろ",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-308f",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-308f",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana わ",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-3092",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-3092",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana を",
+      "direction": "romaji-cue-to-kana"
+    },
+    {
+      "id": "review-hb-reading-3093",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-reading-3093",
+      "skill": "Recall the kana spelling from a Latin-letter cue for basic hiragana ん",
+      "direction": "romaji-cue-to-kana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored F05 sign exercises and explanations; no CSV or mock curriculum reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; basic kana correspondences are linguistic facts. No third-party text, recordings, or audio used."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-3089",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "ra",
+        "reading": "ra",
+        "translation": "Latin-letter cue for the basic hiragana ra sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ら",
+            "reading": "ら",
+            "gloss": "Hiragana sign for the basic ra reading.",
+            "romaji": "ra"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue ra is ら. Hiragana sign for the basic ra reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-308a",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "ri",
+        "reading": "ri",
+        "translation": "Latin-letter cue for the basic hiragana ri sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "り",
+            "reading": "り",
+            "gloss": "Hiragana sign for the basic ri reading.",
+            "romaji": "ri"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue ri is り. Hiragana sign for the basic ri reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-308b",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "ru",
+        "reading": "ru",
+        "translation": "Latin-letter cue for the basic hiragana ru sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "る",
+            "reading": "る",
+            "gloss": "Hiragana sign for the basic ru reading.",
+            "romaji": "ru"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue ru is る. Hiragana sign for the basic ru reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-308c",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "re",
+        "reading": "re",
+        "translation": "Latin-letter cue for the basic hiragana re sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "れ",
+            "reading": "れ",
+            "gloss": "Hiragana sign for the basic re reading.",
+            "romaji": "re"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue re is れ. Hiragana sign for the basic re reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-308d",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "ro",
+        "reading": "ro",
+        "translation": "Latin-letter cue for the basic hiragana ro sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ろ",
+            "reading": "ろ",
+            "gloss": "Hiragana sign for the basic ro reading.",
+            "romaji": "ro"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue ro is ろ. Hiragana sign for the basic ro reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-308f",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "wa",
+        "reading": "wa",
+        "translation": "Latin-letter cue for the basic hiragana wa sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "わ",
+            "reading": "わ",
+            "gloss": "Hiragana sign for the basic wa reading.",
+            "romaji": "wa"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue wa is わ. Hiragana sign for the basic wa reading. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-3092",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "wo",
+        "reading": "wo",
+        "translation": "Object-particle spelling conventionally cued as wo, often pronounced o; not the basic o sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "を",
+            "reading": "を",
+            "gloss": "Hiragana sign for the object particle を, conventionally romanized wo but often pronounced o.",
+            "romaji": "wo"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue wo is を. Hiragana sign for the object particle を, conventionally romanized wo but often pronounced o. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hb-reading-3093",
+      "prompt": "From the Latin-letter cue below, recall and type its hiragana spelling (not romaji).",
+      "stimulus": {
+        "surface": "n",
+        "reading": "n",
+        "translation": "Latin-letter cue for the basic hiragana n sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ん",
+            "reading": "ん",
+            "gloss": "Hiragana sign for the moraic nasal ん, conventionally written n in romaji.",
+            "romaji": "n"
+          }
+        }
+      ],
+      "explanation": "The hiragana spelling for the cue n is ん. Hiragana sign for the moraic nasal ん, conventionally written n in romaji. Only this authored kana spelling is accepted; this is not a pronunciation-equivalence test."
+    }
+  ]
+}

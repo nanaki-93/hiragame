@@ -1,0 +1,365 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-basic-r-w-n-recognition",
+  "topicId": "kana-foundations",
+  "title": "Basic hiragana: R and W rows and ん — find the sign",
+  "description": "Choose the written sign from three visible kana using a basic sound or specified spelling context. 8 independent targets.",
+  "reviewItems": [
+    {
+      "id": "review-hb-recognition-3089",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3089",
+      "skill": "Recognize basic hiragana ら",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-308a",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-308a",
+      "skill": "Recognize basic hiragana り",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-308b",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-308b",
+      "skill": "Recognize basic hiragana る",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-308c",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-308c",
+      "skill": "Recognize basic hiragana れ",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-308d",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-308d",
+      "skill": "Recognize basic hiragana ろ",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-308f",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-308f",
+      "skill": "Recognize basic hiragana わ",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3092",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3092",
+      "skill": "Recognize basic hiragana を",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3093",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3093",
+      "skill": "Recognize basic hiragana ん",
+      "direction": "sound-or-context-to-sign"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored F05 sign exercises and explanations; no CSV or mock curriculum reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; basic kana correspondences are linguistic facts. No third-party text, recordings, or audio used."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3089",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ra in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3089-for-3089",
+          "text": {
+            "surface": "ら",
+            "reading": "ら",
+            "gloss": "Hiragana sign for the basic ra reading.",
+            "romaji": "ra"
+          }
+        },
+        {
+          "id": "option-hb-308a-for-3089",
+          "text": {
+            "surface": "り",
+            "reading": "り",
+            "gloss": "Hiragana sign for the basic ri reading.",
+            "romaji": "ri"
+          }
+        },
+        {
+          "id": "option-hb-308b-for-3089",
+          "text": {
+            "surface": "る",
+            "reading": "る",
+            "gloss": "Hiragana sign for the basic ru reading.",
+            "romaji": "ru"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3089-for-3089",
+      "explanation": "ら is the hiragana spelling for this target. Hiragana sign for the basic ra reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-308a",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ri in romaji?",
+      "options": [
+        {
+          "id": "option-hb-308b-for-308a",
+          "text": {
+            "surface": "る",
+            "reading": "る",
+            "gloss": "Hiragana sign for the basic ru reading.",
+            "romaji": "ru"
+          }
+        },
+        {
+          "id": "option-hb-308c-for-308a",
+          "text": {
+            "surface": "れ",
+            "reading": "れ",
+            "gloss": "Hiragana sign for the basic re reading.",
+            "romaji": "re"
+          }
+        },
+        {
+          "id": "option-hb-308a-for-308a",
+          "text": {
+            "surface": "り",
+            "reading": "り",
+            "gloss": "Hiragana sign for the basic ri reading.",
+            "romaji": "ri"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-308a-for-308a",
+      "explanation": "り is the hiragana spelling for this target. Hiragana sign for the basic ri reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-308b",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ru in romaji?",
+      "options": [
+        {
+          "id": "option-hb-308d-for-308b",
+          "text": {
+            "surface": "ろ",
+            "reading": "ろ",
+            "gloss": "Hiragana sign for the basic ro reading.",
+            "romaji": "ro"
+          }
+        },
+        {
+          "id": "option-hb-308b-for-308b",
+          "text": {
+            "surface": "る",
+            "reading": "る",
+            "gloss": "Hiragana sign for the basic ru reading.",
+            "romaji": "ru"
+          }
+        },
+        {
+          "id": "option-hb-308c-for-308b",
+          "text": {
+            "surface": "れ",
+            "reading": "れ",
+            "gloss": "Hiragana sign for the basic re reading.",
+            "romaji": "re"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-308b-for-308b",
+      "explanation": "る is the hiragana spelling for this target. Hiragana sign for the basic ru reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-308c",
+      "prompt": "Which hiragana sign has the basic reading conventionally written re in romaji?",
+      "options": [
+        {
+          "id": "option-hb-308c-for-308c",
+          "text": {
+            "surface": "れ",
+            "reading": "れ",
+            "gloss": "Hiragana sign for the basic re reading.",
+            "romaji": "re"
+          }
+        },
+        {
+          "id": "option-hb-308d-for-308c",
+          "text": {
+            "surface": "ろ",
+            "reading": "ろ",
+            "gloss": "Hiragana sign for the basic ro reading.",
+            "romaji": "ro"
+          }
+        },
+        {
+          "id": "option-hb-308f-for-308c",
+          "text": {
+            "surface": "わ",
+            "reading": "わ",
+            "gloss": "Hiragana sign for the basic wa reading.",
+            "romaji": "wa"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-308c-for-308c",
+      "explanation": "れ is the hiragana spelling for this target. Hiragana sign for the basic re reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-308d",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ro in romaji?",
+      "options": [
+        {
+          "id": "option-hb-308f-for-308d",
+          "text": {
+            "surface": "わ",
+            "reading": "わ",
+            "gloss": "Hiragana sign for the basic wa reading.",
+            "romaji": "wa"
+          }
+        },
+        {
+          "id": "option-hb-3092-for-308d",
+          "text": {
+            "surface": "を",
+            "reading": "を",
+            "gloss": "Hiragana sign for the object particle を, conventionally romanized wo but often pronounced o.",
+            "romaji": "wo"
+          }
+        },
+        {
+          "id": "option-hb-308d-for-308d",
+          "text": {
+            "surface": "ろ",
+            "reading": "ろ",
+            "gloss": "Hiragana sign for the basic ro reading.",
+            "romaji": "ro"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-308d-for-308d",
+      "explanation": "ろ is the hiragana spelling for this target. Hiragana sign for the basic ro reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-308f",
+      "prompt": "Which hiragana sign has the basic reading conventionally written wa in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3093-for-308f",
+          "text": {
+            "surface": "ん",
+            "reading": "ん",
+            "gloss": "Hiragana sign for the moraic nasal ん, conventionally written n in romaji.",
+            "romaji": "n"
+          }
+        },
+        {
+          "id": "option-hb-308f-for-308f",
+          "text": {
+            "surface": "わ",
+            "reading": "わ",
+            "gloss": "Hiragana sign for the basic wa reading.",
+            "romaji": "wa"
+          }
+        },
+        {
+          "id": "option-hb-3092-for-308f",
+          "text": {
+            "surface": "を",
+            "reading": "を",
+            "gloss": "Hiragana sign for the object particle を, conventionally romanized wo but often pronounced o.",
+            "romaji": "wo"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-308f-for-308f",
+      "explanation": "わ is the hiragana spelling for this target. Hiragana sign for the basic wa reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3092",
+      "prompt": "Choose the hiragana spelling of the object particle (often pronounced /o/), not the independent o sign.",
+      "options": [
+        {
+          "id": "option-hb-3092-for-3092",
+          "text": {
+            "surface": "を",
+            "reading": "を",
+            "gloss": "Hiragana sign for the object particle を, conventionally romanized wo but often pronounced o.",
+            "romaji": "wo"
+          }
+        },
+        {
+          "id": "option-hb-304a-for-3092",
+          "text": {
+            "surface": "お",
+            "reading": "お",
+            "gloss": "Hiragana sign for the basic o reading.",
+            "romaji": "o"
+          }
+        },
+        {
+          "id": "option-hb-3089-for-3092",
+          "text": {
+            "surface": "ら",
+            "reading": "ら",
+            "gloss": "Hiragana sign for the basic ra reading.",
+            "romaji": "ra"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3092-for-3092",
+      "explanation": "を is the hiragana spelling for this target. Hiragana sign for the object particle を, conventionally romanized wo but often pronounced o. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3093",
+      "prompt": "Which hiragana sign is the moraic nasal conventionally written n in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3089-for-3093",
+          "text": {
+            "surface": "ら",
+            "reading": "ら",
+            "gloss": "Hiragana sign for the basic ra reading.",
+            "romaji": "ra"
+          }
+        },
+        {
+          "id": "option-hb-308a-for-3093",
+          "text": {
+            "surface": "り",
+            "reading": "り",
+            "gloss": "Hiragana sign for the basic ri reading.",
+            "romaji": "ri"
+          }
+        },
+        {
+          "id": "option-hb-3093-for-3093",
+          "text": {
+            "surface": "ん",
+            "reading": "ん",
+            "gloss": "Hiragana sign for the moraic nasal ん, conventionally written n in romaji.",
+            "romaji": "n"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3093-for-3093",
+      "explanation": "ん is the hiragana spelling for this target. Hiragana sign for the moraic nasal ん, conventionally written n in romaji. Other spellings are not interchangeable just because a sound can overlap in context."
+    }
+  ]
+}

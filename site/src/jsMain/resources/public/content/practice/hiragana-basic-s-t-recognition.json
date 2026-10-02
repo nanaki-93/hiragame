@@ -1,0 +1,451 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-basic-s-t-recognition",
+  "topicId": "kana-foundations",
+  "title": "Basic hiragana: S and T rows — find the sign",
+  "description": "Choose the written sign from three visible kana using a basic sound or specified spelling context. 10 independent targets.",
+  "reviewItems": [
+    {
+      "id": "review-hb-recognition-3055",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3055",
+      "skill": "Recognize basic hiragana さ",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3057",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3057",
+      "skill": "Recognize basic hiragana し",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3059",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3059",
+      "skill": "Recognize basic hiragana す",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-305b",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-305b",
+      "skill": "Recognize basic hiragana せ",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-305d",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-305d",
+      "skill": "Recognize basic hiragana そ",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-305f",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-305f",
+      "skill": "Recognize basic hiragana た",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3061",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3061",
+      "skill": "Recognize basic hiragana ち",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3064",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3064",
+      "skill": "Recognize basic hiragana つ",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3066",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3066",
+      "skill": "Recognize basic hiragana て",
+      "direction": "sound-or-context-to-sign"
+    },
+    {
+      "id": "review-hb-recognition-3068",
+      "targetKind": "exercise",
+      "targetId": "exercise-hb-recognition-3068",
+      "skill": "Recognize basic hiragana と",
+      "direction": "sound-or-context-to-sign"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored F05 sign exercises and explanations; no CSV or mock curriculum reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; basic kana correspondences are linguistic facts. No third-party text, recordings, or audio used."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3055",
+      "prompt": "Which hiragana sign has the basic reading conventionally written sa in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3055-for-3055",
+          "text": {
+            "surface": "さ",
+            "reading": "さ",
+            "gloss": "Hiragana sign for the basic sa reading.",
+            "romaji": "sa"
+          }
+        },
+        {
+          "id": "option-hb-3057-for-3055",
+          "text": {
+            "surface": "し",
+            "reading": "し",
+            "gloss": "Hiragana sign for the basic shi reading.",
+            "romaji": "shi"
+          }
+        },
+        {
+          "id": "option-hb-3059-for-3055",
+          "text": {
+            "surface": "す",
+            "reading": "す",
+            "gloss": "Hiragana sign for the basic su reading.",
+            "romaji": "su"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3055-for-3055",
+      "explanation": "さ is the hiragana spelling for this target. Hiragana sign for the basic sa reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3057",
+      "prompt": "Which hiragana sign has the basic reading conventionally written shi in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3059-for-3057",
+          "text": {
+            "surface": "す",
+            "reading": "す",
+            "gloss": "Hiragana sign for the basic su reading.",
+            "romaji": "su"
+          }
+        },
+        {
+          "id": "option-hb-305b-for-3057",
+          "text": {
+            "surface": "せ",
+            "reading": "せ",
+            "gloss": "Hiragana sign for the basic se reading.",
+            "romaji": "se"
+          }
+        },
+        {
+          "id": "option-hb-3057-for-3057",
+          "text": {
+            "surface": "し",
+            "reading": "し",
+            "gloss": "Hiragana sign for the basic shi reading.",
+            "romaji": "shi"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3057-for-3057",
+      "explanation": "し is the hiragana spelling for this target. Hiragana sign for the basic shi reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3059",
+      "prompt": "Which hiragana sign has the basic reading conventionally written su in romaji?",
+      "options": [
+        {
+          "id": "option-hb-305d-for-3059",
+          "text": {
+            "surface": "そ",
+            "reading": "そ",
+            "gloss": "Hiragana sign for the basic so reading.",
+            "romaji": "so"
+          }
+        },
+        {
+          "id": "option-hb-3059-for-3059",
+          "text": {
+            "surface": "す",
+            "reading": "す",
+            "gloss": "Hiragana sign for the basic su reading.",
+            "romaji": "su"
+          }
+        },
+        {
+          "id": "option-hb-305b-for-3059",
+          "text": {
+            "surface": "せ",
+            "reading": "せ",
+            "gloss": "Hiragana sign for the basic se reading.",
+            "romaji": "se"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3059-for-3059",
+      "explanation": "す is the hiragana spelling for this target. Hiragana sign for the basic su reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-305b",
+      "prompt": "Which hiragana sign has the basic reading conventionally written se in romaji?",
+      "options": [
+        {
+          "id": "option-hb-305b-for-305b",
+          "text": {
+            "surface": "せ",
+            "reading": "せ",
+            "gloss": "Hiragana sign for the basic se reading.",
+            "romaji": "se"
+          }
+        },
+        {
+          "id": "option-hb-305d-for-305b",
+          "text": {
+            "surface": "そ",
+            "reading": "そ",
+            "gloss": "Hiragana sign for the basic so reading.",
+            "romaji": "so"
+          }
+        },
+        {
+          "id": "option-hb-305f-for-305b",
+          "text": {
+            "surface": "た",
+            "reading": "た",
+            "gloss": "Hiragana sign for the basic ta reading.",
+            "romaji": "ta"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-305b-for-305b",
+      "explanation": "せ is the hiragana spelling for this target. Hiragana sign for the basic se reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-305d",
+      "prompt": "Which hiragana sign has the basic reading conventionally written so in romaji?",
+      "options": [
+        {
+          "id": "option-hb-305f-for-305d",
+          "text": {
+            "surface": "た",
+            "reading": "た",
+            "gloss": "Hiragana sign for the basic ta reading.",
+            "romaji": "ta"
+          }
+        },
+        {
+          "id": "option-hb-3061-for-305d",
+          "text": {
+            "surface": "ち",
+            "reading": "ち",
+            "gloss": "Hiragana sign for the basic chi reading.",
+            "romaji": "chi"
+          }
+        },
+        {
+          "id": "option-hb-305d-for-305d",
+          "text": {
+            "surface": "そ",
+            "reading": "そ",
+            "gloss": "Hiragana sign for the basic so reading.",
+            "romaji": "so"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-305d-for-305d",
+      "explanation": "そ is the hiragana spelling for this target. Hiragana sign for the basic so reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-305f",
+      "prompt": "Which hiragana sign has the basic reading conventionally written ta in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3064-for-305f",
+          "text": {
+            "surface": "つ",
+            "reading": "つ",
+            "gloss": "Hiragana sign for the basic tsu reading.",
+            "romaji": "tsu"
+          }
+        },
+        {
+          "id": "option-hb-305f-for-305f",
+          "text": {
+            "surface": "た",
+            "reading": "た",
+            "gloss": "Hiragana sign for the basic ta reading.",
+            "romaji": "ta"
+          }
+        },
+        {
+          "id": "option-hb-3061-for-305f",
+          "text": {
+            "surface": "ち",
+            "reading": "ち",
+            "gloss": "Hiragana sign for the basic chi reading.",
+            "romaji": "chi"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-305f-for-305f",
+      "explanation": "た is the hiragana spelling for this target. Hiragana sign for the basic ta reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3061",
+      "prompt": "Which hiragana sign has the basic reading conventionally written chi in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3061-for-3061",
+          "text": {
+            "surface": "ち",
+            "reading": "ち",
+            "gloss": "Hiragana sign for the basic chi reading.",
+            "romaji": "chi"
+          }
+        },
+        {
+          "id": "option-hb-3064-for-3061",
+          "text": {
+            "surface": "つ",
+            "reading": "つ",
+            "gloss": "Hiragana sign for the basic tsu reading.",
+            "romaji": "tsu"
+          }
+        },
+        {
+          "id": "option-hb-3066-for-3061",
+          "text": {
+            "surface": "て",
+            "reading": "て",
+            "gloss": "Hiragana sign for the basic te reading.",
+            "romaji": "te"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3061-for-3061",
+      "explanation": "ち is the hiragana spelling for this target. Hiragana sign for the basic chi reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3064",
+      "prompt": "Which hiragana sign has the basic reading conventionally written tsu in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3066-for-3064",
+          "text": {
+            "surface": "て",
+            "reading": "て",
+            "gloss": "Hiragana sign for the basic te reading.",
+            "romaji": "te"
+          }
+        },
+        {
+          "id": "option-hb-3068-for-3064",
+          "text": {
+            "surface": "と",
+            "reading": "と",
+            "gloss": "Hiragana sign for the basic to reading.",
+            "romaji": "to"
+          }
+        },
+        {
+          "id": "option-hb-3064-for-3064",
+          "text": {
+            "surface": "つ",
+            "reading": "つ",
+            "gloss": "Hiragana sign for the basic tsu reading.",
+            "romaji": "tsu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3064-for-3064",
+      "explanation": "つ is the hiragana spelling for this target. Hiragana sign for the basic tsu reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3066",
+      "prompt": "Which hiragana sign has the basic reading conventionally written te in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3055-for-3066",
+          "text": {
+            "surface": "さ",
+            "reading": "さ",
+            "gloss": "Hiragana sign for the basic sa reading.",
+            "romaji": "sa"
+          }
+        },
+        {
+          "id": "option-hb-3066-for-3066",
+          "text": {
+            "surface": "て",
+            "reading": "て",
+            "gloss": "Hiragana sign for the basic te reading.",
+            "romaji": "te"
+          }
+        },
+        {
+          "id": "option-hb-3068-for-3066",
+          "text": {
+            "surface": "と",
+            "reading": "と",
+            "gloss": "Hiragana sign for the basic to reading.",
+            "romaji": "to"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3066-for-3066",
+      "explanation": "て is the hiragana spelling for this target. Hiragana sign for the basic te reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hb-recognition-3068",
+      "prompt": "Which hiragana sign has the basic reading conventionally written to in romaji?",
+      "options": [
+        {
+          "id": "option-hb-3068-for-3068",
+          "text": {
+            "surface": "と",
+            "reading": "と",
+            "gloss": "Hiragana sign for the basic to reading.",
+            "romaji": "to"
+          }
+        },
+        {
+          "id": "option-hb-3055-for-3068",
+          "text": {
+            "surface": "さ",
+            "reading": "さ",
+            "gloss": "Hiragana sign for the basic sa reading.",
+            "romaji": "sa"
+          }
+        },
+        {
+          "id": "option-hb-3057-for-3068",
+          "text": {
+            "surface": "し",
+            "reading": "し",
+            "gloss": "Hiragana sign for the basic shi reading.",
+            "romaji": "shi"
+          }
+        }
+      ],
+      "correctOptionId": "option-hb-3068-for-3068",
+      "explanation": "と is the hiragana spelling for this target. Hiragana sign for the basic to reading. Other spellings are not interchangeable just because a sound can overlap in context."
+    }
+  ]
+}
