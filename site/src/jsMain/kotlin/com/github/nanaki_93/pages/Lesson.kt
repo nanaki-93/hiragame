@@ -27,6 +27,7 @@ import com.github.nanaki_93.content.BundledContentLoader
 import com.github.nanaki_93.lesson.LessonCheckpointMismatch
 import com.github.nanaki_93.lesson.LessonCheckpointResolution
 import com.github.nanaki_93.lesson.LessonCommand
+import com.github.nanaki_93.lesson.LessonCommit
 import com.github.nanaki_93.lesson.EmptyLessonStage
 import com.github.nanaki_93.lesson.LessonEmptyReason
 import com.github.nanaki_93.lesson.LessonPlanItem
@@ -44,6 +45,7 @@ import com.github.nanaki_93.content.AnswerRepresentation
 import com.github.nanaki_93.practice.Assessment
 import com.github.nanaki_93.practice.InvalidReason
 import com.github.nanaki_93.practice.PracticeAnswer
+import com.github.nanaki_93.storage.LocalProgressState
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
 import com.varabyte.kobweb.compose.ui.Modifier
@@ -173,7 +175,7 @@ private fun LessonEntry(lessonId: String) {
                 PrimaryButton("Continue from Situation", onClick = coordinator::recoverToSituation)
             }
         }
-        is LocalLessonState.Active -> LessonPlayer(current, saved.snapshot.preferences, coordinator)
+        is LocalLessonState.Active -> LessonPlayer(current, saved, coordinator)
     }
 }
 
@@ -181,9 +183,10 @@ private fun LessonEntry(lessonId: String) {
 @Composable
 private fun LessonPlayer(
     active: LocalLessonState.Active,
-    preferences: SavePreferences,
+    saved: LocalProgressState,
     coordinator: LocalLessonCoordinator,
 ) {
+    val preferences = saved.snapshot.preferences
     val lesson = active.lesson
     val session = active.session
     val stage = session.plan.stage(session.stage)
@@ -248,11 +251,7 @@ private fun LessonPlayer(
                     }
                 } else P { Text("Select Next to begin the role-play prompts.") }
             }
-            LessonStage.SUMMARY -> {
-                H3 { Text("Summary") }
-                P { Text("Communication goal: ${lesson.communicationGoal}") }
-                P { Text("Arriving here does not finish the lesson. Finish and session summary controls follow in the next player step.") }
-            }
+            LessonStage.SUMMARY -> LessonSummary(active, saved, coordinator)
         }
         LessonActionError(active.operationError, coordinator, canLeave = true)
         if (active.operationError == null) {
@@ -289,6 +288,54 @@ private fun LessonPlayer(
                 coordinator.dispatch(LessonCommand.Leave(session.id, session.revision))
             })
         }
+    }
+}
+
+/** All counts are bounded by the plan's one outcome per item, and never reconstructed from a save. */
+@Composable
+private fun LessonSummary(
+    active: LocalLessonState.Active,
+    saved: LocalProgressState,
+    coordinator: LocalLessonCoordinator,
+) {
+    val session = active.session
+    val outcomes = session.outcomes
+    H3 { Text("Summary") }
+    P { Text("Communication goal: ${active.lesson.communicationGoal}") }
+    if (active.lesson.phrases.isNotEmpty()) {
+        H3 { Text("Useful authored phrases") }
+        active.lesson.phrases.forEach { phrase ->
+            PreviewJapaneseText(phrase.text, saved.snapshot.preferences)
+            P { Text("Use: ${phrase.usage} · Register: ${phrase.register}") }
+        }
+    }
+    H3 { Text("Current-session outcomes only") }
+    P { Text("Attempted: ${outcomes.count { it == LessonOutcome.CORRECT || it == LessonOutcome.INCORRECT }} · " +
+        "Skipped: ${outcomes.count { it == LessonOutcome.SKIPPED }} · " +
+        "Revealed: ${outcomes.count { it == LessonOutcome.REVEALED }} · " +
+        "Self-assessed: ${outcomes.count { it == LessonOutcome.SELF_MET_CRITERIA || it == LessonOutcome.SELF_NEEDS_PRACTICE }}") }
+    if (session.resumed) P { Text("You resumed a saved place. Earlier responses and feedback are unknown and are not included in these counts.") }
+    P { Text("A skip or reveal is not a correct attempt. Self-assessment is your judgment, not an automatic grade.") }
+    P(attrs = { attr("role", "status") }) {
+        Text(if (active.finished) "Finished this lesson sequence. This is not mastery or a scheduled review."
+            else "Not finished in this session. Arriving at Summary does not record completion; choose Finish lesson.")
+    }
+    P { Text("Local save status: ${saveStatusMessage(saved)}") }
+    if (active.commit is LessonCommit.Rejected) {
+        P(attrs = { attr("role", "alert") }) {
+            Text(if (!active.finished) "The latest lesson update was rejected. This session remains usable, but that update was not saved and Finish was not accepted. Retry Finish when ready."
+                else "The latest lesson update was rejected; earlier accepted Finish is unchanged. This update was not saved.")
+        }
+    }
+    if (active.operationError == null) {
+        if (!active.finished) PrimaryButton("Finish lesson", onClick = {
+            coordinator.finish(session.id, session.revision)
+        })
+        Link(path = "/topics") { Text("Back to Topics") }
+        P { Text("Revisit starts again at Situation. Earlier completion, other lessons and reviews are retained; current-session outcomes are cleared.") }
+        SecondaryButton("Revisit lesson", onClick = {
+            coordinator.dispatch(LessonCommand.Restart(session.id, session.revision, session.id))
+        })
     }
 }
 

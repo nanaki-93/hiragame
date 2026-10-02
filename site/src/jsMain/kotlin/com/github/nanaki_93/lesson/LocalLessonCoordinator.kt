@@ -309,8 +309,9 @@ class LocalLessonCoordinator(
             pending = null
             mutableState.value = if (next.left) content?.let(::projectEntry) ?: LocalLessonState.Loading
                 else LocalLessonState.Active(lesson, next, commit = commit,
-                    finished = (current as? LocalLessonState.Active)?.finished == true ||
-                        (operation is LessonOperation.Finish && commit is LessonCommit.Accepted))
+                    finished = (operation !is LessonOperation.Dispatch || operation.command !is LessonCommand.Restart) &&
+                        ((current as? LocalLessonState.Active)?.finished == true ||
+                            (operation is LessonOperation.Finish && commit is LessonCommit.Accepted)))
         } catch (e: CancellationException) {
             throw e
         } catch (_: Exception) {

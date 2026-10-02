@@ -46,7 +46,7 @@ class LessonRouteTests(unittest.TestCase):
 
     def test_stage_player_renders_one_cursor_and_guarded_navigation(self):
         page = PAGE.read_text(encoding='utf-8')
-        self.assertIn('LocalLessonState.Active -> LessonPlayer(current, saved.snapshot.preferences, coordinator)', page)
+        self.assertIn('LocalLessonState.Active -> LessonPlayer(current, saved, coordinator)', page)
         self.assertIn('session.plan.stage(session.stage)', page)
         self.assertIn('Stage $stageNumber of ${session.plan.stages.size}', page)
         self.assertIn('Item ${session.itemIndex!! + 1} of ${stage.items.size}', page)
@@ -114,6 +114,33 @@ class LessonRouteTests(unittest.TestCase):
         for forbidden in ('window.location.href', 'console.log', 'localStorage', 'innerHTML',
                           'visitLesson(', 'progress.mutate('):
             self.assertNotIn(forbidden, page)
+
+    def test_summary_counts_and_completion_are_explicit_and_truthful(self):
+        page = PAGE.read_text(encoding='utf-8')
+        coordinator = COORDINATOR.read_text(encoding='utf-8')
+        self.assertIn('LessonStage.SUMMARY -> LessonSummary(active, saved, coordinator)', page)
+        summary = page.split('private fun LessonSummary(')[1].split('/** Prompt-local state')[0]
+        self.assertIn('active.lesson.communicationGoal', summary)
+        self.assertIn('active.lesson.phrases.forEach', summary)
+        self.assertIn('PreviewJapaneseText(phrase.text, saved.snapshot.preferences)', summary)
+        for outcome in ('CORRECT', 'INCORRECT', 'SKIPPED', 'REVEALED',
+                        'SELF_MET_CRITERIA', 'SELF_NEEDS_PRACTICE'):
+            self.assertIn('LessonOutcome.' + outcome, summary)
+        self.assertIn('session.outcomes', summary)
+        self.assertIn('if (session.resumed)', summary)
+        self.assertIn('Earlier responses and feedback are unknown', summary)
+        self.assertIn('if (active.finished)', summary)
+        self.assertIn('if (!active.finished) PrimaryButton("Finish lesson"', summary)
+        self.assertIn('coordinator.finish(session.id, session.revision)', summary)
+        self.assertIn('LessonCommit.Rejected', summary)
+        self.assertIn('Finish was not accepted', summary)
+        self.assertIn('saveStatusMessage(saved)', summary)
+        self.assertIn('Link(path = "/topics")', summary)
+        self.assertIn('LessonCommand.Restart(session.id, session.revision, session.id)', summary)
+        self.assertIn('not mastery or a scheduled review', summary)
+        self.assertIn('operation is LessonOperation.Finish && commit is LessonCommit.Accepted', coordinator)
+        self.assertNotIn('scheduleReview(', page)
+        self.assertNotIn('Link(path = "/review', page)
 
     def test_entry_recovery_and_safe_exits(self):
         page = PAGE.read_text(encoding='utf-8')
