@@ -3,8 +3,15 @@ package com.github.nanaki_93.lesson
 import com.github.nanaki_93.content.Lesson
 import com.github.nanaki_93.progress.LessonProgress
 import com.github.nanaki_93.progress.LessonStage
+import com.github.nanaki_93.practice.Assessment
 import com.github.nanaki_93.practice.AuthoredFeedback
+import com.github.nanaki_93.practice.EvaluationResult
+import com.github.nanaki_93.practice.InvalidReason
+import com.github.nanaki_93.practice.LabeledCriterion
+import com.github.nanaki_93.practice.LabeledExample
+import com.github.nanaki_93.practice.PracticeAnswer
 import com.github.nanaki_93.practice.authoredFeedback
+import com.github.nanaki_93.practice.evaluate
 
 /** Only one outcome per executable item; no attempt history or responses are saved here. */
 enum class LessonOutcome { SKIPPED, REVEALED, CORRECT, INCORRECT, SELF_MET_CRITERIA, SELF_NEEDS_PRACTICE }
@@ -19,6 +26,8 @@ sealed interface LessonCommand {
     data class Next(override val sessionId: Long, override val revision: Long) : LessonCommand
     data class Previous(override val sessionId: Long, override val revision: Long) : LessonCommand
     data class Continue(override val sessionId: Long, override val revision: Long) : LessonCommand
+    data class Submit(override val sessionId: Long, override val revision: Long, val answer: PracticeAnswer) : LessonCommand
+    data class Reveal(override val sessionId: Long, override val revision: Long) : LessonCommand
     data class Skip(override val sessionId: Long, override val revision: Long) : LessonCommand
     /** Deliberately bypass unresolved prompts in this stage, never crediting them as attempted. */
     data class SkipRemaining(override val sessionId: Long, override val revision: Long) : LessonCommand
@@ -43,6 +52,9 @@ class LessonSession private constructor(
     private val stageIndex: Int,
     val itemIndex: Int?,
     private val slots: List<List<LessonOutcome?>>,
+    /** One optional reflection when the role-play has no production exercise. */
+    private val objectiveOutcome: LessonOutcome?,
+    val validation: InvalidReason?,
     val resumed: Boolean,
     val notice: String?,
     val left: Boolean,
@@ -50,18 +62,34 @@ class LessonSession private constructor(
     val stage: LessonStage get() = plan.stages[stageIndex].stage
     val item: LessonPlanItem? get() = itemIndex?.let { plan.stages[stageIndex].items[it] }
     val checkpointId: String? get() = item?.checkpointId
-    val itemView: LessonItemView? get() = if (item is LessonPlanItem.Prompt) {
+    private val objectiveOnly: Boolean get() = stage == LessonStage.ROLE_PLAY &&
+        itemIndex == null && plan.stages[stageIndex].empty == EmptyLessonStage.ROLE_PLAY_OBJECTIVE_ONLY
+    val itemView: LessonItemView? get() = if (item is LessonPlanItem.Prompt || objectiveOnly) {
         if (outcome != null) LessonItemView.FEEDBACK else LessonItemView.PROMPT
     } else null
-    val outcome: LessonOutcome? get() = itemIndex?.let { slots[stageIndex][it] }
+    val outcome: LessonOutcome? get() = if (objectiveOnly) objectiveOutcome else itemIndex?.let { slots[stageIndex][it] }
     /** Authored explanation remains available on revisits, never on an unresolved prompt. */
-    val feedback: AuthoredFeedback? get() = (item as? LessonPlanItem.Prompt)?.exercise
-        ?.takeIf { outcome != null }?.let(::authoredFeedback)
+    val feedback: AuthoredFeedback? get() = if (outcome == null) null else when {
+        objectiveOnly -> AuthoredFeedback.Production(
+            plan.lesson.rolePlay.examples.map { LabeledExample("Possible response", it) },
+            plan.lesson.rolePlay.criteria.map { LabeledCriterion("Self-assessment criterion", it) },
+        )
+        else -> (item as? LessonPlanItem.Prompt)?.exercise?.let(::authoredFeedback)
+    }
     /** Counts cover only this run; a resumed run cannot reconstruct earlier answers. */
-    val outcomes: List<LessonOutcome> get() = slots.flatMap { it.filterNotNull() }
+    val outcomes: List<LessonOutcome> get() = slots.flatMap { it.filterNotNull() } + listOfNotNull(objectiveOutcome)
 
-    private fun move(stage: Int, index: Int?, slots: List<List<LessonOutcome?>> = this.slots): LessonSession =
-        LessonSession(id, revision + 1, plan, stage, index, slots, resumed, notice, false)
+    private fun move(stage: Int, index: Int?, slots: List<List<LessonOutcome?>> = this.slots,
+                     objectiveOutcome: LessonOutcome? = this.objectiveOutcome): LessonSession =
+        LessonSession(id, revision + 1, plan, stage, index, slots, objectiveOutcome, null, resumed, notice, false)
+
+    private fun invalid(reason: InvalidReason): LessonSession =
+        LessonSession(id, revision + 1, plan, stageIndex, itemIndex, slots, objectiveOutcome,
+            reason, resumed, notice, false)
+
+    private fun resolve(outcome: LessonOutcome): LessonSession = if (objectiveOnly) {
+        move(stageIndex, itemIndex, objectiveOutcome = outcome)
+    } else move(stageIndex, itemIndex, setOutcome(itemIndex!!, outcome))
 
     private fun setOutcome(index: Int, outcome: LessonOutcome?): List<List<LessonOutcome?>> =
         slots.toMutableList().also { stages ->
@@ -71,12 +99,13 @@ class LessonSession private constructor(
     internal fun transition(command: LessonCommand): LessonSession {
         if (left || command.sessionId != id || command.revision != revision) return this
         if (command is LessonCommand.Leave) return LessonSession(
-            id, revision + 1, plan, stageIndex, itemIndex, slots, resumed, notice, true,
+            id, revision + 1, plan, stageIndex, itemIndex, slots, objectiveOutcome, null, resumed, notice, true,
         )
         if (command is LessonCommand.Restart) return if (command.newSessionId > id) {
             create(command.newSessionId, plan)
         } else this
         val stageItems = plan.stages[stageIndex].items
+        val currentItem = item
         return when (command) {
             is LessonCommand.Previous -> when {
                 itemIndex != null -> move(stageIndex, if (itemIndex == 0) null else itemIndex - 1)
@@ -88,15 +117,40 @@ class LessonSession private constructor(
             }
             is LessonCommand.Next -> when {
                 itemIndex == null && stageItems.isNotEmpty() -> move(stageIndex, 0)
+                itemIndex == null && objectiveOnly -> this // Resolve, then explicitly Continue.
                 itemIndex == null && stageIndex < plan.stages.lastIndex -> move(stageIndex + 1, null)
                 itemIndex != null && item is LessonPlanItem.Turn -> advance()
                 else -> this // An exercise requires resolution and an explicit Continue.
             }
-            is LessonCommand.Continue -> if (item is LessonPlanItem.Prompt && outcome != null) advance() else this
-            is LessonCommand.Skip -> if (item is LessonPlanItem.Prompt && outcome == null) {
-                move(stageIndex, itemIndex, setOutcome(itemIndex!!, LessonOutcome.SKIPPED))
+            is LessonCommand.Submit -> if (currentItem is LessonPlanItem.Prompt && outcome == null) {
+                when (val result = evaluate(currentItem.exercise, command.answer)) {
+                    is EvaluationResult.Invalid -> invalid(result.reason)
+                    is EvaluationResult.Objective -> resolve(if (result.correct) LessonOutcome.CORRECT else LessonOutcome.INCORRECT)
+                    is EvaluationResult.SelfAssessed -> resolve(when (result.assessment) {
+                        Assessment.MET_CRITERIA -> LessonOutcome.SELF_MET_CRITERIA
+                        Assessment.NEEDS_PRACTICE -> LessonOutcome.SELF_NEEDS_PRACTICE
+                    })
+                }
+            } else if (objectiveOnly && outcome == null) {
+                // No exercise to grade: reflect on the authored objective without comparing to examples.
+                when (val answer = command.answer) {
+                    is PracticeAnswer.SelfAssessment -> if (answer.response.isBlank()) invalid(InvalidReason.BLANK_INPUT)
+                        else resolve(when (answer.assessment) {
+                            Assessment.MET_CRITERIA -> LessonOutcome.SELF_MET_CRITERIA
+                            Assessment.NEEDS_PRACTICE -> LessonOutcome.SELF_NEEDS_PRACTICE
+                        })
+                    else -> invalid(InvalidReason.WRONG_ANSWER_TYPE)
+                }
             } else this
+            is LessonCommand.Continue -> if (item is LessonPlanItem.Prompt && outcome != null) advance()
+                else if (objectiveOnly && outcome != null) move(stageIndex + 1, null) else this
+            is LessonCommand.Skip -> if ((item is LessonPlanItem.Prompt || objectiveOnly) && outcome == null)
+                resolve(LessonOutcome.SKIPPED) else this
+            is LessonCommand.Reveal -> if ((item is LessonPlanItem.Prompt || objectiveOnly) && outcome == null)
+                resolve(LessonOutcome.REVEALED) else this
             is LessonCommand.SkipRemaining -> {
+                if (objectiveOnly && outcome == null) return move(stageIndex + 1, null,
+                    objectiveOutcome = LessonOutcome.SKIPPED)
                 if (stageIndex == plan.stages.lastIndex || stageItems.isEmpty() ||
                     stageItems.indices.none { index -> index >= (itemIndex ?: 0) &&
                         stageItems[index] is LessonPlanItem.Prompt && slots[stageIndex][index] == null }) return this
@@ -109,7 +163,9 @@ class LessonSession private constructor(
                 val updated = slots.toMutableList().also { it[stageIndex] = remaining }
                 move(stageIndex + 1, null, updated)
             }
-            is LessonCommand.Retry -> if (item is LessonPlanItem.Prompt && outcome != null) {
+            is LessonCommand.Retry -> if (objectiveOnly && outcome != null) {
+                move(stageIndex, itemIndex, objectiveOutcome = null)
+            } else if (item is LessonPlanItem.Prompt && outcome != null) {
                 move(stageIndex, itemIndex, setOutcome(itemIndex!!, null))
             } else this
             else -> this
@@ -133,8 +189,9 @@ class LessonSession private constructor(
                 require(it >= 0) { "Invalid lesson checkpoint" }
             } }
             return LessonSession(id, 0, plan, stageIndex, itemIndex,
-                plan.stages.map { List(it.items.size) { null } }, resumed,
-                if (resumed && items.getOrNull(itemIndex ?: -1) is LessonPlanItem.Prompt) LESSON_RESUME_NOTICE else null,
+                plan.stages.map { List(it.items.size) { null } }, null, null, resumed,
+                if (resumed && (items.getOrNull(itemIndex ?: -1) is LessonPlanItem.Prompt ||
+                    (stage == LessonStage.ROLE_PLAY && items.isEmpty()))) LESSON_RESUME_NOTICE else null,
                 false)
         }
     }

@@ -22,7 +22,10 @@ import com.github.nanaki_93.content.Speaker
 import com.github.nanaki_93.content.TerminalNode
 import com.github.nanaki_93.progress.LessonProgress
 import com.github.nanaki_93.progress.LessonStage
+import com.github.nanaki_93.practice.Assessment
 import com.github.nanaki_93.practice.AuthoredFeedback
+import com.github.nanaki_93.practice.InvalidReason
+import com.github.nanaki_93.practice.PracticeAnswer
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -124,6 +127,8 @@ class LessonSessionTest {
     private fun LessonSession.previous() = reduceLesson(this, LessonCommand.Previous(id, revision))
     private fun LessonSession.continueLesson() = reduceLesson(this, LessonCommand.Continue(id, revision))
     private fun LessonSession.skip() = reduceLesson(this, LessonCommand.Skip(id, revision))
+    private fun LessonSession.reveal() = reduceLesson(this, LessonCommand.Reveal(id, revision))
+    private fun LessonSession.submit(answer: PracticeAnswer) = reduceLesson(this, LessonCommand.Submit(id, revision, answer))
     private fun LessonSession.skipRemaining() = reduceLesson(this, LessonCommand.SkipRemaining(id, revision))
     private fun LessonSession.retry() = reduceLesson(this, LessonCommand.Retry(id, revision))
 
@@ -215,10 +220,16 @@ class LessonSessionTest {
             session = session.next()
             assertEquals(expected, session.stage)
             assertNull(session.item)
-            assertSame(session, session.skipRemaining())
+            if (expected == LessonStage.ROLE_PLAY) {
+                assertEquals(LessonItemView.PROMPT, session.itemView)
+                assertSame(session, session.next())
+                session = session.skip()
+                assertEquals(LessonOutcome.SKIPPED, session.outcome)
+                session = session.continueLesson()
+            } else assertSame(session, session.skipRemaining())
         }
         assertSame(session, session.next())
-        assertTrue(session.outcomes.isEmpty())
+        assertEquals(listOf(LessonOutcome.SKIPPED), session.outcomes)
     }
 
     @Test fun resumeKeepsSavedPlaceReadOnlyAndDoesNotRecreateFeedback() {
@@ -259,6 +270,115 @@ class LessonSessionTest {
         assertTrue(left.left)
         assertSame(left, reduceLesson(left, LessonCommand.Next(4, left.revision)))
         assertSame(left, reduceLesson(left, LessonCommand.Restart(4, left.revision, 5)))
+    }
+
+    private fun atStage(source: Lesson, target: LessonStage): LessonSession {
+        var session = startLessonSession(100, source)
+        while (session.stage != target) session = if (session.item is LessonPlanItem.Prompt) {
+            session.skip().continueLesson()
+        } else session.next()
+        return session
+    }
+
+    @Test fun objectiveAnswersUseAuthoredEvaluationAndInvalidSubmissionsStayAtPrompt() {
+        val choice = atStage(lesson(), LessonStage.UNDERSTANDING).next()
+        val wrongType = choice.submit(PracticeAnswer.Text("yes"))
+        assertEquals(InvalidReason.WRONG_ANSWER_TYPE, wrongType.validation)
+        assertEquals(LessonItemView.PROMPT, wrongType.itemView)
+        assertNull(wrongType.feedback)
+        assertSame(wrongType, reduceLesson(wrongType, LessonCommand.Submit(choice.id, choice.revision,
+            PracticeAnswer.Choice("yes"))))
+        val unknown = wrongType.submit(PracticeAnswer.Choice("missing"))
+        assertEquals(InvalidReason.UNKNOWN_CHOICE, unknown.validation)
+        val incorrect = unknown.submit(PracticeAnswer.Choice("no"))
+        assertNull(incorrect.validation)
+        assertEquals(LessonOutcome.INCORRECT, incorrect.outcome)
+        assertEquals("Why", assertIs<AuthoredFeedback.Choice>(incorrect.feedback).explanation)
+        assertSame(incorrect, incorrect.next())
+        assertSame(incorrect, incorrect.submit(PracticeAnswer.Choice("yes")))
+        assertEquals(LessonStage.GUIDED_PRACTICE, incorrect.continueLesson().stage)
+        val correct = incorrect.retry().submit(PracticeAnswer.Choice("yes"))
+        assertEquals(listOf(LessonOutcome.CORRECT), correct.outcomes)
+        assertEquals(LessonItemView.FEEDBACK, correct.itemView)
+        assertEquals(LessonOutcome.CORRECT, correct.previous().next().outcome)
+    }
+
+    @Test fun guidedReadingAndFillUseAuthoredNormalizationAndRevealNeverGrades() {
+        val source = lesson().copy(exercises = listOf(reading("read"), completion("fill")))
+        var session = atStage(source, LessonStage.GUIDED_PRACTICE).next()
+        assertEquals(InvalidReason.BLANK_INPUT, session.submit(PracticeAnswer.Text("   ")).validation)
+        session = session.submit(PracticeAnswer.Text(" はい。 "))
+        assertEquals(LessonOutcome.CORRECT, session.outcome)
+        assertEquals(text, assertIs<AuthoredFeedback.Reading>(session.feedback).stimulus)
+        session = session.continueLesson()
+        assertEquals("fill", session.checkpointId)
+        assertEquals(LessonOutcome.INCORRECT, session.submit(PracticeAnswer.Text("違う")).outcome)
+        session = session.reveal()
+        assertEquals(LessonOutcome.REVEALED, session.outcome)
+        assertEquals(text, assertIs<AuthoredFeedback.Completion>(session.feedback).completedExample)
+        assertEquals(listOf(LessonOutcome.CORRECT, LessonOutcome.REVEALED), session.outcomes)
+        assertEquals(LessonOutcome.SKIPPED, session.retry().skip().outcome)
+    }
+
+    @Test fun productionRequiresTextAndAssessmentAndNeverAutomaticallyGrades() {
+        var session = atStage(lesson(), LessonStage.ROLE_PLAY).next()
+        assertEquals(InvalidReason.WRONG_ANSWER_TYPE,
+            session.submit(PracticeAnswer.Text("a plausible response")).validation)
+        session = session.submit(PracticeAnswer.SelfAssessment(" \n ", Assessment.MET_CRITERIA))
+        assertEquals(InvalidReason.BLANK_INPUT, session.validation)
+        assertSame(session, session.continueLesson())
+        session = session.submit(PracticeAnswer.SelfAssessment("My own response", Assessment.NEEDS_PRACTICE))
+        assertEquals(LessonOutcome.SELF_NEEDS_PRACTICE, session.outcome)
+        assertEquals(listOf(LessonOutcome.SKIPPED, LessonOutcome.SKIPPED, LessonOutcome.SELF_NEEDS_PRACTICE), session.outcomes)
+        assertEquals("Self-assessment criterion", assertIs<AuthoredFeedback.Production>(session.feedback).criteria.first().label)
+        assertEquals("Example response", assertIs<AuthoredFeedback.Production>(session.feedback).examples.first().label)
+        session = session.continueLesson()
+        assertEquals(LessonStage.SUMMARY, session.stage)
+        session = session.previous().retry().submit(PracticeAnswer.SelfAssessment("not an exact match", Assessment.MET_CRITERIA))
+        assertEquals(listOf(LessonOutcome.SKIPPED, LessonOutcome.SKIPPED, LessonOutcome.SELF_MET_CRITERIA), session.outcomes)
+        assertEquals(LessonOutcome.REVEALED, session.retry().reveal().outcome)
+        assertEquals(LessonOutcome.SKIPPED, session.retry().skip().outcome)
+    }
+
+    @Test fun objectiveOnlyRolePlayHasBoundedReflectionWithNullCheckpoint() {
+        val source = lesson().copy(exercises = emptyList(), rolePlay = RolePlayObjective(
+            "Check the time", listOf("Ask politely"), examples = listOf(text)))
+        var session = atStage(source, LessonStage.ROLE_PLAY)
+        assertNull(session.checkpointId)
+        assertEquals(LessonItemView.PROMPT, session.itemView)
+        assertSame(session, session.next())
+        assertEquals(InvalidReason.WRONG_ANSWER_TYPE,
+            session.submit(PracticeAnswer.Text("my response")).validation)
+        session = session.submit(PracticeAnswer.SelfAssessment("   ", Assessment.MET_CRITERIA))
+        assertEquals(InvalidReason.BLANK_INPUT, session.validation)
+        session = session.submit(PracticeAnswer.SelfAssessment("自由な返事", Assessment.MET_CRITERIA))
+        assertEquals(LessonOutcome.SELF_MET_CRITERIA, session.outcome)
+        assertSame(session, session.next())
+        val feedback = assertIs<AuthoredFeedback.Production>(session.feedback)
+        assertEquals("Ask politely", feedback.criteria.single().text)
+        assertEquals(text, feedback.examples.single().text)
+        session = session.continueLesson()
+        assertEquals(LessonStage.SUMMARY, session.stage)
+        session = session.previous()
+        assertEquals(LessonOutcome.SELF_MET_CRITERIA, session.outcome)
+        session = session.retry()
+        assertNull(session.outcome)
+        assertNull(session.feedback)
+        assertTrue(session.outcomes.isEmpty())
+        session = session.reveal()
+        assertEquals(listOf(LessonOutcome.REVEALED), session.outcomes)
+        assertEquals(listOf(LessonOutcome.SKIPPED), session.retry().skip().outcomes)
+        assertEquals(listOf(LessonOutcome.SKIPPED), session.retry().skipRemaining().outcomes)
+        assertEquals(LessonStage.SUMMARY, session.retry().skipRemaining().stage)
+        val record = LessonProgress(source.id, source.contentVersion, 20, LessonStage.ROLE_PLAY, null)
+        val resumed = assertIs<LessonResumeResult.Available>(resumeLessonSession(101, source, record)).session
+        assertEquals(LESSON_RESUME_NOTICE, resumed.notice)
+        assertEquals(LessonItemView.PROMPT, resumed.itemView)
+        assertNull(resumed.feedback)
+        assertTrue(resumed.outcomes.isEmpty())
+        val restarted = reduceLesson(session, LessonCommand.Restart(session.id, session.revision, 102))
+        assertEquals(LessonStage.SITUATION, restarted.stage)
+        assertTrue(restarted.outcomes.isEmpty())
     }
 
     @Test fun mutatedAuthoredListsCannotIntroduceDuplicateExecutableIds() {
