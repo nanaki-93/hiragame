@@ -355,6 +355,19 @@ class LocalProgressOwner(
             is ReplacementResult.InvalidReplacement -> ProtectedReplacementResult.InvalidReplacement(result.reason)
         }
 
+    /** Supplier failures are invalid replacement metadata, not exceptions escaping confirmation. */
+    private fun replacementTime(): Long = try {
+        clock()
+    } catch (_: Throwable) {
+        throw SaveEncodeException(SaveProblem.INVALID_SNAPSHOT)
+    }
+
+    private fun replacementId(): String = try {
+        newSnapshotId()
+    } catch (_: Throwable) {
+        throw SaveEncodeException(SaveProblem.INVALID_SNAPSHOT)
+    }
+
     /** The only destructive path: prepare, reread, compare, then one guarded write. */
     fun confirmReplacement(token: ReplacementToken): ReplacementResult {
         val pending = pendingReplacement
@@ -373,7 +386,9 @@ class LocalProgressOwner(
         val wire: String
         try {
             replacement = when (val operation = pending.operation) {
-                ReplacementOperation.ProtectedFresh -> fresh()
+                ReplacementOperation.ProtectedFresh -> SaveEnvelope(
+                    savedAtEpochMs = replacementTime(), snapshotId = replacementId(), revision = 0,
+                )
                 is ReplacementOperation.Restore -> {
                     val imported = operation.candidate.snapshot
                     // Reject fabricated/stale candidates before copying them; do not trust their
@@ -385,11 +400,11 @@ class LocalProgressOwner(
                         }
                         pending.snapshot.revision + 1
                     }
-                    val localId = newSnapshotId()
+                    val localId = replacementId()
                     if (localId == imported.snapshotId || localId == pending.snapshot.snapshotId) {
                         throw SaveEncodeException(SaveProblem.INVALID_SNAPSHOT)
                     }
-                    imported.copy(snapshotId = localId, savedAtEpochMs = clock(), revision = revision)
+                    imported.copy(snapshotId = localId, savedAtEpochMs = replacementTime(), revision = revision)
                 }
             }
             wire = encodeSave(replacement)
