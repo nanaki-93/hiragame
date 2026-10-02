@@ -1,8 +1,9 @@
 package com.github.nanaki_93.storage
 
-import com.github.nanaki_93.progress.SaveEncodeException
+import com.github.nanaki_93.progress.BackupCodec
+import com.github.nanaki_93.progress.BackupEncodeException
+import com.github.nanaki_93.progress.BackupProblem
 import com.github.nanaki_93.progress.SaveProblem
-import com.github.nanaki_93.progress.encodeSave
 
 /** A sink receives complete text; it must not interpret or rewrite protected recovery material. */
 fun interface ProgressDownloadSink {
@@ -28,18 +29,19 @@ class ProgressDownloads(
     )
 
     fun exportCurrent(): DownloadResult {
-        val snapshot = owner.state.value.snapshot
+        val current = owner.state.value
+        val exportedAt = try { clock() } catch (_: Throwable) { return DownloadResult.Failed }
         val text = try {
-            encodeSave(snapshot)
-        } catch (error: SaveEncodeException) {
-            return DownloadResult.InvalidSnapshot(error.reason)
+            BackupCodec.encodeBackup(current.snapshot, SiteBuildInfo.VERSION, exportedAt)
+        } catch (error: BackupEncodeException) {
+            return DownloadResult.InvalidSnapshot(if (error.reason == BackupProblem.OVERSIZED) SaveProblem.OVERSIZED else SaveProblem.INVALID_SNAPSHOT)
         }
-        val label = if (owner.state.value.status == PersistenceStatus.Saved) {
-            "Validated progress backup"
+        val label = if (current.status == PersistenceStatus.Saved) {
+            "Validated progress backup download requested"
         } else {
-            "Validated progress export (includes work not confirmed saved in this browser)"
+            "Validated progress export download requested (includes work not confirmed saved in this browser)"
         }
-        return deliver("hiragame-state", "json", "application/json;charset=utf-8", text, label)
+        return deliver("hiragame-backup", "json", "application/json;charset=utf-8", text, label, exportedAt)
     }
 
     /** Exact originally read text; explicitly NOT a validated backup or an importable save. */
@@ -52,11 +54,11 @@ class ProgressDownloads(
         )
     }
 
-    private fun date(): String = kotlin.js.Date(clock().toDouble()).toISOString().substring(0, 10)
+    private fun date(epochMs: Long): String = kotlin.js.Date(epochMs.toDouble()).toISOString().substring(0, 10)
 
-    private fun deliver(prefix: String, extension: String, type: String, text: String, label: String): DownloadResult =
+    private fun deliver(prefix: String, extension: String, type: String, text: String, label: String, time: Long? = null): DownloadResult =
         try {
-            val filename = "$prefix-${date()}.$extension"
+            val filename = "$prefix-${date(time ?: clock())}.$extension"
             sink.download(filename, type, text)
             DownloadResult.Downloaded(filename, label)
         } catch (_: Throwable) {
