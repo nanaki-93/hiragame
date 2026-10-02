@@ -198,6 +198,8 @@ Build non-interactive tests into each feature rather than deferring them to the 
 
 **Depends on:** F01, F02.
 
+**Status:** F03 scoped implementation and non-interactive integration checks passed on 2026-10-02; [observed F03 validation evidence](content-source/review-notes/f03-validation.md) records commands, Node/fake-adapter coverage, canonical artifact parity and limitations. This does not establish live-browser persistence, accessibility, offline use, deployment or atomic cross-tab behavior. Checklist completion remains subject to workflow review.
+
 ### Implementation tasks
 
 - [ ] Define a versioned save envelope, using a stable key such as `hiragame:state`. Include `schemaVersion`, saved timestamp, preferences, lesson progress, and review-item state.
