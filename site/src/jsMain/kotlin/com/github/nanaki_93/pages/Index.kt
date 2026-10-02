@@ -37,6 +37,7 @@ import com.github.nanaki_93.progress.CheckpointView
 import com.github.nanaki_93.progress.SavedColorMode
 import com.github.nanaki_93.progress.SaveProblem
 import com.github.nanaki_93.progress.BackupProblem
+import com.github.nanaki_93.progress.ResetScope
 import com.github.nanaki_93.progress.changePreferences
 import com.github.nanaki_93.storage.LocalProgressOwner
 import com.github.nanaki_93.storage.LocalProgressState
@@ -53,6 +54,8 @@ import com.github.nanaki_93.storage.BackupReadError
 import com.github.nanaki_93.storage.BackupConfirmationError
 import com.github.nanaki_93.storage.BackupPreview
 import com.github.nanaki_93.storage.ReplacementResult
+import com.github.nanaki_93.storage.ReplacementPreparation
+import com.github.nanaki_93.storage.ReplacementToken
 import com.github.nanaki_93.storage.ProtectedReplacementToken
 import com.github.nanaki_93.storage.ProtectedReplacementResult
 import com.github.nanaki_93.practice.PracticeCheckpointResolution
@@ -264,6 +267,36 @@ internal fun confirmRestoreAndApplyMode(flow: BackupFlowCoordinator, apply: () -
     return flow.state.value.also { if (wasConfirming && it is BackupFlowState.Success) apply() }
 }
 
+/** A reset, unlike an ordinary preference mutation, changes the visible theme only after a committed write. */
+internal fun confirmResetAndApplyMode(progress: LocalProgressOwner, token: ReplacementToken, apply: () -> Unit): ReplacementResult =
+    progress.confirmReplacement(token).also { if (it == ReplacementResult.Replaced) apply() }
+
+private data class ResetNotice(val text: String, val error: Boolean = false)
+
+private data class ResetReview(
+    val scope: ResetScope,
+    val token: ReplacementToken,
+    val state: LocalProgressState,
+    val generation: Long,
+    val baseline: String?,
+    val baselineKnown: Boolean,
+)
+
+private fun resetReviewIsCurrent(progress: LocalProgressOwner, review: ResetReview): Boolean =
+    progress.isCurrentGeneration(review.generation) && progress.state.value == review.state &&
+        progress.savedBaseline == review.baseline && progress.hasKnownBaseline == review.baselineKnown
+
+internal fun resetResultMessage(scope: ResetScope, result: ReplacementResult): String {
+    val action = if (scope == ResetScope.PROGRESS_ONLY) "Progress reset" else "Full learner reset"
+    return when (result) {
+        ReplacementResult.Replaced -> "$action saved in this browser. Offline content and unrelated browser data were not cleared."
+        ReplacementResult.Stale -> "$action confirmation expired. Nothing was reset; review the current save again."
+        ReplacementResult.Conflict -> "Another tab changed the saved text. $action stopped; reconcile before trying again."
+        is ReplacementResult.Failure -> "$action failed because browser storage is unavailable or full. Current progress and preferences remain active. Review again."
+        is ReplacementResult.InvalidReplacement -> "$action could not be prepared safely. Current progress and preferences remain active. Review again."
+    }
+}
+
 internal fun saveStatusMessage(state: LocalProgressState): String = when (val status = state.status) {
     PersistenceStatus.Fresh -> "No local snapshot yet. Progress checkpoints will be saved in this browser when possible."
     PersistenceStatus.Saved -> if (state.rejectedUpdate != null)
@@ -330,6 +363,7 @@ private fun SavePreferencesSection(progress: LocalProgressOwner) {
             P { Text("Browser storage could not be read; the unavailable original cannot be downloaded. You can still export current memory.") }
         }
         RestoreSection(restore, restoreState, saved, downloads) { colorModeState.value = initialSilkMode(progress) }
+        ResetSection(progress, saved, downloads, restore) { colorModeState.value = initialSilkMode(progress) }
         if (saved.status is PersistenceStatus.Protected) {
             P(attrs = { attr("role", "alert") }) {
                 Text("Replacing the unreadable local save permanently discards its original stored text and any changes only in this view's memory. Download unvalidated recovery text and export current progress first if needed. This does not clear offline content.")
@@ -395,6 +429,101 @@ private fun SavePreferencesSection(progress: LocalProgressOwner) {
             }
         }
     }
+}
+
+/** Reset is a separate, scope-bound confirmation, never an ordinary mutate or storage deletion. */
+@Composable
+private fun ResetSection(
+    progress: LocalProgressOwner,
+    saved: LocalProgressState,
+    downloads: ProgressDownloads,
+    restore: BackupFlowCoordinator,
+    applyMode: () -> Unit,
+) {
+    var review by remember(progress) { mutableStateOf<ResetReview?>(null) }
+    var message by remember(progress) { mutableStateOf<ResetNotice?>(null) }
+    var exportMessage by remember(progress) { mutableStateOf<String?>(null) }
+    fun cancel() {
+        review?.let { progress.cancelReplacement(it.token) }
+        review = null
+    }
+    // Capture the exact token in the effect: a disposal must not use the first render's null review.
+    DisposableEffect(progress, review?.token) {
+        val token = review?.token
+        onDispose { token?.let(progress::cancelReplacement) }
+    }
+    SideEffect {
+        review?.let {
+            if (!resetReviewIsCurrent(progress, it)) {
+                cancel()
+                message = ResetNotice("Reset confirmation expired because local progress changed. Review the current save again.", error = true)
+            }
+        }
+    }
+    H2 { Text("Reset local learner data") }
+    P { Text("Saves are isolated to this browser, device, and site origin. Clearing browser storage can lose them. Export regularly; to move to another device, manually transfer an exported JSON file and restore it there. No automatic backup or sync is provided.") }
+    P { Text("Either reset writes a new local snapshot. Neither clears offline content/assets, unrelated browser keys, or the legacy color preference key. Offline cache management is separate.") }
+    if (saved.status is PersistenceStatus.Protected) {
+        P(attrs = { attr("role", "alert") }) {
+            Text("Reset progress is unavailable while the original save is unreadable: its preferences cannot be preserved. Full reset can replace the protected original after confirmation. Download the unvalidated original above and export current memory first if needed.")
+        }
+    }
+    if (review == null) {
+        if (saved.status !is PersistenceStatus.Protected) {
+            SecondaryButton("Reset progress…", onClick = {
+                message = null
+                restore.cancel()
+                when (val prepared = progress.beginReset(ResetScope.PROGRESS_ONLY)) {
+                    is ReplacementPreparation.Ready -> review = ResetReview(ResetScope.PROGRESS_ONLY, prepared.token,
+                        progress.state.value, progress.generation, progress.savedBaseline, progress.hasKnownBaseline)
+                    ReplacementPreparation.Blocked -> message = ResetNotice("Progress reset is blocked until the local save can be read or a conflict is reconciled. No save was changed.", error = true)
+                }
+            })
+        }
+        SecondaryButton("Reset all learner data and preferences…", onClick = {
+            message = null
+            restore.cancel()
+            when (val prepared = progress.beginReset(ResetScope.FULL_LEARNER_STATE)) {
+                is ReplacementPreparation.Ready -> review = ResetReview(ResetScope.FULL_LEARNER_STATE, prepared.token,
+                    progress.state.value, progress.generation, progress.savedBaseline, progress.hasKnownBaseline)
+                ReplacementPreparation.Blocked -> message = ResetNotice("Full reset is blocked until the local save can be read or a conflict is reconciled. No save was changed.", error = true)
+            }
+        })
+    } else {
+        val pending = review!!
+        when (pending.scope) {
+            ResetScope.PROGRESS_ONLY -> P(attrs = { attr("role", "alert") }) {
+                Text("Confirm Reset progress? All lessons (including completed ones), practice checkpoints, and review items, even for unavailable content, will be removed. Every current preference is kept: color mode, readings, translation, and romaji. Unsaved work in this view and the active practice session/draft will be lost only if this reset succeeds. This is not reversible here.")
+            }
+            ResetScope.FULL_LEARNER_STATE -> P(attrs = { attr("role", "alert") }) {
+                Text("Confirm Reset all learner data and preferences? All lessons (including completed ones), practice checkpoints, and review items, even for unavailable content, will be removed. Color mode returns to system, readings and translation are shown, and romaji is hidden (the default preferences). Unsaved work in this view and the active practice session/draft will be lost only if this reset succeeds. An unreadable protected original will be replaced and cannot be recovered from this browser afterward. This is not reversible here.")
+            }
+        }
+        P { Text("Export the current validated memory before resetting. If the original is unreadable, download the separate unvalidated recovery text above as well. Offline content is not cleared.") }
+        SecondaryButton("Export current progress before reset", onClick = {
+            exportMessage = downloadMessage(downloads.exportCurrent())
+        })
+        exportMessage?.let { P(attrs = { attr("role", "status") }) { Text(it) } }
+        SecondaryButton(if (pending.scope == ResetScope.PROGRESS_ONLY) "Cancel progress reset" else "Cancel full reset", onClick = {
+            cancel()
+            message = ResetNotice(if (pending.scope == ResetScope.PROGRESS_ONLY)
+                "Progress reset canceled. Local progress and preferences were not changed."
+            else "Full learner reset canceled. Local progress and preferences were not changed.")
+        })
+        PrimaryButton(if (pending.scope == ResetScope.PROGRESS_ONLY) "Confirm Reset progress" else "Confirm Reset all learner data and preferences", onClick = {
+            if (review?.token === pending.token) {
+                review = null // one click consumes this UI confirmation
+                message = if (!resetReviewIsCurrent(progress, pending)) {
+                    progress.cancelReplacement(pending.token)
+                    ResetNotice("Reset confirmation expired because local progress changed. Review the current save again.", error = true)
+                } else {
+                    val result = confirmResetAndApplyMode(progress, pending.token, applyMode)
+                    ResetNotice(resetResultMessage(pending.scope, result), error = result != ReplacementResult.Replaced)
+                }
+            }
+        })
+    }
+    message?.let { P(attrs = { attr("role", if (it.error) "alert" else "status") }) { Text(it.text) } }
 }
 
 private fun utcDate(epochMs: Long): String = kotlin.js.Date(epochMs.toDouble()).toISOString().substring(0, 10)
