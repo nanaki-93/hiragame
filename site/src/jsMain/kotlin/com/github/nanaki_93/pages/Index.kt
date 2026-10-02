@@ -108,6 +108,7 @@ fun HomePage() {
     val coordinator = remember(progress) { LocalPracticeCoordinator(scope, progress, BundledContentLoader(BrowserContentTextSource())) }
     val state by coordinator.state.collectAsState()
     val saved by progress.state.collectAsState()
+    com.github.nanaki_93.offline.SessionActivity((state as? LocalPracticeState.Ready)?.session != null)
     val studyAids = saved.snapshot.preferences
     val darkMode = ColorMode.current == ColorMode.DARK
 

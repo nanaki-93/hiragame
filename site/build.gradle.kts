@@ -113,6 +113,8 @@ kotlin {
 tasks.register<Sync>("reorganizeOutput") {
     dependsOn("jsBrowserDistribution")
 
+    inputs.file(rootProject.file("tools/build_offline.py"))
+    inputs.file("src/offline/service-worker.js")
     val productionDir = layout.buildDirectory.dir("dist/js/productionExecutable")
     into(productionDir.map { it.dir("public") })
 
@@ -127,11 +129,11 @@ tasks.register<Sync>("reorganizeOutput") {
         include("index.html")
     }
     from(processedPublic) {
-        include("*.ico", "*.png", "*.svg", "*.css")
+        exclude("index.html")
         into("hiragame")
     }
-    from("src/jsMain/resources/public/content") {
-        into("hiragame/content")
+    doLast {
+        exec { commandLine("python3", rootProject.file("tools/build_offline.py"), destinationDir) }
     }
 }
 
