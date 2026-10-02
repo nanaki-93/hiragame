@@ -1,0 +1,291 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-contracted-n-h-m-reading",
+  "topicId": "katakana-foundations",
+  "title": "Contracted katakana: N, H and M rows — write in kana",
+  "description": "Use a Latin-letter spelling cue and base sign to distinguish small ャ/ュ/ョ from full-sized kana.",
+  "reviewItems": [
+    {
+      "id": "review-kc-reading-30cb-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30cb-30e3",
+      "skill": "Write katakana ニャ (contracted nya spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30cb-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30cb-30e5",
+      "skill": "Write katakana ニュ (contracted nyu spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30cb-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30cb-30e7",
+      "skill": "Write katakana ニョ (contracted nyo spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30d2-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30d2-30e3",
+      "skill": "Write katakana ヒャ (contracted hya spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30d2-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30d2-30e5",
+      "skill": "Write katakana ヒュ (contracted hyu spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30d2-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30d2-30e7",
+      "skill": "Write katakana ヒョ (contracted hyo spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30df-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30df-30e3",
+      "skill": "Write katakana ミャ (contracted mya spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30df-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30df-30e5",
+      "skill": "Write katakana ミュ (contracted myu spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30df-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30df-30e7",
+      "skill": "Write katakana ミョ (contracted myo spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Original agent-authored katakana spelling cues and short common-loanword examples; no legacy CSV or F00 mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original English questions, explanations and translations; kana spellings and short common-word meanings are linguistic facts. No copied work or audio."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30cb-30e3",
+      "prompt": "Type the contracted katakana nya using the ニ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ニャ is the contracted nya spelling. Small ャ joins ニ; ニヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "nya — ニ base sign + small kana",
+        "reading": "nya — ニ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ニャ",
+            "reading": "ニャ",
+            "translation": "Contracted katakana nya spelling with small kana.",
+            "romaji": "nya"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30cb-30e5",
+      "prompt": "Type the contracted katakana nyu using the ニ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ニュ is the contracted nyu spelling. Small ュ joins ニ; ニユ uses full-sized ユ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "nyu — ニ base sign + small kana",
+        "reading": "nyu — ニ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ニュ",
+            "reading": "ニュ",
+            "translation": "Contracted katakana nyu spelling with small kana.",
+            "romaji": "nyu"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30cb-30e7",
+      "prompt": "Type the contracted katakana nyo using the ニ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ニョ is the contracted nyo spelling. Small ョ joins ニ; ニヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "nyo — ニ base sign + small kana",
+        "reading": "nyo — ニ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ニョ",
+            "reading": "ニョ",
+            "translation": "Contracted katakana nyo spelling with small kana.",
+            "romaji": "nyo"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30d2-30e3",
+      "prompt": "Type the contracted katakana hya using the ヒ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ヒャ is the contracted hya spelling. Small ャ joins ヒ; ヒヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "hya — ヒ base sign + small kana",
+        "reading": "hya — ヒ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ヒャ",
+            "reading": "ヒャ",
+            "translation": "Contracted katakana hya spelling with small kana.",
+            "romaji": "hya"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30d2-30e5",
+      "prompt": "Type the contracted katakana hyu using the ヒ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ヒュ is the contracted hyu spelling. Small ュ joins ヒ; ヒユ uses full-sized ユ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "hyu — ヒ base sign + small kana",
+        "reading": "hyu — ヒ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ヒュ",
+            "reading": "ヒュ",
+            "translation": "Contracted katakana hyu spelling with small kana.",
+            "romaji": "hyu"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30d2-30e7",
+      "prompt": "Type the contracted katakana hyo using the ヒ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ヒョ is the contracted hyo spelling. Small ョ joins ヒ; ヒヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "hyo — ヒ base sign + small kana",
+        "reading": "hyo — ヒ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ヒョ",
+            "reading": "ヒョ",
+            "translation": "Contracted katakana hyo spelling with small kana.",
+            "romaji": "hyo"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30df-30e3",
+      "prompt": "Type the contracted katakana mya using the ミ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ミャ is the contracted mya spelling. Small ャ joins ミ; ミヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "mya — ミ base sign + small kana",
+        "reading": "mya — ミ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ミャ",
+            "reading": "ミャ",
+            "translation": "Contracted katakana mya spelling with small kana.",
+            "romaji": "mya"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30df-30e5",
+      "prompt": "Type the contracted katakana myu using the ミ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ミュ is the contracted myu spelling. Small ュ joins ミ; ミユ uses full-sized ユ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "myu — ミ base sign + small kana",
+        "reading": "myu — ミ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ミュ",
+            "reading": "ミュ",
+            "translation": "Contracted katakana myu spelling with small kana.",
+            "romaji": "myu"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30df-30e7",
+      "prompt": "Type the contracted katakana myo using the ミ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ミョ is the contracted myo spelling. Small ョ joins ミ; ミヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "myo — ミ base sign + small kana",
+        "reading": "myo — ミ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ミョ",
+            "reading": "ミョ",
+            "translation": "Contracted katakana myo spelling with small kana.",
+            "romaji": "myo"
+          }
+        }
+      ]
+    }
+  ]
+}

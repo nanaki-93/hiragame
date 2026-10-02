@@ -1,0 +1,390 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-contracted-r-g-j-recognition",
+  "topicId": "katakana-foundations",
+  "title": "Contracted katakana: R, G and J rows — find the form",
+  "description": "Use a Latin-letter spelling cue and base sign to distinguish small ャ/ュ/ョ from full-sized kana.",
+  "reviewItems": [
+    {
+      "id": "review-kc-recognition-30ea-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30ea-30e3",
+      "skill": "Recognize katakana リャ (contracted rya spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30ea-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30ea-30e5",
+      "skill": "Recognize katakana リュ (contracted ryu spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30ea-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30ea-30e7",
+      "skill": "Recognize katakana リョ (contracted ryo spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30ae-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30ae-30e3",
+      "skill": "Recognize katakana ギャ (contracted gya spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30ae-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30ae-30e5",
+      "skill": "Recognize katakana ギュ (contracted gyu spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30ae-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30ae-30e7",
+      "skill": "Recognize katakana ギョ (contracted gyo spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30b8-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30b8-30e3",
+      "skill": "Recognize katakana ジャ (contracted ja spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30b8-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30b8-30e5",
+      "skill": "Recognize katakana ジュ (contracted ju spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30b8-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30b8-30e7",
+      "skill": "Recognize katakana ジョ (contracted jo spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Original agent-authored katakana spelling cues and short common-loanword examples; no legacy CSV or F00 mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original English questions, explanations and translations; kana spellings and short common-word meanings are linguistic facts. No copied work or audio."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30ea-30e3",
+      "prompt": "Which katakana spelling uses the リ base sign + small ya (rya)? Compare small and full-sized kana.",
+      "explanation": "リャ is the contracted rya spelling. Small ャ joins リ; リヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30ea-30e3-0",
+          "text": {
+            "surface": "リャ",
+            "reading": "リャ",
+            "translation": "Katakana rya: Small ャ joins リ; リヤ uses full-sized ヤ.",
+            "romaji": "rya"
+          }
+        },
+        {
+          "id": "option-kc-30ea-30e3-1",
+          "text": {
+            "surface": "リヤ",
+            "reading": "リヤ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30ea-30e3-2",
+          "text": {
+            "surface": "リュ",
+            "reading": "リュ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30ea-30e3-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30ea-30e5",
+      "prompt": "Which katakana spelling uses the リ base sign + small yu (ryu)? Compare small and full-sized kana.",
+      "explanation": "リュ is the contracted ryu spelling. Small ュ joins リ; リユ uses full-sized ユ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30ea-30e5-0",
+          "text": {
+            "surface": "リュ",
+            "reading": "リュ",
+            "translation": "Katakana ryu: Small ュ joins リ; リユ uses full-sized ユ.",
+            "romaji": "ryu"
+          }
+        },
+        {
+          "id": "option-kc-30ea-30e5-1",
+          "text": {
+            "surface": "リユ",
+            "reading": "リユ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30ea-30e5-2",
+          "text": {
+            "surface": "リョ",
+            "reading": "リョ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30ea-30e5-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30ea-30e7",
+      "prompt": "Which katakana spelling uses the リ base sign + small yo (ryo)? Compare small and full-sized kana.",
+      "explanation": "リョ is the contracted ryo spelling. Small ョ joins リ; リヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30ea-30e7-0",
+          "text": {
+            "surface": "リョ",
+            "reading": "リョ",
+            "translation": "Katakana ryo: Small ョ joins リ; リヨ uses full-sized ヨ.",
+            "romaji": "ryo"
+          }
+        },
+        {
+          "id": "option-kc-30ea-30e7-1",
+          "text": {
+            "surface": "リヨ",
+            "reading": "リヨ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30ea-30e7-2",
+          "text": {
+            "surface": "リャ",
+            "reading": "リャ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30ea-30e7-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30ae-30e3",
+      "prompt": "Which katakana spelling uses the ギ base sign + small ya (gya)? Compare small and full-sized kana.",
+      "explanation": "ギャ is the contracted gya spelling. Small ャ joins ギ; ギヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30ae-30e3-0",
+          "text": {
+            "surface": "ギャ",
+            "reading": "ギャ",
+            "translation": "Katakana gya: Small ャ joins ギ; ギヤ uses full-sized ヤ.",
+            "romaji": "gya"
+          }
+        },
+        {
+          "id": "option-kc-30ae-30e3-1",
+          "text": {
+            "surface": "ギヤ",
+            "reading": "ギヤ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30ae-30e3-2",
+          "text": {
+            "surface": "ギュ",
+            "reading": "ギュ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30ae-30e3-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30ae-30e5",
+      "prompt": "Which katakana spelling uses the ギ base sign + small yu (gyu)? Compare small and full-sized kana.",
+      "explanation": "ギュ is the contracted gyu spelling. Small ュ joins ギ; ギユ uses full-sized ユ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30ae-30e5-0",
+          "text": {
+            "surface": "ギュ",
+            "reading": "ギュ",
+            "translation": "Katakana gyu: Small ュ joins ギ; ギユ uses full-sized ユ.",
+            "romaji": "gyu"
+          }
+        },
+        {
+          "id": "option-kc-30ae-30e5-1",
+          "text": {
+            "surface": "ギユ",
+            "reading": "ギユ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30ae-30e5-2",
+          "text": {
+            "surface": "ギョ",
+            "reading": "ギョ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30ae-30e5-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30ae-30e7",
+      "prompt": "Which katakana spelling uses the ギ base sign + small yo (gyo)? Compare small and full-sized kana.",
+      "explanation": "ギョ is the contracted gyo spelling. Small ョ joins ギ; ギヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30ae-30e7-0",
+          "text": {
+            "surface": "ギョ",
+            "reading": "ギョ",
+            "translation": "Katakana gyo: Small ョ joins ギ; ギヨ uses full-sized ヨ.",
+            "romaji": "gyo"
+          }
+        },
+        {
+          "id": "option-kc-30ae-30e7-1",
+          "text": {
+            "surface": "ギヨ",
+            "reading": "ギヨ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30ae-30e7-2",
+          "text": {
+            "surface": "ギャ",
+            "reading": "ギャ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30ae-30e7-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30b8-30e3",
+      "prompt": "Which katakana spelling uses the ジ base sign + small ya (ja)? Compare small and full-sized kana.",
+      "explanation": "ジャ is the contracted ja spelling. Small ャ joins ジ; ジヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30b8-30e3-0",
+          "text": {
+            "surface": "ジャ",
+            "reading": "ジャ",
+            "translation": "Katakana ja: Small ャ joins ジ; ジヤ uses full-sized ヤ.",
+            "romaji": "ja"
+          }
+        },
+        {
+          "id": "option-kc-30b8-30e3-1",
+          "text": {
+            "surface": "ジヤ",
+            "reading": "ジヤ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30b8-30e3-2",
+          "text": {
+            "surface": "ジュ",
+            "reading": "ジュ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30b8-30e3-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30b8-30e5",
+      "prompt": "Which katakana spelling uses the ジ base sign + small yu (ju)? Compare small and full-sized kana.",
+      "explanation": "ジュ is the contracted ju spelling. Small ュ joins ジ; ジユ uses full-sized ユ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30b8-30e5-0",
+          "text": {
+            "surface": "ジュ",
+            "reading": "ジュ",
+            "translation": "Katakana ju: Small ュ joins ジ; ジユ uses full-sized ユ.",
+            "romaji": "ju"
+          }
+        },
+        {
+          "id": "option-kc-30b8-30e5-1",
+          "text": {
+            "surface": "ジユ",
+            "reading": "ジユ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30b8-30e5-2",
+          "text": {
+            "surface": "ジョ",
+            "reading": "ジョ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30b8-30e5-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30b8-30e7",
+      "prompt": "Which katakana spelling uses the ジ base sign + small yo (jo)? Compare small and full-sized kana.",
+      "explanation": "ジョ is the contracted jo spelling. Small ョ joins ジ; ジヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30b8-30e7-0",
+          "text": {
+            "surface": "ジョ",
+            "reading": "ジョ",
+            "translation": "Katakana jo: Small ョ joins ジ; ジヨ uses full-sized ヨ.",
+            "romaji": "jo"
+          }
+        },
+        {
+          "id": "option-kc-30b8-30e7-1",
+          "text": {
+            "surface": "ジヨ",
+            "reading": "ジヨ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30b8-30e7-2",
+          "text": {
+            "surface": "ジャ",
+            "reading": "ジャ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30b8-30e7-0"
+    }
+  ]
+}

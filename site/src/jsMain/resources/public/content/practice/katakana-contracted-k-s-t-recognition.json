@@ -1,0 +1,390 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-contracted-k-s-t-recognition",
+  "topicId": "katakana-foundations",
+  "title": "Contracted katakana: K, S and T rows — find the form",
+  "description": "Use a Latin-letter spelling cue and base sign to distinguish small ャ/ュ/ョ from full-sized kana.",
+  "reviewItems": [
+    {
+      "id": "review-kc-recognition-30ad-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30ad-30e3",
+      "skill": "Recognize katakana キャ (contracted kya spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30ad-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30ad-30e5",
+      "skill": "Recognize katakana キュ (contracted kyu spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30ad-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30ad-30e7",
+      "skill": "Recognize katakana キョ (contracted kyo spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30b7-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30b7-30e3",
+      "skill": "Recognize katakana シャ (contracted sha spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30b7-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30b7-30e5",
+      "skill": "Recognize katakana シュ (contracted shu spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30b7-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30b7-30e7",
+      "skill": "Recognize katakana ショ (contracted sho spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30c1-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30c1-30e3",
+      "skill": "Recognize katakana チャ (contracted cha spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30c1-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30c1-30e5",
+      "skill": "Recognize katakana チュ (contracted chu spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30c1-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30c1-30e7",
+      "skill": "Recognize katakana チョ (contracted cho spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Original agent-authored katakana spelling cues and short common-loanword examples; no legacy CSV or F00 mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original English questions, explanations and translations; kana spellings and short common-word meanings are linguistic facts. No copied work or audio."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30ad-30e3",
+      "prompt": "Which katakana spelling uses the キ base sign + small ya (kya)? Compare small and full-sized kana.",
+      "explanation": "キャ is the contracted kya spelling. Small ャ joins キ; キヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30ad-30e3-0",
+          "text": {
+            "surface": "キャ",
+            "reading": "キャ",
+            "translation": "Katakana kya: Small ャ joins キ; キヤ uses full-sized ヤ.",
+            "romaji": "kya"
+          }
+        },
+        {
+          "id": "option-kc-30ad-30e3-1",
+          "text": {
+            "surface": "キヤ",
+            "reading": "キヤ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30ad-30e3-2",
+          "text": {
+            "surface": "キュ",
+            "reading": "キュ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30ad-30e3-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30ad-30e5",
+      "prompt": "Which katakana spelling uses the キ base sign + small yu (kyu)? Compare small and full-sized kana.",
+      "explanation": "キュ is the contracted kyu spelling. Small ュ joins キ; キユ uses full-sized ユ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30ad-30e5-0",
+          "text": {
+            "surface": "キュ",
+            "reading": "キュ",
+            "translation": "Katakana kyu: Small ュ joins キ; キユ uses full-sized ユ.",
+            "romaji": "kyu"
+          }
+        },
+        {
+          "id": "option-kc-30ad-30e5-1",
+          "text": {
+            "surface": "キユ",
+            "reading": "キユ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30ad-30e5-2",
+          "text": {
+            "surface": "キョ",
+            "reading": "キョ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30ad-30e5-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30ad-30e7",
+      "prompt": "Which katakana spelling uses the キ base sign + small yo (kyo)? Compare small and full-sized kana.",
+      "explanation": "キョ is the contracted kyo spelling. Small ョ joins キ; キヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30ad-30e7-0",
+          "text": {
+            "surface": "キョ",
+            "reading": "キョ",
+            "translation": "Katakana kyo: Small ョ joins キ; キヨ uses full-sized ヨ.",
+            "romaji": "kyo"
+          }
+        },
+        {
+          "id": "option-kc-30ad-30e7-1",
+          "text": {
+            "surface": "キヨ",
+            "reading": "キヨ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30ad-30e7-2",
+          "text": {
+            "surface": "キャ",
+            "reading": "キャ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30ad-30e7-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30b7-30e3",
+      "prompt": "Which katakana spelling uses the シ base sign + small ya (sha)? Compare small and full-sized kana.",
+      "explanation": "シャ is the contracted sha spelling. Small ャ joins シ; シヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30b7-30e3-0",
+          "text": {
+            "surface": "シャ",
+            "reading": "シャ",
+            "translation": "Katakana sha: Small ャ joins シ; シヤ uses full-sized ヤ.",
+            "romaji": "sha"
+          }
+        },
+        {
+          "id": "option-kc-30b7-30e3-1",
+          "text": {
+            "surface": "シヤ",
+            "reading": "シヤ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30b7-30e3-2",
+          "text": {
+            "surface": "シュ",
+            "reading": "シュ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30b7-30e3-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30b7-30e5",
+      "prompt": "Which katakana spelling uses the シ base sign + small yu (shu)? Compare small and full-sized kana.",
+      "explanation": "シュ is the contracted shu spelling. Small ュ joins シ; シユ uses full-sized ユ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30b7-30e5-0",
+          "text": {
+            "surface": "シュ",
+            "reading": "シュ",
+            "translation": "Katakana shu: Small ュ joins シ; シユ uses full-sized ユ.",
+            "romaji": "shu"
+          }
+        },
+        {
+          "id": "option-kc-30b7-30e5-1",
+          "text": {
+            "surface": "シユ",
+            "reading": "シユ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30b7-30e5-2",
+          "text": {
+            "surface": "ショ",
+            "reading": "ショ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30b7-30e5-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30b7-30e7",
+      "prompt": "Which katakana spelling uses the シ base sign + small yo (sho)? Compare small and full-sized kana.",
+      "explanation": "ショ is the contracted sho spelling. Small ョ joins シ; シヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30b7-30e7-0",
+          "text": {
+            "surface": "ショ",
+            "reading": "ショ",
+            "translation": "Katakana sho: Small ョ joins シ; シヨ uses full-sized ヨ.",
+            "romaji": "sho"
+          }
+        },
+        {
+          "id": "option-kc-30b7-30e7-1",
+          "text": {
+            "surface": "シヨ",
+            "reading": "シヨ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30b7-30e7-2",
+          "text": {
+            "surface": "シャ",
+            "reading": "シャ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30b7-30e7-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30c1-30e3",
+      "prompt": "Which katakana spelling uses the チ base sign + small ya (cha)? Compare small and full-sized kana.",
+      "explanation": "チャ is the contracted cha spelling. Small ャ joins チ; チヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30c1-30e3-0",
+          "text": {
+            "surface": "チャ",
+            "reading": "チャ",
+            "translation": "Katakana cha: Small ャ joins チ; チヤ uses full-sized ヤ.",
+            "romaji": "cha"
+          }
+        },
+        {
+          "id": "option-kc-30c1-30e3-1",
+          "text": {
+            "surface": "チヤ",
+            "reading": "チヤ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30c1-30e3-2",
+          "text": {
+            "surface": "チュ",
+            "reading": "チュ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30c1-30e3-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30c1-30e5",
+      "prompt": "Which katakana spelling uses the チ base sign + small yu (chu)? Compare small and full-sized kana.",
+      "explanation": "チュ is the contracted chu spelling. Small ュ joins チ; チユ uses full-sized ユ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30c1-30e5-0",
+          "text": {
+            "surface": "チュ",
+            "reading": "チュ",
+            "translation": "Katakana chu: Small ュ joins チ; チユ uses full-sized ユ.",
+            "romaji": "chu"
+          }
+        },
+        {
+          "id": "option-kc-30c1-30e5-1",
+          "text": {
+            "surface": "チユ",
+            "reading": "チユ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30c1-30e5-2",
+          "text": {
+            "surface": "チョ",
+            "reading": "チョ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30c1-30e5-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30c1-30e7",
+      "prompt": "Which katakana spelling uses the チ base sign + small yo (cho)? Compare small and full-sized kana.",
+      "explanation": "チョ is the contracted cho spelling. Small ョ joins チ; チヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30c1-30e7-0",
+          "text": {
+            "surface": "チョ",
+            "reading": "チョ",
+            "translation": "Katakana cho: Small ョ joins チ; チヨ uses full-sized ヨ.",
+            "romaji": "cho"
+          }
+        },
+        {
+          "id": "option-kc-30c1-30e7-1",
+          "text": {
+            "surface": "チヨ",
+            "reading": "チヨ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30c1-30e7-2",
+          "text": {
+            "surface": "チャ",
+            "reading": "チャ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30c1-30e7-0"
+    }
+  ]
+}

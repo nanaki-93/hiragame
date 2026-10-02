@@ -1,0 +1,291 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-contracted-k-s-t-reading",
+  "topicId": "katakana-foundations",
+  "title": "Contracted katakana: K, S and T rows — write in kana",
+  "description": "Use a Latin-letter spelling cue and base sign to distinguish small ャ/ュ/ョ from full-sized kana.",
+  "reviewItems": [
+    {
+      "id": "review-kc-reading-30ad-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30ad-30e3",
+      "skill": "Write katakana キャ (contracted kya spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30ad-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30ad-30e5",
+      "skill": "Write katakana キュ (contracted kyu spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30ad-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30ad-30e7",
+      "skill": "Write katakana キョ (contracted kyo spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30b7-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30b7-30e3",
+      "skill": "Write katakana シャ (contracted sha spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30b7-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30b7-30e5",
+      "skill": "Write katakana シュ (contracted shu spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30b7-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30b7-30e7",
+      "skill": "Write katakana ショ (contracted sho spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30c1-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30c1-30e3",
+      "skill": "Write katakana チャ (contracted cha spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30c1-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30c1-30e5",
+      "skill": "Write katakana チュ (contracted chu spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kc-reading-30c1-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-reading-30c1-30e7",
+      "skill": "Write katakana チョ (contracted cho spelling)",
+      "direction": "latin-and-base-cue-to-katakana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Original agent-authored katakana spelling cues and short common-loanword examples; no legacy CSV or F00 mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original English questions, explanations and translations; kana spellings and short common-word meanings are linguistic facts. No copied work or audio."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30ad-30e3",
+      "prompt": "Type the contracted katakana kya using the キ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "キャ is the contracted kya spelling. Small ャ joins キ; キヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "kya — キ base sign + small kana",
+        "reading": "kya — キ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "キャ",
+            "reading": "キャ",
+            "translation": "Contracted katakana kya spelling with small kana.",
+            "romaji": "kya"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30ad-30e5",
+      "prompt": "Type the contracted katakana kyu using the キ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "キュ is the contracted kyu spelling. Small ュ joins キ; キユ uses full-sized ユ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "kyu — キ base sign + small kana",
+        "reading": "kyu — キ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "キュ",
+            "reading": "キュ",
+            "translation": "Contracted katakana kyu spelling with small kana.",
+            "romaji": "kyu"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30ad-30e7",
+      "prompt": "Type the contracted katakana kyo using the キ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "キョ is the contracted kyo spelling. Small ョ joins キ; キヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "kyo — キ base sign + small kana",
+        "reading": "kyo — キ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "キョ",
+            "reading": "キョ",
+            "translation": "Contracted katakana kyo spelling with small kana.",
+            "romaji": "kyo"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30b7-30e3",
+      "prompt": "Type the contracted katakana sha using the シ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "シャ is the contracted sha spelling. Small ャ joins シ; シヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "sha — シ base sign + small kana",
+        "reading": "sha — シ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "シャ",
+            "reading": "シャ",
+            "translation": "Contracted katakana sha spelling with small kana.",
+            "romaji": "sha"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30b7-30e5",
+      "prompt": "Type the contracted katakana shu using the シ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "シュ is the contracted shu spelling. Small ュ joins シ; シユ uses full-sized ユ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "shu — シ base sign + small kana",
+        "reading": "shu — シ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "シュ",
+            "reading": "シュ",
+            "translation": "Contracted katakana shu spelling with small kana.",
+            "romaji": "shu"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30b7-30e7",
+      "prompt": "Type the contracted katakana sho using the シ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "ショ is the contracted sho spelling. Small ョ joins シ; シヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "sho — シ base sign + small kana",
+        "reading": "sho — シ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ショ",
+            "reading": "ショ",
+            "translation": "Contracted katakana sho spelling with small kana.",
+            "romaji": "sho"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30c1-30e3",
+      "prompt": "Type the contracted katakana cha using the チ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "チャ is the contracted cha spelling. Small ャ joins チ; チヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "cha — チ base sign + small kana",
+        "reading": "cha — チ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "チャ",
+            "reading": "チャ",
+            "translation": "Contracted katakana cha spelling with small kana.",
+            "romaji": "cha"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30c1-30e5",
+      "prompt": "Type the contracted katakana chu using the チ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "チュ is the contracted chu spelling. Small ュ joins チ; チユ uses full-sized ユ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "chu — チ base sign + small kana",
+        "reading": "chu — チ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "チュ",
+            "reading": "チュ",
+            "translation": "Contracted katakana chu spelling with small kana.",
+            "romaji": "chu"
+          }
+        }
+      ]
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kc-reading-30c1-30e7",
+      "prompt": "Type the contracted katakana cho using the チ base sign and a small kana. Do not use a full-sized kana.",
+      "explanation": "チョ is the contracted cho spelling. Small ョ joins チ; チヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "stimulus": {
+        "surface": "cho — チ base sign + small kana",
+        "reading": "cho — チ base sign + small kana",
+        "translation": "Latin-letter cue and named katakana base sign; write the contracted form."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "チョ",
+            "reading": "チョ",
+            "translation": "Contracted katakana cho spelling with small kana.",
+            "romaji": "cho"
+          }
+        }
+      ]
+    }
+  ]
+}

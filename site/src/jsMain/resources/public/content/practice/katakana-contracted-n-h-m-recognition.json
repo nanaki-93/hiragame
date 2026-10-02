@@ -1,0 +1,390 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-contracted-n-h-m-recognition",
+  "topicId": "katakana-foundations",
+  "title": "Contracted katakana: N, H and M rows — find the form",
+  "description": "Use a Latin-letter spelling cue and base sign to distinguish small ャ/ュ/ョ from full-sized kana.",
+  "reviewItems": [
+    {
+      "id": "review-kc-recognition-30cb-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30cb-30e3",
+      "skill": "Recognize katakana ニャ (contracted nya spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30cb-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30cb-30e5",
+      "skill": "Recognize katakana ニュ (contracted nyu spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30cb-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30cb-30e7",
+      "skill": "Recognize katakana ニョ (contracted nyo spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30d2-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30d2-30e3",
+      "skill": "Recognize katakana ヒャ (contracted hya spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30d2-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30d2-30e5",
+      "skill": "Recognize katakana ヒュ (contracted hyu spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30d2-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30d2-30e7",
+      "skill": "Recognize katakana ヒョ (contracted hyo spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30df-30e3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30df-30e3",
+      "skill": "Recognize katakana ミャ (contracted mya spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30df-30e5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30df-30e5",
+      "skill": "Recognize katakana ミュ (contracted myu spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-kc-recognition-30df-30e7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kc-recognition-30df-30e7",
+      "skill": "Recognize katakana ミョ (contracted myo spelling)",
+      "direction": "spelling-cue-to-contracted-form"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Original agent-authored katakana spelling cues and short common-loanword examples; no legacy CSV or F00 mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original English questions, explanations and translations; kana spellings and short common-word meanings are linguistic facts. No copied work or audio."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30cb-30e3",
+      "prompt": "Which katakana spelling uses the ニ base sign + small ya (nya)? Compare small and full-sized kana.",
+      "explanation": "ニャ is the contracted nya spelling. Small ャ joins ニ; ニヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30cb-30e3-0",
+          "text": {
+            "surface": "ニャ",
+            "reading": "ニャ",
+            "translation": "Katakana nya: Small ャ joins ニ; ニヤ uses full-sized ヤ.",
+            "romaji": "nya"
+          }
+        },
+        {
+          "id": "option-kc-30cb-30e3-1",
+          "text": {
+            "surface": "ニヤ",
+            "reading": "ニヤ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30cb-30e3-2",
+          "text": {
+            "surface": "ニュ",
+            "reading": "ニュ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30cb-30e3-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30cb-30e5",
+      "prompt": "Which katakana spelling uses the ニ base sign + small yu (nyu)? Compare small and full-sized kana.",
+      "explanation": "ニュ is the contracted nyu spelling. Small ュ joins ニ; ニユ uses full-sized ユ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30cb-30e5-0",
+          "text": {
+            "surface": "ニュ",
+            "reading": "ニュ",
+            "translation": "Katakana nyu: Small ュ joins ニ; ニユ uses full-sized ユ.",
+            "romaji": "nyu"
+          }
+        },
+        {
+          "id": "option-kc-30cb-30e5-1",
+          "text": {
+            "surface": "ニユ",
+            "reading": "ニユ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30cb-30e5-2",
+          "text": {
+            "surface": "ニョ",
+            "reading": "ニョ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30cb-30e5-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30cb-30e7",
+      "prompt": "Which katakana spelling uses the ニ base sign + small yo (nyo)? Compare small and full-sized kana.",
+      "explanation": "ニョ is the contracted nyo spelling. Small ョ joins ニ; ニヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30cb-30e7-0",
+          "text": {
+            "surface": "ニョ",
+            "reading": "ニョ",
+            "translation": "Katakana nyo: Small ョ joins ニ; ニヨ uses full-sized ヨ.",
+            "romaji": "nyo"
+          }
+        },
+        {
+          "id": "option-kc-30cb-30e7-1",
+          "text": {
+            "surface": "ニヨ",
+            "reading": "ニヨ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30cb-30e7-2",
+          "text": {
+            "surface": "ニャ",
+            "reading": "ニャ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30cb-30e7-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30d2-30e3",
+      "prompt": "Which katakana spelling uses the ヒ base sign + small ya (hya)? Compare small and full-sized kana.",
+      "explanation": "ヒャ is the contracted hya spelling. Small ャ joins ヒ; ヒヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30d2-30e3-0",
+          "text": {
+            "surface": "ヒャ",
+            "reading": "ヒャ",
+            "translation": "Katakana hya: Small ャ joins ヒ; ヒヤ uses full-sized ヤ.",
+            "romaji": "hya"
+          }
+        },
+        {
+          "id": "option-kc-30d2-30e3-1",
+          "text": {
+            "surface": "ヒヤ",
+            "reading": "ヒヤ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30d2-30e3-2",
+          "text": {
+            "surface": "ヒュ",
+            "reading": "ヒュ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30d2-30e3-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30d2-30e5",
+      "prompt": "Which katakana spelling uses the ヒ base sign + small yu (hyu)? Compare small and full-sized kana.",
+      "explanation": "ヒュ is the contracted hyu spelling. Small ュ joins ヒ; ヒユ uses full-sized ユ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30d2-30e5-0",
+          "text": {
+            "surface": "ヒュ",
+            "reading": "ヒュ",
+            "translation": "Katakana hyu: Small ュ joins ヒ; ヒユ uses full-sized ユ.",
+            "romaji": "hyu"
+          }
+        },
+        {
+          "id": "option-kc-30d2-30e5-1",
+          "text": {
+            "surface": "ヒユ",
+            "reading": "ヒユ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30d2-30e5-2",
+          "text": {
+            "surface": "ヒョ",
+            "reading": "ヒョ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30d2-30e5-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30d2-30e7",
+      "prompt": "Which katakana spelling uses the ヒ base sign + small yo (hyo)? Compare small and full-sized kana.",
+      "explanation": "ヒョ is the contracted hyo spelling. Small ョ joins ヒ; ヒヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30d2-30e7-0",
+          "text": {
+            "surface": "ヒョ",
+            "reading": "ヒョ",
+            "translation": "Katakana hyo: Small ョ joins ヒ; ヒヨ uses full-sized ヨ.",
+            "romaji": "hyo"
+          }
+        },
+        {
+          "id": "option-kc-30d2-30e7-1",
+          "text": {
+            "surface": "ヒヨ",
+            "reading": "ヒヨ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30d2-30e7-2",
+          "text": {
+            "surface": "ヒャ",
+            "reading": "ヒャ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30d2-30e7-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30df-30e3",
+      "prompt": "Which katakana spelling uses the ミ base sign + small ya (mya)? Compare small and full-sized kana.",
+      "explanation": "ミャ is the contracted mya spelling. Small ャ joins ミ; ミヤ uses full-sized ヤ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30df-30e3-0",
+          "text": {
+            "surface": "ミャ",
+            "reading": "ミャ",
+            "translation": "Katakana mya: Small ャ joins ミ; ミヤ uses full-sized ヤ.",
+            "romaji": "mya"
+          }
+        },
+        {
+          "id": "option-kc-30df-30e3-1",
+          "text": {
+            "surface": "ミヤ",
+            "reading": "ミヤ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30df-30e3-2",
+          "text": {
+            "surface": "ミュ",
+            "reading": "ミュ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30df-30e3-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30df-30e5",
+      "prompt": "Which katakana spelling uses the ミ base sign + small yu (myu)? Compare small and full-sized kana.",
+      "explanation": "ミュ is the contracted myu spelling. Small ュ joins ミ; ミユ uses full-sized ユ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30df-30e5-0",
+          "text": {
+            "surface": "ミュ",
+            "reading": "ミュ",
+            "translation": "Katakana myu: Small ュ joins ミ; ミユ uses full-sized ユ.",
+            "romaji": "myu"
+          }
+        },
+        {
+          "id": "option-kc-30df-30e5-1",
+          "text": {
+            "surface": "ミユ",
+            "reading": "ミユ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30df-30e5-2",
+          "text": {
+            "surface": "ミョ",
+            "reading": "ミョ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30df-30e5-0"
+    },
+    {
+      "type": "choice",
+      "id": "exercise-kc-recognition-30df-30e7",
+      "prompt": "Which katakana spelling uses the ミ base sign + small yo (myo)? Compare small and full-sized kana.",
+      "explanation": "ミョ is the contracted myo spelling. Small ョ joins ミ; ミヨ uses full-sized ヨ. These written forms are not interchangeable.",
+      "options": [
+        {
+          "id": "option-kc-30df-30e7-0",
+          "text": {
+            "surface": "ミョ",
+            "reading": "ミョ",
+            "translation": "Katakana myo: Small ョ joins ミ; ミヨ uses full-sized ヨ.",
+            "romaji": "myo"
+          }
+        },
+        {
+          "id": "option-kc-30df-30e7-1",
+          "text": {
+            "surface": "ミヨ",
+            "reading": "ミヨ",
+            "translation": "Different spelling; not the requested form."
+          }
+        },
+        {
+          "id": "option-kc-30df-30e7-2",
+          "text": {
+            "surface": "ミャ",
+            "reading": "ミャ",
+            "translation": "Different spelling; not the requested form."
+          }
+        }
+      ],
+      "correctOptionId": "option-kc-30df-30e7-0"
+    }
+  ]
+}
