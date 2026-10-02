@@ -27,6 +27,12 @@ class LocalRuntimeTests(unittest.TestCase):
         self.components = self.base / 'components'
         (self.components / 'widgets').mkdir(parents=True)
         (self.components / 'widgets' / 'LessonCard.kt').write_text('fun card() = true', encoding='utf-8')
+        self.site_lesson = self.base / 'site/lesson'
+        self.site_lesson.mkdir(parents=True)
+        (self.site_lesson / 'LocalLessonCoordinator.kt').write_text('fun load() = true', encoding='utf-8')
+        self.shared_lesson = self.base / 'shared/lesson'
+        self.shared_lesson.mkdir(parents=True)
+        (self.shared_lesson / 'LessonSession.kt').write_text('fun reduce() = true', encoding='utf-8')
         self.domain = self.base / 'domain'
         self.domain.mkdir()
         (self.domain / 'Session.kt').write_text('fun start() = true', encoding='utf-8')
@@ -43,7 +49,8 @@ class LocalRuntimeTests(unittest.TestCase):
 
     def errors(self):
         return runtime.validate(self.host, self.canonical, [self.entry],
-                                [self.pages, self.components, self.domain, self.progress, self.storage])
+                                [self.pages, self.components, self.site_lesson, self.shared_lesson,
+                                 self.domain, self.progress, self.storage])
 
     def assert_problem(self, fragment):
         self.assertIn(fragment, '\n'.join(self.errors()))
@@ -162,8 +169,32 @@ class LocalRuntimeTests(unittest.TestCase):
         widget.write_text('fun card() = true', encoding='utf-8')
         self.assertEqual([], self.errors())
 
+    def test_lesson_sources_reject_storage_and_legacy_services(self):
+        self.assertIn(runtime.SITE / 'lesson', runtime.SOURCE_DIRS)
+        self.assertIn(runtime.SHARED / 'lesson', runtime.SOURCE_DIRS)
+        for directory, name in ((self.site_lesson, 'LocalLessonCoordinator.kt'),
+                                (self.shared_lesson, 'LessonSession.kt')):
+            path = directory / name
+            original = path.read_text(encoding='utf-8')
+            for forbidden, error in (
+                ('window.localStorage.getItem("hiragame:state")', 'direct browser storage outside isolated adapter'),
+                ('window.sessionStorage.setItem("hiragame:state", "x")', 'direct browser storage outside isolated adapter'),
+                ('import com.github.nanaki_93.service.AuthService', 'legacy runtime dependency'),
+                ('val endpoint = apiUrl + "/auth/login"', 'legacy runtime dependency'),
+            ):
+                with self.subTest(directory=directory, forbidden=forbidden):
+                    path.write_text(forbidden, encoding='utf-8')
+                    self.assert_problem(f'{error} in {path}:1')
+            path.write_text(original, encoding='utf-8')
+            # Adapter names are exempt only inside the isolated storage directory.
+            lookalike = directory / 'BrowserProgressStore.kt'
+            lookalike.write_text('window.localStorage.getItem("hiragame:state")', encoding='utf-8')
+            self.assert_problem(f'direct browser storage outside isolated adapter in {lookalike}:1')
+            lookalike.unlink()
+        self.assertEqual([], self.errors())
+
     def test_new_source_directories_are_required(self):
-        for directory in (self.components, self.progress, self.storage):
+        for directory in (self.components, self.progress, self.storage, self.site_lesson, self.shared_lesson):
             with self.subTest(directory=directory):
                 renamed = directory.with_name(directory.name + '-moved')
                 directory.rename(renamed)
