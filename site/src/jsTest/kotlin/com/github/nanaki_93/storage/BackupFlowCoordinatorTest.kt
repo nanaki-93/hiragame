@@ -11,6 +11,7 @@ import com.github.nanaki_93.progress.SaveEnvelope
 import com.github.nanaki_93.progress.SavePreferences
 import com.github.nanaki_93.progress.SavedColorMode
 import com.github.nanaki_93.progress.encodeSave
+import com.github.nanaki_93.progress.changePreferences
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -36,6 +37,9 @@ class BackupFlowCoordinatorTest {
         }
         fun complete(index: Int, text: String) = reads[index](Result.success(text.encodeToByteArray()))
     }
+
+    private fun BackupFlowCoordinator(reader: BackupFileReader, newSnapshotId: () -> String = { "migration_id" }) =
+        BackupFlowCoordinator(LocalProgressOwner(MemoryProgressStore(MemoryProgressBacking()), { 200 }, { "local_id" }), reader, newSnapshotId)
 
     private val saved = SaveEnvelope(savedAtEpochMs = 50, snapshotId = "source_id", revision = 3,
         preferences = SavePreferences(colorMode = SavedColorMode.DARK, showRomaji = true),
@@ -185,6 +189,188 @@ class BackupFlowCoordinatorTest {
         assertEquals(baseline, owner.savedBaseline)
         assertEquals(0L, owner.generation)
         assertTrue(flow.state.value == BackupFlowState.Idle)
+        flow.dispose()
+        owner.dispose()
+    }
+
+    private fun reviewed(owner: LocalProgressOwner, platform: FakePlatform): BackupFlowCoordinator =
+        BackupFlowCoordinator(owner, BackupFileReader(platform)).also {
+            it.select(FileHint(), "candidate.json")
+            platform.complete(platform.reads.lastIndex, wrapped())
+            assertIs<BackupFlowState.Preview>(it.state.value)
+        }
+
+    @Test fun reviewNeverWritesAndConfirmIsSeparateOneUse() {
+        val backing = MemoryProgressBacking(encodeSave(saved.copy(snapshotId = "old_id")))
+        val owner = LocalProgressOwner(MemoryProgressStore(backing), { 200 }, { "local_id" })
+        val flow = reviewed(owner, FakePlatform())
+        val original = backing.raw
+        assertEquals(0L, owner.generation)
+        assertEquals(original, backing.raw)
+        flow.confirm() // preview alone cannot commit
+        assertEquals(original, backing.raw)
+        flow.requestConfirmation()
+        assertIs<BackupFlowState.Confirming>(flow.state.value)
+        assertEquals(original, backing.raw)
+        flow.confirm()
+        assertIs<BackupFlowState.Success>(flow.state.value)
+        val committed = backing.raw
+        flow.confirm()
+        flow.requestConfirmation()
+        assertEquals(committed, backing.raw)
+        assertEquals(1L, owner.generation)
+        flow.dispose()
+        owner.dispose()
+    }
+
+    @Test fun cancellationSelectionAndDisposalRevokeAuthorization() {
+        val backing = MemoryProgressBacking(encodeSave(saved.copy(snapshotId = "old_id")))
+        val owner = LocalProgressOwner(MemoryProgressStore(backing), { 200 }, { "local_id" })
+        val platform = FakePlatform()
+        val flow = reviewed(owner, platform)
+        flow.requestConfirmation()
+        flow.cancel()
+        flow.confirm()
+        assertEquals(BackupFlowState.Idle, flow.state.value)
+        assertEquals(0L, owner.generation)
+        flow.select(FileHint(), "again")
+        platform.complete(1, wrapped())
+        flow.requestConfirmation()
+        flow.select(FileHint(), "superseded")
+        flow.confirm()
+        platform.complete(2, wrapped())
+        flow.requestConfirmation()
+        flow.dispose()
+        flow.confirm()
+        assertEquals(0L, owner.generation)
+        assertEquals(encodeSave(saved.copy(snapshotId = "old_id")), backing.raw)
+        owner.dispose()
+    }
+
+    @Test fun mutationRetryReloadAndExternalChangeRequireRenewedReview() {
+        for (mode in listOf("mutation", "retry", "reload", "external", "missed")) {
+            val raw = encodeSave(saved.copy(snapshotId = "old_id"))
+            val backing = MemoryProgressBacking(raw)
+            val store = MemoryProgressStore(backing)
+            val owner = LocalProgressOwner(if (mode == "missed") object : ProgressStore by store {
+                override fun subscribe(onExternalChange: () -> Unit) = StoreSubscription {}
+            } else store, { 200 }, { "local_id" })
+            val flow = reviewed(owner, FakePlatform())
+            if (mode != "mutation") flow.requestConfirmation()
+            when (mode) {
+                "mutation" -> owner.mutate { changePreferences(it, it.preferences.copy(showReadings = false)) }
+                "retry" -> {
+                    store.writeFailure = StoreFailure.QUOTA
+                    owner.mutate { changePreferences(it, it.preferences.copy(showReadings = false)) }
+                    store.writeFailure = null
+                    owner.retrySaving()
+                }
+                "reload" -> owner.reloadSavedState()
+                "external", "missed" -> backing.externalChange(null)
+            }
+            if (mode == "missed") {
+                // Only the owner's final reread can detect an event that never arrived.
+                flow.confirm()
+                assertEquals(BackupConfirmationError.Replacement(ReplacementResult.Conflict),
+                    assertIs<BackupFlowState.Failure>(flow.state.value).reason)
+            } else {
+                flow.ownerChanged()
+                assertEquals(BackupConfirmationError.Expired,
+                    assertIs<BackupFlowState.Failure>(flow.state.value).reason)
+                flow.confirm()
+            }
+            assertEquals(0L, if (mode == "reload") owner.generation - 1 else owner.generation)
+            if (mode == "external" || mode == "missed") assertNull(backing.raw)
+            else assertTrue(backing.raw != null)
+            flow.requestConfirmation() // failure is not a preview
+            assertIs<BackupFlowState.Failure>(flow.state.value)
+            flow.renewReview()
+            assertIs<BackupFlowState.Preview>(flow.state.value)
+            if (mode == "external" || mode == "missed") {
+                flow.requestConfirmation()
+                assertEquals(BackupConfirmationError.Blocked,
+                    assertIs<BackupFlowState.Failure>(flow.state.value).reason)
+            }
+            flow.dispose()
+            owner.dispose()
+        }
+    }
+
+    @Test fun reconcilingUnknownStartupBaselineToMissingRequiresNewReviewAndConfirmation() {
+        val backing = MemoryProgressBacking()
+        val delegate = MemoryProgressStore(backing)
+        var denyRead = true
+        var reads = 0
+        var writes = 0
+        val store = object : ProgressStore by delegate {
+            override fun read(): StoreReadResult {
+                reads++
+                return if (denyRead) StoreReadResult.Failure(StoreFailure.DENIED) else delegate.read()
+            }
+            override fun write(expectedRaw: String?, replacementRaw: String): StoreWriteResult {
+                writes++
+                return delegate.write(expectedRaw, replacementRaw)
+            }
+        }
+        var nextId = 0
+        val owner = LocalProgressOwner(store, { 200 }, { "local_${++nextId}" })
+        val flow = reviewed(owner, FakePlatform())
+        val before = owner.state.value
+        assertEquals(PersistenceStatus.MemoryOnly(StoreFailure.DENIED), before.status)
+        assertNull(owner.savedBaseline)
+        assertEquals(false, owner.hasKnownBaseline)
+        assertEquals(1, reads)
+        denyRead = false
+
+        flow.requestConfirmation() // beginRestore reconciles missing, but cannot authorize the old review
+        assertEquals(BackupConfirmationError.Expired,
+            assertIs<BackupFlowState.Failure>(flow.state.value).reason)
+        assertEquals(true, owner.hasKnownBaseline)
+        assertEquals(before, owner.state.value) // state, raw and generation alone would miss this change
+        assertNull(owner.savedBaseline)
+        assertNull(backing.raw)
+        assertEquals(0L, owner.generation)
+        assertEquals(2, reads)
+        flow.confirm()
+        flow.requestConfirmation() // cannot turn a failure directly into a confirmation
+        assertEquals(0, writes)
+        assertIs<BackupFlowState.Failure>(flow.state.value)
+
+        flow.renewReview()
+        assertIs<BackupFlowState.Preview>(flow.state.value)
+        flow.requestConfirmation()
+        assertIs<BackupFlowState.Confirming>(flow.state.value)
+        assertEquals(0, writes)
+        flow.confirm()
+        assertIs<BackupFlowState.Success>(flow.state.value)
+        assertEquals(1, writes)
+        assertEquals(1L, owner.generation)
+        flow.confirm()
+        assertEquals(1, writes)
+        flow.dispose()
+        owner.dispose()
+    }
+
+    @Test fun failedWriteKeepsCandidateInactiveAndRequiresFreshConfirmation() {
+        val raw = encodeSave(saved.copy(snapshotId = "old_id"))
+        val backing = MemoryProgressBacking(raw)
+        val store = MemoryProgressStore(backing).apply { writeFailure = StoreFailure.QUOTA }
+        val owner = LocalProgressOwner(store, { 200 }, { "local_id" })
+        val before = owner.state.value
+        val flow = reviewed(owner, FakePlatform())
+        flow.requestConfirmation()
+        flow.confirm()
+        assertEquals(BackupConfirmationError.Replacement(ReplacementResult.Failure(StoreFailure.QUOTA)),
+            assertIs<BackupFlowState.Failure>(flow.state.value).reason)
+        flow.confirm()
+        assertEquals(before, owner.state.value)
+        assertEquals(raw, backing.raw)
+        assertEquals(0L, owner.generation)
+        store.writeFailure = null
+        flow.renewReview()
+        flow.requestConfirmation()
+        flow.confirm()
+        assertIs<BackupFlowState.Success>(flow.state.value)
         flow.dispose()
         owner.dispose()
     }

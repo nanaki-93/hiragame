@@ -35,18 +35,43 @@ sealed interface BackupFlowState {
     data object Idle : BackupFlowState
     data class Reading(val filename: String) : BackupFlowState
     data class Preview(val details: BackupPreview) : BackupFlowState
+    data class Confirming(val details: BackupPreview) : BackupFlowState
+    data class Success(val details: BackupPreview) : BackupFlowState
+    data class Failure(val details: BackupPreview, val reason: BackupConfirmationError) : BackupFlowState
     data class Error(val reason: BackupFlowError) : BackupFlowState
+}
+
+/** Fixed confirmation outcomes; never include store contents or imported text. */
+sealed interface BackupConfirmationError {
+    data object Expired : BackupConfirmationError
+    data object Blocked : BackupConfirmationError
+    data class Replacement(val result: ReplacementResult) : BackupConfirmationError
 }
 
 /** One transient candidate at a time. Selection and preview never authorize a learner write. */
 class BackupFlowCoordinator(
+    private val owner: LocalProgressOwner,
     private val reader: BackupFileReader = BackupFileReader(),
     private val newSnapshotId: () -> String = {
         "migration_${kotlin.random.Random.nextInt().toUInt().toString(16)}_${kotlin.random.Random.nextInt().toUInt().toString(16)}"
     },
 ) {
     private val mutableState = MutableStateFlow<BackupFlowState>(BackupFlowState.Idle)
-    val state: StateFlow<BackupFlowState> get() = mutableState
+    val state: StateFlow<BackupFlowState> get() {
+        expireIfOwnerChanged()
+        return mutableState
+    }
+    private data class OwnerView(
+        val generation: Long,
+        val state: LocalProgressState,
+        val baseline: String?,
+        val baselineKnown: Boolean,
+    )
+    private fun ownerView() = OwnerView(owner.generation, owner.state.value, owner.savedBaseline, owner.hasKnownBaseline)
+    private var reviewedOwner: OwnerView? = null
+    private var confirmation: ReplacementToken? = null
+    private var confirmingWrite = false
+    private val stopObservingGeneration = owner.observeGeneration { expireIfOwnerChanged() }
     private var candidate: ValidatedBackup? = null
     private var pending: BackupReadHandle? = null
     private var selection = 0L
@@ -76,6 +101,7 @@ class BackupFlowCoordinator(
                             BackupFlowState.Error(BackupFlowError.Validation(decoded.reason))
                         is BackupDecodeResult.Valid -> {
                             candidate = decoded.backup
+                            reviewedOwner = ownerView()
                             mutableState.value = BackupFlowState.Preview(decoded.backup.preview(displayName))
                         }
                     }
@@ -94,6 +120,79 @@ class BackupFlowCoordinator(
         else handle.cancel()
     }
 
+    /** Call when the UI observes an owner state/baseline change (including a save retry).
+     * The state getter and every action also check, so a missed notification cannot authorize a write. */
+    fun ownerChanged() { expireIfOwnerChanged() }
+
+    private fun expireIfOwnerChanged() {
+        if (disposed || confirmingWrite) return
+        val current = mutableState.value
+        val details = when (current) {
+            is BackupFlowState.Preview -> current.details
+            is BackupFlowState.Confirming -> current.details
+            else -> return
+        }
+        if (!owner.isCurrentGeneration(reviewedOwner?.generation ?: -1) || reviewedOwner != ownerView()) {
+            confirmation?.let(owner::cancelReplacement)
+            confirmation = null
+            reviewedOwner = null
+            mutableState.value = BackupFlowState.Failure(details, BackupConfirmationError.Expired)
+        }
+    }
+
+    /** A separate, explicit step after reviewing the candidate and current local state. */
+    fun requestConfirmation() {
+        if (disposed) return
+        expireIfOwnerChanged()
+        val details = (mutableState.value as? BackupFlowState.Preview)?.details ?: return
+        val backup = candidate ?: return
+        when (val prepared = owner.beginRestore(backup)) {
+            ReplacementPreparation.Blocked -> {
+                reviewedOwner = null
+                mutableState.value = BackupFlowState.Failure(details, BackupConfirmationError.Blocked)
+            }
+            is ReplacementPreparation.Ready -> {
+                // Reconciliation or an owner mutation during preparation invalidates this review.
+                if (!owner.isCurrentGeneration(reviewedOwner?.generation ?: -1) || reviewedOwner != ownerView()) {
+                    owner.cancelReplacement(prepared.token)
+                    reviewedOwner = null
+                    mutableState.value = BackupFlowState.Failure(details, BackupConfirmationError.Expired)
+                } else {
+                    confirmation = prepared.token
+                    mutableState.value = BackupFlowState.Confirming(details)
+                }
+            }
+        }
+    }
+
+    /** Failure consumes authorization. Only renewReview can return to Preview. */
+    fun confirm() {
+        if (disposed) return
+        expireIfOwnerChanged()
+        val details = (mutableState.value as? BackupFlowState.Confirming)?.details ?: return
+        val token = confirmation ?: return
+        confirmation = null
+        confirmingWrite = true
+        val result = try { owner.confirmReplacement(token) } finally { confirmingWrite = false }
+        reviewedOwner = null
+        if (result == ReplacementResult.Replaced) {
+            candidate = null
+            mutableState.value = BackupFlowState.Success(details)
+        } else {
+            mutableState.value = BackupFlowState.Failure(details, BackupConfirmationError.Replacement(result))
+        }
+    }
+
+    /** Revisit the warning against the latest owner state; never silently reuse an old token. */
+    fun renewReview() {
+        if (disposed || candidate == null) return
+        val details = (mutableState.value as? BackupFlowState.Failure)?.details ?: return
+        reviewedOwner = ownerView()
+        if (owner.isCurrentGeneration(reviewedOwner!!.generation)) {
+            mutableState.value = BackupFlowState.Preview(details)
+        }
+    }
+
     /** Also handles a dismissed picker; a subsequent selection may use the same file. */
     fun cancel() {
         if (disposed) return
@@ -105,6 +204,7 @@ class BackupFlowCoordinator(
         if (disposed) return
         disposed = true
         invalidate()
+        stopObservingGeneration()
         reader.dispose()
         mutableState.value = BackupFlowState.Idle
     }
@@ -113,6 +213,9 @@ class BackupFlowCoordinator(
         selection++
         val old = pending
         pending = null
+        confirmation?.let(owner::cancelReplacement)
+        confirmation = null
+        reviewedOwner = null
         candidate = null
         old?.cancel()
     }
