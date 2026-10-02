@@ -1,14 +1,12 @@
 import com.varabyte.kobweb.gradle.application.util.configAsKobwebApplication
 import kotlinx.html.meta
 import kotlinx.html.link
-import org.gradle.kotlin.dsl.kotlin
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kobweb.application)
-    alias(libs.plugins.kobwebx.markdown)
 }
 
 repositories {
@@ -85,6 +83,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
             }
         }
         val jsMain by getting {
@@ -95,14 +94,9 @@ kotlin {
                 implementation(libs.compose.html.core)
                 implementation(libs.kobweb.core)
                 implementation(libs.kobweb.silk)
-                implementation(libs.kobwebx.markdown)
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
                 // Shared models/logic
                 implementation(project(":shared"))
-                // Ktor client for JS
-                implementation("io.ktor:ktor-client-core:3.2.3")
-                implementation("io.ktor:ktor-client-js:3.2.3")
-                implementation("io.ktor:ktor-client-content-negotiation:3.2.3")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:3.2.3")
             }
         }
     }

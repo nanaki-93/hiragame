@@ -31,4 +31,4 @@ rootProject.name = "hiragame"
 
 include(":site")
 include(":shared")
-include(":backend")
+// Legacy backend source retained for possible data export; excluded from the application build.

@@ -1039,13 +1039,13 @@ class LocalPracticeCoordinatorTest {
         val path: dynamic = js("require('path')")
         val pages = "site/src/jsMain/kotlin/com/github/nanaki_93/pages/"
         var root: String = js("process.cwd()") as String
-        while (!(fs.existsSync(path.resolve(root, pages, "Login.kt")) as Boolean)) {
+        while (!(fs.existsSync(path.resolve(root, pages, "Index.kt")) as Boolean)) {
             val parent = path.dirname(root) as String
             check(parent != root) { "Active page sources not found" }
             root = parent
         }
         val forbiddenImports = Regex("^import\\s+com\\.github\\.nanaki_93\\.(?:config|service|models|util\\.launchSafe)(?:\\.|$)")
-        for (page in listOf("Index.kt", "Login.kt")) {
+        for (page in (fs.readdirSync(path.resolve(root, pages)) as Array<String>).filter { it.endsWith(".kt") }) {
             val source = fs.readFileSync(path.resolve(root, pages, page), "utf8") as String
             for (line in source.lines()) {
                 assertTrue(!forbiddenImports.containsMatchIn(line), "$page imports a legacy runtime dependency: $line")
@@ -1055,14 +1055,7 @@ class LocalPracticeCoordinatorTest {
                 assertTrue(legacy !in source, "$page uses $legacy")
             }
         }
-        val login = fs.readFileSync(path.resolve(root, pages, "Login.kt"), "utf8") as String
-        assertTrue("@Page(\"/login\")" in login)
-        assertTrue("No account required" in login)
-        assertTrue("href = \"/hiragame/\"" in login)
-        for (legacy in listOf("window.location", "window.fetch", "LaunchedEffect", "register(", "login(", "logout(",
-            "FormField", "SessionExpiredAlert")) {
-            assertTrue(legacy !in login, "Login route still performs legacy behavior: $legacy")
-        }
+        assertTrue(!(fs.existsSync(path.resolve(root, pages, "Login.kt")) as Boolean), "Legacy login route must stay retired")
         for (resource in listOf("config.json", "config.prod.json", "public/config.json", "public/config.prod.json")) {
             assertTrue(!(fs.existsSync(path.resolve(root, "site/src/jsMain/resources", resource)) as Boolean),
                 "Obsolete API configuration still exists: $resource")

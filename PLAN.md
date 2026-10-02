@@ -478,19 +478,21 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** F01 legacy preservation; F02–F05 verified local replacement. Complete any desired old-progress export first.
 
+**Status:** Active build/runtime retirement implemented 2026-10-03; [F13 preservation report](content-source/review-notes/f13-retirement.md). Backend-directory removal and any old-progress export remain deferred because export requirements are unknown. Deployed resources/secrets remain untouched.
+
 ### Implementation tasks
 
 - [ ] If existing personal progress matters, explicitly export/transform it before deleting its backend support. Document which legacy fields can meaningfully map to the new model; do not fabricate phrase mastery from old quiz scores.
 - [ ] Remove `backend/` after preserving source content and verifying local practice.
-- [ ] Remove `:backend` from `settings.gradle.kts` and unused Spring/JPA/JVM/backend plugin declarations, dependencies, and version-catalog entries.
-- [ ] Remove the unused JVM target from `shared/` if JS domain tests meet the target needs. Keep the JDK as a build prerequisite, not an app runtime requirement.
-- [ ] Remove frontend auth/game HTTP services, session handling, `Login.kt`, API DTOs/configuration, and Ktor dependencies that are no longer used.
+- [x] Remove `:backend` from `settings.gradle.kts` and unused Spring/JPA/JVM/backend plugin declarations, dependencies, and version-catalog entries.
+- [x] Remove the unused JVM target from `shared/` if JS domain tests meet the target needs. Keep the JDK as a build prerequisite, not an app runtime requirement.
+- [x] Remove frontend auth/game HTTP services, session handling, `Login.kt`, API DTOs/configuration, and Ktor dependencies that are no longer used.
 - [ ] Remove the backend `Dockerfile`, backend deployment workflow, Compose/database setup instructions, and obsolete backend-only quality configuration.
-- [ ] Remove unused markdown/icon/framework dependencies only after checking actual usage; keep useful frontend libraries.
-- [ ] Audit tracked configuration and public assets for obsolete endpoint references or secrets. Do not copy credentials into new content/config files.
+- [x] Remove unused markdown/icon/framework dependencies only after checking actual usage; keep useful frontend libraries.
+- [x] Audit tracked configuration and public assets for obsolete endpoint references or secrets. Do not copy credentials into new content/config files.
 - [ ] Document and, with explicit authorization, retire deployed Cloud Run/database resources and unused CI secrets. Deleting repository files does not stop cloud services or billing.
-- [ ] Preserve static Firebase Hosting if useful; no Firebase database/auth product is needed.
-- [ ] Avoid touching unrelated IDE configuration or unrelated working-tree changes.
+- [x] Preserve static Firebase Hosting if useful; no Firebase database/auth product is needed.
+- [x] Avoid touching unrelated IDE configuration or unrelated working-tree changes.
 
 ### Acceptance criteria
 
