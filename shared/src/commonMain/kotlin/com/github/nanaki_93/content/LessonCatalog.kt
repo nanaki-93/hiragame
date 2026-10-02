@@ -1,5 +1,7 @@
 package com.github.nanaki_93.content
 
+import com.github.nanaki_93.lesson.LessonCheckpointResolution
+import com.github.nanaki_93.lesson.resolveLessonCheckpoint
 import com.github.nanaki_93.progress.LessonProgress
 import com.github.nanaki_93.progress.LessonStage
 import com.github.nanaki_93.progress.SaveEnvelope
@@ -83,17 +85,6 @@ private fun recommendLesson(cards: List<LessonCard>, snapshot: SaveEnvelope): Le
     }
 }
 
-private fun checkpointPresent(lesson: Lesson, record: LessonProgress): Boolean {
-    val id = record.checkpointId ?: return true // A stage boundary has no item to resolve.
-    return when (record.stage) {
-        LessonStage.SITUATION, LessonStage.SUMMARY -> false
-        LessonStage.DIALOGUE -> lesson.dialogue.turns.any { it.id == id }
-        LessonStage.UNDERSTANDING, LessonStage.GUIDED_PRACTICE -> lesson.exercises.any { it.id == id }
-        LessonStage.ROLE_PLAY -> lesson.exercises.any { it is ProductionExercise && it.id == id } ||
-            lesson.conversationGraph?.nodes?.any { it.id == id } == true
-    }
-}
-
 /** Projection only: no save validation, repair, visit, completion, or persistence occurs here. */
 fun projectLessonCatalog(
     catalog: ContentCatalog,
@@ -111,7 +102,9 @@ fun projectLessonCatalog(
             entry.id, entry.topicId, lesson.title, lesson.situation, lesson.communicationGoal,
             lesson.difficulty, lesson.durationMinutes, lesson.prerequisiteLessonIds,
             LessonSavedStatus(record, documentAvailable = true,
-                checkpointAvailable = record?.let { checkpointPresent(lesson, it) }),
+                checkpointAvailable = record?.let {
+                    resolveLessonCheckpoint(lesson, it) is LessonCheckpointResolution.Available
+                }),
         )
     }
     val topicIds = lessonEntries.map { it.topicId }.toSet()

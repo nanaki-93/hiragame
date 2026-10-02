@@ -25,12 +25,15 @@ class LessonCatalogTest {
         "exercise", "Choose", listOf(ChoiceOption("yes", label = "Yes"), ChoiceOption("no", label = "No")),
         "yes", "Yes",
     )
+    private val reading = ReadingExercise("reading", "Read", text, AnswerRepresentation.KANA,
+        listOf(KanaReadingAnswer(text)), "Why")
+    private val completion = CompletionExercise("fill", "Fill", "{blank}", listOf(text), text, "Why")
     private val lesson = Lesson(
         1, 3, "first", "work", "First title", "At work", "Introduce yourself",
         AdvisoryDifficulty.BEGINNER, 8, emptyList(),
         Dialogue(listOf(Speaker("speaker", "A", "Engineer")), listOf(DialogueTurn("turn", "speaker", text))),
         emptyList(), emptyList(), RolePlayObjective("Talk", listOf("Polite")), emptyList(), review,
-        listOf(exercise, production),
+        listOf(exercise, reading, completion, production),
         ConversationGraph("node", listOf(TerminalNode("node", "Done"))),
     )
     private val second = lesson.copy(
@@ -74,10 +77,14 @@ class LessonCatalogTest {
             Triple(LessonStage.DIALOGUE, "turn", true),
             Triple(LessonStage.DIALOGUE, "exercise", false),
             Triple(LessonStage.UNDERSTANDING, "exercise", true),
-            Triple(LessonStage.GUIDED_PRACTICE, "exercise", true),
+            Triple(LessonStage.GUIDED_PRACTICE, "exercise", false),
+            Triple(LessonStage.GUIDED_PRACTICE, "reading", true),
+            Triple(LessonStage.GUIDED_PRACTICE, "fill", true),
+            Triple(LessonStage.UNDERSTANDING, "reading", false),
+            Triple(LessonStage.UNDERSTANDING, "fill", false),
             Triple(LessonStage.UNDERSTANDING, "turn", false),
             Triple(LessonStage.ROLE_PLAY, "production", true),
-            Triple(LessonStage.ROLE_PLAY, "node", true),
+            Triple(LessonStage.ROLE_PLAY, "node", false),
             Triple(LessonStage.ROLE_PLAY, "exercise", false),
             Triple(LessonStage.SITUATION, "turn", false),
             Triple(LessonStage.SUMMARY, "production", false),
