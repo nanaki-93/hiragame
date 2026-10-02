@@ -47,7 +47,7 @@ def read(path):
 class FoundationalContentTests(unittest.TestCase):
     def test_hiragana_basic_coverage(self):
         catalog = read(CONTENT / 'catalog.json')
-        self.assertEqual((1, 2), (catalog['formatVersion'], catalog['contentVersion']))
+        self.assertEqual((1, 3), (catalog['formatVersion'], catalog['contentVersion']))
         self.assertIn('kana-foundations', {topic['id'] for topic in catalog['topics']})
         entries = [entry for entry in catalog['entries']
                    if entry['id'].startswith('practice-hiragana-basic-')]
@@ -142,7 +142,7 @@ class FoundationalContentTests(unittest.TestCase):
         # The seed is an optional romaji exercise, not converted to kana by the version bump.
         seed_entry = next(entry for entry in catalog['entries'] if entry['id'] == 'practice-kana-a-i')
         seed = read(CONTENT / seed_entry['path'])
-        self.assertEqual(2, seed['contentVersion'])
+        self.assertEqual(3, seed['contentVersion'])
         self.assertIn('romaji', seed['title'].lower())
         self.assertEqual(['exercise-kana-a-choice', 'exercise-kana-i-reading'],
                          [ex['id'] for ex in seed['exercises']])
@@ -152,13 +152,13 @@ class FoundationalContentTests(unittest.TestCase):
         self.assertEqual(['i'], [answer['text'] for answer in seed['exercises'][1]['acceptedAnswers']])
         lesson_entry = next(entry for entry in catalog['entries'] if entry['id'] == 'lesson-confirm-meeting-time')
         lesson = read(CONTENT / lesson_entry['path'])
-        self.assertEqual(2, lesson['contentVersion'])
+        self.assertEqual(3, lesson['contentVersion'])
         self.assertEqual('f01-seed.md', lesson['review']['reviewNote'])
         self.assertEqual('exercise-complete-time', lesson['exercises'][1]['id'])
 
     def test_hiragana_voiced_coverage(self):
         catalog = read(CONTENT / 'catalog.json')
-        self.assertEqual((1, 2), (catalog['formatVersion'], catalog['contentVersion']))
+        self.assertEqual((1, 3), (catalog['formatVersion'], catalog['contentVersion']))
         self.assertIn('kana-foundations', {t['id'] for t in catalog['topics']})
         entries = [e for e in catalog['entries'] if e['id'].startswith('practice-hiragana-voiced-')]
         self.assertEqual(6, len(entries))
@@ -181,7 +181,7 @@ class FoundationalContentTests(unittest.TestCase):
                 self.assertIsNotNone(slug)
                 self.assertEqual(f'practice/hiragana-voiced-{slug}-{mode}.json', entry['path'])
                 doc = read(CONTENT / entry['path'])
-                self.assertEqual((1, 2, entry['id'], entry['topicId']),
+                self.assertEqual((1, 3, entry['id'], entry['topicId']),
                                  (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))
                 label = 'Semi-voiced' if slug == 'p' else 'Voiced'
                 action = 'find the sign' if mode == 'recognition' else 'write in kana'
@@ -264,7 +264,7 @@ class FoundationalContentTests(unittest.TestCase):
 
     def test_katakana_voiced_coverage(self):
         catalog = read(CONTENT / 'catalog.json')
-        self.assertEqual((1, 2), (catalog['formatVersion'], catalog['contentVersion']))
+        self.assertEqual((1, 3), (catalog['formatVersion'], catalog['contentVersion']))
         self.assertIn('katakana-foundations', {t['id'] for t in catalog['topics']})
         entries = [e for e in catalog['entries'] if e['id'].startswith('practice-katakana-voiced-')]
         self.assertEqual(6, len(entries))
@@ -291,7 +291,7 @@ class FoundationalContentTests(unittest.TestCase):
                 title = ('Semi-voiced' if slug == 'p' else 'Voiced') + ' katakana: ' + {
                     'g-z': 'G and Z rows', 'd-b': 'D and B rows', 'p': 'P row'
                 }[slug] + (' — find the sign' if mode == 'recognition' else ' — write in kana')
-                self.assertEqual((1, 2, doc_id, entry['topicId'], title),
+                self.assertEqual((1, 3, doc_id, entry['topicId'], title),
                                  (doc['formatVersion'], doc['contentVersion'], doc['id'],
                                   doc['topicId'], doc['title']))
                 self.assertTrue(doc['description'].strip())
@@ -392,7 +392,7 @@ class FoundationalContentTests(unittest.TestCase):
 
     def test_hiragana_contracted_coverage(self):
         catalog = read(CONTENT / 'catalog.json')
-        self.assertEqual((1, 2), (catalog['formatVersion'], catalog['contentVersion']))
+        self.assertEqual((1, 3), (catalog['formatVersion'], catalog['contentVersion']))
         entries = {e['id']: e for e in catalog['entries']
                    if e['id'].startswith('practice-hiragana-contracted-')}
         self.assertEqual(10, len(entries))
@@ -505,7 +505,7 @@ class FoundationalContentTests(unittest.TestCase):
 
     def test_katakana_basic_coverage(self):
         catalog = read(CONTENT / 'catalog.json')
-        self.assertEqual((1, 2), (catalog['formatVersion'], catalog['contentVersion']))
+        self.assertEqual((1, 3), (catalog['formatVersion'], catalog['contentVersion']))
         self.assertIn('katakana-foundations', {t['id'] for t in catalog['topics']})
         entries = [e for e in catalog['entries'] if e['id'].startswith('practice-katakana-basic-')]
         self.assertEqual(10, len(entries))
@@ -522,7 +522,7 @@ class FoundationalContentTests(unittest.TestCase):
                                  (entry['kind'], entry['topicId']))
                 self.assertRegex(entry['path'], r'^practice/katakana-basic-[a-z-]+\.json$')
                 doc = read(CONTENT / entry['path'])
-                self.assertEqual((1, 2, entry['id'], entry['topicId']),
+                self.assertEqual((1, 3, entry['id'], entry['topicId']),
                                  (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))
                 self.assertTrue(doc['title'].startswith('Basic katakana: '))
                 self.assertTrue(doc['description'].strip())
@@ -629,7 +629,7 @@ class FoundationalContentTests(unittest.TestCase):
                                   f'practice/katakana-contracted-{slug}-{mode}.json'),
                                  (entry['kind'], entry['topicId'], entry['path']))
                 doc = read(CONTENT / entry['path'])
-                self.assertEqual((1, 2, doc_id, 'katakana-foundations'),
+                self.assertEqual((1, 3, doc_id, 'katakana-foundations'),
                                  (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))
                 self.assertTrue(doc['title'].startswith(('Contracted katakana:', 'Katakana spelling:')))
                 self.assertEqual('reviewed', doc['review']['status'])
@@ -743,7 +743,7 @@ class FoundationalContentTests(unittest.TestCase):
             },
         }
         catalog = read(CONTENT / 'catalog.json')
-        self.assertEqual((1, 2), (catalog['formatVersion'], catalog['contentVersion']))
+        self.assertEqual((1, 3), (catalog['formatVersion'], catalog['contentVersion']))
         topics = [t for t in catalog['topics'] if t['id'] == 'foundational-vocabulary']
         self.assertEqual(1, len(topics))
         self.assertTrue(topics[0]['title'] and topics[0]['description'])
@@ -759,7 +759,7 @@ class FoundationalContentTests(unittest.TestCase):
                               f'practice/vocabulary-{category}-reading.json'),
                              (entry['kind'], entry['topicId'], entry['path']))
             doc = read(CONTENT / entry['path'])
-            self.assertEqual((1, 2, doc_id, entry['topicId']),
+            self.assertEqual((1, 3, doc_id, entry['topicId']),
                              (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))
             self.assertTrue(doc['title'] and doc['description'])
             self.assertEqual(6, len(doc['exercises']))
@@ -827,7 +827,7 @@ class FoundationalContentTests(unittest.TestCase):
     def test_all_micro_sets_reachable_and_unique(self):
         # Complete canonical scenario: execute only at the final gate.
         catalog = read(CONTENT / 'catalog.json')
-        self.assertEqual((1, 2), (catalog['formatVersion'], catalog['contentVersion']))
+        self.assertEqual((1, 3), (catalog['formatVersion'], catalog['contentVersion']))
         self.assertEqual(len(catalog['topics']), len({t['id'] for t in catalog['topics']}))
         entries = catalog['entries']
         self.assertEqual(len(entries), len({e['id'] for e in entries}))
@@ -837,7 +837,7 @@ class FoundationalContentTests(unittest.TestCase):
             with self.subTest(entry=entry['id']):
                 self.assertIn(entry['topicId'], {t['id'] for t in catalog['topics']})
                 doc = read(CONTENT / entry['path'])
-                self.assertEqual((1, 2, entry['id'], entry['topicId']),
+                self.assertEqual((1, 3, entry['id'], entry['topicId']),
                                  (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))
                 if entry['kind'] == 'practice':
                     self.assertTrue(1 <= len(doc['exercises']) <= 10, entry['id'])
@@ -856,7 +856,7 @@ class FoundationalContentTests(unittest.TestCase):
                          {entry['path'] for entry in entries})
 
     def _check_contracted_document(self, doc, entry, note):
-        self.assertEqual((1, 2, entry['id'], entry['topicId']),
+        self.assertEqual((1, 3, entry['id'], entry['topicId']),
                          (doc['formatVersion'], doc['contentVersion'], doc['id'], doc['topicId']))
         self.assertTrue(doc['title'].startswith(('Contracted hiragana:', 'Hiragana spelling:')))
         self.assertTrue(doc['description'].strip())
