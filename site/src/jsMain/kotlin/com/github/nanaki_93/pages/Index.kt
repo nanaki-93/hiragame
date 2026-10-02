@@ -261,7 +261,7 @@ fun HomePage() {
                         }
                     }
                 }
-                SavePreferencesSection(progress)
+                Link(path = "/settings") { Text("Settings / Backup") }
             }
         }
     }
@@ -374,7 +374,7 @@ internal fun saveStatusMessage(state: LocalProgressState): String = when (val st
 
 /** Independent of the bundled catalog: render status and preferences even if practice fails to load. */
 @Composable
-private fun SavePreferencesSection(progress: LocalProgressOwner) {
+internal fun SavePreferencesSection(progress: LocalProgressOwner) {
     val saved by progress.state.collectAsState()
     val colorModeState = ColorMode.currentState
     val downloads = remember(progress) { ProgressDownloads(progress, BrowserDownloadSink()) }

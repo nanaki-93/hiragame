@@ -421,18 +421,20 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** F00. Implement foundational primitives before new learning surfaces.
 
+**Status:** Implemented 2026-10-03; [F11 evidence](content-source/review-notes/f11-validation.md).
+
 ### Implementation tasks
 
-- [ ] Consolidate the existing `JpStyles.kt` and `SiteTheme.kt` palettes into one token/theme vocabulary aligned with approved mocks.
-- [ ] Reuse or simplify `BaseComponents.kt`; provide shared buttons, labeled inputs, status/error messages, lesson cards, transcript rows, and review controls.
-- [ ] Reuse the selected token colors and existing focus styles; remove unconditional outline suppression when adapting inputs. Do not add contrast or focus-verification tests.
-- [ ] Use semantic headings/landmarks, associated labels, meaningful control names, and non-colour-only answer feedback.
-- [ ] Reuse accepted native dialog semantics and simple status messages; preserve working focus behavior without adding custom keyboard systems or accessibility test gates.
-- [ ] Mark Japanese passages with `lang="ja"`; render authored furigana with semantic ruby markup where appropriate.
-- [ ] Use wrapping and responsive composition for long Japanese, authored ruby and mixed Japanese/code text. Check source and static fixtures, not rendered zoom, viewport or touch behavior. Do not apply the existing large kana font to full dialogues.
-- [ ] Honour reduced motion and avoid animated spinners/artificial waits as learning feedback.
-- [ ] Use system font fallbacks or locally bundled licensed fonts/icons. Do not require remote font/CDN requests for offline rendering.
-- [ ] Implement visible local-save status, optional-audio status, and actionable error messages consistently across features.
+- [x] Consolidate the existing `JpStyles.kt` and `SiteTheme.kt` palettes into one token/theme vocabulary aligned with approved mocks.
+- [x] Reuse or simplify `BaseComponents.kt`; provide shared buttons, labeled inputs, status/error messages, lesson cards, transcript rows, and review controls.
+- [x] Reuse the selected token colors and existing focus styles; remove unconditional outline suppression when adapting inputs. Do not add contrast or focus-verification tests.
+- [x] Use semantic headings/landmarks, associated labels, meaningful control names, and non-colour-only answer feedback.
+- [x] Reuse accepted native dialog semantics and simple status messages; preserve working focus behavior without adding custom keyboard systems or accessibility test gates.
+- [x] Mark Japanese passages with `lang="ja"`; render authored furigana with semantic ruby markup where appropriate.
+- [x] Use wrapping and responsive composition for long Japanese, authored ruby and mixed Japanese/code text. Check source and static fixtures, not rendered zoom, viewport or touch behavior. Do not apply the existing large kana font to full dialogues.
+- [x] Honour reduced motion and avoid animated spinners/artificial waits as learning feedback.
+- [x] Use system font fallbacks or locally bundled licensed fonts/icons. Do not require remote font/CDN requests for offline rendering.
+- [x] Implement visible local-save status, optional-audio status, and actionable error messages consistently across features.
 
 ### Acceptance criteria
 

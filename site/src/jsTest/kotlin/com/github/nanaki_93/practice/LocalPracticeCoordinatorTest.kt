@@ -943,7 +943,7 @@ class LocalPracticeCoordinatorTest {
         assertTrue("if (text.segments.isEmpty() || !showRuby) Text(text.surface)" in passageUi)
         assertTrue("if (answerHidden) return VisibleAids(false, null, null, null)" in passageUi)
         assertTrue("TagElement<HTMLElement>(\"rt\"" in passageUi && "Text(segment.surface)" in passageUi)
-        val saveUi = home.substringAfter("private fun SavePreferencesSection(").substringBefore("/** Keep raw drafts")
+        val saveUi = home.substringAfter("internal fun SavePreferencesSection(").substringBefore("/** Keep raw drafts")
         for (required in listOf("progress.state.collectAsState()", "H2 { Text(\"Save & preferences\") }",
             "saveStatusMessage(saved)", "PersistenceStatus.MemoryOnly", "progress.retrySaving()",
             "Fieldset {", "Legend { Text(\"Color mode\") }", "InputType.Radio", "Label(attrs",
@@ -951,8 +951,10 @@ class LocalPracticeCoordinatorTest {
             "selectColorMode(progress, mode)", "colorModeState.value = initialSilkMode(progress)")) {
             assertTrue(required in saveUi, "Home missing save/preference control: $required")
         }
-        assertTrue(home.indexOf("SavePreferencesSection(progress)") > home.indexOf("when (val current = state)"),
-            "Save status must render independently after every content load state")
+        val app = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/AppEntry.kt"), "utf8") as String
+        val settings = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/pages/Settings.kt"), "utf8") as String
+        assertTrue("LocalSaveStatus()" in app, "Save status must render outside content loading states")
+        assertTrue("SavePreferencesSection(LocalProgress.current)" in settings, "Settings must retain save controls")
         assertTrue("not saved" !in home && "lost when" !in home, "Home still claims checkpoints are never saved")
         val launchUi = home.substringAfter("val checkpoints = coordinator.savedCheckpoints()").substringBefore("} else {\n                            // Commands capture")
         for (required in listOf("PracticeCheckpointResolution.Available", "PracticeCheckpointResolution.Unavailable",
@@ -1006,8 +1008,9 @@ class LocalPracticeCoordinatorTest {
         assertTrue("localStorage" !in resetUi && "innerHTML" !in resetUi && "clear()" !in resetUi)
         assertTrue("if (it == ReplacementResult.Replaced) apply()" in home)
         assertTrue("reloadSavedAndApplyMode(progress) { colorModeState.value = initialSilkMode(progress) }" in recoveryUi)
-        assertTrue(home.indexOf("SavePreferencesSection(progress)") > home.indexOf("when (val current = state)"),
-            "Recovery controls must be available even on content load failure")
+        val navigation = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/components/widgets/LearningNavigation.kt"), "utf8") as String
+        assertTrue("LearningNavigation()" in app && "\"/settings\"" in navigation,
+            "Recovery controls must be reachable even on content load failure")
         assertTrue("ColorMode.current == ColorMode.DARK" in home &&
             "Modifier.backgroundColor(Colors.DarkBackground)" in home &&
             "Modifier.backgroundColor(Colors.DarkCardBackground).color(Colors.DarkText)" in home,
