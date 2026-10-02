@@ -1,6 +1,8 @@
 package com.github.nanaki_93.storage
 
 import com.github.nanaki_93.progress.ProgressUpdate
+import com.github.nanaki_93.progress.ResetScope
+import com.github.nanaki_93.progress.resetLearnerState
 import com.github.nanaki_93.progress.ValidatedBackup
 import com.github.nanaki_93.progress.SaveBounds
 import com.github.nanaki_93.progress.SaveCodec
@@ -86,6 +88,7 @@ class LocalProgressOwner(
     private sealed interface ReplacementOperation {
         data object ProtectedFresh : ReplacementOperation
         data class Restore(val candidate: ValidatedBackup) : ReplacementOperation
+        data class Reset(val scope: ResetScope) : ReplacementOperation
     }
     private data class PendingReplacement(
         val token: ReplacementToken,
@@ -297,6 +300,8 @@ class LocalProgressOwner(
         if (current.status == PersistenceStatus.Conflict ||
             (operation == ReplacementOperation.ProtectedFresh &&
                 (current.status !is PersistenceStatus.Protected || protectedRaw == null || protectedRaw != acknowledgedRaw)) ||
+            (operation is ReplacementOperation.Reset && operation.scope == ResetScope.PROGRESS_ONLY &&
+                current.status is PersistenceStatus.Protected) ||
             (current.status is PersistenceStatus.Protected && protectedRaw != acknowledgedRaw)
         ) return ReplacementPreparation.Blocked
         val token = ReplacementToken()
@@ -309,8 +314,8 @@ class LocalProgressOwner(
     fun prepareProtectedReplacement(): ReplacementPreparation =
         beginReplacement(ReplacementOperation.ProtectedFresh)
 
-    /** A preview is not authorization. Reconcile an unknown startup baseline before issuing a token. */
-    fun beginRestore(candidate: ValidatedBackup): ReplacementPreparation {
+    /** An unknown startup baseline must be reconciled before any explicit replacement. */
+    private fun beginReconciledReplacement(operation: ReplacementOperation): ReplacementPreparation {
         pendingReplacement = null
         if (disposed) return ReplacementPreparation.Blocked
         if (!baselineKnown && mutableState.value.status is PersistenceStatus.MemoryOnly) {
@@ -330,8 +335,16 @@ class LocalProgressOwner(
                 }
             }
         }
-        return beginReplacement(ReplacementOperation.Restore(candidate))
+        return beginReplacement(operation)
     }
+
+    /** A preview is not authorization. */
+    fun beginRestore(candidate: ValidatedBackup): ReplacementPreparation =
+        beginReconciledReplacement(ReplacementOperation.Restore(candidate))
+
+    /** Scope is bound to the one-use token; even an ineligible request supersedes older tokens. */
+    fun beginReset(scope: ResetScope): ReplacementPreparation =
+        beginReconciledReplacement(ReplacementOperation.Reset(scope))
 
     /** Compatibility entry point for the existing explicitly warned protected recovery control. */
     fun beginProtectedReplacement(): ProtectedReplacementToken? =
@@ -389,6 +402,20 @@ class LocalProgressOwner(
                 ReplacementOperation.ProtectedFresh -> SaveEnvelope(
                     savedAtEpochMs = replacementTime(), snapshotId = replacementId(), revision = 0,
                 )
+                is ReplacementOperation.Reset -> {
+                    val cleared = resetLearnerState(pending.snapshot, operation.scope)
+                    val revision = if (pending.status is PersistenceStatus.Protected) 0L else {
+                        if (pending.snapshot.revision >= SaveBounds.MAX_SAFE_INTEGER) {
+                            throw SaveEncodeException(SaveProblem.INVALID_SNAPSHOT)
+                        }
+                        pending.snapshot.revision + 1
+                    }
+                    val localId = replacementId()
+                    if (localId == pending.snapshot.snapshotId) {
+                        throw SaveEncodeException(SaveProblem.INVALID_SNAPSHOT)
+                    }
+                    cleared.copy(snapshotId = localId, savedAtEpochMs = replacementTime(), revision = revision)
+                }
                 is ReplacementOperation.Restore -> {
                     val imported = operation.candidate.snapshot
                     // Reject fabricated/stale candidates before copying them; do not trust their
