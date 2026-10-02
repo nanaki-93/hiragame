@@ -1,0 +1,321 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-katakana-voiced-d-b-reading",
+  "topicId": "katakana-foundations",
+  "title": "Voiced katakana: D and B rows — write in kana",
+  "description": "Type katakana from Latin-letter spelling cues, with base-sign context for same-sound signs. Kana answers only.",
+  "reviewItems": [
+    {
+      "id": "review-kv-reading-30c0",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30c0",
+      "skill": "Recall the spelling of voiced katakana ダ",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kv-reading-30c2",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30c2",
+      "skill": "Recall the spelling of voiced katakana ヂ",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kv-reading-30c5",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30c5",
+      "skill": "Recall the spelling of voiced katakana ヅ",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kv-reading-30c7",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30c7",
+      "skill": "Recall the spelling of voiced katakana デ",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kv-reading-30c9",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30c9",
+      "skill": "Recall the spelling of voiced katakana ド",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kv-reading-30d0",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30d0",
+      "skill": "Recall the spelling of voiced katakana バ",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kv-reading-30d3",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30d3",
+      "skill": "Recall the spelling of voiced katakana ビ",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kv-reading-30d6",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30d6",
+      "skill": "Recall the spelling of voiced katakana ブ",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kv-reading-30d9",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30d9",
+      "skill": "Recall the spelling of voiced katakana ベ",
+      "direction": "latin-and-base-cue-to-katakana"
+    },
+    {
+      "id": "review-kv-reading-30dc",
+      "targetKind": "exercise",
+      "targetId": "exercise-kv-reading-30dc",
+      "skill": "Recall the spelling of voiced katakana ボ",
+      "direction": "latin-and-base-cue-to-katakana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independent agent-authored voiced and semi-voiced katakana sign cues and feedback; no legacy CSV or mock text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-authored English copy and glosses; katakana correspondences are linguistic facts. No third-party work or audio used."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30c0",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "da",
+        "reading": "da",
+        "translation": "Latin-letter cue for a katakana spelling."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ダ",
+            "reading": "ダ",
+            "gloss": "Katakana voiced sign conventionally cued as da.",
+            "romaji": "da"
+          }
+        }
+      ],
+      "explanation": "The cue da is written ダ. Katakana voiced sign conventionally cued as da. Only this authored katakana spelling is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30c2",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "di (voiced spelling of the chi base sign)",
+        "reading": "di (voiced spelling of the chi base sign)",
+        "translation": "Latin-letter cue for a katakana spelling formed from the chi base sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ヂ",
+            "reading": "ヂ",
+            "gloss": "Katakana ヂ is the voiced spelling of チ (the chi base sign); sound alone does not fix its spelling.",
+            "romaji": "di"
+          }
+        }
+      ],
+      "explanation": "The cue di (voiced spelling of the chi base sign) is written ヂ. Katakana ヂ is the voiced spelling of チ (the chi base sign); sound alone does not fix its spelling. Only this authored katakana spelling is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30c5",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "du (voiced spelling of the tsu base sign)",
+        "reading": "du (voiced spelling of the tsu base sign)",
+        "translation": "Latin-letter cue for a katakana spelling formed from the tsu base sign."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ヅ",
+            "reading": "ヅ",
+            "gloss": "Katakana ヅ is the voiced spelling of ツ (the tsu base sign); sound alone does not fix its spelling.",
+            "romaji": "du"
+          }
+        }
+      ],
+      "explanation": "The cue du (voiced spelling of the tsu base sign) is written ヅ. Katakana ヅ is the voiced spelling of ツ (the tsu base sign); sound alone does not fix its spelling. Only this authored katakana spelling is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30c7",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "de",
+        "reading": "de",
+        "translation": "Latin-letter cue for a katakana spelling."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "デ",
+            "reading": "デ",
+            "gloss": "Katakana voiced sign conventionally cued as de.",
+            "romaji": "de"
+          }
+        }
+      ],
+      "explanation": "The cue de is written デ. Katakana voiced sign conventionally cued as de. Only this authored katakana spelling is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30c9",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "do",
+        "reading": "do",
+        "translation": "Latin-letter cue for a katakana spelling."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ド",
+            "reading": "ド",
+            "gloss": "Katakana voiced sign conventionally cued as do.",
+            "romaji": "do"
+          }
+        }
+      ],
+      "explanation": "The cue do is written ド. Katakana voiced sign conventionally cued as do. Only this authored katakana spelling is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30d0",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "ba",
+        "reading": "ba",
+        "translation": "Latin-letter cue for a katakana spelling."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "バ",
+            "reading": "バ",
+            "gloss": "Katakana voiced sign conventionally cued as ba.",
+            "romaji": "ba"
+          }
+        }
+      ],
+      "explanation": "The cue ba is written バ. Katakana voiced sign conventionally cued as ba. Only this authored katakana spelling is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30d3",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "bi",
+        "reading": "bi",
+        "translation": "Latin-letter cue for a katakana spelling."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ビ",
+            "reading": "ビ",
+            "gloss": "Katakana voiced sign conventionally cued as bi.",
+            "romaji": "bi"
+          }
+        }
+      ],
+      "explanation": "The cue bi is written ビ. Katakana voiced sign conventionally cued as bi. Only this authored katakana spelling is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30d6",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "bu",
+        "reading": "bu",
+        "translation": "Latin-letter cue for a katakana spelling."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ブ",
+            "reading": "ブ",
+            "gloss": "Katakana voiced sign conventionally cued as bu.",
+            "romaji": "bu"
+          }
+        }
+      ],
+      "explanation": "The cue bu is written ブ. Katakana voiced sign conventionally cued as bu. Only this authored katakana spelling is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30d9",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "be",
+        "reading": "be",
+        "translation": "Latin-letter cue for a katakana spelling."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ベ",
+            "reading": "ベ",
+            "gloss": "Katakana voiced sign conventionally cued as be.",
+            "romaji": "be"
+          }
+        }
+      ],
+      "explanation": "The cue be is written ベ. Katakana voiced sign conventionally cued as be. Only this authored katakana spelling is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-kv-reading-30dc",
+      "prompt": "From the Latin-letter spelling cue below, type the katakana sign (not romaji). For same-sound signs use the specified base sign.",
+      "stimulus": {
+        "surface": "bo",
+        "reading": "bo",
+        "translation": "Latin-letter cue for a katakana spelling."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ボ",
+            "reading": "ボ",
+            "gloss": "Katakana voiced sign conventionally cued as bo.",
+            "romaji": "bo"
+          }
+        }
+      ],
+      "explanation": "The cue bo is written ボ. Katakana voiced sign conventionally cued as bo. Only this authored katakana spelling is accepted."
+    }
+  ]
+}
