@@ -10,6 +10,8 @@ import com.github.nanaki_93.content.CompletionExercise
 import com.github.nanaki_93.content.JapaneseText
 import com.github.nanaki_93.content.ProductionExercise
 import com.github.nanaki_93.pages.promptAnswer
+import com.github.nanaki_93.pages.visibleAids
+import com.github.nanaki_93.pages.VisibleAids
 import com.github.nanaki_93.pages.practiceTopicGroups
 import com.github.nanaki_93.pages.saveStatusMessage
 import com.github.nanaki_93.pages.selectColorMode
@@ -53,6 +55,7 @@ import com.github.nanaki_93.storage.PersistenceStatus
 import com.github.nanaki_93.storage.ProgressMutationResult
 import com.github.nanaki_93.progress.CheckpointView
 import com.github.nanaki_93.progress.SavedColorMode
+import com.github.nanaki_93.progress.SavePreferences
 import com.github.nanaki_93.progress.SaveProblem
 import com.github.nanaki_93.progress.LessonProgress
 import com.github.nanaki_93.progress.LessonStage
@@ -292,6 +295,66 @@ class LocalPracticeCoordinatorTest {
         assertEquals(1, session().counts.selfAssessed)
         assertEquals(0, session().counts.revealed) // showing an example is not a graded or resolved outcome
         assertEquals(SessionView.Feedback(3), session().view)
+    }
+
+    @Test fun answerVisibilityWithholdsEveryIdentifyingAidUntilResolution() {
+        val prefs = SavePreferences(showReadings = true, showTranslation = true, showRomaji = true)
+        val word = JapaneseText("水", "みず", translation = "water", romaji = "mizu",
+            segments = listOf(com.github.nanaki_93.content.TextSegment("水", "みず")))
+        val hidden = VisibleAids(false, null, null, null)
+        assertEquals(hidden, visibleAids(word, prefs, answerHidden = true))
+        assertEquals(hidden, visibleAids(word, SavePreferences(), answerHidden = true))
+        assertEquals(VisibleAids(true, "みず", "water", "mizu"), visibleAids(word, prefs, answerHidden = false))
+        val off = prefs.copy(showReadings = false, showTranslation = false, showRomaji = false)
+        assertEquals(hidden, visibleAids(word, off, answerHidden = false))
+        val kana = JapaneseText("あ", "あ", gloss = "basic a", romaji = "a")
+        assertEquals(VisibleAids(true, "あ", "basic a", "a"), visibleAids(kana, prefs, answerHidden = false))
+        assertNull(visibleAids(word.copy(romaji = null), prefs, answerHidden = false).romaji)
+    }
+
+    @Test fun revealAndSkipExposeAuthoredFeedbackWithoutAwardingCorrectOrAdvancing() = runTest {
+        val progress = owner()
+        val practice = coordinator(this, BundledContentLoader(seedSource()), progress)
+        try {
+            practice.load()
+            runCurrent()
+            practice.start("practice-vocabulary-daily-reading")
+            fun session() = assertIs<LocalPracticeState.Ready>(practice.state.value).session!!
+            val initial = session()
+            val stimulus = assertIs<com.github.nanaki_93.content.ReadingExercise>(initial.plan.first().exercise).stimulus
+            assertEquals(VisibleAids(false, null, null, null),
+                visibleAids(stimulus, progress.state.value.snapshot.preferences, answerHidden = true))
+            assertEquals(ProgressMutationResult.Accepted, selectStudyAid(progress, StudyAid.READINGS, false))
+            assertEquals(ProgressMutationResult.Accepted, selectStudyAid(progress, StudyAid.TRANSLATION, false))
+            assertEquals(ProgressMutationResult.Accepted, selectStudyAid(progress, StudyAid.ROMAJI, true))
+            assertSame(initial, session())
+            practice.dispatch(PracticeCommand.Reveal(initial.id, initial.revision))
+            val revealed = session()
+            assertEquals(SessionView.Feedback(0), revealed.view)
+            assertEquals(0, revealed.counts.correct)
+            assertEquals(1, revealed.counts.revealed)
+            val result = assertIs<PracticeOutcome.Revealed>(revealed.outcomes.first())
+            val feedback = assertIs<AuthoredFeedback.Reading>(result.feedback)
+            assertEquals("みず", feedback.stimulus.reading)
+            assertEquals("water", feedback.stimulus.translation)
+            assertEquals("みず", assertIs<ReadingExpectedAnswer.Kana>(feedback.acceptedAnswers.first()).text.surface)
+            assertTrue(feedback.explanation.isNotBlank())
+            practice.dispatch(PracticeCommand.Reveal(initial.id, initial.revision)) // stale render
+            assertSame(revealed, session())
+            practice.dispatch(PracticeCommand.Continue(revealed.id, revealed.revision))
+            val next = session()
+            assertEquals(SessionView.Prompt(1), next.view)
+            practice.dispatch(PracticeCommand.Skip(next.id, next.revision))
+            val skipped = session()
+            assertEquals(SessionView.Feedback(1), skipped.view)
+            assertEquals(0, skipped.counts.correct)
+            assertEquals(1, skipped.counts.skipped)
+            assertIs<AuthoredFeedback.Reading>(assertIs<PracticeOutcome.Skipped>(skipped.outcomes[1]).feedback)
+            assertEquals(1, assertIs<SessionView.Feedback>(skipped.view).index)
+        } finally {
+            practice.dispose()
+            progress.dispose()
+        }
     }
 
     @Test fun feedbackNavigationIsExplicitGuardedAndReviewIsReadOnly() = runTest {
@@ -772,7 +835,7 @@ class LocalPracticeCoordinatorTest {
             "userId", "login", "GameMode", "LevelListRequest", "GameStatistics", "delay(", "launchSafe")) {
             assertTrue(obsolete !in home, "Home still contains $obsolete")
         }
-        for (required in listOf("PracticePrompt(session, view, send)", "promptAnswer(exercise, selectedChoice, draft, assessment, exampleRevealed)",
+        for (required in listOf("PracticePrompt(session, view, studyAids, send)", "promptAnswer(exercise, selectedChoice, draft, assessment, exampleRevealed)",
             "PracticeCommand.Submit(session.id, session.revision, answer)", "InputType.Radio", "InputType.Text",
             "TextArea(value = draft", "Legend {", "Label(attrs", "Input(type =", "attr(\"lang\", \"ja\")",
             "TagElement<HTMLElement>(\"ruby\"", "TagElement<HTMLElement>(\"rt\"", "remember(session.id, exercise.id)")) {
@@ -783,22 +846,40 @@ class LocalPracticeCoordinatorTest {
         assertTrue("if (exercise !is ProductionExercise || exampleRevealed)" in home)
         assertTrue("if (exampleRevealed) assessment?.let" in home)
         assertTrue(productionUi.indexOf("Reveal example and criteria") < productionUi.indexOf("Your self-assessment"))
-        assertTrue("P { JapanesePassage(example) }" in productionUi, "Authored example must be shown as Japanese text")
+        assertTrue("JapaneseStudyText(example, studyAids)" in productionUi, "Revealed example must honor study aids")
         for (unsafe in listOf("innerHTML", "unsafeHTML", "SearchableTextInput", "onKeyDown", "localStorage")) {
             assertTrue(unsafe !in home, "Home prompt contains unsafe or legacy behavior: $unsafe")
         }
-        for (required in listOf("SessionCounts(session)", "PracticeFeedback(session, view.index, reviewing = false)",
-            "PracticeFeedback(session, view.index, reviewing = true)", "SessionView.Complete ->", "SessionView.Review ->",
+        for (required in listOf("SessionCounts(session)", "PracticeFeedback(session, view.index, reviewing = false, studyAids = studyAids)",
+            "PracticeFeedback(session, view.index, reviewing = true, studyAids = studyAids)", "SessionView.Complete ->", "SessionView.Review ->",
             "PracticeCommand.Skip(session.id, session.revision)", "PracticeCommand.Reveal(session.id, session.revision)",
             "PracticeCommand.Continue(session.id, session.revision)", "PracticeCommand.Retry(session.id, session.revision)",
             "PracticeCommand.Previous(session.id, session.revision)", "PracticeCommand.Next(session.id, session.revision)",
             "PracticeCommand.Return(session.id, session.revision)", "PracticeCommand.Restart(session.id, session.revision, session.id)",
             "PracticeCommand.Leave(session.id, session.revision)", "counts.skipped", "counts.revealed", "counts.selfAssessed",
             "is AuthoredFeedback.Choice ->", "is AuthoredFeedback.Reading ->", "is AuthoredFeedback.Completion ->",
-            "is AuthoredFeedback.Production ->", "JapaneseFeedbackText(feedback.stimulus)", "JapaneseFeedbackText(feedback.completedExample)",
+            "is AuthoredFeedback.Production ->", "JapaneseFeedbackText(feedback.stimulus, studyAids)", "JapaneseFeedbackText(feedback.completedExample, studyAids)",
             "text.translation?.let", "text.gloss?.let", "Session outcomes", "typed responses are not retained", "not automatically graded")) {
             assertTrue(required in home, "Home missing feedback/navigation feature $required")
         }
+        val promptUi = home.substringAfter("private fun PracticePrompt(").substringBefore("private fun SessionCounts(")
+        val feedbackUi = home.substringAfter("private fun PracticeFeedback(").substringBefore("internal data class VisibleAids(")
+        val passageUi = home.substringAfter("internal data class VisibleAids(")
+        for (required in listOf("JapanesePassage(japanese, showRuby = visibleAids(japanese, studyAids, answerHidden = true).ruby)",
+            "JapanesePassage(exercise.stimulus, showRuby = visibleAids(exercise.stimulus, studyAids, answerHidden = true).ruby)",
+            "Answer-identifying study aids are withheld", "JapaneseStudyText(example, studyAids)")) {
+            assertTrue(required in promptUi, "Unresolved prompt must not expose an aid: $required")
+        }
+        assertTrue("japanese.translation" !in promptUi && "stimulus.reading" !in promptUi && "stimulus.romaji" !in promptUi)
+        for (required in listOf("JapaneseFeedbackText(japanese, studyAids)", "Reading: ${'$'}{text.reading}",
+            "Meaning: ${'$'}it", "Gloss: ${'$'}it", "text.romaji?.takeIf { preferences.showRomaji }",
+            "Explanation: ${'$'}{feedback.explanation}", "Authored examples, not a unique correct answer")) {
+            assertTrue(required in feedbackUi || required in passageUi, "Feedback missing $required")
+        }
+        assertTrue("else P { Text(option.label.orEmpty()) }" in feedbackUi,
+            "Label-only choices must not invent Japanese readings")
+        assertTrue("if (text.segments.isEmpty() || !showRuby) Text(text.surface)" in passageUi)
+        assertTrue("TagElement<HTMLElement>(\"rt\"" in passageUi && "Text(segment.surface)" in passageUi)
         val saveUi = home.substringAfter("private fun SavePreferencesSection(").substringBefore("/** Keep raw drafts")
         for (required in listOf("progress.state.collectAsState()", "H2 { Text(\"Save & preferences\") }",
             "saveStatusMessage(saved)", "PersistenceStatus.MemoryOnly", "progress.retrySaving()",

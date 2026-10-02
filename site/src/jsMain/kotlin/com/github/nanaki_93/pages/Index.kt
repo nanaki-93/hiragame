@@ -39,6 +39,7 @@ import com.github.nanaki_93.LocalProgress
 import com.github.nanaki_93.initialSilkMode
 import com.github.nanaki_93.progress.CheckpointView
 import com.github.nanaki_93.progress.SavedColorMode
+import com.github.nanaki_93.progress.SavePreferences
 import com.github.nanaki_93.progress.SaveProblem
 import com.github.nanaki_93.progress.BackupProblem
 import com.github.nanaki_93.progress.ResetScope
@@ -102,6 +103,8 @@ fun HomePage() {
     val progress = LocalProgress.current
     val coordinator = remember(progress) { LocalPracticeCoordinator(scope, progress, BundledContentLoader(BrowserContentTextSource())) }
     val state by coordinator.state.collectAsState()
+    val saved by progress.state.collectAsState()
+    val studyAids = saved.snapshot.preferences
     val darkMode = ColorMode.current == ColorMode.DARK
 
     DisposableEffect(coordinator) {
@@ -202,11 +205,11 @@ fun HomePage() {
                             val send: (PracticeCommand) -> Unit = coordinator::dispatch
                             SessionCounts(session)
                             when (val view = session.view) {
-                                is SessionView.Prompt -> PracticePrompt(session, view, send) { answer ->
+                                is SessionView.Prompt -> PracticePrompt(session, view, studyAids, send) { answer ->
                                     send(PracticeCommand.Submit(session.id, session.revision, answer))
                                 }
                                 is SessionView.Feedback -> {
-                                    PracticeFeedback(session, view.index, reviewing = false)
+                                    PracticeFeedback(session, view.index, reviewing = false, studyAids = studyAids)
                                     SecondaryButton("Retry this exercise", onClick = { send(PracticeCommand.Retry(session.id, session.revision)) })
                                     if (view.index > 0) SecondaryButton("Previous resolved exercise", onClick = {
                                         send(PracticeCommand.Previous(session.id, session.revision))
@@ -216,7 +219,7 @@ fun HomePage() {
                                     })
                                 }
                                 is SessionView.Review -> {
-                                    PracticeFeedback(session, view.index, reviewing = true)
+                                    PracticeFeedback(session, view.index, reviewing = true, studyAids = studyAids)
                                     if (view.index > 0) SecondaryButton("Previous resolved exercise", onClick = {
                                         send(PracticeCommand.Previous(session.id, session.revision))
                                     })
@@ -728,7 +731,8 @@ internal fun promptAnswer(
 
 @Composable
 private fun PracticePrompt(
-    session: PracticeSession, view: SessionView.Prompt, send: (PracticeCommand) -> Unit, submit: (PracticeAnswer) -> Unit,
+    session: PracticeSession, view: SessionView.Prompt, studyAids: SavePreferences,
+    send: (PracticeCommand) -> Unit, submit: (PracticeAnswer) -> Unit,
 ) {
     val exercise = session.plan[view.index].exercise
     // This composable leaves composition on feedback; retry or another exercise gets fresh drafts.
@@ -757,12 +761,14 @@ private fun PracticePrompt(
                         onChange { selectedChoice = option.id }
                     })
                     val japanese = option.text
-                    if (japanese != null) JapanesePassage(japanese) else Text(option.label.orEmpty())
+                    // Even a checked "show readings" preference cannot identify a choice before resolution.
+                    if (japanese != null) JapanesePassage(japanese, showRuby = visibleAids(japanese, studyAids, answerHidden = true).ruby) else Text(option.label.orEmpty())
                 }
             }
         }
         is ReadingExercise -> {
-            P { JapanesePassage(exercise.stimulus) }
+            // Stimulus reading, ruby, meaning and romaji can all give away the typed answer.
+            P { JapanesePassage(exercise.stimulus, showRuby = visibleAids(exercise.stimulus, studyAids, answerHidden = true).ruby) }
             Label(attrs = { attr("for", "practice-response") }) {
                 Text(if (exercise.answerRepresentation == AnswerRepresentation.KANA) "Reading in kana" else "Reading in romaji")
             }
@@ -804,9 +810,7 @@ private fun PracticePrompt(
                 // Reveal command resolves an item as revealed instead, so it cannot serve this step.
                 for ((index, example) in exercise.exampleResponses.withIndex()) {
                     P { Text("Example response ${index + 1} (not your answer):") }
-                    P { JapanesePassage(example) }
-                    val translation = example.translation
-                    if (translation != null) P { Text(translation) }
+                    JapaneseStudyText(example, studyAids)
                 }
                 P { Text("Compare your response with the authored criteria. Your assessment is not an automatic grade.") }
                 for ((index, criterion) in exercise.criteria.withIndex()) {
@@ -827,6 +831,9 @@ private fun PracticePrompt(
                 }
             }
         }
+    }
+    if (exercise is ReadingExercise || exercise is ChoiceExercise || exercise is CompletionExercise) {
+        P { Text("Answer-identifying study aids are withheld until you check, skip, or reveal this exercise.") }
     }
     val validation = view.validation
     if (validation != null) P(attrs = { attr("role", "alert") }) {
@@ -858,7 +865,7 @@ private fun SessionCounts(session: PracticeSession) {
 
 /** The stored outcome is read-only in review; only the active feedback view offers Retry/Continue. */
 @Composable
-private fun PracticeFeedback(session: PracticeSession, index: Int, reviewing: Boolean) {
+private fun PracticeFeedback(session: PracticeSession, index: Int, reviewing: Boolean, studyAids: SavePreferences) {
     val outcome = session.outcomes[index] ?: return
     H2 { Text(if (reviewing) "Review exercise ${index + 1} of ${session.plan.size}" else "Feedback · exercise ${index + 1} of ${session.plan.size}") }
     val exercise = session.plan[index].exercise
@@ -886,16 +893,16 @@ private fun PracticeFeedback(session: PracticeSession, index: Int, reviewing: Bo
             P { Text("Correct option:") }
             val option = feedback.correctOption
             val japanese = option.text
-            if (japanese != null) JapaneseFeedbackText(japanese) else P { Text(option.label.orEmpty()) }
+            if (japanese != null) JapaneseFeedbackText(japanese, studyAids) else P { Text(option.label.orEmpty()) }
             P { Text("Explanation: ${feedback.explanation}") }
         }
         is AuthoredFeedback.Reading -> {
             P { Text("Reading stimulus:") }
-            JapaneseFeedbackText(feedback.stimulus)
+            JapaneseFeedbackText(feedback.stimulus, studyAids)
             for ((number, answer) in feedback.acceptedAnswers.withIndex()) {
                 P { Text("Accepted reading ${number + 1} (${feedback.representation.name.lowercase()}):") }
                 when (answer) {
-                    is ReadingExpectedAnswer.Kana -> JapaneseFeedbackText(answer.text)
+                    is ReadingExpectedAnswer.Kana -> JapaneseFeedbackText(answer.text, studyAids)
                     is ReadingExpectedAnswer.Romaji -> P { Text(answer.text) }
                 }
             }
@@ -904,17 +911,17 @@ private fun PracticeFeedback(session: PracticeSession, index: Int, reviewing: Bo
         is AuthoredFeedback.Completion -> {
             for ((number, fill) in feedback.acceptedFills.withIndex()) {
                 P { Text("Accepted fill ${number + 1}:") }
-                JapaneseFeedbackText(fill)
+                JapaneseFeedbackText(fill, studyAids)
             }
             P { Text("Completed example:") }
-            JapaneseFeedbackText(feedback.completedExample)
+            JapaneseFeedbackText(feedback.completedExample, studyAids)
             P { Text("Explanation: ${feedback.explanation}") }
         }
         is AuthoredFeedback.Production -> {
             P { Text("Authored examples, not a unique correct answer:") }
             for ((number, example) in feedback.examples.withIndex()) {
                 P { Text("${example.label} ${number + 1}:") }
-                JapaneseFeedbackText(example.text)
+                JapaneseFeedbackText(example.text, studyAids)
             }
             for ((number, criterion) in feedback.criteria.withIndex()) {
                 P { Text("${criterion.label} ${number + 1}: ${criterion.text}") }
@@ -923,20 +930,44 @@ private fun PracticeFeedback(session: PracticeSession, index: Int, reviewing: Bo
     }
 }
 
+/** An unresolved answer-bearing stimulus or choice receives NO aids, regardless of preferences.
+ * Revealed or non-answer-bearing support may instead honor the learner's settings.
+ */
+internal data class VisibleAids(val ruby: Boolean, val reading: String?, val meaning: String?, val romaji: String?)
+
+internal fun visibleAids(text: JapaneseText, preferences: SavePreferences, answerHidden: Boolean): VisibleAids {
+    if (answerHidden) return VisibleAids(false, null, null, null)
+    return VisibleAids(
+        preferences.showReadings, text.reading.takeIf { preferences.showReadings },
+        (text.translation ?: text.gloss).takeIf { preferences.showTranslation },
+        text.romaji?.takeIf { preferences.showRomaji },
+    )
+}
+
 @Composable
-private fun JapaneseFeedbackText(text: JapaneseText) {
-    P { JapanesePassage(text) }
-    // A label-only choice never passes through here; do not infer a reading or meaning.
+private fun JapaneseStudyText(text: JapaneseText, preferences: SavePreferences) {
+    val aids = visibleAids(text, preferences, answerHidden = false)
+    P { JapanesePassage(text, aids.ruby) }
+    aids.reading?.let { P { Text("Reading: $it") } }
+    aids.meaning?.let { P { Text("Meaning/gloss: $it") } }
+    aids.romaji?.let { P { Text("Authored romaji: $it") } }
+}
+
+@Composable
+private fun JapaneseFeedbackText(text: JapaneseText, preferences: SavePreferences) {
+    // Feedback is not an optional hint: always give authored reading and meaning when present.
+    P { JapanesePassage(text, showRuby = preferences.showReadings) }
     P { Text("Reading: ${text.reading}") }
     text.translation?.let { P { Text("Meaning: $it") } }
     text.gloss?.let { P { Text("Gloss: $it") } }
+    text.romaji?.takeIf { preferences.showRomaji }?.let { P { Text("Authored romaji: $it") } }
 }
 
-/** Text nodes only: authored segments with readings become real ruby, never injected markup. */
+/** Text nodes only: authored segments with readings become real ruby only when permitted. */
 @Composable
-private fun JapanesePassage(text: JapaneseText) {
+private fun JapanesePassage(text: JapaneseText, showRuby: Boolean) {
     Span(attrs = { attr("lang", "ja"); classes("practice-japanese"); style { property("overflow-wrap", "anywhere") } }) {
-        if (text.segments.isEmpty()) Text(text.surface)
+        if (text.segments.isEmpty() || !showRuby) Text(text.surface)
         else for (segment in text.segments) {
             val reading = segment.reading
             if (reading == null) Text(segment.surface)
