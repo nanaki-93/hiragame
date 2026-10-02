@@ -77,6 +77,7 @@ class LocalLessonCoordinator(
     }
     private var requestedId: String? = null
     private var content: BundledContent? = null
+    val audioAssets get() = content?.catalog?.audioAssets.orEmpty()
     private var generation = 0L
     private var ownerGeneration = progress.generation
     private var loadJob: Job? = null

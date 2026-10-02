@@ -532,11 +532,16 @@ def check_audio(catalog, documents, root, notes):
             if not any(re.search(r'\breviewed\b', line, re.I) and
                        RECORDING_GRANT.search(line) and not REJECTION.search(line) for line in lines):
                 fail(loc, f'audio {audio_id} lacks explicit review and publication permission in review note')
+    total_audio_bytes = 0
     for i, asset in enumerate(catalog.get('audioAssets', [])):
         loc = f'catalog.json:$.audioAssets[{i}] ({asset["id"]})'
         path = safe_path(root, asset['path'], f'{loc}.path', 'audio')
         if not path.is_file():
             fail(f'{loc}.path', 'missing local audio asset')
+        size = path.stat().st_size
+        total_audio_bytes += size
+        if size > 5 * 1024 * 1024 or total_audio_bytes > 25 * 1024 * 1024:
+            fail(f'{loc}.path', 'audio size limit: 5 MiB each, 25 MiB total')
         permission = asset['permissionNote'].strip().lower()
         if REJECTION.search(permission) or not RECORDING_GRANT.search(permission):
             fail(f'{loc}.permissionNote', 'audio permission is not explicitly cleared for publication')

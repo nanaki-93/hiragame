@@ -395,16 +395,18 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** F01, F07, F11; F12 provides offline asset availability.
 
+**Status:** Implemented 2026-10-03; [F10 evidence](content-source/review-notes/f10-validation.md). Reviewed recordings remain omitted under the plan’s rights policy because none are available; synthetic device speech is optional and labelled. Cached lookup is covered with F12 release-policy tests.
+
 ### Implementation tasks
 
-- [ ] Add optional reviewed recordings for lesson turns/phrases with documented redistribution rights.
-- [ ] Implement play/pause, repeat, supported playback speeds, and a simple listen → pause → repeat shadowing sequence.
-- [ ] Require a user action to start playback; do not depend on autoplay being permitted.
-- [ ] Stop previous audio when changing turns, leaving a lesson, or beginning another playback.
-- [ ] Always show transcripts; missing audio must not block understanding or completion.
-- [ ] Report loading, unavailable, and playback-error states with a text-only fallback.
-- [ ] If browser Japanese text-to-speech is offered, label it as device-dependent synthetic audio. Do not claim offline availability or equivalence to reviewed recordings.
-- [ ] Keep audio out of learner saves and cap bundled/downloadable audio size for a predictable offline footprint.
+- [x] Add optional reviewed recordings for lesson turns/phrases with documented redistribution rights.
+- [x] Implement play/pause, repeat, supported playback speeds, and a simple listen → pause → repeat shadowing sequence.
+- [x] Require a user action to start playback; do not depend on autoplay being permitted.
+- [x] Stop previous audio when changing turns, leaving a lesson, or beginning another playback.
+- [x] Always show transcripts; missing audio must not block understanding or completion.
+- [x] Report loading, unavailable, and playback-error states with a text-only fallback.
+- [x] If browser Japanese text-to-speech is offered, label it as device-dependent synthetic audio. Do not claim offline availability or equivalence to reviewed recordings.
+- [x] Keep audio out of learner saves and cap bundled/downloadable audio size for a predictable offline footprint.
 
 ### Acceptance criteria
 
