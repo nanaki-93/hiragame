@@ -76,6 +76,7 @@ import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
 import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.core.Page
+import com.varabyte.kobweb.silk.components.navigation.Link
 import com.varabyte.kobweb.silk.style.toModifier
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.css.cssRem
@@ -125,6 +126,8 @@ fun HomePage() {
                 verticalArrangement = Arrangement.spacedBy(1.cssRem),
             ) {
                 H1 { Text("Hiragame") }
+                // Keep the catalog reachable during loading, empty practice, errors, and active sessions.
+                Link(path = "/topics") { Text("Topics / Learn") }
                 when (val current = state) {
                     LocalPracticeState.Loading -> {
                         H2 { Text("Loading reviewed practice") }
