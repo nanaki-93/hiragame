@@ -24,6 +24,9 @@ class LocalRuntimeTests(unittest.TestCase):
         self.pages.mkdir()
         self.entry = self.pages / 'Index.kt'
         self.entry.write_text('fun home() = "bundled content"', encoding='utf-8')
+        self.components = self.base / 'components'
+        (self.components / 'widgets').mkdir(parents=True)
+        (self.components / 'widgets' / 'LessonCard.kt').write_text('fun card() = true', encoding='utf-8')
         self.domain = self.base / 'domain'
         self.domain.mkdir()
         (self.domain / 'Session.kt').write_text('fun start() = true', encoding='utf-8')
@@ -40,7 +43,7 @@ class LocalRuntimeTests(unittest.TestCase):
 
     def errors(self):
         return runtime.validate(self.host, self.canonical, [self.entry],
-                                [self.pages, self.domain, self.progress, self.storage])
+                                [self.pages, self.components, self.domain, self.progress, self.storage])
 
     def assert_problem(self, fragment):
         self.assertIn(fragment, '\n'.join(self.errors()))
@@ -148,8 +151,19 @@ class LocalRuntimeTests(unittest.TestCase):
         (self.progress / 'SaveCodec.kt').write_text('import com.github.nanaki_93.service.GameService')
         self.assert_problem('legacy runtime dependency in')
 
+    def test_active_presentation_sources_are_scanned(self):
+        self.assertIn(runtime.SITE / 'components', runtime.SOURCE_DIRS)
+        self.assertIn(runtime.SITE / 'SiteTheme.kt', runtime.SOURCE_FILES)
+        widget = self.components / 'widgets' / 'LessonCard.kt'
+        widget.write_text('window.localStorage.getItem("hiragame:state")', encoding='utf-8')
+        self.assert_problem('direct browser storage outside isolated adapter in')
+        widget.write_text('import com.github.nanaki_93.service.AuthService', encoding='utf-8')
+        self.assert_problem('legacy runtime dependency in')
+        widget.write_text('fun card() = true', encoding='utf-8')
+        self.assertEqual([], self.errors())
+
     def test_new_source_directories_are_required(self):
-        for directory in (self.progress, self.storage):
+        for directory in (self.components, self.progress, self.storage):
             with self.subTest(directory=directory):
                 renamed = directory.with_name(directory.name + '-moved')
                 directory.rename(renamed)
