@@ -76,6 +76,17 @@ class LocalProgressOwner(
     /** Changes only on explicit reload (or disposal); consumers can reject stale callbacks. */
     var generation: Long = 0
         private set
+    private val generationListeners = mutableSetOf<(Long) -> Unit>()
+
+    /** Synchronous notification, including reloads whose resulting state compares equal. */
+    fun observeGeneration(listener: (Long) -> Unit): () -> Unit {
+        if (!disposed) generationListeners.add(listener)
+        return { generationListeners.remove(listener) }
+    }
+
+    private fun notifyGenerationChanged() {
+        generationListeners.toList().forEach { it(generation) }
+    }
 
     private val mutableState: MutableStateFlow<LocalProgressState>
     val state: StateFlow<LocalProgressState> get() = mutableState
@@ -158,6 +169,7 @@ class LocalProgressOwner(
         baselineKnown = true
         generation++
         mutableState.value = loaded
+        notifyGenerationChanged()
         return true
     }
 
@@ -169,6 +181,8 @@ class LocalProgressOwner(
         generation++
         subscription?.dispose()
         subscription = null
+        notifyGenerationChanged()
+        generationListeners.clear()
     }
 
     private fun fresh(colorMode: SavedColorMode? = null) = SaveEnvelope(
@@ -303,6 +317,7 @@ class LocalProgressOwner(
                 protectedRaw = null
                 generation++ // invalidate callbacks against the old learning state
                 mutableState.value = LocalProgressState(replacement, PersistenceStatus.Saved)
+                notifyGenerationChanged()
                 ProtectedReplacementResult.Replaced
             }
             is StoreWriteResult.Conflict -> {
