@@ -207,6 +207,130 @@ class F06ContentTest(unittest.TestCase):
             self.assertEqual(len(ids), len(set(ids)), field)
         self.assertFalse(any("audioId" in item for item in lesson["dialogue"]["turns"] + lesson["phrases"]))
 
+    def test_five_starters_and_supplemental_seed_have_complete_reviewed_material(self):
+        catalog = load("catalog.json")
+        starters = (
+            ("engineering-introduction", "workplace-introductions",
+             "Introduce yourself, your engineering role, and relevant experience, then invite a colleague to share their work."),
+            ("clarify-understanding", "workplace-clarification",
+             "Request clarification and confirm an interpretation of a teammate's request without assuming the task is to make a change."),
+            ("daily-update-blocker", "workplace-updates",
+             "Give a concise update and explain a blocker, including the help needed and a conditional next step."),
+            ("bug-reproduction", "workplace-bugs",
+             "Report expected versus actual behavior and reproducible steps for a test-screen bug without assuming its cause."),
+            ("code-review-request", "workplace-reviews",
+             "Request review of a small code change and respond constructively to a teammate's suggestion."),
+        )
+        entries = [entry for entry in catalog["entries"] if entry["kind"] == "lesson"]
+        self.assertEqual([entry["id"] for entry in entries],
+                         [f"lesson-{name}" for name, _, _ in starters] + ["lesson-confirm-meeting-time"])
+        self.assertEqual(len(entries), 6)
+        self.assertEqual(catalog["contentVersion"], 3)
+        topics = {topic["id"] for topic in catalog["topics"]}
+        note = (ROOT.parents[5] / "content-source/review-notes/f06-starter-lessons.md").read_text(encoding="utf-8")
+        documents = {}
+        all_ids = set()
+        for entry in catalog["entries"]:
+            doc = load(entry["path"])
+            self.assertEqual((doc["formatVersion"], doc["contentVersion"], doc["id"], doc["topicId"]),
+                             (1, 3, entry["id"], entry["topicId"]))
+            self.assertIn(entry["topicId"], topics)
+            self.assertNotIn(doc["id"], all_ids)
+            all_ids.add(doc["id"])
+            if entry["kind"] == "lesson":
+                documents[doc["id"]] = doc
+        for name, topic, goal in starters:
+            lesson = documents[f"lesson-{name}"]
+            self.assertEqual((lesson["topicId"], lesson["communicationGoal"]), (topic, goal))
+            self.assertTrue(lesson["situation"] and lesson["title"] and lesson["durationMinutes"] > 0)
+            self.assertIn(lesson["difficulty"], {"beginner", "intermediate", "advanced"})
+            self.assertTrue(6 <= len(lesson["dialogue"]["turns"]) <= 10)
+            self.assertTrue(5 <= len(lesson["phrases"]) <= 8)
+            self.assertTrue(1 <= len(lesson["grammarNotes"]) <= 2)
+            self.assertEqual({exercise["type"] for exercise in lesson["exercises"]},
+                             {"choice", "completion", "production"})
+            self.assertTrue(all(lesson["rolePlay"][key] for key in ("task", "criteria", "hints", "examples")))
+            self.assertEqual((lesson["review"]["status"], lesson["review"]["reviewerType"],
+                              lesson["review"]["rights"], lesson["review"]["reviewNote"]),
+                             ("reviewed", "agent", "publishable", "f06-starter-lessons.md"))
+            self.assertIn(f"`{lesson['id']}`", note)
+            speakers = {speaker["id"] for speaker in lesson["dialogue"]["speakers"]}
+            turns = {turn["id"] for turn in lesson["dialogue"]["turns"]}
+            targets = {item["id"] for item in lesson["phrases"] + lesson["exercises"]}
+            self.assertTrue(all(turn["speakerId"] in speakers for turn in lesson["dialogue"]["turns"]))
+            self.assertTrue(all(phrase.get("sourceTurnId") in turns for phrase in lesson["phrases"]
+                                if "sourceTurnId" in phrase))
+            self.assertTrue(all(item["targetId"] in targets for item in lesson["reviewItems"]))
+            self.assertTrue(all(prereq in documents for prereq in lesson["prerequisiteLessonIds"]))
+            for collection in (lesson["dialogue"]["speakers"], lesson["dialogue"]["turns"],
+                               lesson["phrases"], lesson["grammarNotes"], lesson["exercises"],
+                               lesson["reviewItems"]):
+                for item in collection:
+                    self.assertNotIn(item["id"], all_ids)
+                    all_ids.add(item["id"])
+                    self.assertIn(f"`{item['id']}`", note)
+            for exercise in lesson["exercises"]:
+                if exercise["type"] == "choice":
+                    self.assertIn(exercise["correctOptionId"], {option["id"] for option in exercise["options"]})
+                    for option in exercise["options"]:
+                        self.assertNotIn(option["id"], all_ids)
+                        all_ids.add(option["id"])
+                        self.assertIn(f"`{option['id']}`", note)
+                if exercise["type"] == "completion":
+                    self.assertTrue(exercise["acceptedAnswers"] and exercise["expectedCompletedExample"])
+                if exercise["type"] == "production":
+                    self.assertTrue(exercise["criteria"] and exercise["exampleResponses"])
+            def check_text(value):
+                if isinstance(value, dict):
+                    if "surface" in value and "reading" in value:
+                        self.assertTrue(value["reading"])
+                        if "segments" in value:
+                            self.assertTrue(value.get("translation"))
+                            self.assertEqual("".join(part["surface"] for part in value["segments"]), value["surface"])
+                    for child in value.values():
+                        check_text(child)
+                elif isinstance(value, list):
+                    for child in value:
+                        check_text(child)
+            check_text(lesson)
+            self.assertNotIn("audioId", json.dumps(lesson))
+        seed = documents["lesson-confirm-meeting-time"]
+        self.assertEqual((seed["topicId"], len(seed["dialogue"]["turns"])), ("workplace-clarification", 3))
+        self.assertEqual({speaker["id"] for speaker in seed["dialogue"]["speakers"]},
+                         {"speaker-colleague", "speaker-learner"})
+        self.assertEqual({turn["id"] for turn in seed["dialogue"]["turns"]},
+                         {"turn-time", "turn-check", "turn-confirm"})
+        self.assertEqual({item["id"] for item in seed["phrases"]},
+                         {"phrase-three-right", "phrase-excuse-me"})
+        self.assertEqual({item["id"] for item in seed["grammarNotes"]}, {"grammar-confirm-ne"})
+        self.assertEqual({item["id"] for item in seed["reviewItems"]},
+                         {"review-three-right", "review-complete-time"})
+        self.assertEqual({item["id"] for item in seed["exercises"]},
+                         {"exercise-check-response", "exercise-complete-time", "exercise-ask-confirmation"})
+        self.assertEqual({option["id"] for item in seed["exercises"] if item["type"] == "choice"
+                          for option in item["options"]}, {"option-check-three", "option-change-four"})
+        self.assertEqual(seed["conversationGraph"]["entryNodeId"], "node-time")
+        self.assertEqual({node["id"] for node in seed["conversationGraph"]["nodes"]},
+                         {"node-time", "node-choice", "node-guidance", "node-completion", "node-end"})
+        self.assertIn("supplemental", note)
+        def walk(identifier, visited):
+            self.assertNotIn(identifier, visited, "cyclic advisory prerequisites")
+            for parent in documents[identifier]["prerequisiteLessonIds"]:
+                self.assertIn(parent, documents)
+                walk(parent, visited | {identifier})
+        for identifier in documents:
+            walk(identifier, set())
+
+    def test_review_request_answers_and_example_only_free_response(self):
+        lesson = load("lessons/code-review-request.json")
+        choice, completion, production = lesson["exercises"]
+        self.assertEqual(choice["correctOptionId"], "option-review-focus")
+        self.assertEqual({answer["surface"] for answer in completion["acceptedAnswers"]},
+                         {"ご提案ありがとうございます", "提案ありがとうございます"})
+        self.assertTrue(production["criteria"] and production["exampleResponses"])
+        self.assertIn("other constructive polite responses", production["criteria"][-1])
+        self.assertIn("other constructive polite replies", lesson["rolePlay"]["criteria"][-1])
+
 
 if __name__ == "__main__":
     unittest.main()
