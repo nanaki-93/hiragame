@@ -10,6 +10,7 @@ import com.github.nanaki_93.content.CompletionExercise
 import com.github.nanaki_93.content.JapaneseText
 import com.github.nanaki_93.content.ProductionExercise
 import com.github.nanaki_93.pages.promptAnswer
+import com.github.nanaki_93.pages.JapaneseSubmissionGuard
 import com.github.nanaki_93.pages.visibleAids
 import com.github.nanaki_93.pages.VisibleAids
 import com.github.nanaki_93.pages.practiceTopicGroups
@@ -295,6 +296,46 @@ class LocalPracticeCoordinatorTest {
         assertEquals(1, session().counts.selfAssessed)
         assertEquals(0, session().counts.revealed) // showing an example is not a graded or resolved outcome
         assertEquals(SessionView.Feedback(3), session().view)
+    }
+
+    @Test fun imeGuardRequiresDeliberateNonComposingNonRepeatSubmission() {
+        val guard = JapaneseSubmissionGuard()
+        assertTrue(guard.canSubmit(false))
+        assertTrue(guard.canSubmitOnEnter(false, 13, false))
+        guard.compositionStarted()
+        assertTrue(!guard.canSubmit(false)) // button cannot grade an active composition
+        assertTrue(!guard.canSubmitOnEnter(false, 13, false))
+        guard.compositionEnded() // end itself does not dispatch anything
+        assertTrue(!guard.canSubmit(true)) // native signal also blocks a click
+        assertTrue(!guard.canSubmitOnEnter(true, 13, false))
+        assertTrue(!guard.canSubmitOnEnter(false, 229, false)) // legacy IME key
+        assertTrue(!guard.canSubmitOnEnter(false, 13, true)) // held Enter
+        assertTrue(guard.canSubmitOnEnter(false, 13, false)) // later deliberate Enter
+        assertTrue(guard.canSubmit(false)) // or later explicit button
+    }
+
+    @Test fun homeWiresCompositionGuardToBothSingleLineInputsAndSubmitPath() {
+        val fs: dynamic = js("require('fs')")
+        val path: dynamic = js("require('path')")
+        val file = "site/src/jsMain/kotlin/com/github/nanaki_93/pages/Index.kt"
+        var root: String = js("process.cwd()") as String
+        while (!(fs.existsSync(path.resolve(root, file)) as Boolean)) root = path.dirname(root) as String
+        val home = fs.readFileSync(path.resolve(root, file), "utf8") as String
+        val prompt = home.substringAfter("private fun PracticePrompt(").substringBefore("private fun SessionCounts(")
+        assertEquals(2, Regex("JapaneseAnswerInput\\(draft, \\{ draft = it \\}, submissionGuard, ::submitPrompt\\)").findAll(prompt).count())
+        for (required in listOf("remember(session.id, exercise.id) { JapaneseSubmissionGuard() }",
+            "submissionGuard.canSubmit(nativeComposing)", "submitPrompt()", "guard.canSubmitOnEnter(",
+            "native.isComposing == true, (native.keyCode as? Int) ?: 0, native.repeat == true", "event.preventDefault()", "compositionstart",
+            "compositionend", "removeEventListener", "onDispose", "if (event.key == \"Enter\"",
+            "if (it.nativeEvent.asDynamic().isComposing == true) guard.compositionStarted()")) {
+            assertTrue(required in prompt, "Missing guarded Japanese submission wiring: $required")
+        }
+        assertTrue("guard.compositionEnded()" in prompt && "submit()" !in prompt.substringAfter("val ended: (Event)").substringBefore("onDispose"),
+            "Composition-end must never submit")
+        val textarea = prompt.substringAfter("is ProductionExercise -> {").substringBefore("if (exercise is ReadingExercise ||")
+        assertTrue("TextArea(value = draft" in textarea && "onKeyDown" !in textarea)
+        assertTrue("Form(" !in prompt && "<form" !in prompt, "No unguarded form submit route")
+        assertTrue("PracticeCommand.Submit(session.id, session.revision, answer)" in home)
     }
 
     @Test fun answerVisibilityWithholdsEveryIdentifyingAidUntilResolution() {
@@ -847,7 +888,7 @@ class LocalPracticeCoordinatorTest {
         assertTrue("if (exampleRevealed) assessment?.let" in home)
         assertTrue(productionUi.indexOf("Reveal example and criteria") < productionUi.indexOf("Your self-assessment"))
         assertTrue("JapaneseStudyText(example, studyAids)" in productionUi, "Revealed example must honor study aids")
-        for (unsafe in listOf("innerHTML", "unsafeHTML", "SearchableTextInput", "onKeyDown", "localStorage")) {
+        for (unsafe in listOf("innerHTML", "unsafeHTML", "SearchableTextInput", "localStorage")) {
             assertTrue(unsafe !in home, "Home prompt contains unsafe or legacy behavior: $unsafe")
         }
         for (required in listOf("SessionCounts(session)", "PracticeFeedback(session, view.index, reviewing = false, studyAids = studyAids)",
