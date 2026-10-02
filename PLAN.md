@@ -487,7 +487,8 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 - [x] Remove `:backend` from `settings.gradle.kts` and unused Spring/JPA/JVM/backend plugin declarations, dependencies, and version-catalog entries.
 - [x] Remove the unused JVM target from `shared/` if JS domain tests meet the target needs. Keep the JDK as a build prerequisite, not an app runtime requirement.
 - [x] Remove frontend auth/game HTTP services, session handling, `Login.kt`, API DTOs/configuration, and Ktor dependencies that are no longer used.
-- [ ] Remove the backend `Dockerfile`, backend deployment workflow, Compose/database setup instructions, and obsolete backend-only quality configuration.
+- [x] Remove the root backend `Dockerfile`, backend deployment workflow, active Compose/database setup instructions, and obsolete backend-only quality configuration.
+- [ ] Remove the preserved backend-directory Compose/schema sources after resolving legacy export requirements.
 - [x] Remove unused markdown/icon/framework dependencies only after checking actual usage; keep useful frontend libraries.
 - [x] Audit tracked configuration and public assets for obsolete endpoint references or secrets. Do not copy credentials into new content/config files.
 - [ ] Document and, with explicit authorization, retire deployed Cloud Run/database resources and unused CI secrets. Deleting repository files does not stop cloud services or billing.
