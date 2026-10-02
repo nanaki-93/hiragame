@@ -157,6 +157,56 @@ class F06ContentTest(unittest.TestCase):
             self.assertEqual(len(ids), len(set(ids)), field)
         self.assertFalse(any("audioId" in item for item in lesson["dialogue"]["turns"] + lesson["phrases"]))
 
+    def test_bug_reproduction_is_fourth_starter_with_reviewed_steps_and_contrast(self):
+        catalog = load("catalog.json")
+        lesson = load("lessons/bug-reproduction.json")
+        entry = catalog["entries"][4]
+        self.assertEqual((entry["id"], entry["kind"], entry["topicId"], entry["path"]),
+                         ("lesson-bug-reproduction", "lesson", "workplace-bugs",
+                          "lessons/bug-reproduction.json"))
+        self.assertIn("workplace-bugs", {topic["id"] for topic in catalog["topics"]})
+        self.assertEqual((lesson["id"], lesson["topicId"], lesson["contentVersion"]),
+                         (entry["id"], entry["topicId"], catalog["contentVersion"]))
+        self.assertEqual(lesson["communicationGoal"],
+                         "Report expected versus actual behavior and reproducible steps for a test-screen bug without assuming its cause.")
+        self.assertEqual(lesson["prerequisiteLessonIds"], ["lesson-daily-update-blocker"])
+        self.assertTrue(lesson["title"] and lesson["situation"] and lesson["durationMinutes"] > 0)
+        self.assertTrue(6 <= len(lesson["dialogue"]["turns"]) <= 10)
+        self.assertTrue(5 <= len(lesson["phrases"]) <= 8)
+        self.assertTrue(1 <= len(lesson["grammarNotes"]) <= 2)
+        self.assertEqual({ex["type"] for ex in lesson["exercises"]}, {"choice", "completion", "production"})
+        self.assertTrue(all(lesson["rolePlay"][key] for key in ("task", "criteria", "hints", "examples")))
+        turns = {turn["id"] for turn in lesson["dialogue"]["turns"]}
+        targets = {item["id"] for item in lesson["phrases"] + lesson["exercises"]}
+        self.assertTrue(all(phrase["sourceTurnId"] in turns for phrase in lesson["phrases"]))
+        self.assertTrue(all(item["targetId"] in targets for item in lesson["reviewItems"]))
+        for turn in lesson["dialogue"]["turns"]:
+            text = turn["text"]
+            self.assertTrue(text["reading"] and text["translation"])
+            self.assertEqual("".join(s["surface"] for s in text["segments"]), text["surface"])
+        choice = next(ex for ex in lesson["exercises"] if ex["type"] == "choice")
+        self.assertEqual(choice["correctOptionId"], "option-bug-observed")
+        self.assertEqual({option["id"] for option in choice["options"]},
+                         {"option-bug-observed", "option-bug-guess"})
+        completion = next(ex for ex in lesson["exercises"] if ex["type"] == "completion")
+        self.assertEqual({answer["surface"] for answer in completion["acceptedAnswers"]},
+                         {"実際には", "実際は"})
+        production = next(ex for ex in lesson["exercises"] if ex["type"] == "production")
+        self.assertTrue(production["criteria"] and production["exampleResponses"])
+        for text in production["exampleResponses"] + lesson["rolePlay"]["examples"]:
+            self.assertEqual("".join(s["surface"] for s in text["segments"]), text["surface"])
+            self.assertTrue(text["reading"] and text["translation"])
+        self.assertEqual((lesson["review"]["status"], lesson["review"]["reviewerType"],
+                          lesson["review"]["rights"], lesson["review"]["reviewNote"]),
+                         ("reviewed", "agent", "publishable", "f06-starter-lessons.md"))
+        previous = [load(f"lessons/{name}.json") for name in
+                    ("engineering-introduction", "clarify-understanding", "daily-update-blocker",
+                     "confirm-meeting-time")]
+        for field in ("phrases", "exercises", "reviewItems"):
+            ids = [item["id"] for doc in previous + [lesson] for item in doc[field]]
+            self.assertEqual(len(ids), len(set(ids)), field)
+        self.assertFalse(any("audioId" in item for item in lesson["dialogue"]["turns"] + lesson["phrases"]))
+
 
 if __name__ == "__main__":
     unittest.main()

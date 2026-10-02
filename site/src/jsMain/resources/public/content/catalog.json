@@ -31,6 +31,11 @@
       "id": "workplace-updates",
       "title": "Workplace updates",
       "description": "Give a concise team update, explain a factual blocker, and agree on the next step."
+    },
+    {
+      "id": "workplace-bugs",
+      "title": "Bug reports",
+      "description": "Describe expected and actual test behavior and give reproducible steps without guessing a cause."
     }
   ],
   "entries": [
@@ -57,6 +62,12 @@
       "kind": "lesson",
       "topicId": "workplace-updates",
       "path": "lessons/daily-update-blocker.json"
+    },
+    {
+      "id": "lesson-bug-reproduction",
+      "kind": "lesson",
+      "topicId": "workplace-bugs",
+      "path": "lessons/bug-reproduction.json"
     },
     {
       "id": "lesson-confirm-meeting-time",
