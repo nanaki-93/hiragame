@@ -32,6 +32,7 @@ import com.github.nanaki_93.content.EmptyContentReason
 import com.github.nanaki_93.practice.LocalPracticeCoordinator
 import com.github.nanaki_93.LocalProgress
 import com.github.nanaki_93.initialSilkMode
+import com.github.nanaki_93.progress.CheckpointView
 import com.github.nanaki_93.progress.SavedColorMode
 import com.github.nanaki_93.progress.SaveProblem
 import com.github.nanaki_93.progress.changePreferences
@@ -40,6 +41,12 @@ import com.github.nanaki_93.storage.LocalProgressState
 import com.github.nanaki_93.storage.PersistenceStatus
 import com.github.nanaki_93.storage.ProgressMutationResult
 import com.github.nanaki_93.storage.StoreFailure
+import com.github.nanaki_93.storage.BrowserDownloadSink
+import com.github.nanaki_93.storage.ProgressDownloads
+import com.github.nanaki_93.storage.DownloadResult
+import com.github.nanaki_93.storage.ProtectedReplacementToken
+import com.github.nanaki_93.storage.ProtectedReplacementResult
+import com.github.nanaki_93.practice.PracticeCheckpointResolution
 import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import com.github.nanaki_93.practice.LocalPracticeState
 import com.github.nanaki_93.practice.PracticeCommand
@@ -127,14 +134,37 @@ fun HomePage() {
                         } else if (session == null) {
                             H2 { Text("Practice locally") }
                             P { Text("A short session with reviewed exercises. Progress checkpoints are saved locally when possible; typed responses are not retained.") }
+                            val checkpoints = coordinator.savedCheckpoints()
+                            // The saved record is never replaced just because a set or exercise is missing.
+                            for ((setId, resolution) in checkpoints) {
+                                if (resolution is PracticeCheckpointResolution.Unavailable) {
+                                    val set = current.availablePracticeSets[setId]
+                                    P(attrs = { attr("role", "status") }) {
+                                        Text(if (resolution.missingSet) "Saved practice set $setId is unavailable in the current content. Its checkpoint is preserved; there is no run to start here."
+                                        else "The saved checkpoint for ${set?.title ?: setId} cannot be resumed with the current exercises. It remains in your local progress until you choose a fresh start.")
+                                    }
+                                    if (set != null) SecondaryButton("Start fresh: ${set.title} (replace checkpoint)", onClick = {
+                                        coordinator.startFreshAfterUnavailable(setId)
+                                    })
+                                }
+                            }
                             // One clear invitation for the seed; extra sets get their own titled actions.
                             val sets = current.availablePracticeSets.values.toList()
                             for (set in sets) {
+                                val resolution = checkpoints[set.id]
                                 P { Text("${set.title} · ${set.exercises.size} exercises. ${set.description}") }
-                                PrimaryButton(
-                                    text = if (sets.size == 1) "Start practice" else "Start ${set.title}",
-                                    onClick = { coordinator.start(set.id) },
-                                )
+                                if (resolution is PracticeCheckpointResolution.Available) {
+                                    if (resolution.checkpoint.view != CheckpointView.COMPLETE) {
+                                        PrimaryButton("Resume ${set.title}", onClick = { coordinator.resume(set.id) })
+                                        P { Text("Starting a new run replaces this set's unfinished checkpoint. Other progress is kept.") }
+                                    } else P { Text("Previous run completed. You can start a new run.") }
+                                }
+                                if (resolution !is PracticeCheckpointResolution.Unavailable) {
+                                    SecondaryButton(
+                                        text = if (sets.size == 1) "Start practice" else "Start ${set.title}",
+                                        onClick = { coordinator.start(set.id) },
+                                    )
+                                }
                             }
                             if (sets.isEmpty()) P { Text("No exercises are available. Reload to check again.") }
                             SecondaryButton("Reload practice", onClick = coordinator::load)
@@ -228,6 +258,20 @@ internal fun saveStatusMessage(state: LocalProgressState): String = when (val st
 private fun SavePreferencesSection(progress: LocalProgressOwner) {
     val saved by progress.state.collectAsState()
     val colorModeState = ColorMode.currentState
+    val downloads = remember(progress) { ProgressDownloads(progress, BrowserDownloadSink()) }
+    var actionMessage by remember(progress) { mutableStateOf<String?>(null) }
+    var pendingReplacement by remember(progress) { mutableStateOf<ProtectedReplacementToken?>(null) }
+    var confirmReload by remember(progress) { mutableStateOf(false) }
+    // A reload or successful replacement invalidates confirmations captured by this view.
+    val ownerGeneration = progress.generation
+    val persistenceStatus = saved.status
+    DisposableEffect(progress, ownerGeneration, persistenceStatus) {
+        onDispose {
+            pendingReplacement?.let { progress.cancelProtectedReplacement(it) }
+            pendingReplacement = null
+            confirmReload = false
+        }
+    }
     Section(attrs = { classes("save-preferences") }) {
         H2 { Text("Save & preferences") }
         P(attrs = { attr("role", "status") }) { Text(saveStatusMessage(saved)) }
@@ -239,6 +283,61 @@ private fun SavePreferencesSection(progress: LocalProgressOwner) {
         if (saved.status is PersistenceStatus.MemoryOnly) {
             SecondaryButton("Retry saving", onClick = { progress.retrySaving() })
         }
+        H2 { Text("Local progress actions") }
+        P { Text("Export the current validated progress in this view. When saving is paused or unavailable, this export includes work not confirmed saved in this browser. Typed responses are never included.") }
+        SecondaryButton("Export current progress", onClick = {
+            actionMessage = downloadMessage(downloads.exportCurrent())
+        })
+        if (progress.originalProtectedRaw != null) {
+            P { Text("The original unreadable save can be downloaded separately as unvalidated recovery text. It is not a validated or importable backup.") }
+            SecondaryButton("Download unvalidated original", onClick = {
+                actionMessage = downloadMessage(downloads.downloadProtectedOriginal())
+            })
+        } else if (persistenceStatus is PersistenceStatus.MemoryOnly && persistenceStatus.reason == StoreFailure.DENIED) {
+            P { Text("Browser storage could not be read; the unavailable original cannot be downloaded. You can still export current memory.") }
+        }
+        if (saved.status is PersistenceStatus.Protected) {
+            P(attrs = { attr("role", "alert") }) {
+                Text("Replacing the unreadable local save permanently discards its original stored text and any changes only in this view's memory. Download unvalidated recovery text and export current progress first if needed. This does not clear offline content.")
+            }
+            if (pendingReplacement == null) {
+                SecondaryButton("Replace unreadable local save…", onClick = {
+                    pendingReplacement = progress.beginProtectedReplacement()
+                    if (pendingReplacement == null) actionMessage = "Replacement is no longer available. No save was changed."
+                })
+            } else {
+                P { Text("Confirm replacement of the unreadable local save? This cannot be undone in this browser.") }
+                SecondaryButton("Cancel replacement", onClick = {
+                    pendingReplacement?.let { progress.cancelProtectedReplacement(it) }
+                    pendingReplacement = null
+                })
+                PrimaryButton("Confirm replace unreadable save", onClick = {
+                    val token = pendingReplacement
+                    pendingReplacement = null
+                    if (token != null) actionMessage = replacementMessage(progress.confirmProtectedReplacement(token))
+                })
+            }
+        }
+        if (saved.status == PersistenceStatus.Conflict) {
+            P(attrs = { attr("role", "alert") }) {
+                Text("Another tab changed or removed the saved snapshot. Saving is paused. Keep this view to continue only in memory, or export it before reloading. Reload discards unsaved changes and drafts; no automatic merge is available.")
+            }
+            SecondaryButton("Keep this view (saving paused)", onClick = {
+                progress.keepThisView()
+                actionMessage = "Keeping this view in memory. Saving remains paused; export before leaving."
+            })
+            if (!confirmReload) SecondaryButton("Reload saved state…", onClick = { confirmReload = true })
+            else {
+                P { Text("Discard changes and drafts in this view and reload the latest local save?") }
+                SecondaryButton("Cancel reload", onClick = { confirmReload = false })
+                PrimaryButton("Confirm discard and reload", onClick = {
+                    confirmReload = false
+                    actionMessage = if (progress.reloadSavedState()) "Reloaded local state. Unsaved work in this view was discarded."
+                    else "Could not read the saved state. This view and its unsaved work remain available."
+                })
+            }
+        }
+        actionMessage?.let { message -> P(attrs = { attr("role", "status") }) { Text(message) } }
         Fieldset {
             Legend { Text("Color mode") }
             Span(attrs = { classes("save-color-options") }) {
@@ -259,6 +358,21 @@ private fun SavePreferencesSection(progress: LocalProgressOwner) {
             }
         }
     }
+}
+
+internal fun downloadMessage(result: DownloadResult): String = when (result) {
+    is DownloadResult.Downloaded -> "${result.label}: ${result.filename}"
+    DownloadResult.OriginalUnavailable -> "The original saved text is unavailable. No recovery file was downloaded."
+    is DownloadResult.InvalidSnapshot -> "Current progress could not be exported safely. No file was downloaded."
+    DownloadResult.Failed -> "Download failed. Your local progress and saved text were not changed."
+}
+
+internal fun replacementMessage(result: ProtectedReplacementResult): String = when (result) {
+    ProtectedReplacementResult.Replaced -> "Unreadable local save replaced with fresh progress in this browser."
+    ProtectedReplacementResult.Stale -> "Replacement confirmation expired. No save was changed."
+    ProtectedReplacementResult.Conflict -> "Another tab changed the saved text. Replacement stopped; saving is paused."
+    is ProtectedReplacementResult.Failure -> "Replacement failed. The unreadable original remains stored."
+    is ProtectedReplacementResult.InvalidReplacement -> "Replacement could not be prepared. The unreadable original remains stored."
 }
 
 /** Keep raw drafts local to the prompt. The evaluator, not the UI, judges blank and authored answers. */
