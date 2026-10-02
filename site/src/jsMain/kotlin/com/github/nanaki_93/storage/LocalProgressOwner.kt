@@ -34,6 +34,17 @@ sealed interface ProgressMutationResult {
     data class Rejected(val reason: SaveProblem) : ProgressMutationResult
 }
 
+/** Opaque, one-use authorization for replacing only the protected original seen at issuance. */
+class ProtectedReplacementToken internal constructor()
+
+sealed interface ProtectedReplacementResult {
+    data object Replaced : ProtectedReplacementResult
+    data object Stale : ProtectedReplacementResult
+    data object Conflict : ProtectedReplacementResult
+    data class Failure(val reason: StoreFailure) : ProtectedReplacementResult
+    data class InvalidReplacement(val reason: SaveProblem) : ProtectedReplacementResult
+}
+
 /** Synchronous, application-lifetime owner. Browser APIs live only in the injected store. */
 class LocalProgressOwner(
     private val store: ProgressStore,
@@ -51,6 +62,13 @@ class LocalProgressOwner(
     private var protectedRaw: String? = null
     private var disposed = false
     private var subscription: StoreSubscription? = null
+    private data class PendingReplacement(
+        val token: ProtectedReplacementToken,
+        val baseline: String,
+        val generation: Long,
+        val snapshot: SaveEnvelope,
+    )
+    private var pendingReplacement: PendingReplacement? = null
     /** Changes only on explicit reload (or disposal); consumers can reject stale callbacks. */
     var generation: Long = 0
         private set
@@ -103,6 +121,7 @@ class LocalProgressOwner(
             }
         }
         if (!baselineKnown || observed != acknowledgedRaw) {
+            pendingReplacement = null
             mutableState.value = mutableState.value.copy(status = PersistenceStatus.Conflict)
         }
     }
@@ -126,6 +145,7 @@ class LocalProgressOwner(
             }
             is StoreReadResult.Failure -> error("Handled above")
         }
+        pendingReplacement = null
         acknowledgedRaw = (read as? StoreReadResult.Raw)?.value
         protectedRaw = if (loaded.status is PersistenceStatus.Protected) acknowledgedRaw else null
         baselineKnown = true
@@ -138,6 +158,7 @@ class LocalProgressOwner(
     fun dispose() {
         if (disposed) return
         disposed = true
+        pendingReplacement = null
         generation++
         subscription?.dispose()
         subscription = null
@@ -186,6 +207,7 @@ class LocalProgressOwner(
             }
             else -> previous.status
         }
+        pendingReplacement = null // changed learning state requires a new, explicit confirmation
         mutableState.value = LocalProgressState(accepted, status)
         return ProgressMutationResult.Accepted
     }
@@ -215,6 +237,69 @@ class LocalProgressOwner(
             }
             is StoreWriteResult.Failure -> PersistenceStatus.MemoryOnly(result.reason)
             is StoreWriteResult.Conflict -> PersistenceStatus.Conflict
+        }
+    }
+
+    /** Present the data-loss warning before requesting this token; no read or write occurs here. */
+    fun beginProtectedReplacement(): ProtectedReplacementToken? {
+        if (disposed || mutableState.value.status !is PersistenceStatus.Protected || !baselineKnown) return null
+        val raw = protectedRaw ?: return null
+        if (raw != acknowledgedRaw) return null
+        val token = ProtectedReplacementToken()
+        pendingReplacement = PendingReplacement(token, raw, generation, mutableState.value.snapshot)
+        return token
+    }
+
+    /** Cancel is idempotent and never touches the store. */
+    fun cancelProtectedReplacement(token: ProtectedReplacementToken): Boolean {
+        if (disposed || pendingReplacement?.token !== token) return false
+        pendingReplacement = null
+        return true
+    }
+
+    /** Recovery is storage-first: only a successful baseline-checked write publishes fresh state. */
+    fun confirmProtectedReplacement(token: ProtectedReplacementToken): ProtectedReplacementResult {
+        val pending = pendingReplacement
+        if (disposed || pending == null || pending.token !== token) return ProtectedReplacementResult.Stale
+        pendingReplacement = null // consume even when a read or write fails
+        if (pending.generation != generation ||
+            mutableState.value.status !is PersistenceStatus.Protected ||
+            mutableState.value.snapshot != pending.snapshot ||
+            protectedRaw != pending.baseline || acknowledgedRaw != pending.baseline
+        ) return ProtectedReplacementResult.Stale
+
+        // An explicit reread catches changes even when the storage event was missed. The store
+        // also compares immediately before its single setItem, for a change between read and write.
+        when (val read = store.read()) {
+            is StoreReadResult.Failure -> return ProtectedReplacementResult.Failure(read.reason)
+            StoreReadResult.Missing -> {
+                mutableState.value = mutableState.value.copy(status = PersistenceStatus.Conflict)
+                return ProtectedReplacementResult.Conflict
+            }
+            is StoreReadResult.Raw -> if (read.value != pending.baseline) {
+                mutableState.value = mutableState.value.copy(status = PersistenceStatus.Conflict)
+                return ProtectedReplacementResult.Conflict
+            }
+        }
+        val replacement = try {
+            fresh()
+        } catch (error: SaveEncodeException) {
+            return ProtectedReplacementResult.InvalidReplacement(error.reason)
+        }
+        val wire = encodeSave(replacement)
+        return when (val result = store.write(pending.baseline, wire)) {
+            StoreWriteResult.Written -> {
+                acknowledgedRaw = wire
+                protectedRaw = null
+                generation++ // invalidate callbacks against the old learning state
+                mutableState.value = LocalProgressState(replacement, PersistenceStatus.Saved)
+                ProtectedReplacementResult.Replaced
+            }
+            is StoreWriteResult.Conflict -> {
+                mutableState.value = mutableState.value.copy(status = PersistenceStatus.Conflict)
+                ProtectedReplacementResult.Conflict
+            }
+            is StoreWriteResult.Failure -> ProtectedReplacementResult.Failure(result.reason)
         }
     }
 
