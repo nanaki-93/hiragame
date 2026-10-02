@@ -20,7 +20,7 @@
     {
       "id": "workplace-clarification",
       "title": "Workplace clarification",
-      "description": "Polite ways to check a meeting time with a colleague."
+      "description": "Ask for missing task details and confirm your interpretation with a teammate; a separate short lesson checks a meeting time."
     },
     {
       "id": "workplace-introductions",
@@ -40,6 +40,12 @@
       "kind": "lesson",
       "topicId": "workplace-introductions",
       "path": "lessons/engineering-introduction.json"
+    },
+    {
+      "id": "lesson-clarify-understanding",
+      "kind": "lesson",
+      "topicId": "workplace-clarification",
+      "path": "lessons/clarify-understanding.json"
     },
     {
       "id": "lesson-confirm-meeting-time",
