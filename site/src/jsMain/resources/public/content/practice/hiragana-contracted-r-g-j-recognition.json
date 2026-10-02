@@ -1,0 +1,390 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-contracted-r-g-j-recognition",
+  "topicId": "kana-foundations",
+  "title": "Contracted hiragana: R, G and J rows — find the form",
+  "description": "Compare the base sign plus a small ゃ, ゅ or ょ with full-sized kana. The written spelling cue disambiguates similar sounds.",
+  "reviewItems": [
+    {
+      "id": "review-hc-recognition-308a-3083",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-308a-3083",
+      "skill": "Recognize contracted hiragana りゃ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-308a-3085",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-308a-3085",
+      "skill": "Recognize contracted hiragana りゅ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-308a-3087",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-308a-3087",
+      "skill": "Recognize contracted hiragana りょ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-304e-3083",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-304e-3083",
+      "skill": "Recognize contracted hiragana ぎゃ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-304e-3085",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-304e-3085",
+      "skill": "Recognize contracted hiragana ぎゅ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-304e-3087",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-304e-3087",
+      "skill": "Recognize contracted hiragana ぎょ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-3058-3083",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-3058-3083",
+      "skill": "Recognize contracted hiragana じゃ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-3058-3085",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-3058-3085",
+      "skill": "Recognize contracted hiragana じゅ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-3058-3087",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-3058-3087",
+      "skill": "Recognize contracted hiragana じょ",
+      "direction": "spelling-cue-to-contracted-form"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Original agent-authored contracted hiragana spelling cues and word examples; no legacy CSV or F00 text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original English prompts, translations and explanations; kana spellings and short common-word meanings are linguistic facts. No copied work or audio."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-308a-3083",
+      "prompt": "Which written hiragana uses the ri base sign + small ya (rya)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-308a-3083-0",
+          "text": {
+            "surface": "りゃ",
+            "reading": "りゃ",
+            "translation": "Contracted hiragana rya, written with the ri base sign and small ya.",
+            "romaji": "rya"
+          }
+        },
+        {
+          "id": "option-hc-recognition-308a-3083-1",
+          "text": {
+            "surface": "りや",
+            "reading": "りや",
+            "translation": "Full-sized kana spelling; not rya."
+          }
+        },
+        {
+          "id": "option-hc-recognition-308a-3083-2",
+          "text": {
+            "surface": "りゅ",
+            "reading": "りゅ",
+            "translation": "Different small kana spelling; not rya."
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-308a-3083-0",
+      "explanation": "りゃ is rya: ri base sign + small ya. りや uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-308a-3085",
+      "prompt": "Which written hiragana uses the ri base sign + small yu (ryu)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-308a-3085-0",
+          "text": {
+            "surface": "りゆ",
+            "reading": "りゆ",
+            "translation": "Full-sized kana spelling; not ryu."
+          }
+        },
+        {
+          "id": "option-hc-recognition-308a-3085-1",
+          "text": {
+            "surface": "りょ",
+            "reading": "りょ",
+            "translation": "Different small kana spelling; not ryu."
+          }
+        },
+        {
+          "id": "option-hc-recognition-308a-3085-2",
+          "text": {
+            "surface": "りゅ",
+            "reading": "りゅ",
+            "translation": "Contracted hiragana ryu, written with the ri base sign and small yu.",
+            "romaji": "ryu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-308a-3085-2",
+      "explanation": "りゅ is ryu: ri base sign + small yu. りゆ uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-308a-3087",
+      "prompt": "Which written hiragana uses the ri base sign + small yo (ryo)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-308a-3087-0",
+          "text": {
+            "surface": "りょ",
+            "reading": "りょ",
+            "translation": "Contracted hiragana ryo, written with the ri base sign and small yo.",
+            "romaji": "ryo"
+          }
+        },
+        {
+          "id": "option-hc-recognition-308a-3087-1",
+          "text": {
+            "surface": "りよ",
+            "reading": "りよ",
+            "translation": "Full-sized kana spelling; not ryo."
+          }
+        },
+        {
+          "id": "option-hc-recognition-308a-3087-2",
+          "text": {
+            "surface": "りゃ",
+            "reading": "りゃ",
+            "translation": "Different small kana spelling; not ryo."
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-308a-3087-0",
+      "explanation": "りょ is ryo: ri base sign + small yo. りよ uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-304e-3083",
+      "prompt": "Which written hiragana uses the gi base sign + small ya (gya)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-304e-3083-0",
+          "text": {
+            "surface": "ぎや",
+            "reading": "ぎや",
+            "translation": "Full-sized kana spelling; not gya."
+          }
+        },
+        {
+          "id": "option-hc-recognition-304e-3083-1",
+          "text": {
+            "surface": "ぎゅ",
+            "reading": "ぎゅ",
+            "translation": "Different small kana spelling; not gya."
+          }
+        },
+        {
+          "id": "option-hc-recognition-304e-3083-2",
+          "text": {
+            "surface": "ぎゃ",
+            "reading": "ぎゃ",
+            "translation": "Contracted hiragana gya, written with the gi base sign and small ya.",
+            "romaji": "gya"
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-304e-3083-2",
+      "explanation": "ぎゃ is gya: gi base sign + small ya. ぎや uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-304e-3085",
+      "prompt": "Which written hiragana uses the gi base sign + small yu (gyu)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-304e-3085-0",
+          "text": {
+            "surface": "ぎゅ",
+            "reading": "ぎゅ",
+            "translation": "Contracted hiragana gyu, written with the gi base sign and small yu.",
+            "romaji": "gyu"
+          }
+        },
+        {
+          "id": "option-hc-recognition-304e-3085-1",
+          "text": {
+            "surface": "ぎゆ",
+            "reading": "ぎゆ",
+            "translation": "Full-sized kana spelling; not gyu."
+          }
+        },
+        {
+          "id": "option-hc-recognition-304e-3085-2",
+          "text": {
+            "surface": "ぎょ",
+            "reading": "ぎょ",
+            "translation": "Different small kana spelling; not gyu."
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-304e-3085-0",
+      "explanation": "ぎゅ is gyu: gi base sign + small yu. ぎゆ uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-304e-3087",
+      "prompt": "Which written hiragana uses the gi base sign + small yo (gyo)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-304e-3087-0",
+          "text": {
+            "surface": "ぎよ",
+            "reading": "ぎよ",
+            "translation": "Full-sized kana spelling; not gyo."
+          }
+        },
+        {
+          "id": "option-hc-recognition-304e-3087-1",
+          "text": {
+            "surface": "ぎゃ",
+            "reading": "ぎゃ",
+            "translation": "Different small kana spelling; not gyo."
+          }
+        },
+        {
+          "id": "option-hc-recognition-304e-3087-2",
+          "text": {
+            "surface": "ぎょ",
+            "reading": "ぎょ",
+            "translation": "Contracted hiragana gyo, written with the gi base sign and small yo.",
+            "romaji": "gyo"
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-304e-3087-2",
+      "explanation": "ぎょ is gyo: gi base sign + small yo. ぎよ uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-3058-3083",
+      "prompt": "Which written hiragana uses the ji (voiced shi) base sign + small ya (ja)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-3058-3083-0",
+          "text": {
+            "surface": "じゃ",
+            "reading": "じゃ",
+            "translation": "Contracted hiragana ja, written with the ji (voiced shi) base sign and small ya.",
+            "romaji": "ja"
+          }
+        },
+        {
+          "id": "option-hc-recognition-3058-3083-1",
+          "text": {
+            "surface": "じや",
+            "reading": "じや",
+            "translation": "Full-sized kana spelling; not ja."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3058-3083-2",
+          "text": {
+            "surface": "じゅ",
+            "reading": "じゅ",
+            "translation": "Different small kana spelling; not ja."
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-3058-3083-0",
+      "explanation": "じゃ is ja: ji (voiced shi) base sign + small ya. じや uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-3058-3085",
+      "prompt": "Which written hiragana uses the ji (voiced shi) base sign + small yu (ju)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-3058-3085-0",
+          "text": {
+            "surface": "じゆ",
+            "reading": "じゆ",
+            "translation": "Full-sized kana spelling; not ju."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3058-3085-1",
+          "text": {
+            "surface": "じょ",
+            "reading": "じょ",
+            "translation": "Different small kana spelling; not ju."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3058-3085-2",
+          "text": {
+            "surface": "じゅ",
+            "reading": "じゅ",
+            "translation": "Contracted hiragana ju, written with the ji (voiced shi) base sign and small yu.",
+            "romaji": "ju"
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-3058-3085-2",
+      "explanation": "じゅ is ju: ji (voiced shi) base sign + small yu. じゆ uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-3058-3087",
+      "prompt": "Which written hiragana uses the ji (voiced shi) base sign + small yo (jo)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-3058-3087-0",
+          "text": {
+            "surface": "じょ",
+            "reading": "じょ",
+            "translation": "Contracted hiragana jo, written with the ji (voiced shi) base sign and small yo.",
+            "romaji": "jo"
+          }
+        },
+        {
+          "id": "option-hc-recognition-3058-3087-1",
+          "text": {
+            "surface": "じよ",
+            "reading": "じよ",
+            "translation": "Full-sized kana spelling; not jo."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3058-3087-2",
+          "text": {
+            "surface": "じゃ",
+            "reading": "じゃ",
+            "translation": "Different small kana spelling; not jo."
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-3058-3087-0",
+      "explanation": "じょ is jo: ji (voiced shi) base sign + small yo. じよ uses a full-sized kana, so it is a different spelling."
+    }
+  ]
+}

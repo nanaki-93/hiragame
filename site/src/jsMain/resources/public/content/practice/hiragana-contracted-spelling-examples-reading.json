@@ -1,0 +1,231 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-contracted-spelling-examples-reading",
+  "topicId": "kana-foundations",
+  "title": "Hiragana spelling: long vowels and small kana — write the word",
+  "description": "Short everyday words distinguish おう/おお, small っ, and small ゃ/ゅ/ょ from competing spellings.",
+  "reviewItems": [
+    {
+      "id": "review-hc-example-reading-high-school",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-example-reading-high-school",
+      "skill": "Spell こうこう (high school)",
+      "direction": "meaning-and-latin-cue-to-kana"
+    },
+    {
+      "id": "review-hc-example-reading-large",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-example-reading-large",
+      "skill": "Spell おおきい (large; big)",
+      "direction": "meaning-and-latin-cue-to-kana"
+    },
+    {
+      "id": "review-hc-example-reading-bought",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-example-reading-bought",
+      "skill": "Spell かった (bought (past of かう))",
+      "direction": "meaning-and-latin-cue-to-kana"
+    },
+    {
+      "id": "review-hc-example-reading-photograph",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-example-reading-photograph",
+      "skill": "Spell しゃしん (photograph)",
+      "direction": "meaning-and-latin-cue-to-kana"
+    },
+    {
+      "id": "review-hc-example-reading-guest",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-example-reading-guest",
+      "skill": "Spell きゃく (guest)",
+      "direction": "meaning-and-latin-cue-to-kana"
+    },
+    {
+      "id": "review-hc-example-reading-nine",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-example-reading-nine",
+      "skill": "Spell きゅう (nine)",
+      "direction": "meaning-and-latin-cue-to-kana"
+    },
+    {
+      "id": "review-hc-example-reading-today",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-example-reading-today",
+      "skill": "Spell きょう (today)",
+      "direction": "meaning-and-latin-cue-to-kana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Original agent-authored contracted hiragana spelling cues and word examples; no legacy CSV or F00 text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original English prompts, translations and explanations; kana spellings and short common-word meanings are linguistic facts. No copied work or audio."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-hc-example-reading-high-school",
+      "prompt": "Type “high school” in hiragana (koukou). Both long o spellings in this word use おう; do not replace う with お.",
+      "stimulus": {
+        "surface": "koukou — high school",
+        "reading": "koukou — high school",
+        "translation": "English meaning and Latin-letter spelling cue; write the Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "こうこう",
+            "reading": "こうこう",
+            "translation": "high school",
+            "romaji": "koukou"
+          }
+        }
+      ],
+      "explanation": "こうこう means high school. Both long o spellings in this word use おう; do not replace う with お. The contrast こおこう is not accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-example-reading-large",
+      "prompt": "Type “large; big” in hiragana (ookii). The first long o here is written おお, not おう.",
+      "stimulus": {
+        "surface": "ookii — large; big",
+        "reading": "ookii — large; big",
+        "translation": "English meaning and Latin-letter spelling cue; write the Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "おおきい",
+            "reading": "おおきい",
+            "translation": "large; big",
+            "romaji": "ookii"
+          }
+        }
+      ],
+      "explanation": "おおきい means large; big. The first long o here is written おお, not おう. The contrast おうきい is not accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-example-reading-bought",
+      "prompt": "Type “bought (past of かう)” in hiragana (katta). The small っ doubles the following consonant; かた is a different spelling.",
+      "stimulus": {
+        "surface": "katta — bought (past of かう)",
+        "reading": "katta — bought (past of かう)",
+        "translation": "English meaning and Latin-letter spelling cue; write the Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "かった",
+            "reading": "かった",
+            "translation": "bought (past of かう)",
+            "romaji": "katta"
+          }
+        }
+      ],
+      "explanation": "かった means bought (past of かう). The small っ doubles the following consonant; かた is a different spelling. The contrast かた is not accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-example-reading-photograph",
+      "prompt": "Type “photograph” in hiragana (shashin). Small ゃ combines with し; full-sized や would change the spelling.",
+      "stimulus": {
+        "surface": "shashin — photograph",
+        "reading": "shashin — photograph",
+        "translation": "English meaning and Latin-letter spelling cue; write the Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "しゃしん",
+            "reading": "しゃしん",
+            "translation": "photograph",
+            "romaji": "shashin"
+          }
+        }
+      ],
+      "explanation": "しゃしん means photograph. Small ゃ combines with し; full-sized や would change the spelling. The contrast しやしん is not accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-example-reading-guest",
+      "prompt": "Type “guest” in hiragana (kyaku). Small ゃ combines with き; full-sized や would change the spelling.",
+      "stimulus": {
+        "surface": "kyaku — guest",
+        "reading": "kyaku — guest",
+        "translation": "English meaning and Latin-letter spelling cue; write the Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "きゃく",
+            "reading": "きゃく",
+            "translation": "guest",
+            "romaji": "kyaku"
+          }
+        }
+      ],
+      "explanation": "きゃく means guest. Small ゃ combines with き; full-sized や would change the spelling. The contrast きやく is not accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-example-reading-nine",
+      "prompt": "Type “nine” in hiragana (kyuu). Small ゅ combines with き; full-sized ゆ would change the spelling.",
+      "stimulus": {
+        "surface": "kyuu — nine",
+        "reading": "kyuu — nine",
+        "translation": "English meaning and Latin-letter spelling cue; write the Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "きゅう",
+            "reading": "きゅう",
+            "translation": "nine",
+            "romaji": "kyuu"
+          }
+        }
+      ],
+      "explanation": "きゅう means nine. Small ゅ combines with き; full-sized ゆ would change the spelling. The contrast きゆう is not accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-example-reading-today",
+      "prompt": "Type “today” in hiragana (kyou). Small ょ combines with き; full-sized よ would change the spelling.",
+      "stimulus": {
+        "surface": "kyou — today",
+        "reading": "kyou — today",
+        "translation": "English meaning and Latin-letter spelling cue; write the Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "きょう",
+            "reading": "きょう",
+            "translation": "today",
+            "romaji": "kyou"
+          }
+        }
+      ],
+      "explanation": "きょう means today. Small ょ combines with き; full-sized よ would change the spelling. The contrast きよう is not accepted."
+    }
+  ]
+}

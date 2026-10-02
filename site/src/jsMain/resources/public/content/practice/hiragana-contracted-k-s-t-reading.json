@@ -1,0 +1,291 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-contracted-k-s-t-reading",
+  "topicId": "kana-foundations",
+  "title": "Contracted hiragana: K, S and T rows — write in kana",
+  "description": "Compare the base sign plus a small ゃ, ゅ or ょ with full-sized kana. The written spelling cue disambiguates similar sounds.",
+  "reviewItems": [
+    {
+      "id": "review-hc-reading-304d-3083",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-reading-304d-3083",
+      "skill": "Write contracted hiragana きゃ",
+      "direction": "latin-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hc-reading-304d-3085",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-reading-304d-3085",
+      "skill": "Write contracted hiragana きゅ",
+      "direction": "latin-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hc-reading-304d-3087",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-reading-304d-3087",
+      "skill": "Write contracted hiragana きょ",
+      "direction": "latin-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hc-reading-3057-3083",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-reading-3057-3083",
+      "skill": "Write contracted hiragana しゃ",
+      "direction": "latin-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hc-reading-3057-3085",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-reading-3057-3085",
+      "skill": "Write contracted hiragana しゅ",
+      "direction": "latin-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hc-reading-3057-3087",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-reading-3057-3087",
+      "skill": "Write contracted hiragana しょ",
+      "direction": "latin-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hc-reading-3061-3083",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-reading-3061-3083",
+      "skill": "Write contracted hiragana ちゃ",
+      "direction": "latin-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hc-reading-3061-3085",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-reading-3061-3085",
+      "skill": "Write contracted hiragana ちゅ",
+      "direction": "latin-and-base-cue-to-kana"
+    },
+    {
+      "id": "review-hc-reading-3061-3087",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-reading-3061-3087",
+      "skill": "Write contracted hiragana ちょ",
+      "direction": "latin-and-base-cue-to-kana"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Original agent-authored contracted hiragana spelling cues and word examples; no legacy CSV or F00 text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original English prompts, translations and explanations; kana spellings and short common-word meanings are linguistic facts. No copied work or audio."
+  },
+  "exercises": [
+    {
+      "type": "reading",
+      "id": "exercise-hc-reading-304d-3083",
+      "prompt": "Type the contracted hiragana spelling in kana, not Latin letters. The cue names the base and small kana.",
+      "stimulus": {
+        "surface": "kya (ki base sign + small ya)",
+        "reading": "kya (ki base sign + small ya)",
+        "translation": "Latin-letter and base-sign spelling cue, not a Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "きゃ",
+            "reading": "きゃ",
+            "translation": "Contracted hiragana kya, written with the ki base sign and small ya.",
+            "romaji": "kya"
+          }
+        }
+      ],
+      "explanation": "Write きゃ for kya (ki base sign + small ya). A full-sized ya would change the spelling; only this authored kana answer is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-reading-304d-3085",
+      "prompt": "Type the contracted hiragana spelling in kana, not Latin letters. The cue names the base and small kana.",
+      "stimulus": {
+        "surface": "kyu (ki base sign + small yu)",
+        "reading": "kyu (ki base sign + small yu)",
+        "translation": "Latin-letter and base-sign spelling cue, not a Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "きゅ",
+            "reading": "きゅ",
+            "translation": "Contracted hiragana kyu, written with the ki base sign and small yu.",
+            "romaji": "kyu"
+          }
+        }
+      ],
+      "explanation": "Write きゅ for kyu (ki base sign + small yu). A full-sized yu would change the spelling; only this authored kana answer is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-reading-304d-3087",
+      "prompt": "Type the contracted hiragana spelling in kana, not Latin letters. The cue names the base and small kana.",
+      "stimulus": {
+        "surface": "kyo (ki base sign + small yo)",
+        "reading": "kyo (ki base sign + small yo)",
+        "translation": "Latin-letter and base-sign spelling cue, not a Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "きょ",
+            "reading": "きょ",
+            "translation": "Contracted hiragana kyo, written with the ki base sign and small yo.",
+            "romaji": "kyo"
+          }
+        }
+      ],
+      "explanation": "Write きょ for kyo (ki base sign + small yo). A full-sized yo would change the spelling; only this authored kana answer is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-reading-3057-3083",
+      "prompt": "Type the contracted hiragana spelling in kana, not Latin letters. The cue names the base and small kana.",
+      "stimulus": {
+        "surface": "sha (shi base sign + small ya)",
+        "reading": "sha (shi base sign + small ya)",
+        "translation": "Latin-letter and base-sign spelling cue, not a Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "しゃ",
+            "reading": "しゃ",
+            "translation": "Contracted hiragana sha, written with the shi base sign and small ya.",
+            "romaji": "sha"
+          }
+        }
+      ],
+      "explanation": "Write しゃ for sha (shi base sign + small ya). A full-sized ya would change the spelling; only this authored kana answer is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-reading-3057-3085",
+      "prompt": "Type the contracted hiragana spelling in kana, not Latin letters. The cue names the base and small kana.",
+      "stimulus": {
+        "surface": "shu (shi base sign + small yu)",
+        "reading": "shu (shi base sign + small yu)",
+        "translation": "Latin-letter and base-sign spelling cue, not a Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "しゅ",
+            "reading": "しゅ",
+            "translation": "Contracted hiragana shu, written with the shi base sign and small yu.",
+            "romaji": "shu"
+          }
+        }
+      ],
+      "explanation": "Write しゅ for shu (shi base sign + small yu). A full-sized yu would change the spelling; only this authored kana answer is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-reading-3057-3087",
+      "prompt": "Type the contracted hiragana spelling in kana, not Latin letters. The cue names the base and small kana.",
+      "stimulus": {
+        "surface": "sho (shi base sign + small yo)",
+        "reading": "sho (shi base sign + small yo)",
+        "translation": "Latin-letter and base-sign spelling cue, not a Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "しょ",
+            "reading": "しょ",
+            "translation": "Contracted hiragana sho, written with the shi base sign and small yo.",
+            "romaji": "sho"
+          }
+        }
+      ],
+      "explanation": "Write しょ for sho (shi base sign + small yo). A full-sized yo would change the spelling; only this authored kana answer is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-reading-3061-3083",
+      "prompt": "Type the contracted hiragana spelling in kana, not Latin letters. The cue names the base and small kana.",
+      "stimulus": {
+        "surface": "cha (chi base sign + small ya)",
+        "reading": "cha (chi base sign + small ya)",
+        "translation": "Latin-letter and base-sign spelling cue, not a Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ちゃ",
+            "reading": "ちゃ",
+            "translation": "Contracted hiragana cha, written with the chi base sign and small ya.",
+            "romaji": "cha"
+          }
+        }
+      ],
+      "explanation": "Write ちゃ for cha (chi base sign + small ya). A full-sized ya would change the spelling; only this authored kana answer is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-reading-3061-3085",
+      "prompt": "Type the contracted hiragana spelling in kana, not Latin letters. The cue names the base and small kana.",
+      "stimulus": {
+        "surface": "chu (chi base sign + small yu)",
+        "reading": "chu (chi base sign + small yu)",
+        "translation": "Latin-letter and base-sign spelling cue, not a Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ちゅ",
+            "reading": "ちゅ",
+            "translation": "Contracted hiragana chu, written with the chi base sign and small yu.",
+            "romaji": "chu"
+          }
+        }
+      ],
+      "explanation": "Write ちゅ for chu (chi base sign + small yu). A full-sized yu would change the spelling; only this authored kana answer is accepted."
+    },
+    {
+      "type": "reading",
+      "id": "exercise-hc-reading-3061-3087",
+      "prompt": "Type the contracted hiragana spelling in kana, not Latin letters. The cue names the base and small kana.",
+      "stimulus": {
+        "surface": "cho (chi base sign + small yo)",
+        "reading": "cho (chi base sign + small yo)",
+        "translation": "Latin-letter and base-sign spelling cue, not a Japanese word."
+      },
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [
+        {
+          "type": "kana",
+          "text": {
+            "surface": "ちょ",
+            "reading": "ちょ",
+            "translation": "Contracted hiragana cho, written with the chi base sign and small yo.",
+            "romaji": "cho"
+          }
+        }
+      ],
+      "explanation": "Write ちょ for cho (chi base sign + small yo). A full-sized yo would change the spelling; only this authored kana answer is accepted."
+    }
+  ]
+}

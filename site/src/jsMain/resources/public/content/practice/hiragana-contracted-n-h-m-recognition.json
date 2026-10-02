@@ -1,0 +1,390 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 2,
+  "id": "practice-hiragana-contracted-n-h-m-recognition",
+  "topicId": "kana-foundations",
+  "title": "Contracted hiragana: N, H and M rows — find the form",
+  "description": "Compare the base sign plus a small ゃ, ゅ or ょ with full-sized kana. The written spelling cue disambiguates similar sounds.",
+  "reviewItems": [
+    {
+      "id": "review-hc-recognition-306b-3083",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-306b-3083",
+      "skill": "Recognize contracted hiragana にゃ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-306b-3085",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-306b-3085",
+      "skill": "Recognize contracted hiragana にゅ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-306b-3087",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-306b-3087",
+      "skill": "Recognize contracted hiragana にょ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-3072-3083",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-3072-3083",
+      "skill": "Recognize contracted hiragana ひゃ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-3072-3085",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-3072-3085",
+      "skill": "Recognize contracted hiragana ひゅ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-3072-3087",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-3072-3087",
+      "skill": "Recognize contracted hiragana ひょ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-307f-3083",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-307f-3083",
+      "skill": "Recognize contracted hiragana みゃ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-307f-3085",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-307f-3085",
+      "skill": "Recognize contracted hiragana みゅ",
+      "direction": "spelling-cue-to-contracted-form"
+    },
+    {
+      "id": "review-hc-recognition-307f-3087",
+      "targetKind": "exercise",
+      "targetId": "exercise-hc-recognition-307f-3087",
+      "skill": "Recognize contracted hiragana みょ",
+      "direction": "spelling-cue-to-contracted-form"
+    }
+  ],
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Original agent-authored contracted hiragana spelling cues and word examples; no legacy CSV or F00 text reused.",
+    "rights": "publishable",
+    "rightsBasis": "Original English prompts, translations and explanations; kana spellings and short common-word meanings are linguistic facts. No copied work or audio."
+  },
+  "exercises": [
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-306b-3083",
+      "prompt": "Which written hiragana uses the ni base sign + small ya (nya)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-306b-3083-0",
+          "text": {
+            "surface": "にゃ",
+            "reading": "にゃ",
+            "translation": "Contracted hiragana nya, written with the ni base sign and small ya.",
+            "romaji": "nya"
+          }
+        },
+        {
+          "id": "option-hc-recognition-306b-3083-1",
+          "text": {
+            "surface": "にや",
+            "reading": "にや",
+            "translation": "Full-sized kana spelling; not nya."
+          }
+        },
+        {
+          "id": "option-hc-recognition-306b-3083-2",
+          "text": {
+            "surface": "にゅ",
+            "reading": "にゅ",
+            "translation": "Different small kana spelling; not nya."
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-306b-3083-0",
+      "explanation": "にゃ is nya: ni base sign + small ya. にや uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-306b-3085",
+      "prompt": "Which written hiragana uses the ni base sign + small yu (nyu)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-306b-3085-0",
+          "text": {
+            "surface": "にゆ",
+            "reading": "にゆ",
+            "translation": "Full-sized kana spelling; not nyu."
+          }
+        },
+        {
+          "id": "option-hc-recognition-306b-3085-1",
+          "text": {
+            "surface": "にょ",
+            "reading": "にょ",
+            "translation": "Different small kana spelling; not nyu."
+          }
+        },
+        {
+          "id": "option-hc-recognition-306b-3085-2",
+          "text": {
+            "surface": "にゅ",
+            "reading": "にゅ",
+            "translation": "Contracted hiragana nyu, written with the ni base sign and small yu.",
+            "romaji": "nyu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-306b-3085-2",
+      "explanation": "にゅ is nyu: ni base sign + small yu. にゆ uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-306b-3087",
+      "prompt": "Which written hiragana uses the ni base sign + small yo (nyo)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-306b-3087-0",
+          "text": {
+            "surface": "にょ",
+            "reading": "にょ",
+            "translation": "Contracted hiragana nyo, written with the ni base sign and small yo.",
+            "romaji": "nyo"
+          }
+        },
+        {
+          "id": "option-hc-recognition-306b-3087-1",
+          "text": {
+            "surface": "によ",
+            "reading": "によ",
+            "translation": "Full-sized kana spelling; not nyo."
+          }
+        },
+        {
+          "id": "option-hc-recognition-306b-3087-2",
+          "text": {
+            "surface": "にゃ",
+            "reading": "にゃ",
+            "translation": "Different small kana spelling; not nyo."
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-306b-3087-0",
+      "explanation": "にょ is nyo: ni base sign + small yo. によ uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-3072-3083",
+      "prompt": "Which written hiragana uses the hi base sign + small ya (hya)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-3072-3083-0",
+          "text": {
+            "surface": "ひや",
+            "reading": "ひや",
+            "translation": "Full-sized kana spelling; not hya."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3072-3083-1",
+          "text": {
+            "surface": "ひゅ",
+            "reading": "ひゅ",
+            "translation": "Different small kana spelling; not hya."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3072-3083-2",
+          "text": {
+            "surface": "ひゃ",
+            "reading": "ひゃ",
+            "translation": "Contracted hiragana hya, written with the hi base sign and small ya.",
+            "romaji": "hya"
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-3072-3083-2",
+      "explanation": "ひゃ is hya: hi base sign + small ya. ひや uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-3072-3085",
+      "prompt": "Which written hiragana uses the hi base sign + small yu (hyu)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-3072-3085-0",
+          "text": {
+            "surface": "ひゅ",
+            "reading": "ひゅ",
+            "translation": "Contracted hiragana hyu, written with the hi base sign and small yu.",
+            "romaji": "hyu"
+          }
+        },
+        {
+          "id": "option-hc-recognition-3072-3085-1",
+          "text": {
+            "surface": "ひゆ",
+            "reading": "ひゆ",
+            "translation": "Full-sized kana spelling; not hyu."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3072-3085-2",
+          "text": {
+            "surface": "ひょ",
+            "reading": "ひょ",
+            "translation": "Different small kana spelling; not hyu."
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-3072-3085-0",
+      "explanation": "ひゅ is hyu: hi base sign + small yu. ひゆ uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-3072-3087",
+      "prompt": "Which written hiragana uses the hi base sign + small yo (hyo)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-3072-3087-0",
+          "text": {
+            "surface": "ひよ",
+            "reading": "ひよ",
+            "translation": "Full-sized kana spelling; not hyo."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3072-3087-1",
+          "text": {
+            "surface": "ひゃ",
+            "reading": "ひゃ",
+            "translation": "Different small kana spelling; not hyo."
+          }
+        },
+        {
+          "id": "option-hc-recognition-3072-3087-2",
+          "text": {
+            "surface": "ひょ",
+            "reading": "ひょ",
+            "translation": "Contracted hiragana hyo, written with the hi base sign and small yo.",
+            "romaji": "hyo"
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-3072-3087-2",
+      "explanation": "ひょ is hyo: hi base sign + small yo. ひよ uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-307f-3083",
+      "prompt": "Which written hiragana uses the mi base sign + small ya (mya)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-307f-3083-0",
+          "text": {
+            "surface": "みゃ",
+            "reading": "みゃ",
+            "translation": "Contracted hiragana mya, written with the mi base sign and small ya.",
+            "romaji": "mya"
+          }
+        },
+        {
+          "id": "option-hc-recognition-307f-3083-1",
+          "text": {
+            "surface": "みや",
+            "reading": "みや",
+            "translation": "Full-sized kana spelling; not mya."
+          }
+        },
+        {
+          "id": "option-hc-recognition-307f-3083-2",
+          "text": {
+            "surface": "みゅ",
+            "reading": "みゅ",
+            "translation": "Different small kana spelling; not mya."
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-307f-3083-0",
+      "explanation": "みゃ is mya: mi base sign + small ya. みや uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-307f-3085",
+      "prompt": "Which written hiragana uses the mi base sign + small yu (myu)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-307f-3085-0",
+          "text": {
+            "surface": "みゆ",
+            "reading": "みゆ",
+            "translation": "Full-sized kana spelling; not myu."
+          }
+        },
+        {
+          "id": "option-hc-recognition-307f-3085-1",
+          "text": {
+            "surface": "みょ",
+            "reading": "みょ",
+            "translation": "Different small kana spelling; not myu."
+          }
+        },
+        {
+          "id": "option-hc-recognition-307f-3085-2",
+          "text": {
+            "surface": "みゅ",
+            "reading": "みゅ",
+            "translation": "Contracted hiragana myu, written with the mi base sign and small yu.",
+            "romaji": "myu"
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-307f-3085-2",
+      "explanation": "みゅ is myu: mi base sign + small yu. みゆ uses a full-sized kana, so it is a different spelling."
+    },
+    {
+      "type": "choice",
+      "id": "exercise-hc-recognition-307f-3087",
+      "prompt": "Which written hiragana uses the mi base sign + small yo (myo)? Compare small and full-sized kana.",
+      "options": [
+        {
+          "id": "option-hc-recognition-307f-3087-0",
+          "text": {
+            "surface": "みょ",
+            "reading": "みょ",
+            "translation": "Contracted hiragana myo, written with the mi base sign and small yo.",
+            "romaji": "myo"
+          }
+        },
+        {
+          "id": "option-hc-recognition-307f-3087-1",
+          "text": {
+            "surface": "みよ",
+            "reading": "みよ",
+            "translation": "Full-sized kana spelling; not myo."
+          }
+        },
+        {
+          "id": "option-hc-recognition-307f-3087-2",
+          "text": {
+            "surface": "みゃ",
+            "reading": "みゃ",
+            "translation": "Different small kana spelling; not myo."
+          }
+        }
+      ],
+      "correctOptionId": "option-hc-recognition-307f-3087-0",
+      "explanation": "みょ is myo: mi base sign + small yo. みよ uses a full-sized kana, so it is a different spelling."
+    }
+  ]
+}
