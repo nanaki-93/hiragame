@@ -120,6 +120,8 @@ class LocalProgressOwner(
     val originalProtectedRaw: String? get() = protectedRaw
     /** The raw text last successfully read or written, not a serialization of the current memory state. */
     val savedBaseline: String? get() = acknowledgedRaw
+    /** Distinguishes a confirmed missing key from an unreadable startup baseline (both have null raw). */
+    val hasKnownBaseline: Boolean get() = baselineKnown
 
     init {
         val initial = when (val read = store.read()) {
