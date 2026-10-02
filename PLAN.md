@@ -557,10 +557,12 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** F10, F11.
 
-- [ ] Add opt-in microphone recording with explicit permission, visible recording state, stop/cancel, and playback beside a model recording.
-- [ ] Keep recordings transient/in-memory initially; release microphone tracks when leaving the activity.
-- [ ] Preserve a text-only path and handle permission denial/unsupported recording.
-- [ ] Do not claim automatic pronunciation grading. Any future speech-recognition feature must document whether it sends audio off-device and cannot be required for offline learning.
+**Status:** Implemented 2026-10-03; [O02 evidence](content-source/review-notes/o02-validation.md).
+
+- [x] Add opt-in microphone recording with explicit permission, visible recording state, stop/cancel, and playback beside a model recording.
+- [x] Keep recordings transient/in-memory initially; release microphone tracks when leaving the activity.
+- [x] Preserve a text-only path and handle permission denial/unsupported recording.
+- [x] Do not claim automatic pronunciation grading. Any future speech-recognition feature must document whether it sends audio off-device and cannot be required for offline learning.
 
 **Acceptance:** learners can compare their speech voluntarily without uploading audio or making recordings part of local progress storage.
 
