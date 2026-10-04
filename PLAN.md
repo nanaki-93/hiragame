@@ -557,7 +557,22 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 
 **Depends on:** F02, F03, F05.
 
-**Status:** Implementation in progress, 2026-10-05. Validation results are pending this feature's final gate. The exact commands and their outcomes will be recorded here then. No full-suite, validator, packaging or browser result is claimed yet.
+**Status:** Implemented; non-interactive checks run 2026-10-05 from the repository root with JDK 21.0.11 and Python 3.11.16, all passing:
+
+| Command | Result |
+| --- | --- |
+| `python3 -m unittest discover -s tools -p 'test_*.py'` | Pass: 142 tests OK |
+| `python3 tools/validate_content.py site/src/jsMain/resources/public/content --review-root content-source/review-notes` | Pass: "content valid" |
+| `python3 tools/validate_mockups.py .mockups --stage complete` | Pass: static checks passed |
+| `./gradlew --no-daemon :shared:jsNodeTest :site:jsNodeTest :site:offlinePolicyTest` (repeated with `--rerun` on each task so the tests actually ran) | Pass: `shared` 123 tests and `site` 194 tests, 0 failures, 0 errors, 0 skipped; offline policy passed |
+| `./gradlew --no-daemon :site:reorganizeOutput` | Pass: BUILD SUCCESSFUL; only the advisory webpack size warnings |
+| `python3 tools/validate_local_runtime.py --artifact-root site/build/dist/js/productionExecutable/public` | Pass: local runtime verified |
+| `python3 tools/validate_release.py site/build/dist/js/productionExecutable/public` | Pass: release integrity, manifest, routes and hosting checks passed |
+| `git diff --check` | Pass |
+
+The `site` count includes the 11 new `LocalPracticeCoordinatorTest` regressions and the existing practice, resume, persistence, quota and lesson-coordinator tests. The `shared` count includes the exact completion-grading contract test. The working tree also contained separate, uncommitted page-layout edits (`AppEntry.kt`, `components/layouts/`, `pages/Layout.kt`). The save-status/navigation assertion in `homeWiresLocalLoadAndDisposalWithoutLegacyInitialization` now reads `components/layouts/PageLayout.kt` when it exists and otherwise `AppEntry.kt`. Before that change, a `git archive HEAD` export (without the layout edits) failed that one test because `PageLayout.kt` was missing. With the change, the same export passes `./gradlew --no-daemon :shared:jsNodeTest :site:jsNodeTest :site:offlinePolicyTest` (123 and 194 tests, 0 failures).
+
+Coverage is Node and fake-adapter only. Browser/E2E, screenshot/visual, accessibility, native keyboard/IME, server-startup, live-offline and manual checks were excluded and not run. No live-browser result is claimed.
 
 **Scope:**
 - **Recoverable practice-load cancellation** in `LocalPracticeCoordinator`:
@@ -578,7 +593,6 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 - The callback-reentrancy cases are deterministic adversarial tests. Whether normal browser use reaches them is unverified.
 - Exact completion-answer grading is a deliberate, tested contract, not a defect, and is unchanged. Completion answers are only trimmed at the boundaries, while reading answers are normalized.
 - `LocalProgressOwner`, `LocalLessonCoordinator`, `pages/Index.kt`, the save schema, the backup format, content IDs and grading are unchanged.
-- Coverage is Node and fake-adapter only. No live-browser result is claimed.
 
 ---
 

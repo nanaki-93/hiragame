@@ -953,7 +953,11 @@ class LocalPracticeCoordinatorTest {
             "selectColorMode(progress, mode)", "colorModeState.value = initialSilkMode(progress)")) {
             assertTrue(required in saveUi, "Home missing save/preference control: $required")
         }
-        val layout = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/components/layouts/PageLayout.kt"), "utf8") as String
+        // The shared shell lives in the default PageLayout when present; otherwise AppEntry renders it.
+        val pageLayoutFile = "site/src/jsMain/kotlin/com/github/nanaki_93/components/layouts/PageLayout.kt"
+        val shellFile = if (fs.existsSync(path.resolve(root, pageLayoutFile)) as Boolean) pageLayoutFile
+            else "site/src/jsMain/kotlin/com/github/nanaki_93/AppEntry.kt"
+        val layout = fs.readFileSync(path.resolve(root, shellFile), "utf8") as String
         val settings = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/pages/Settings.kt"), "utf8") as String
         assertTrue("LocalSaveStatus()" in layout, "Save status must render outside content loading states")
         assertTrue("SavePreferencesSection(LocalProgress.current)" in settings, "Settings must retain save controls")
