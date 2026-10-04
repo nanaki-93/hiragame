@@ -6,6 +6,14 @@ Turn Hiragame into a personal Japanese-learning app for a software engineer who 
 
 This document is an implementation plan, not a record of completed work. Feature status and recorded command results determine completion; unchecked work is not complete.
 
+### How to read this plan
+
+- Each feature's `Status:` line (for F04, its acceptance line) and its linked `content-source/review-notes/*-validation.md` evidence record the verified scope and the commands actually run.
+- Unchecked boxes in F02, F03 and F05–F07 are the original planning checklist. They were not re-audited after implementation, so an unchecked box there does not mean the code is missing. As stated above, the feature status decides completion. In F13 and O01, the status line names the items that remain deferred or unverified.
+- A checked box or an "implemented" status is not a live-browser verification. Recorded checks are Node, fake-adapter, CLI and static checks.
+- Do not tick boxes because matching code exists. Tick them only after a recorded review against the item.
+- Sections labelled historical describe the pre-refactor application and are kept as evidence. They do not list work that is currently missing.
+
 ## Autonomous execution and verification policy
 
 This policy supersedes earlier manual-approval and interactive-verification requirements in project planning documents and historical workflow reports.
@@ -19,6 +27,8 @@ This policy supersedes earlier manual-approval and interactive-verification requ
 - **Content review is agent-owned:** review meaning, authored readings, translations, register, answer variants and provenance against available sources; record reviewer type and uncertainties in `content-source/review-notes/`. Human/native-speaker certification is not required and must not be claimed. Correct, replace or omit uncertain material; never invent licence/redistribution rights. Optional audio with unconfirmed rights stays omitted.
 - **Honest completion:** satisfy the scoped artifact and non-interactive checks, record actual commands/results, and continue to the next task. Static/unit passes do not prove real-browser behavior or accessibility. Repair failures; do not weaken validators, fabricate evidence, or mark absent work complete. A missing build dependency or genuine technical failure is reported precisely, not replaced with a manual-check request.
 - **Safety boundaries remain:** preserve unrelated changes and legacy source data. Do not delete personal saves or deployed resources, publish/deploy, spend money, or change secrets without existing explicit authorization. If an external destructive operation is not authorized, defer that operation and continue independent repository work; approval-free design is not blanket destructive authorization.
+
+**Historical (F00 workflow):** the `.pi/` documents named in the next paragraph are historical workflow artifacts, not active instructions for current work. Later per-feature workflow runs reused those paths: at the last inspection (2026-10-05), `.pi/SPEC.md`, `.pi/ANALYSIS.md` and `.pi/PLAN.md` held an F07 snapshot. They do not describe the current architecture, so use this plan's feature statuses and their linked evidence instead. The next paragraph is the original F00-era note, kept unchanged as historical evidence.
 
 The active F00 execution documents are `.pi/SPEC.md`, `.pi/ANALYSIS.md`, and `.pi/PLAN.md`. Historical `.pi/workflows/` prompts, attestations and runner state remain untouched; if a runner cached the old requirements, replan/resume from these revised documents rather than treating stale manual gates as current instructions.
 
@@ -46,7 +56,16 @@ The active F00 execution documents are `.pi/SPEC.md`, `.pi/ANALYSIS.md`, and `.p
 - Persisting full conversation transcripts or large recordings in `localStorage`.
 - A desktop/mobile-native rewrite or a separate general-purpose content CMS.
 
-## Current implementation to replace
+## Pre-refactor implementation (historical; replaced)
+
+**Current state**, from read-only directory and source inspection on 2026-10-05 (not a test result):
+- The active `site` source has no `pages/Login.kt`, no `service/` package, no `config/Config.kt`, and no login, `apiUrl` or Ktor references. `pages/Index.kt` wires the local `LocalPracticeCoordinator`.
+- `shared` has no `models/` package.
+- There is no root `Dockerfile`.
+- `.github/workflows/` contains only `content-check.yml`, `firebase-deploy.yml` and `qodana_code_quality.yml`.
+- `backend/` is retained as source but excluded from the Gradle build in `settings.gradle.kts` (see F13).
+
+The heading was originally "Current implementation to replace". The rest of this section describes the pre-refactor application and is kept unchanged as historical evidence. It is not a list of current gaps.
 
 - `site/src/jsMain/kotlin/com/github/nanaki_93/pages/Index.kt`: authentication, remote question/answer calls, mode/level selection, fixed two-second delays, and romanization-only practice.
 - `site/src/jsMain/kotlin/com/github/nanaki_93/pages/Login.kt`: login/registration UI.
@@ -531,6 +550,35 @@ Final CLI/static and isolated-adapter acceptance: PASS. Evidence: `content-sourc
 - A production artifact contains all core lessons and required static resources.
 - Domain/state-machine and isolated adapter scenarios cover first visit, lesson completion, review, backup round trip and offline/update policy without running the UI.
 - README commands match build configuration; recorded CLI build/test commands are reproducible. Development/preview instructions are documented but not claimed live-tested.
+
+## Reliability hardening (practice coordinator)
+
+**Purpose:** make the local practice loop recover from interrupted loading, and reject practice actions that a save reload, reset, replacement or disposal has invalidated. The application is not rewritten.
+
+**Depends on:** F02, F03, F05.
+
+**Status:** Implementation in progress, 2026-10-05. Validation results are pending this feature's final gate. The exact commands and their outcomes will be recorded here then. No full-suite, validator, packaging or browser result is claimed yet.
+
+**Scope:**
+- **Recoverable practice-load cancellation** in `LocalPracticeCoordinator`:
+  - If the current load is interrupted while the coordinator's scope is still live, practice shows a fixed, retryable message ("Practice loading stopped. Retry the load or open Topics / Learn.") instead of staying in Loading.
+  - If the coordinator's scope has already been cancelled, a fixed message points to Topics / Learn or Settings, and Retry does not launch a load that can never run.
+  - Loads replaced by a newer load, or stopped by disposal, stay silent and cannot overwrite newer state.
+  - Content, HTTP and unexpected-failure classification and messages are unchanged.
+- **Rejection of invalidated practice operations:** the save owner may reload, reset or replace progress, or the coordinator may be disposed, while an injected session-factory, reducer or clock callback is running. In that case the operation:
+  - writes no checkpoint into the new snapshot;
+  - publishes no old session;
+  - attaches no stale error or retry.
+
+  Ordinary preference changes do not invalidate an operation.
+
+**Findings:**
+- Every suspected defect in both areas was reproduced by a focused regression test that failed before its repair.
+- Two kinds of test are compatibility guards rather than reproductions: the silent cancellation of superseded or disposed loads, and a preference change during a callback. Neither needed a repair.
+- The callback-reentrancy cases are deterministic adversarial tests. Whether normal browser use reaches them is unverified.
+- Exact completion-answer grading is a deliberate, tested contract, not a defect, and is unchanged. Completion answers are only trimmed at the boundaries, while reading answers are normalized.
+- `LocalProgressOwner`, `LocalLessonCoordinator`, `pages/Index.kt`, the save schema, the backup format, content IDs and grading are unchanged.
+- Coverage is Node and fake-adapter only. No live-browser result is claimed.
 
 ---
 

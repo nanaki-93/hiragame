@@ -24,7 +24,7 @@ On a Homebrew machine with an older default Java, prefix Gradle with `JAVA_HOME=
 
 `reorganizeOutput` depends on the installed Kobweb/webpack production distribution. It copies the generated shell and **all nested processed public assets**, then generates `/hiragame/index.html`, a manifest-linked production shell, hashed `precache.json` and `sw.js`. This is a client-rendered static application; no browser-driven prerender/export step is required. Output is `site/build/dist/js/productionExecutable/public`. Build output is ignored by Git.
 
-The commands above are the reproducible non-interactive release checks. [Feature evidence](content-source/review-notes/f14-validation.md) records actual results and limits. Tests run through Node with domain/state machines and fake storage/audio/cache adapters. No live browser, screenshot, accessibility, keyboard/IME, screen-reader, device-matrix or network-disabled walkthrough is claimed. Webpack size warnings are advisory.
+The commands above are the reproducible non-interactive release checks. [Feature evidence](content-source/review-notes/f14-validation.md) records the original release results and limits. Tests run through Node with domain/state machines and fake storage/audio/cache adapters; they do not mount the browser UI. Use the development smoke check below for startup and navigation changes. Accessibility, keyboard/IME, screen-reader, device-matrix and network-disabled walkthroughs are separate checks. Webpack size warnings are advisory.
 
 ## Development and optional local preview
 
@@ -36,7 +36,9 @@ make run
 
 Open `http://localhost:8081/hiragame/`. This runs `./gradlew --no-daemon :site:kobwebStart --continuous`, rebuilding when source files change. Use Ctrl+C to leave watch mode, then `make stop` to stop the managed development server. `make build` assembles the static production distribution, and `make help` lists the commands. The Makefile respects `JAVA_HOME`; use the JDK selection described above if your default Java is older.
 
-The repository's `site/.kobweb/conf.yaml` sets port 8081 and base path `/hiragame`. Make recipes and Gradle task graphs are checked with dry runs; the development server is **not launched during verification**. Development does not load the production offline registration script. Use a distinct origin/port for production preview so an old worker cannot control development.
+The repository's `site/.kobweb/conf.yaml` sets port 8081 and base path `/hiragame`. Development does not load the production offline registration script. Use a distinct origin/port for production preview so an old worker cannot control development.
+
+For a browser smoke check, run `make run`, open `/hiragame/`, wait for “Practice locally”, and follow the navigation to Topics / Learn, a lesson, Review and Settings / Backup. Reload a nested route and check the browser console for errors. In a separate test browser profile or origin, change a preference and confirm it survives navigation and reload. Shared navigation belongs in the default `PageLayout`, where Kobweb supplies the page context required by its links; app-wide progress is initialized inside `SilkApp` after its startup hooks run.
 
 After production assembly, this optional static preview serves the distribution without Internet:
 
@@ -82,7 +84,7 @@ Content CI and the Firebase deployment workflow run non-interactive validation, 
 
 `backend/` is excluded from Gradle but temporarily retained because old personal-progress export requirements are unknown. Its deployment workflow and active frontend dependencies are removed. [F13 preservation report](content-source/review-notes/f13-retirement.md) records how to recover the historical toolchain for an export. Legacy quiz scores cannot be converted into phrase mastery. Cloud Run/database resources and unused CI secrets have **not** been retired; repository changes do not stop remote billing.
 
-Optional AI, microphone recording, authoring helpers and expansion are separate from the required offline learning loop. See [PLAN.md](PLAN.md) for their current implementation and verification status.
+Optional AI, microphone recording, authoring helpers and expansion are separate from the required offline learning loop. See [PLAN.md](PLAN.md) for their current implementation and verification status. `PLAN.md` combines current feature status with historical pre-refactor planning, which is labelled as historical. Its feature status lines and linked evidence are authoritative; unchecked boxes from the original checklist were not re-audited.
 
 ## Optional local AI
 
