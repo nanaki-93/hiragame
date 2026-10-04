@@ -1614,4 +1614,273 @@ class LocalPracticeCoordinatorTest {
         coordinator.dispatch(PracticeCommand.Restart(oldId, 0, Long.MAX_VALUE))
         assertSame(session, assertIs<LocalPracticeState.Ready>(coordinator.state.value).session)
     }
+
+    // Deterministic adversarial reentrancy: injected callbacks replace or dispose state mid-operation.
+    // These guard the invalidation contract; they do not claim browser callbacks routinely do this.
+    private val adversarialSetId = "practice-kana-a-i"
+
+    @Test fun clockTriggeredOwnerReloadRejectsObsoletePracticeCheckpoint() = runTest {
+        val valid = seed()
+        val store = CountingStore()
+        val progress = owner(store)
+        var reloadOnClock = false
+        val practice = LocalPracticeCoordinator(this, progress, { valid }, ::reduce, ::startSession, now = {
+            if (reloadOnClock) progress.reloadSavedState()
+            1_000L
+        })
+        try {
+            practice.load()
+            runCurrent()
+            practice.start(adversarialSetId)
+            val session = assertIs<LocalPracticeState.Ready>(practice.state.value).session!!
+            val writes = store.writes
+            val before = progress.state.value.snapshot.practiceProgress
+            assertEquals(CheckpointView.PROMPT, before.single().view)
+            reloadOnClock = true
+            val submit = PracticeCommand.Submit(session.id, session.revision, PracticeAnswer.Choice("option-kana-a"))
+            practice.dispatch(submit)
+            val ready = assertIs<LocalPracticeState.Ready>(practice.state.value)
+            assertNull(ready.session)
+            assertNull(ready.operationError)
+            assertEquals(writes, store.writes)
+            assertEquals(before, progress.state.value.snapshot.practiceProgress)
+            assertTrue(progress.state.value.snapshot.practiceProgress.none { it.view == CheckpointView.FEEDBACK })
+            val generation = progress.generation
+            practice.dispatch(submit) // the old command cannot reach the reducer, clock or owner
+            assertTrue(ready === practice.state.value, "Old command must not replace the published state")
+            assertEquals(writes, store.writes)
+            assertEquals(generation, progress.generation)
+        } finally {
+            practice.dispose()
+            progress.dispose()
+        }
+    }
+
+    @Test fun clockTriggeredResetKeepsReplacementProgressIntact() = runTest {
+        val valid = seed()
+        val store = CountingStore()
+        val progress = owner(store)
+        var resetOnClock = false
+        var preparation: ReplacementPreparation? = null
+        var replacement: ReplacementResult? = null
+        val practice = LocalPracticeCoordinator(this, progress, { valid }, ::reduce, ::startSession, now = {
+            if (resetOnClock) {
+                resetOnClock = false
+                val prepared = progress.beginReset(ResetScope.PROGRESS_ONLY)
+                preparation = prepared
+                if (prepared is ReplacementPreparation.Ready) replacement = progress.confirmReplacement(prepared.token)
+            }
+            1_000L
+        })
+        try {
+            practice.load()
+            runCurrent()
+            practice.start(adversarialSetId)
+            val session = assertIs<LocalPracticeState.Ready>(practice.state.value).session!!
+            val writes = store.writes
+            assertEquals(1, progress.state.value.snapshot.practiceProgress.size)
+            resetOnClock = true
+            practice.dispatch(PracticeCommand.Skip(session.id, session.revision)) // a committed transition
+            assertIs<ReplacementPreparation.Ready>(preparation)
+            assertEquals(ReplacementResult.Replaced, replacement)
+            val ready = assertIs<LocalPracticeState.Ready>(practice.state.value)
+            assertNull(ready.session)
+            assertNull(ready.operationError)
+            assertTrue(progress.state.value.snapshot.practiceProgress.isEmpty())
+            assertEquals(writes + 1, store.writes) // only the reset itself wrote
+            assertTrue(assertIs<SaveDecodeResult.Valid>(SaveCodec.decodeSave(store.delegate.backing.raw!!))
+                .snapshot.practiceProgress.isEmpty())
+        } finally {
+            practice.dispose()
+            progress.dispose()
+        }
+    }
+
+    @Test fun reducerTriggeredOwnerReloadCannotResurrectSessionOrWrite() = runTest {
+        val valid = seed()
+        val store = CountingStore()
+        val progress = owner(store)
+        var reloadInReducer = false
+        val practice = coordinator(this, { valid }, progress, reducer = { session, command ->
+            if (reloadInReducer) progress.reloadSavedState()
+            reduce(session, command)
+        })
+        try {
+            practice.load()
+            runCurrent()
+            practice.start(adversarialSetId)
+            val session = assertIs<LocalPracticeState.Ready>(practice.state.value).session!!
+            val writes = store.writes
+            val before = progress.state.value.snapshot.practiceProgress
+            reloadInReducer = true
+            practice.dispatch(PracticeCommand.Submit(session.id, session.revision, PracticeAnswer.Choice("option-kana-a")))
+            val ready = assertIs<LocalPracticeState.Ready>(practice.state.value)
+            assertNull(ready.session)
+            assertNull(ready.operationError)
+            assertEquals(writes, store.writes)
+            assertEquals(before, progress.state.value.snapshot.practiceProgress)
+        } finally {
+            practice.dispose()
+            progress.dispose()
+        }
+    }
+
+    @Test fun reducerReloadThenFailureAttachesNoStaleErrorOrRetry() = runTest {
+        val valid = seed()
+        val store = CountingStore()
+        val progress = owner(store)
+        var reloadAndFail = false
+        val practice = coordinator(this, { valid }, progress, reducer = { session, command ->
+            if (reloadAndFail) {
+                progress.reloadSavedState()
+                error("private reducer diagnostic")
+            }
+            reduce(session, command)
+        })
+        try {
+            practice.load()
+            runCurrent()
+            practice.start(adversarialSetId)
+            val session = assertIs<LocalPracticeState.Ready>(practice.state.value).session!!
+            val writes = store.writes
+            reloadAndFail = true
+            practice.dispatch(PracticeCommand.Submit(session.id, session.revision, PracticeAnswer.Choice("option-kana-a")))
+            val ready = assertIs<LocalPracticeState.Ready>(practice.state.value)
+            assertNull(ready.operationError)
+            assertNull(ready.session)
+            assertEquals(writes, store.writes)
+            practice.retryOperation(PracticeOperationError(PracticeOperation.DISPATCH, "stale", 1))
+            assertTrue(ready === practice.state.value, "A stale retry must not act on the replacement state")
+            assertEquals(writes, store.writes)
+            reloadAndFail = false
+            practice.start(adversarialSetId) // the replacement state starts normally
+            val fresh = assertIs<LocalPracticeState.Ready>(practice.state.value)
+            assertNull(fresh.operationError)
+            assertEquals(SessionView.Prompt(0), fresh.session!!.view)
+            assertTrue(fresh.session.id > session.id)
+            assertEquals(writes + 1, store.writes)
+        } finally {
+            practice.dispose()
+            progress.dispose()
+        }
+    }
+
+    @Test fun sessionFactoryTriggeredReloadPublishesNoStartedSession() = runTest {
+        val valid = seed()
+        val store = CountingStore()
+        val progress = owner(store)
+        var reloadInFactory = false
+        val practice = coordinator(this, { valid }, progress, sessionFactory = { id, set, limit ->
+            if (reloadInFactory) progress.reloadSavedState()
+            startSession(id, set, limit)
+        })
+        try {
+            practice.load()
+            runCurrent()
+            val writes = store.writes
+            reloadInFactory = true
+            practice.start(adversarialSetId)
+            val ready = assertIs<LocalPracticeState.Ready>(practice.state.value)
+            assertNull(ready.session)
+            assertNull(ready.operationError)
+            assertTrue(progress.state.value.snapshot.practiceProgress.isEmpty())
+            assertEquals(writes, store.writes)
+        } finally {
+            practice.dispose()
+            progress.dispose()
+        }
+    }
+
+    @Test fun disposalInsideCallbackWritesAndPublishesNothing() = runTest {
+        val valid = seed()
+        val store = CountingStore()
+        val progress = owner(store)
+        lateinit var practice: LocalPracticeCoordinator
+        var disposeInReducer = false
+        practice = coordinator(this, { valid }, progress, reducer = { session, command ->
+            if (disposeInReducer) practice.dispose()
+            reduce(session, command)
+        })
+        try {
+            practice.load()
+            runCurrent()
+            practice.start(adversarialSetId)
+            val published = practice.state.value
+            val session = assertIs<LocalPracticeState.Ready>(published).session!!
+            val writes = store.writes
+            val before = progress.state.value.snapshot.practiceProgress
+            disposeInReducer = true
+            practice.dispatch(PracticeCommand.Submit(session.id, session.revision, PracticeAnswer.Choice("option-kana-a")))
+            assertTrue(published === practice.state.value, "A disposed operation must not publish")
+            assertEquals(writes, store.writes)
+            assertEquals(before, progress.state.value.snapshot.practiceProgress)
+        } finally {
+            practice.dispose()
+        }
+
+        // Disposal from the clock, sampled just before persistence, is rejected the same way.
+        lateinit var clocked: LocalPracticeCoordinator
+        var disposeOnClock = false
+        clocked = LocalPracticeCoordinator(this, progress, { valid }, ::reduce, ::startSession, now = {
+            if (disposeOnClock) clocked.dispose()
+            1_000L
+        })
+        try {
+            clocked.load()
+            runCurrent()
+            val published = clocked.state.value
+            val writes = store.writes
+            val before = progress.state.value.snapshot.practiceProgress
+            disposeOnClock = true
+            clocked.start("practice-katakana-basic-vowels-k-reading")
+            assertTrue(published === clocked.state.value, "A disposed start must not publish")
+            assertEquals(writes, store.writes)
+            assertEquals(before, progress.state.value.snapshot.practiceProgress)
+        } finally {
+            clocked.dispose()
+            progress.dispose()
+        }
+    }
+
+    @Test fun preferenceChangeInsideCallbackDoesNotInvalidateOperation() = runTest {
+        val valid = seed()
+        val store = CountingStore()
+        val progress = owner(store)
+        var changeAidOnClock = false
+        var aidResult: ProgressMutationResult? = null
+        val practice = LocalPracticeCoordinator(this, progress, { valid }, ::reduce, ::startSession, now = {
+            if (changeAidOnClock) {
+                changeAidOnClock = false
+                aidResult = selectStudyAid(progress, StudyAid.ROMAJI, true)
+            }
+            1_000L
+        })
+        try {
+            practice.load()
+            runCurrent()
+            practice.start(adversarialSetId)
+            val session = assertIs<LocalPracticeState.Ready>(practice.state.value).session!!
+            val writes = store.writes
+            val generation = progress.generation
+            assertTrue(!progress.state.value.snapshot.preferences.showRomaji)
+            changeAidOnClock = true
+            practice.dispatch(PracticeCommand.Submit(session.id, session.revision, PracticeAnswer.Choice("option-kana-a")))
+            assertEquals(ProgressMutationResult.Accepted, aidResult)
+            assertEquals(generation, progress.generation) // preferences never replace the owner
+            val advanced = assertIs<LocalPracticeState.Ready>(practice.state.value)
+            assertNull(advanced.operationError)
+            assertEquals(session.id, advanced.session!!.id)
+            assertEquals(SessionView.Feedback(0), advanced.session.view)
+            assertEquals(writes + 2, store.writes) // the preference and the checkpoint
+            val snapshot = progress.state.value.snapshot
+            assertTrue(snapshot.preferences.showRomaji)
+            assertEquals(CheckpointView.FEEDBACK, snapshot.practiceProgress.single().view)
+            val decoded = assertIs<SaveDecodeResult.Valid>(SaveCodec.decodeSave(store.delegate.backing.raw!!)).snapshot
+            assertTrue(decoded.preferences.showRomaji)
+            assertEquals(CheckpointView.FEEDBACK, decoded.practiceProgress.single().view)
+        } finally {
+            practice.dispose()
+            progress.dispose()
+        }
+    }
 }

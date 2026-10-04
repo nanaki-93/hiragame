@@ -251,10 +251,21 @@ class LocalPracticeCoordinator(
     private fun perform(operation: PendingOperation, retrying: Boolean = false) {
         if (disposed) return
         reconcileOwner()
-        val ready = state.value as? LocalPracticeState.Ready ?: return
+        if (!progress.isCurrentGeneration(ownerGeneration)) return
+        val ready = mutableState.value as? LocalPracticeState.Ready ?: return
         // An operation error must be explicitly retried or left, not silently overwritten.
         if (ready.operationError != null && (!retrying || pendingOperation != operation)) return
+        val operationGeneration = generation
+        // Injected callbacks (session factory, reducer, clock) and the owner itself may reload,
+        // reset, replace or dispose synchronously. An invalidated operation must not persist
+        // into the replacement snapshot or publish a session, error or retry against it.
+        fun stillCurrent(): Boolean {
+            reconcileOwner()
+            return !disposed && generation == operationGeneration &&
+                progress.isCurrentGeneration(ownerGeneration) && mutableState.value === ready
+        }
         try {
+            var resumedRunToken: String? = null
             val updated = when (operation) {
                 is PendingOperation.Start -> {
                     if (ready.session != null) return
@@ -269,7 +280,7 @@ class LocalPracticeCoordinator(
                     val set = ready.availablePracticeSets[operation.setId] ?: return
                     val restored = restorePractice(runtimePracticeId(), set, resolution.checkpoint)
                     if (restored !is PracticeRestoreResult.Restored) return
-                    runToken = resolution.checkpoint.runToken
+                    resumedRunToken = resolution.checkpoint.runToken
                     restored.session
                 }
                 is PendingOperation.Command -> {
@@ -282,6 +293,7 @@ class LocalPracticeCoordinator(
                     reducer(current, guarded)
                 }
             }
+            if (!stillCurrent()) return
             // Reducer validation and read-only navigation may change its runtime revision but
             // not the committed frontier. Never observe the StateFlow as a save trigger.
             val committed = when (operation) {
@@ -294,20 +306,24 @@ class LocalPracticeCoordinator(
                     else -> false
                 }
             }
+            var nextRunToken = resumedRunToken ?: runToken
             if (committed) {
                 val set = ready.availablePracticeSets[updated.setId]
                 if (set != null) {
+                    // Sample time before assigning tokens or entering the owner: the clock may replace it.
+                    val timestamp = now()
+                    if (!stillCurrent()) return
                     val newRun = operation is PendingOperation.Start ||
                         (operation is PendingOperation.Command && operation.command is PracticeCommand.Restart)
-                    if (newRun || runToken == null) runToken = "${tokenPrefix}_run_${++nextTransition}"
+                    val checkpointRun = if (newRun || runToken == null) "${tokenPrefix}_run_${++nextTransition}" else runToken!!
                     val transitionToken = "${tokenPrefix}_transition_${++nextTransition}"
+                    nextRunToken = checkpointRun
                     // A rejected bounded mutation leaves the previous valid snapshot in the owner;
                     // the accepted practice action still remains usable in this runtime session.
-                    val timestamp = now()
                     progress.mutate { snapshot ->
                         val previous = snapshot.practiceProgress.firstOrNull { it.setId == set.id }
                         val checkpoint = projectPracticeCheckpoint(
-                            updated, set, timestamp, runToken!!, transitionToken, previous,
+                            updated, set, timestamp, checkpointRun, transitionToken, previous,
                         )
                         if (checkpoint == previous) ProgressUpdate.Unchanged(snapshot)
                         else {
@@ -318,8 +334,11 @@ class LocalPracticeCoordinator(
                                 else records.toMutableList().also { it[index] = checkpoint }))
                         }
                     }
+                    // The owner may be replaced synchronously while it persists.
+                    if (!stillCurrent()) return
                 }
             }
+            runToken = nextRunToken
             pendingOperation = null
             mutableState.value = ready.copy(
                 session = if (updated.view == SessionView.Left) null else updated,
@@ -328,6 +347,8 @@ class LocalPracticeCoordinator(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            // A failure from an invalidated operation must not attach an error or retry to new state.
+            if (!stillCurrent()) return
             pendingOperation = operation
             val kind = if (operation is PendingOperation.Start || operation is PendingOperation.Resume) PracticeOperation.START else PracticeOperation.DISPATCH
             mutableState.value = ready.copy(operationError = PracticeOperationError(
