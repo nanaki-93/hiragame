@@ -65,8 +65,10 @@ import com.github.nanaki_93.progress.ReviewItemProgress
 import com.github.nanaki_93.progress.ReviewOutcome
 import com.github.nanaki_93.progress.SaveCodec
 import com.github.nanaki_93.progress.SaveDecodeResult
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -951,9 +953,9 @@ class LocalPracticeCoordinatorTest {
             "selectColorMode(progress, mode)", "colorModeState.value = initialSilkMode(progress)")) {
             assertTrue(required in saveUi, "Home missing save/preference control: $required")
         }
-        val app = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/AppEntry.kt"), "utf8") as String
+        val layout = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/components/layouts/PageLayout.kt"), "utf8") as String
         val settings = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/pages/Settings.kt"), "utf8") as String
-        assertTrue("LocalSaveStatus()" in app, "Save status must render outside content loading states")
+        assertTrue("LocalSaveStatus()" in layout, "Save status must render outside content loading states")
         assertTrue("SavePreferencesSection(LocalProgress.current)" in settings, "Settings must retain save controls")
         assertTrue("not saved" !in home && "lost when" !in home, "Home still claims checkpoints are never saved")
         val launchUi = home.substringAfter("val checkpoints = coordinator.savedCheckpoints()").substringBefore("} else {\n                            // Commands capture")
@@ -1009,7 +1011,7 @@ class LocalPracticeCoordinatorTest {
         assertTrue("if (it == ReplacementResult.Replaced) apply()" in home)
         assertTrue("reloadSavedAndApplyMode(progress) { colorModeState.value = initialSilkMode(progress) }" in recoveryUi)
         val navigation = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/components/widgets/LearningNavigation.kt"), "utf8") as String
-        assertTrue("LearningNavigation()" in app && "\"/settings\"" in navigation,
+        assertTrue("LearningNavigation()" in layout && "\"/settings\"" in navigation,
             "Recovery controls must be reachable even on content load failure")
         assertTrue("ColorMode.current == ColorMode.DARK" in home &&
             "Modifier.backgroundColor(Colors.DarkBackground)" in home &&
@@ -1220,6 +1222,118 @@ class LocalPracticeCoordinatorTest {
         assertIs<LocalPracticeState.Loading>(coordinator.state.value)
         coordinator.load()
         assertIs<LocalPracticeState.Loading>(coordinator.state.value)
+    }
+
+    @Test fun cancelledPracticeLoadInLiveScopeCanRetry() = runTest {
+        val valid = seed()
+        var calls = 0
+        val coordinator = coordinator(this, {
+            if (++calls == 1) throw CancellationException("private cancellation")
+            valid
+        })
+        coordinator.load()
+        runCurrent()
+        val stopped = assertIs<LocalPracticeState.Error>(coordinator.state.value)
+        assertEquals(LoadErrorKind.CANCELLED, stopped.kind)
+        assertEquals("Practice loading stopped. Retry the load or open Topics / Learn.", stopped.safeMessage)
+        assertNull(stopped.affectedPath)
+        assertTrue("private" !in stopped.safeMessage)
+        coordinator.retryLoad()
+        assertIs<LocalPracticeState.Loading>(coordinator.state.value)
+        runCurrent()
+        assertIs<LocalPracticeState.Ready>(coordinator.state.value)
+        assertEquals(2, calls)
+        coordinator.dispose()
+    }
+
+    @Test fun alreadyCancelledScopeCannotLeavePracticeLoadStuck() = runTest {
+        val parent = Job()
+        parent.cancel()
+        var calls = 0
+        val valid = seed()
+        val coordinator = coordinator(CoroutineScope(coroutineContext + parent), {
+            calls++
+            valid
+        })
+        coordinator.load()
+        runCurrent()
+        val error = assertIs<LocalPracticeState.Error>(coordinator.state.value)
+        assertEquals(LoadErrorKind.CANCELLED, error.kind)
+        assertEquals("Practice loading stopped. Open Topics / Learn or Settings to continue.", error.safeMessage)
+        assertNull(error.affectedPath)
+        assertEquals(0, calls)
+        // A dead parent cannot run a new load; the error and its navigation exits remain.
+        coordinator.retryLoad()
+        runCurrent()
+        assertSame(error, coordinator.state.value)
+        assertEquals(0, calls)
+        coordinator.dispose()
+    }
+
+    @Test fun scopeCancelledDuringPracticeLoadDoesNotPublishLateResult() = runTest {
+        val parent = Job()
+        val late = CompletableDeferred<CatalogLoad>()
+        var calls = 0
+        val coordinator = coordinator(CoroutineScope(coroutineContext + parent), {
+            calls++
+            withContext(NonCancellable) { late.await() }
+        })
+        coordinator.load()
+        runCurrent()
+        assertIs<LocalPracticeState.Loading>(coordinator.state.value)
+        parent.cancel()
+        late.complete(seed())
+        runCurrent()
+        val cancelled = assertIs<LocalPracticeState.Error>(coordinator.state.value)
+        assertEquals(LoadErrorKind.CANCELLED, cancelled.kind)
+        assertEquals("Practice loading stopped. Open Topics / Learn or Settings to continue.", cancelled.safeMessage)
+        assertNull(cancelled.affectedPath)
+        coordinator.retryLoad()
+        runCurrent()
+        assertSame(cancelled, coordinator.state.value)
+        assertEquals(1, calls)
+        coordinator.dispose()
+    }
+
+    @Test fun supersededOrDisposedCancellationStaysSilent() = runTest {
+        val valid = seed()
+        val release = CompletableDeferred<Unit>()
+        var attempts = 0
+        val superseded = coordinator(this, {
+            if (++attempts == 1) {
+                withContext(NonCancellable) { release.await() }
+                throw CancellationException("private superseded cancellation")
+            }
+            valid
+        })
+        superseded.load()
+        runCurrent()
+        superseded.load()
+        runCurrent()
+        val ready = assertIs<LocalPracticeState.Ready>(superseded.state.value)
+        release.complete(Unit)
+        runCurrent()
+        assertSame(ready, superseded.state.value)
+        assertEquals(2, attempts)
+        superseded.dispose()
+
+        val disposedRelease = CompletableDeferred<Unit>()
+        var disposedCalls = 0
+        val disposed = coordinator(this, {
+            disposedCalls++
+            withContext(NonCancellable) { disposedRelease.await() }
+            throw CancellationException("private disposed cancellation")
+        })
+        disposed.load()
+        runCurrent()
+        disposed.dispose()
+        disposedRelease.complete(Unit)
+        runCurrent()
+        assertIs<LocalPracticeState.Loading>(disposed.state.value)
+        disposed.retryLoad()
+        runCurrent()
+        assertIs<LocalPracticeState.Loading>(disposed.state.value)
+        assertEquals(1, disposedCalls)
     }
 
     @Test fun invalidActionsAndEvaluatorFailuresRetainSessionWithRetryOrLeave() = runTest {

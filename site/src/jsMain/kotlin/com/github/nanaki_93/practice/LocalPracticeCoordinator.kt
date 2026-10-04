@@ -17,6 +17,9 @@ import kotlin.random.Random
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,7 +43,11 @@ sealed interface LocalPracticeState {
 }
 
 /** Categories are based on exception types, never on untrusted response or diagnostic text. */
-enum class LoadErrorKind { CONTENT, HTTP, UNEXPECTED }
+enum class LoadErrorKind { CONTENT, HTTP, UNEXPECTED, CANCELLED }
+
+/** Fixed cancellation copy: a live scope can retry; a dead scope offers only navigation exits. */
+private const val CANCELLED_LIVE_MESSAGE = "Practice loading stopped. Retry the load or open Topics / Learn."
+private const val CANCELLED_DEAD_MESSAGE = "Practice loading stopped. Open Topics / Learn or Settings to continue."
 
 enum class PracticeOperation { START, DISPATCH }
 
@@ -106,9 +113,11 @@ class LocalPracticeCoordinator(
         pendingOperation = null
         mutableState.value = LocalPracticeState.Loading
         val token = generation
-        loadJob = scope.launch {
+        val job = scope.launch {
             try {
                 val result = loadContent()
+                // A source may ignore cancellation; never publish its late result from a cancelled job.
+                currentCoroutineContext().ensureActive()
                 reconcileOwner()
                 if (token != generation || disposed) return@launch
                 mutableState.value = when (result) {
@@ -123,6 +132,7 @@ class LocalPracticeCoordinator(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
+                currentCoroutineContext().ensureActive()
                 reconcileOwner()
                 if (token != generation || disposed) return@launch
                 val bundled = e as? BundledContentException
@@ -137,15 +147,34 @@ class LocalPracticeCoordinator(
                         LoadErrorKind.HTTP -> "Unable to read bundled content from this site. Retry the load."
                         LoadErrorKind.CONTENT -> "Unable to load reviewed content. Retry the load."
                         LoadErrorKind.UNEXPECTED -> "Unable to load local content. Retry the load."
+                        LoadErrorKind.CANCELLED -> CANCELLED_LIVE_MESSAGE
                     },
                     bundled?.affectedPath,
                 )
             }
         }
+        loadJob = job
+        // A cancelled scope may prevent the body from running at all, and a source may throw
+        // CancellationException while the scope stays active. Superseded and disposed loads
+        // have a stale token or the disposed flag, so their completion stays silent.
+        job.invokeOnCompletion { cause ->
+            if (cause !is CancellationException || disposed || token != generation ||
+                mutableState.value !is LocalPracticeState.Loading) return@invokeOnCompletion
+            mutableState.value = LocalPracticeState.Error(
+                LoadErrorKind.CANCELLED,
+                if (scope.isActive) CANCELLED_LIVE_MESSAGE else CANCELLED_DEAD_MESSAGE,
+                null,
+            )
+        }
     }
 
     fun retryLoad() {
-        if (state.value is LocalPracticeState.Error || state.value is LocalPracticeState.Empty) load()
+        if (disposed) return
+        reconcileOwner()
+        // A cancelled parent scope cannot execute another load; its error still offers navigation exits.
+        if (!scope.isActive) return
+        val current = mutableState.value
+        if (current is LocalPracticeState.Error || current is LocalPracticeState.Empty) load()
     }
 
     /** Read against the latest catalog and save; never remove records when content is missing. */
