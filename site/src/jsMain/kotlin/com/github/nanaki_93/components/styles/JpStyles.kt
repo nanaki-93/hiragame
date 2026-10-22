@@ -75,9 +75,9 @@ object Base {
     fun card() = Modifier
         .background(Colors.CardBackground)
         .border(1.px, LineStyle.Solid, Colors.Border)
-        .borderRadius(16.px)
+        .borderRadius(12.px)
         .padding(2.cssRem)
-        .boxShadow(0.px, 8.px, 24.px, color = rgba(46, 23, 71, 0.08))
+        .boxShadow(0.px, 3.px, 12.px, color = rgba(30, 40, 34, 0.03))
 
     fun button() = Modifier
         .padding(0.65.cssRem, 1.15.cssRem)
@@ -85,7 +85,8 @@ object Base {
         .fontSize(0.92.cssRem)
         .fontWeight(FontWeight.SemiBold)
         .cursor(Cursor.Pointer)
-        .transition(Transition.all(0.2.s))
+        .minHeight(44.px)
+        .transition(Transition.of("background-color", 0.18.s))
         .border(0.px)
         .textAlign(TextAlign.Center)
         .display(DisplayStyle.Flex)
@@ -112,13 +113,13 @@ object Base {
 
 object Styles {
     val GameContainer = CssStyle.base {
-        Modifier.fillMaxWidth().background(Colors.Background).minHeight(100.vh)
+        Modifier.fillMaxWidth().background(Colors.Background)
             .display(DisplayStyle.Flex).justifyContent(JustifyContent.Center)
             .alignItems(AlignItems.FlexStart).fontFamily("var(--font-ui)")
             .padding(1.25.cssRem, 1.cssRem)
     }
 
-    val Card = CssStyle.base { Base.card().maxWidth(960.px).width(100.percent).textAlign(TextAlign.Start).color(Colors.Text) }
+    val Card = CssStyle.base { Base.card().maxWidth(1120.px).width(100.percent).textAlign(TextAlign.Start).color(Colors.Text) }
     val QuestionCard = CssStyle.base { Base.card().fillMaxWidth().minHeight(200.px) }
     val StatItem = CssStyle.base { Base.card().padding(0.5.cssRem, 1.cssRem).borderRadius(10.px).flexGrow(1).minWidth(100.px).margin(0.25.cssRem).border(1.px, LineStyle.Solid, Colors.Border) }
     val Title = CssStyle.base { Base.headingText().fontSize(2.25.cssRem) }
@@ -132,7 +133,7 @@ object Styles {
 
     val Value = CssStyle.base { Base.text(1.1.cssRem, FontWeight.Bold) }
     val Error = CssStyle.base { Base.text(0.9.cssRem, FontWeight.Bold).textAlign(TextAlign.Center).backgroundColor(Colors.Error).color(Colors.Inverse).borderRadius(8.px).padding(0.5.cssRem).boxShadow(0.px, 2.px, 8.px, color = rgba(0, 0, 0, 0.08)) }
-    val ButtonPrimary = CssStyle.base { Base.button().backgroundColor(Colors.Primary).color(Colors.Inverse).boxShadow(0.px, 4.px, 12.px, color = rgba(46, 23, 71, 0.18)) }
+    val ButtonPrimary = CssStyle.base { Base.button().backgroundColor(Colors.Primary).color(Colors.Inverse) }
     val ButtonSecondary = CssStyle.base { Base.button().backgroundColor(Colors.CardBackground).color(Colors.Text).border(1.5.px, LineStyle.Solid, Colors.Border) }
     val ButtonSmall = CssStyle.base { Base.button().padding(0.5.cssRem, 0.8.cssRem).fontSize(0.9.cssRem).minWidth(80.px) }
     val ButtonLink = CssStyle.base { Modifier.backgroundColor(Color.transparent).color(Colors.Primary).textDecorationLine(TextDecorationLine.Underline).fontSize(0.9.cssRem).cursor(Cursor.Pointer) }
