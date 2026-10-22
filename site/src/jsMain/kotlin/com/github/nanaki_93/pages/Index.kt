@@ -33,11 +33,14 @@ import com.github.nanaki_93.components.widgets.JapaneseResponseArea
 import com.github.nanaki_93.components.widgets.JapaneseSubmissionGuard
 import com.github.nanaki_93.components.widgets.JapanesePassage
 import com.github.nanaki_93.components.widgets.JapaneseStudyText
+import com.github.nanaki_93.components.widgets.ZeroBeginnerReferenceDesk
+import com.github.nanaki_93.components.widgets.ZeroToJapanRoadmapSection
 import com.github.nanaki_93.components.widgets.visibleAids
 import com.github.nanaki_93.components.widgets.SecondaryButton
 import com.github.nanaki_93.content.BrowserContentTextSource
 import com.github.nanaki_93.content.BundledContentLoader
 import com.github.nanaki_93.content.EmptyContentReason
+import com.github.nanaki_93.content.projectZeroToJapanRoadmap
 import com.github.nanaki_93.practice.LocalPracticeCoordinator
 import com.github.nanaki_93.LocalProgress
 import com.github.nanaki_93.initialSilkMode
@@ -173,6 +176,13 @@ fun HomePage() {
                         } else if (session == null) {
                             H2 { Text("Practice locally") }
                             P { Text("A short session with reviewed exercises. Progress checkpoints are saved locally when possible; typed responses are not retained.") }
+                            val roadmap = projectZeroToJapanRoadmap(
+                                current.content.catalog, current.availablePracticeSets, current.content.lessons, saved.snapshot,
+                            )
+                            ZeroToJapanRoadmapSection(roadmap) { setId, resumable ->
+                                if (resumable) coordinator.resume(setId) else coordinator.start(setId)
+                            }
+                            ZeroBeginnerReferenceDesk()
                             val checkpoints = coordinator.savedCheckpoints()
                             // The saved record is never replaced just because a set or exercise is missing.
                             for ((setId, resolution) in checkpoints) {
@@ -264,6 +274,7 @@ fun HomePage() {
                             SecondaryButton("Back to practice sets", onClick = {
                                 send(PracticeCommand.Leave(session.id, session.revision))
                             })
+                            ZeroBeginnerReferenceDesk()
                         }
                     }
                 }
