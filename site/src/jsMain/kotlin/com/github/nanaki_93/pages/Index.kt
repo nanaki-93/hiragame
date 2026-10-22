@@ -26,6 +26,9 @@ import com.github.nanaki_93.practice.PracticeAnswer
 import com.github.nanaki_93.practice.PracticeSession
 import com.github.nanaki_93.components.styles.Styles
 import com.github.nanaki_93.components.styles.Colors
+import com.github.nanaki_93.components.widgets.StudyWelcome
+import com.github.nanaki_93.components.widgets.TodayStudySection
+import com.github.nanaki_93.components.widgets.StudyProgress
 import com.github.nanaki_93.components.widgets.PrimaryButton
 import com.github.nanaki_93.components.widgets.AuthoredFeedbackContent
 import com.github.nanaki_93.components.widgets.JapaneseAnswerInput
@@ -94,6 +97,7 @@ import org.jetbrains.compose.web.dom.Legend
 import org.jetbrains.compose.web.dom.TagElement
 import org.jetbrains.compose.web.dom.Span
 import org.w3c.dom.HTMLElement
+import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.H3
@@ -113,172 +117,162 @@ fun HomePage() {
     val saved by progress.state.collectAsState()
     com.github.nanaki_93.offline.SessionActivity((state as? LocalPracticeState.Ready)?.session != null)
     val studyAids = saved.snapshot.preferences
-    val darkMode = ColorMode.current == ColorMode.DARK
 
     DisposableEffect(coordinator) {
         coordinator.load()
         onDispose { coordinator.dispose() }
     }
 
-    Main {
-        Box(Styles.GameContainer.toModifier().then(
-            if (darkMode) Modifier.backgroundColor(Colors.DarkBackground) else Modifier
-        )) {
-            Column(
-                modifier = Styles.Card.toModifier().then(
-                    if (darkMode) Modifier.backgroundColor(Colors.DarkCardBackground).color(Colors.DarkText) else Modifier
-                ),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.spacedBy(0.85.cssRem),
-            ) {
-                H1 { Text("Hiragame") }
-                Link(path = "/review") { Text("Phrase review") }
-                val content = (state as? LocalPracticeState.Ready)?.content
-                val dueCount = content?.let {
-                    com.github.nanaki_93.review.reviewDueCount(
-                        com.github.nanaki_93.review.eligibleReviewCards(it.lessons.values, it.practiceSets.values, saved.snapshot),
-                        saved.snapshot, kotlin.js.Date.now().toLong())
+    val ready = state as? LocalPracticeState.Ready
+    Main(attrs = { classes(if (ready?.session == null) "study-dashboard" else "learning-page", if (ready?.session == null) "home-page" else "practice-page") }) {
+        if (ready?.session == null) StudyWelcome()
+        else {
+            Span(attrs = { classes("eyebrow") }) { Text("A LITTLE PRACTICE") }
+            H1 { Text("One step at a time.") }
+        }
+        when (val current = state) {
+            LocalPracticeState.Loading -> {
+                H2 { Text("Loading reviewed practice") }
+                P { Text("Reading this site's bundled content. No account is needed.") }
+            }
+            is LocalPracticeState.Empty -> {
+                H2 { Text("No practice available yet") }
+                P {
+                    Text(when (current.reason) {
+                        EmptyContentReason.EMPTY_CATALOG -> "The content catalog is empty. Reload to check again."
+                        EmptyContentReason.NO_PRACTICE -> "No reviewed practice sets are listed yet. Reload to check again."
+                        EmptyContentReason.EMPTY_PRACTICE_SETS -> "Reviewed practice sets have no exercises yet. Reload to check again."
+                    })
                 }
-                P { Text("${dueCount?.let { "$it available phrases due" } ?: "Open Phrase review to check due items"} · ${saved.snapshot.lessonProgress.count { it.completedAtEpochMs != null }} lessons completed") }
-                if (dueCount != null && dueCount > 0) Link(path = "/review") { Text("Start due reviews") }
-                else saved.snapshot.lessonProgress.filter { it.completedAtEpochMs == null && content?.lessons?.containsKey(it.lessonId) == true }.maxByOrNull { it.updatedAtEpochMs }?.let {
-                    Link(path = "/lesson?lessonId=${it.lessonId}") { Text("Continue your lesson") }
-                }
-                // Keep the catalog reachable during loading, empty practice, errors, and active sessions.
-                Link(path = "/topics") { Text("Topics / Learn") }
-                when (val current = state) {
-                    LocalPracticeState.Loading -> {
-                        H2 { Text("Loading reviewed practice") }
-                        P { Text("Reading this site's bundled content. No account is needed.") }
+                PrimaryButton("Reload practice", onClick = coordinator::retryLoad)
+            }
+            is LocalPracticeState.Error -> {
+                H2 { Text("Practice could not load") }
+                P { Text(current.safeMessage) }
+                PrimaryButton("Retry loading", onClick = coordinator::retryLoad)
+            }
+            is LocalPracticeState.Ready -> {
+                val session = current.session
+                if (current.operationError != null) {
+                    P { Text(current.operationError.safeMessage) }
+                    SecondaryButton("Retry action", onClick = { coordinator.retryOperation(current.operationError) })
+                    SecondaryButton("Back to practice sets", onClick = { coordinator.leave(current.operationError) })
+                } else if (session == null) {
+                    val roadmap = projectZeroToJapanRoadmap(
+                        current.content.catalog, current.availablePracticeSets, current.content.lessons, saved.snapshot,
+                    )
+                    val dueCount = com.github.nanaki_93.review.reviewDueCount(
+                        com.github.nanaki_93.review.eligibleReviewCards(current.content.lessons.values, current.content.practiceSets.values, saved.snapshot),
+                        saved.snapshot, kotlin.js.Date.now().toLong(),
+                    )
+                    val resumeLesson = saved.snapshot.lessonProgress
+                        .filter { it.completedAtEpochMs == null && current.content.lessons.containsKey(it.lessonId) }
+                        .maxByOrNull { it.updatedAtEpochMs }
+                        ?.let { it.lessonId to current.content.lessons.getValue(it.lessonId).title }
+                    TodayStudySection(roadmap, dueCount, resumeLesson) { setId, resumable ->
+                        if (resumable) coordinator.resume(setId) else coordinator.start(setId)
                     }
-                    is LocalPracticeState.Empty -> {
-                        H2 { Text("No practice available yet") }
-                        P {
-                            Text(when (current.reason) {
-                                EmptyContentReason.EMPTY_CATALOG -> "The content catalog is empty. Reload to check again."
-                                EmptyContentReason.NO_PRACTICE -> "No reviewed practice sets are listed yet. Reload to check again."
-                                EmptyContentReason.EMPTY_PRACTICE_SETS -> "Reviewed practice sets have no exercises yet. Reload to check again."
+                    ZeroToJapanRoadmapSection(roadmap) { setId, resumable ->
+                        if (resumable) coordinator.resume(setId) else coordinator.start(setId)
+                    }
+                    ZeroBeginnerReferenceDesk()
+                    Div(attrs = { classes("section-heading") }) {
+                        H2 { Text("Practice your way") }
+                        Span(attrs = { classes("muted") }) { Text("Pick a set, or follow your next step above.") }
+                    }
+                    val checkpoints = coordinator.savedCheckpoints()
+                    // The saved record is never replaced just because a set or exercise is missing.
+                    for ((setId, resolution) in checkpoints) {
+                        if (resolution is PracticeCheckpointResolution.Unavailable) {
+                            val set = current.availablePracticeSets[setId]
+                            P(attrs = { attr("role", "status") }) {
+                                Text(if (resolution.missingSet) "Saved practice set $setId is unavailable in the current content. Its checkpoint is preserved; there is no run to start here."
+                                else "The saved checkpoint for ${set?.title ?: setId} cannot be resumed with the current exercises. It remains in your local progress until you choose a fresh start.")
+                            }
+                            if (set != null) SecondaryButton("Start fresh: ${set.title} (replace checkpoint)", onClick = {
+                                coordinator.startFreshAfterUnavailable(setId)
                             })
                         }
-                        PrimaryButton("Reload practice", onClick = coordinator::retryLoad)
                     }
-                    is LocalPracticeState.Error -> {
-                        H2 { Text("Practice could not load") }
-                        P { Text(current.safeMessage) }
-                        PrimaryButton("Retry loading", onClick = coordinator::retryLoad)
-                    }
-                    is LocalPracticeState.Ready -> {
-                        val session = current.session
-                        if (current.operationError != null) {
-                            P { Text(current.operationError.safeMessage) }
-                            SecondaryButton("Retry action", onClick = { coordinator.retryOperation(current.operationError) })
-                            SecondaryButton("Back to practice sets", onClick = { coordinator.leave(current.operationError) })
-                        } else if (session == null) {
-                            H2 { Text("Practice locally") }
-                            P { Text("A short session with reviewed exercises. Progress checkpoints are saved locally when possible; typed responses are not retained.") }
-                            val roadmap = projectZeroToJapanRoadmap(
-                                current.content.catalog, current.availablePracticeSets, current.content.lessons, saved.snapshot,
-                            )
-                            ZeroToJapanRoadmapSection(roadmap) { setId, resumable ->
-                                if (resumable) coordinator.resume(setId) else coordinator.start(setId)
+                    // Group only published, nonempty practice documents under their catalog topics.
+                    // Details/summary keep dozens of sets available without a wall of primary actions.
+                    val groups = practiceTopicGroups(current.content)
+                    for (group in groups) {
+                        TagElement<HTMLElement>("details", applyAttrs = {
+                            style { property("width", "100%"); property("text-align", "start"); property("overflow-wrap", "anywhere") }
+                        }) {
+                            TagElement<HTMLElement>("summary", applyAttrs = {}) {
+                                H3 { Text("${group.topic.title} · ${group.sets.size} sets") }
                             }
-                            ZeroBeginnerReferenceDesk()
-                            val checkpoints = coordinator.savedCheckpoints()
-                            // The saved record is never replaced just because a set or exercise is missing.
-                            for ((setId, resolution) in checkpoints) {
-                                if (resolution is PracticeCheckpointResolution.Unavailable) {
-                                    val set = current.availablePracticeSets[setId]
-                                    P(attrs = { attr("role", "status") }) {
-                                        Text(if (resolution.missingSet) "Saved practice set $setId is unavailable in the current content. Its checkpoint is preserved; there is no run to start here."
-                                        else "The saved checkpoint for ${set?.title ?: setId} cannot be resumed with the current exercises. It remains in your local progress until you choose a fresh start.")
+                            P { Text(group.topic.description) }
+                            for (set in group.sets) {
+                                val resolution = checkpoints[set.id]
+                                Section {
+                                    H3 { Text(set.title) }
+                                    P { Text("Goal: ${set.description} · ${minOf(10, set.exercises.size)} exercises in this run.") }
+                                    if (resolution is PracticeCheckpointResolution.Available) {
+                                        if (resolution.checkpoint.view != CheckpointView.COMPLETE) {
+                                            PrimaryButton("Resume ${set.title}", onClick = { coordinator.resume(set.id) })
+                                            P { Text("Starting a new run replaces this set's unfinished checkpoint. Other progress is kept.") }
+                                        } else P { Text("Previous run completed. You can start a new run.") }
                                     }
-                                    if (set != null) SecondaryButton("Start fresh: ${set.title} (replace checkpoint)", onClick = {
-                                        coordinator.startFreshAfterUnavailable(setId)
-                                    })
-                                }
-                            }
-                            // Group only published, nonempty practice documents under their catalog topics.
-                            // Details/summary keep dozens of sets available without a wall of primary actions.
-                            val groups = practiceTopicGroups(current.content)
-                            for (group in groups) {
-                                TagElement<HTMLElement>("details", applyAttrs = {
-                                    style { property("width", "100%"); property("text-align", "start"); property("overflow-wrap", "anywhere") }
-                                }) {
-                                    TagElement<HTMLElement>("summary", applyAttrs = {}) {
-                                        H3 { Text("${group.topic.title} · ${group.sets.size} sets") }
-                                    }
-                                    P { Text(group.topic.description) }
-                                    for (set in group.sets) {
-                                        val resolution = checkpoints[set.id]
-                                        Section {
-                                            H3 { Text(set.title) }
-                                            P { Text("Goal: ${set.description} · ${minOf(10, set.exercises.size)} exercises in this run.") }
-                                            if (resolution is PracticeCheckpointResolution.Available) {
-                                                if (resolution.checkpoint.view != CheckpointView.COMPLETE) {
-                                                    PrimaryButton("Resume ${set.title}", onClick = { coordinator.resume(set.id) })
-                                                    P { Text("Starting a new run replaces this set's unfinished checkpoint. Other progress is kept.") }
-                                                } else P { Text("Previous run completed. You can start a new run.") }
-                                            }
-                                            if (resolution !is PracticeCheckpointResolution.Unavailable) {
-                                                SecondaryButton("Start ${set.title}", onClick = { coordinator.start(set.id) })
-                                            }
-                                        }
+                                    if (resolution !is PracticeCheckpointResolution.Unavailable) {
+                                        SecondaryButton("Start ${set.title}", onClick = { coordinator.start(set.id) })
                                     }
                                 }
                             }
-                            if (groups.isEmpty()) P { Text("No exercises are available. Reload to check again.") }
-                            SecondaryButton("Reload practice", onClick = coordinator::load)
-                        } else {
-                            // Commands capture the rendered identity/revision. The coordinator applies them
-                            // synchronously, so a second click from this render is stale and cannot advance.
-                            val send: (PracticeCommand) -> Unit = coordinator::dispatch
-                            SessionCounts(session)
-                            when (val view = session.view) {
-                                is SessionView.Prompt -> PracticePrompt(session, view, studyAids, send) { answer ->
-                                    send(PracticeCommand.Submit(session.id, session.revision, answer))
-                                }
-                                is SessionView.Feedback -> {
-                                    PracticeFeedback(session, view.index, reviewing = false, studyAids = studyAids)
-                                    SecondaryButton("Retry this exercise", onClick = { send(PracticeCommand.Retry(session.id, session.revision)) })
-                                    if (view.index > 0) SecondaryButton("Previous resolved exercise", onClick = {
-                                        send(PracticeCommand.Previous(session.id, session.revision))
-                                    })
-                                    PrimaryButton(if (view.index == session.plan.lastIndex) "Complete session" else "Continue to next exercise", onClick = {
-                                        send(PracticeCommand.Continue(session.id, session.revision))
-                                    })
-                                }
-                                is SessionView.Review -> {
-                                    PracticeFeedback(session, view.index, reviewing = true, studyAids = studyAids)
-                                    if (view.index > 0) SecondaryButton("Previous resolved exercise", onClick = {
-                                        send(PracticeCommand.Previous(session.id, session.revision))
-                                    })
-                                    SecondaryButton("Next resolved exercise or return", onClick = {
-                                        send(PracticeCommand.Next(session.id, session.revision))
-                                    })
-                                    SecondaryButton("Return to current place", onClick = {
-                                        send(PracticeCommand.Return(session.id, session.revision))
-                                    })
-                                }
-                                SessionView.Complete -> {
-                                    H2 { Text("Session complete") }
-                                    P { Text("This run's checkpoint is saved locally when possible. Typed responses are not retained; this summary does not measure mastery or proficiency.") }
-                                    SecondaryButton("Review previous exercise", onClick = {
-                                        send(PracticeCommand.Previous(session.id, session.revision))
-                                    })
-                                }
-                                SessionView.Left -> Unit
-                            }
-                            SecondaryButton("Restart session", onClick = {
-                                send(PracticeCommand.Restart(session.id, session.revision, session.id))
-                            })
-                            SecondaryButton("Back to practice sets", onClick = {
-                                send(PracticeCommand.Leave(session.id, session.revision))
-                            })
-                            ZeroBeginnerReferenceDesk()
                         }
                     }
+                    if (groups.isEmpty()) P { Text("No exercises are available. Reload to check again.") }
+                    SecondaryButton("Reload practice", onClick = coordinator::load)
+                } else {
+                    // Commands capture the rendered identity/revision. The coordinator applies them
+                    // synchronously, so a second click from this render is stale and cannot advance.
+                    val send: (PracticeCommand) -> Unit = coordinator::dispatch
+                    SessionCounts(session)
+                    when (val view = session.view) {
+                        is SessionView.Prompt -> PracticePrompt(session, view, studyAids, send) { answer ->
+                            send(PracticeCommand.Submit(session.id, session.revision, answer))
+                        }
+                        is SessionView.Feedback -> {
+                            PracticeFeedback(session, view.index, reviewing = false, studyAids = studyAids)
+                            SecondaryButton("Retry this exercise", onClick = { send(PracticeCommand.Retry(session.id, session.revision)) })
+                            if (view.index > 0) SecondaryButton("Previous resolved exercise", onClick = {
+                                send(PracticeCommand.Previous(session.id, session.revision))
+                            })
+                            PrimaryButton(if (view.index == session.plan.lastIndex) "Complete session" else "Continue to next exercise", onClick = {
+                                send(PracticeCommand.Continue(session.id, session.revision))
+                            })
+                        }
+                        is SessionView.Review -> {
+                            PracticeFeedback(session, view.index, reviewing = true, studyAids = studyAids)
+                            if (view.index > 0) SecondaryButton("Previous resolved exercise", onClick = {
+                                send(PracticeCommand.Previous(session.id, session.revision))
+                            })
+                            SecondaryButton("Next resolved exercise or return", onClick = {
+                                send(PracticeCommand.Next(session.id, session.revision))
+                            })
+                            SecondaryButton("Return to current place", onClick = {
+                                send(PracticeCommand.Return(session.id, session.revision))
+                            })
+                        }
+                        SessionView.Complete -> {
+                            H2 { Text("Session complete") }
+                            P { Text("This run's checkpoint is saved locally when possible. Typed responses are not retained; this summary does not measure mastery or proficiency.") }
+                            SecondaryButton("Review previous exercise", onClick = {
+                                send(PracticeCommand.Previous(session.id, session.revision))
+                            })
+                        }
+                        SessionView.Left -> Unit
+                    }
+                    SecondaryButton("Restart session", onClick = {
+                        send(PracticeCommand.Restart(session.id, session.revision, session.id))
+                    })
+                    SecondaryButton("Back to practice sets", onClick = {
+                        send(PracticeCommand.Leave(session.id, session.revision))
+                    })
+                    ZeroBeginnerReferenceDesk()
                 }
-                Link(path = "/settings") { Text("Settings / Backup") }
             }
         }
     }

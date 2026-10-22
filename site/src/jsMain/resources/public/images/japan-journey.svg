@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" fill="none">
+  <defs>
+    <pattern id="paper" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".5" fill="#62715b" opacity=".12"/></pattern>
+    <pattern id="windows" width="14" height="19" patternUnits="userSpaceOnUse"><path d="M4 6h4v7H4z" fill="#f7f5ef" opacity=".65"/></pattern>
+    <clipPath id="frame"><rect width="640" height="330" rx="12"/></clipPath>
+  </defs>
+  <g clip-path="url(#frame)">
+    <circle cx="424" cy="108" r="72" fill="#bf5945"/>
+    <path d="M54 249 209 91 352 249Z" fill="#a7b29e"/>
+    <path d="m209 91-46 47 26-5 17 18 16-14 33 5Z" fill="#f7f5ef"/>
+    <path d="m0 269 129-80 54 34 82-36 149 82Z" fill="#bac3b0"/>
+    <path d="m0 298 174-73 144 43 124-72 198 102v32H0Z" fill="#d6dccc"/>
+    <path d="M115 64h88m-68-7h39M299 38h63m-40-7h20M499 91h111m-82 8h45" stroke="#a9b29e" stroke-linecap="round"/>
+    <path d="M352 179h30v100h-30z" fill="#8c9b89"/>
+    <path d="M357 184h20v91h-20z" fill="url(#windows)"/>
+    <path d="M390 214h36v68h-36z" fill="#b1bcaa"/>
+    <path d="M435 151h40v133h-40z" fill="#778c7c"/>
+    <path d="M440 158h30v116h-30z" fill="url(#windows)"/>
+    <path d="M447 150v-13h16v13" stroke="#778c7c" stroke-width="3"/>
+    <path d="M532 224h32v63h-32z" fill="#92a08e"/>
+    <g stroke="#526e60" stroke-width="3" stroke-linejoin="round">
+      <path d="M510 133v154m-21 0 21-145 21 145M493 262h35m-30-37h25m-19-38h13M493 253l34 22m-28-51 23 20m-18-55 13 20"/>
+      <path d="M498 181h24m-20-5h16M510 121v14"/>
+    </g>
+    <path d="M59 283h125v6H59z" fill="#5d7763"/>
+    <path d="M75 263h94v21H75z" fill="#b9bfa5"/>
+    <path d="M70 262c22-2 37-14 52-24 16 12 32 22 53 24Z" fill="#5d7763"/>
+    <path d="M91 236h62v16H91z" fill="#b9bfa5"/>
+    <path d="M80 238c18-3 29-13 42-21 13 9 25 18 42 21Z" fill="#5d7763"/>
+    <path d="M102 213h40v17h-40z" fill="#b9bfa5"/>
+    <path d="M90 215c15-4 24-11 32-19 9 8 18 16 33 19Z" fill="#5d7763"/>
+    <path d="M122 182v16" stroke="#5d7763" stroke-width="3"/>
+    <path d="M115 265h13v18h-13z" fill="#5d7763"/>
+    <path d="M0 306c115-27 199-13 283-9 138 7 224-18 357-8v41H0Z" fill="#8fa28a"/>
+    <path d="M200 330c30-25 55-35 111-36 48-1 71-11 87-22" stroke="#f7f5ef" stroke-width="3" stroke-dasharray="5 7"/>
+    <circle cx="399" cy="271" r="5" fill="#bf5945" stroke="#f7f5ef" stroke-width="3"/>
+    <rect width="640" height="330" fill="url(#paper)"/>
+  </g>
+</svg>
