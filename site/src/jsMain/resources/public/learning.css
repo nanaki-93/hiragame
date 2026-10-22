@@ -222,3 +222,105 @@ main .roadmap-note { font-size: 11px; margin: 12px 0 0; text-align: center; }
   .phase-card > p { margin-bottom: 10px; }
   .phase-bottom { grid-column: 1 / -1; }
 }
+
+/* A searchable library of daily-life and engineering situations. */
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.page-intro { margin: 38px 0 30px; max-width: 690px; }
+.page-intro h1, .lesson-page > h1, .settings-page > h1, .review-page > h1 { font-family: var(--font-serif); font-weight: 400; letter-spacing: -1px; margin: 12px 0; }
+.page-intro p { font-size: 14px; }
+.catalog-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+fieldset.area-filters { display: flex; flex-wrap: wrap; gap: 5px; border: none; padding: 0; margin: 0; width: auto; background: none; }
+.area-filter { display: flex; align-items: center; gap: 7px; min-height: 44px; padding: 8px 12px; font-size: 12px; border: 1px solid transparent; border-radius: 6px; cursor: pointer; }
+.area-filter:has(input:checked) { border-color: var(--color-border-strong); background: var(--color-bg-secondary); }
+.area-filter input { width: 13px; height: 13px; }
+.lesson-search { width: 255px; }
+.lesson-search input { border-color: var(--color-border); font-size: 13px; padding: 12px 16px; border-radius: 6px; }
+.catalog-options { background: none; margin: 14px 0; border: none; }
+.catalog-options > summary { padding: 4px 0; min-height: 40px; font-size: 12px; font-weight: 450; justify-content: flex-start; }
+.catalog-options-fields { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 12px 0; }
+.catalog-options-fields select { padding: 10px; border: 1px solid var(--color-border-strong); background: var(--color-bg-secondary); color: var(--color-text-primary); border-radius: 5px; max-width: 100%; }
+main .catalog-results { font-size: 11px; padding: 0; margin: 16px 0; }
+.lesson-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+main .topic-card { margin: 0; padding: 22px; display: flex; flex-direction: column; transition: border-color .15s, box-shadow .15s; }
+.topic-card:hover { border-color: var(--color-border-strong); box-shadow: var(--shadow-md); }
+.lesson-card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
+.lesson-card-icon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 8px; }
+.lesson-card-icon--work { background: var(--surface-blue); color: var(--color-info); }
+.lesson-card-icon--life { background: var(--surface-green); color: var(--color-success); }
+.topic-card h3 { font-size: 17px; line-height: 1.5; letter-spacing: -.25px; }
+.topic-card > p { font-size: 12px; line-height: 1.8; margin: 6px 0 22px; }
+.lesson-card-bottom { margin-top: auto; }
+main .lesson-card-status { font-size: 11px; color: var(--color-text-secondary); display: flex; align-items: center; gap: 5px; padding-bottom: 12px; border-bottom: 1px solid var(--color-border); }
+.lesson-card-status .study-icon { color: var(--color-success); width: 14px; }
+.lesson-card-actions { display: flex; gap: 12px; align-items: center; justify-content: space-between; padding-top: 6px; }
+.preview-button { padding: 5px 8px; min-height: 44px; border: none; background: none; font-size: 11px; color: var(--color-text-secondary); margin: 0; text-decoration: underline; text-underline-offset: 3px; }
+.beginner-link { margin-top: 28px; padding: 20px; border: 1px dashed var(--color-border-strong); border-radius: 8px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--color-text-secondary); }
+/* Quiet, focused practice with a clear prompt and generous Japanese glyphs. */
+.learning-page.practice-page, .learning-page.lesson-page, .learning-page.review-page { max-width: 800px; padding: 36px; }
+.practice-page > h1 { font-family: var(--font-serif); font-weight: 400; font-size: 34px; margin-top: 12px; }
+.session-progress { margin-top: 24px; }
+.session-progress .section-heading { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 8px; }
+.session-details { border: none; margin: 0 0 26px; background: none; }
+.session-details > summary { font-size: 11px; font-weight: 450; color: var(--color-text-secondary); min-height: 36px; padding: 0; justify-content: flex-start; }
+.session-details p { font-size: 12px; }
+.practice-page .exercise-prompt { font-size: 17px; color: var(--color-text-primary); margin: 18px 0; }
+.practice-page fieldset.answer-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; border: none; background: none; padding: 0; }
+.answer-options legend { font-size: 12px; padding: 0; margin-bottom: 8px; color: var(--color-text-secondary); }
+.answer-options .practice-choice { position: relative; justify-content: center; min-height: 114px; font: 400 40px/1.5 var(--font-serif); padding: 16px !important; }
+.answer-options .practice-choice input { position: absolute; top: 12px; left: 12px; width: 14px; height: 14px; }
+.answer-options .practice-japanese { font-size: 40px !important; }
+.practice-page > button, .lesson-page button, .review-page button { font-size: 13px; }
+.practice-page .muted { margin: 16px 0; font-size: 11px; }
+main .feedback-result { margin: 20px 0; padding: 16px; font-size: 17px; font-weight: 600; }
+main .feedback-result--correct[role="status"] { background: var(--surface-green); border-color: var(--color-success); color: var(--color-success); }
+main .feedback-result--retry[role="status"] { background: var(--surface-rose); border-color: var(--color-accent); }
+.lesson-page-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.lesson-page-heading a { font-size: 12px; }
+.lesson-page > section { padding: 0; border: none; margin-top: 24px; }
+.lesson-page > section > h2 { font-size: 24px; }
+.lesson-stepper { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; list-style: none; margin: 24px 0 14px; padding: 0; }
+.lesson-stepper li { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; font-size: 10px; color: var(--color-text-secondary); line-height: 1.5; }
+.step-number { display: grid; place-items: center; width: 28px; height: 28px; background: var(--color-bg-tertiary); border-radius: 50%; font: 11px/1 var(--font-mono); }
+.lesson-stepper [aria-current="step"] { color: var(--color-accent); font-weight: 650; }
+.lesson-stepper [aria-current="step"] .step-number { background: var(--color-accent); color: var(--color-text-inverse); }
+.step-past .step-number { background: var(--surface-green); color: var(--color-success); }
+.lesson-page .practice-choice { font-size: 17px; }
+/* Review grows from an encouraging empty state into a focused recall card. */
+.review-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 28px 0; padding: 20px 0; border-block: 1px solid var(--color-border); }
+.review-stats > div { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11px; color: var(--color-text-secondary); text-align: center; }
+.review-stats > div + div { border-left: 1px solid var(--color-border); }
+.review-stat-value { font: 32px/1.2 var(--font-serif); color: var(--color-text-primary); }
+main .review-start, main .empty-state { background: var(--surface-subtle); text-align: center; padding: 36px; border: none; }
+.review-start h2, .empty-state h2 { font-family: var(--font-serif); font-weight: 400; font-size: 28px; }
+.review-start p, .empty-state p { max-width: 430px; margin: 12px auto 22px; font-size: 13px; }
+.empty-state-symbol { display: grid; place-items: center; color: var(--color-success); margin-bottom: 18px; }
+.empty-state-symbol .study-icon { width: 32px; height: 32px; }
+main .review-cue { font: 400 25px/1.6 var(--font-serif); padding: 24px; margin: 24px 0; background: var(--surface-subtle); border-radius: 8px; color: var(--color-text-primary); }
+.review-ratings { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.review-ratings button { flex: 1; margin: 0; min-height: 48px; }
+main .review-footnote { margin-top: 24px; font-size: 11px; color: var(--color-text-secondary); }
+.settings-page { max-width: 860px; }
+@media (max-width: 1000px) { .lesson-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) {
+  .catalog-toolbar { align-items: stretch; flex-direction: column; gap: 8px; }
+  .area-filter { padding: 6px 8px; font-size: 11px; }
+  .lesson-search { width: 100%; }
+  .lesson-search input { font-size: 16px; }
+  .lesson-grid { grid-template-columns: 1fr; }
+  .page-intro { margin: 28px 0 22px; }
+  .page-intro h1 { font-size: 34px; }
+  .learning-page.practice-page, .learning-page.lesson-page, .learning-page.review-page { padding: 22px; }
+  .practice-page fieldset.answer-options { gap: 7px; }
+  .answer-options .practice-choice { min-height: 96px; font-size: 30px; padding: 20px 7px !important; }
+  .answer-options .practice-choice input { top: 8px; left: 8px; }
+  .answer-options .practice-japanese { font-size: 30px !important; }
+  .lesson-stepper { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 16px; }
+  .lesson-page-heading { flex-wrap: wrap; }
+  main .review-start, main .empty-state { padding: 24px 18px; }
+  .review-stats > div { font-size: 10px; }
+  .review-stat-value { font-size: 27px; }
+}
+.catalog-suggestion { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin: 16px 0 24px; padding: 14px 18px; background: var(--surface-green); border-radius: 7px; color: var(--color-text-secondary); font-size: 12px; }
+.catalog-suggestion .study-icon { color: var(--color-success); }
+/* Compose buttons remain inline so related actions share one calm action row. */
+button { display: inline-flex !important; align-items: center; justify-content: center; }

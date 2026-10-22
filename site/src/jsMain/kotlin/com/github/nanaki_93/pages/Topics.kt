@@ -9,14 +9,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.github.nanaki_93.LocalProgress
-import com.github.nanaki_93.components.styles.Colors
-import com.github.nanaki_93.components.styles.Styles
+import com.github.nanaki_93.components.widgets.StudyIcon
 import com.github.nanaki_93.components.widgets.PrimaryButton
 import com.github.nanaki_93.components.widgets.PreviewJapaneseText
 import com.github.nanaki_93.components.widgets.SecondaryButton
 import com.github.nanaki_93.content.BrowserContentTextSource
 import com.github.nanaki_93.content.BundledContentLoader
-import com.github.nanaki_93.content.CatalogEmptyReason
 import com.github.nanaki_93.content.CatalogViewOptions
 import com.github.nanaki_93.content.Lesson
 import com.github.nanaki_93.content.LessonCard
@@ -32,17 +30,17 @@ import com.github.nanaki_93.progress.LessonStage
 import com.github.nanaki_93.progress.SavePreferences
 import com.github.nanaki_93.storage.LocalProgressOwner
 import com.github.nanaki_93.storage.ProgressMutationResult
-import com.varabyte.kobweb.compose.foundation.layout.Box
-import com.varabyte.kobweb.compose.foundation.layout.Column
+import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
-import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.components.navigation.Link
-import com.varabyte.kobweb.silk.style.toModifier
-import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import org.jetbrains.compose.web.attributes.InputType
-import org.jetbrains.compose.web.css.cssRem
+import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.Span
+import org.jetbrains.compose.web.dom.Select
+import org.jetbrains.compose.web.dom.Option
+import org.jetbrains.compose.web.dom.TagElement
+import org.w3c.dom.HTMLElement
 import org.jetbrains.compose.web.dom.Fieldset
 import org.jetbrains.compose.web.dom.H1
 import org.jetbrains.compose.web.dom.H2
@@ -66,138 +64,129 @@ fun TopicsPage() {
     val saved by progress.state.collectAsState()
     var topicId by remember { mutableStateOf<String?>(null) }
     var beginnerPath by remember { mutableStateOf(false) }
+    var area by remember { mutableStateOf("all") }
+    var query by remember { mutableStateOf("") }
     var selectedLessonId by remember { mutableStateOf<String?>(null) }
     var supportNotice by remember { mutableStateOf<String?>(null) }
-    val darkMode = ColorMode.current == ColorMode.DARK
 
     DisposableEffect(coordinator) {
         coordinator.load()
         onDispose { coordinator.dispose() }
     }
 
-    Main {
-        Box(Styles.GameContainer.toModifier().then(
-            if (darkMode) Modifier.backgroundColor(Colors.DarkBackground) else Modifier
-        )) {
-            Column(modifier = Styles.Card.toModifier().then(
-                if (darkMode) Modifier.backgroundColor(Colors.DarkCardBackground).color(Colors.DarkText) else Modifier
-            )) {
-                H1 { Text("Topics / Learn") }
-                Link(path = "/review") { Text("Phrase review") }
-                Link(path = "/") { Text("Back to Home") }
-                when (val current = state) {
-                    LocalCatalogState.Loading -> Section(attrs = { attr("aria-live", "polite") }) {
-                        H2 { Text("Loading lessons") }
-                        P(attrs = { attr("role", "status") }) { Text("Reading reviewed lessons bundled with this site.") }
-                    }
-                    is LocalCatalogState.Empty -> Section {
-                        H2 { Text("No workplace lessons available") }
-                        P { Text(when (current.reason) {
-                            CatalogEmptyReason.EMPTY_CATALOG -> "The content catalog is empty. Your local progress has not been removed."
-                            CatalogEmptyReason.NO_WORKPLACE_LESSONS -> "No workplace lessons are listed yet. Practice may still be available on Home."
-                        }) }
-                        PrimaryButton("Retry loading", onClick = coordinator::retryLoad)
-                    }
-                    is LocalCatalogState.Error -> Section {
-                        H2 { Text("Workplace lessons could not load") }
-                        P(attrs = { attr("role", "alert") }) { Text(current.safeMessage) }
-                        PrimaryButton("Retry loading", onClick = coordinator::retryLoad)
-                    }
-                    is LocalCatalogState.Ready -> {
-                        // Reproject on every owner state update (including restore, reset, and reload).
-                        // Never cache the save or derive completion from a practice score.
-                        val view = projectLessonCatalog(current.content.catalog, current.content.lessons,
-                            saved.snapshot, CatalogViewOptions(topicId, beginnerPath))
-                        P(attrs = { attr("role", "status") }) { Text(saveStatusMessage(saved)) }
-                        P { Text("Saving or recovery controls are on Home. Browsing here never changes lesson or review progress.") }
-                        val allCards = view.topics.flatMap { it.cards }
-                        if (selectedLessonId != null) {
-                            // Resolve the selected ID against the current validated snapshot, not a cached card.
-                            val lesson = current.content.lessons[selectedLessonId]
-                                ?.takeIf { it.id == selectedLessonId }
-                            val card = allCards.firstOrNull { it.lessonId == selectedLessonId }
-                            if (lesson == null || card == null) Section {
-                                H2 { Text("Lesson unavailable") }
-                                P { Text("This lesson is not in the current validated catalog. Any saved place is retained; viewing another lesson does not repair it.") }
-                                SecondaryButton("Back to catalog", onClick = { selectedLessonId = null })
-                            } else LessonPreview(lesson, card, allCards, saved.snapshot.preferences, progress,
-                                supportNotice, onSupportNotice = { supportNotice = it }, onClose = { selectedLessonId = null; supportNotice = null })
-                        } else {
-                            H2 { Text("Choose a workplace situation") }
-                            P { Text("Every lesson is open. Difficulty and prerequisites are suggestions, not requirements; no path or proficiency level is assigned.") }
-                            Fieldset {
-                                Legend { Text("Browse lessons") }
-                                P { Text("Filter by workplace topic") }
-                                Label(attrs = { classes("save-mode-choice") }) {
+    Main(attrs = { classes("study-dashboard", "catalog-page") }) {
+        Div(attrs = { classes("page-intro") }) {
+            Span(attrs = { classes("eyebrow") }) { Text("WORDS YOU WILL ACTUALLY USE") }
+            H1 { Text("Japanese for your real life.") }
+            P { Text("A first introduction. A train to catch. A code review to ask for. Start with a situation that matters to you.") }
+        }
+        when (val current = state) {
+            LocalCatalogState.Loading -> P(attrs = { attr("role", "status") }) { Text("Getting your lessons ready…") }
+            is LocalCatalogState.Empty -> Section {
+                H2 { Text("No lessons available yet") }
+                P { Text("Try reloading, or explore kana practice on My path.") }
+                PrimaryButton("Retry loading", onClick = coordinator::retryLoad)
+            }
+            is LocalCatalogState.Error -> Section {
+                H2 { Text("Lessons could not load") }
+                P(attrs = { attr("role", "alert") }) { Text(current.safeMessage) }
+                PrimaryButton("Retry loading", onClick = coordinator::retryLoad)
+            }
+            is LocalCatalogState.Ready -> {
+                val view = projectLessonCatalog(current.content.catalog, current.content.lessons,
+                    saved.snapshot, CatalogViewOptions(topicId, beginnerPath))
+                val allCards = view.topics.flatMap { it.cards }
+                if (selectedLessonId != null) {
+                    val lesson = current.content.lessons[selectedLessonId]?.takeIf { it.id == selectedLessonId }
+                    val card = allCards.firstOrNull { it.lessonId == selectedLessonId }
+                    if (lesson == null || card == null) Section {
+                        H2 { Text("Lesson unavailable") }
+                        P { Text("This lesson is not in the current catalog. Your saved place is retained.") }
+                        SecondaryButton("Back to lessons", onClick = { selectedLessonId = null })
+                    } else LessonPreview(lesson, card, allCards, saved.snapshot.preferences, progress,
+                        supportNotice, onSupportNotice = { supportNotice = it }, onClose = { selectedLessonId = null; supportNotice = null })
+                } else {
+                    Div(attrs = { classes("catalog-toolbar") }) {
+                        Fieldset(attrs = { classes("area-filters") }) {
+                            Legend(attrs = { classes("visually-hidden") }) { Text("Lesson setting") }
+                            for ((value, label) in listOf("all" to "All lessons", "life" to "Daily life", "work" to "Engineering & work")) {
+                                Label(attrs = { classes("area-filter") }) {
                                     Input(type = InputType.Radio, attrs = {
-                                        attr("name", "topic-filter")
-                                        checked(topicId == null)
-                                        onChange { topicId = null }
+                                        attr("name", "lesson-area"); checked(area == value)
+                                        onChange { area = value }
                                     })
-                                    Text("All workplace topics")
-                                }
-                                for (group in view.topics) {
-                                    Label(attrs = { classes("save-mode-choice") }) {
-                                        Input(type = InputType.Radio, attrs = {
-                                            attr("name", "topic-filter")
-                                            checked(topicId == group.topic.id)
-                                            onChange { topicId = group.topic.id }
-                                        })
-                                        Text(group.topic.title)
-                                    }
-                                }
-                                Label(attrs = { classes("save-mode-choice") }) {
-                                    Input(type = InputType.Checkbox, attrs = {
-                                        checked(beginnerPath)
-                                        onChange { beginnerPath = it.value }
-                                    })
-                                    Text("Show optional beginner path")
-                                }
-                            }
-                            P { Text("Filter and beginner path are temporary to this page; they are not saved preferences. All lessons remain selectable.") }
-                            if (view.beginnerPath) Section {
-                                H3 { Text("Suggested starter order") }
-                                P { Text("Start with up to five short lessons, one at a time. Use readings, translations and phrase support if helpful, or explore independently. This order does not unlock lessons.") }
-                                view.beginnerPathCards.forEachIndexed { index, card ->
-                                    P { Text("${index + 1}. ${card.title}") }
-                                }
-                            }
-                            view.recommendation?.let { recommendation ->
-                                val card = allCards.firstOrNull { it.lessonId == recommendation.lessonId }
-                                if (card != null) CatalogCard {
-                                    H3 { Text(if (recommendation.revisit) "Revisit suggestion: ${card.title}" else "Suggested: ${card.title}") }
-                                    P { Text(recommendation.reason) }
-                                    P { Text("This is guidance, not an assessment or a requirement.") }
-                                    SecondaryButton("View lesson: ${card.title}", onClick = { selectedLessonId = card.lessonId; supportNotice = null })
-                                    LessonEntryLink(card.lessonId)
-                                }
-                            }
-                            if (view.cards.isEmpty()) Section {
-                                H3 { Text("No lessons match this topic") }
-                                P { Text("Other lessons remain available. Your saved progress has not changed.") }
-                                SecondaryButton("Clear filter", onClick = { topicId = null })
-                            }
-                            for (group in view.topics) {
-                                val matching = view.cards.filter { it.topicId == group.topic.id }
-                                if (matching.isNotEmpty()) Section {
-                                    H2 { Text(group.topic.title) }
-                                    P { Text(group.topic.description) }
-                                    for (card in matching) LessonCatalogCard(card, allCards) {
-                                        selectedLessonId = card.lessonId
-                                        supportNotice = null
-                                    }
-                                }
-                            }
-                            if (view.unavailableSavedLessons.isNotEmpty()) Section {
-                                H2 { Text("Saved lessons not in this catalog") }
-                                P { Text("These records remain in your local progress. Browsing does not remove or repair them.") }
-                                for (status in view.unavailableSavedLessons) {
-                                    P(attrs = { style { property("overflow-wrap", "anywhere") } }) {
-                                        Text("${status.record?.lessonId}: lesson document unavailable; saved checkpoint unavailable. ${lessonProgressLabel(status)}")
-                                    }
+                                    Text(label)
                                 }
                             }
                         }
+                        Div(attrs = { classes("lesson-search") }) {
+                            Label(attrs = { attr("for", "lesson-search"); classes("visually-hidden") }) { Text("Search lessons") }
+                            Input(type = InputType.Search, attrs = {
+                                id("lesson-search"); attr("placeholder", "Find a situation…"); value(query)
+                                onInput { query = it.value }
+                            })
+                        }
+                    }
+                    TagElement<HTMLElement>("details", applyAttrs = { classes("catalog-options") }) {
+                        TagElement<HTMLElement>("summary", applyAttrs = {}) { Text("More study options") }
+                        Div(attrs = { classes("catalog-options-fields") }) {
+                            Label(attrs = { attr("for", "lesson-topic") }) { Text("Topic") }
+                            Select(attrs = { id("lesson-topic"); onChange { topicId = it.value?.takeIf { value -> value.isNotEmpty() } } }) {
+                                Option(value = "", attrs = { prop({ option: org.w3c.dom.HTMLOptionElement, isSelected: Boolean -> option.selected = isSelected }, topicId == null) }) { Text("All topics") }
+                                for (group in view.topics) Option(value = group.topic.id, attrs = { prop({ option: org.w3c.dom.HTMLOptionElement, isSelected: Boolean -> option.selected = isSelected }, topicId == group.topic.id) }) { Text(group.topic.title) }
+                            }
+                            Label(attrs = { classes("save-mode-choice") }) {
+                                Input(type = InputType.Checkbox, attrs = { checked(beginnerPath); onChange { beginnerPath = it.value } })
+                                Text("Show a suggested starter order")
+                            }
+                        }
+                    }
+                    if (view.beginnerPath) Section(attrs = { classes("starter-note") }) {
+                        H2 { Text("A gentle place to start") }
+                        P { Text("Try these short lessons in order, with readings and translations whenever you need them.") }
+                        view.beginnerPathCards.forEachIndexed { index, card ->
+                            P { Link("/lesson?lessonId=${card.lessonId}") { Text("${index + 1}. ${card.title}") } }
+                        }
+                    }
+                    if (query.isBlank() && area == "all" && topicId == null && !beginnerPath) view.recommendation?.let { recommendation ->
+                        allCards.firstOrNull { it.lessonId == recommendation.lessonId }?.let { card ->
+                            Div(attrs = { classes("catalog-suggestion") }) {
+                                StudyIcon("book")
+                                Text(if (recommendation.revisit) "One to revisit: " else "A good place to start: ")
+                                Link("/lesson?lessonId=${card.lessonId}") { Text(card.title) }
+                            }
+                        }
+                    }
+                    val terms = query.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+                    val matching = view.cards.filter { card ->
+                        (area == "all" || if (area == "life") card.topicId.startsWith("life-") else card.topicId.startsWith("workplace-")) &&
+                            terms.all { term -> listOf(card.title, card.communicationGoal, card.situation,
+                                view.topics.firstOrNull { it.topic.id == card.topicId }?.topic?.title.orEmpty()).any { it.contains(term, ignoreCase = true) } }
+                    }
+                    P(attrs = { classes("catalog-results", "muted"); attr("role", "status") }) {
+                        Text("${matching.size} ${if (matching.size == 1) "lesson" else "lessons"} · Read, practise, then try a conversation. All levels are suggestions.")
+                    }
+                    if (matching.isEmpty()) Section(attrs = { classes("empty-state") }) {
+                        StudyIcon("book")
+                        H2 { Text("No lessons found") }
+                        P { Text("Try a different word or clear your filters to explore all situations.") }
+                        SecondaryButton("Clear search & filters", onClick = { query = ""; area = "all"; topicId = null })
+                    }
+                    Div(attrs = { classes("lesson-grid") }) {
+                        for (card in matching) LessonCatalogCard(card) {
+                            selectedLessonId = card.lessonId; supportNotice = null
+                        }
+                    }
+                    if (view.unavailableSavedLessons.isNotEmpty()) Section {
+                        H2 { Text("Saved lessons not in this catalog") }
+                        P { Text("These records remain in your local progress.") }
+                        for (status in view.unavailableSavedLessons) P {
+                            Text("${status.record?.lessonId}: saved checkpoint unavailable. ${lessonProgressLabel(status)}")
+                        }
+                    }
+                    Div(attrs = { classes("beginner-link") }) {
+                        Span { Text("Starting from zero? Your kana practice and reference sheets are on My path.") }
+                        Link("/") { Text("Go to my path →") }
                     }
                 }
             }
@@ -219,7 +208,7 @@ private fun LessonPreview(
 ) {
     Section(attrs = { style { property("overflow-wrap", "anywhere"); property("min-width", "0") } }) {
         H2 { Text(lesson.title) }
-        P { Text("Read-only lesson preview. Viewing this lesson does not change your saved place. Open the player to choose Start, Resume, Revisit, or checkpoint recovery when available.") }
+        P { Text("Take a look before you begin. Your saved place stays as it is.") }
         P { Text(lessonProgressLabel(card.status)) }
         if (card.status.checkpointAvailable == false) P(attrs = { attr("role", "status") }) {
             Text("The saved checkpoint is unavailable. Your saved place is retained; this preview cannot repair or replace it.")
@@ -313,31 +302,45 @@ private fun LessonPreview(
 }
 
 @Composable
-private fun LessonCatalogCard(card: LessonCard, allCards: List<LessonCard>, onSelect: () -> Unit) {
+private fun LessonCatalogCard(card: LessonCard, onSelect: () -> Unit) {
     CatalogCard {
-        H3 { Text(card.title) }
-        P { Text("Goal: ${card.communicationGoal}") }
-        P { Text(card.situation) }
-        P { Text("Recommended difficulty: ${card.difficulty.name.lowercase()}; about ${card.durationMinutes} minutes.") }
-        val prerequisites = card.prerequisiteLessonIds.map { id ->
-            allCards.firstOrNull { it.lessonId == id }?.title ?: id
+        Div(attrs = { classes("lesson-card-top") }) {
+            Span(attrs = { classes("lesson-card-icon", if (card.topicId.startsWith("life-")) "lesson-card-icon--life" else "lesson-card-icon--work") }) {
+                StudyIcon(if (card.topicId.startsWith("life-")) "home" else "code")
+            }
+            Span(attrs = { classes("stage-badge") }) { Text("${card.durationMinutes} min · ${card.difficulty.name.lowercase()}") }
         }
-        P { Text("Suggested prerequisites (not required): ${prerequisites.joinToString().ifEmpty { "none" }}.") }
-        P { Text(lessonProgressLabel(card.status)) }
-        P { Text("Lesson document: ${if (card.status.documentAvailable) "available" else "unavailable"}; saved checkpoint: ${when (card.status.checkpointAvailable) {
-            true -> "available in the lesson player"
-            false -> "unavailable; saved place retained"
-            null -> "none"
-        }}.") }
-        PrimaryButton("View lesson: ${card.title}", onClick = onSelect)
-        LessonEntryLink(card.lessonId)
+        H3 { Text(card.title) }
+        P { Text(card.communicationGoal) }
+        Div(attrs = { classes("lesson-card-bottom") }) {
+            P(attrs = { classes("lesson-card-status") }) {
+                if (card.status.isCompleted) StudyIcon("check")
+                Text(when {
+                    card.status.checkpointAvailable == false -> "Saved place needs recovery"
+                    card.status.isCompleted -> "Completed · Ready to revisit"
+                    card.status.record != null -> "In progress · ${card.status.savedStage?.name?.lowercase()?.replace('_', ' ').orEmpty()}"
+                    else -> "Ready when you are"
+                })
+            }
+            Div(attrs = { classes("lesson-card-actions") }) {
+                Link("/lesson?lessonId=${card.lessonId}", modifier = Modifier.attrsModifier {
+                    classes("text-link"); attr("aria-label", "Open lesson: ${card.title}")
+                }) {
+                    Text(if (card.status.record != null && !card.status.isCompleted) "Continue lesson" else "Open lesson")
+                    StudyIcon("arrow")
+                }
+                org.jetbrains.compose.web.dom.Button(attrs = {
+                    classes("preview-button"); attr("type", "button"); attr("aria-label", "Preview: ${card.title}"); onClick { onSelect() }
+                }) { Text("Preview") }
+            }
+        }
     }
 }
 
 /** Catalog IDs are validated stable keys; the player performs the entry action only after navigation. */
 @Composable
 private fun LessonEntryLink(lessonId: String) {
-    Link(path = "/lesson?lessonId=$lessonId") { Text("Open lesson player") }
+    Link(path = "/lesson?lessonId=$lessonId") { Text("Open lesson →") }
 }
 
 /** Local card spacing uses inherited surface colors in both Silk modes; controls keep native focus. */
@@ -363,6 +366,6 @@ private fun lessonProgressLabel(status: LessonSavedStatus): String {
         LessonStage.ROLE_PLAY -> "Role-play"
         LessonStage.SUMMARY -> "Summary"
     }
-    return if (status.isCompleted) "Completed (saved completion timestamp: ${status.completedAtEpochMs}). Saved stage: $stage."
+    return if (status.isCompleted) "Completed. Saved stage: $stage."
     else "Unfinished. Saved stage: $stage."
 }

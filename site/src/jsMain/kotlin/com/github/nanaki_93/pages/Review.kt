@@ -30,10 +30,10 @@ fun ReviewPage() {
         catch (e: CancellationException) { throw e }
         catch (_: Exception) { error = "Content could not load. Retry or return to Topics." }
     }
-    Main(attrs = { classes("learning-page") }) {
-        H1 { Text("Phrase review") }
-        Link("/") { Text("Home") }; Link("/topics") { Text("Learn a lesson") }
-        P(attrs = { attr("role", "status") }) { Text("Local save: ${saveStatusMessage(saved)}") }
+    Main(attrs = { classes("learning-page", "review-page") }) {
+        Span(attrs = { classes("eyebrow") }) { Text("A LITTLE REPETITION GOES A LONG WAY") }
+        H1 { Text("Make it stay.") }
+        P { Text("Bring familiar words back to mind. A few phrases, a little more confidence.") }
         val data = bundle
         when {
             error != null -> { P { Text(error!!) }; PrimaryButton("Retry content", onClick = { load++ }) }
@@ -42,25 +42,41 @@ fun ReviewPage() {
                 val now = kotlin.js.Date.now().toLong()
                 val cards = eligibleReviewCards(data.lessons.values, data.practiceSets.values, saved.snapshot)
                 val due = reviewDueCount(cards, saved.snapshot, now)
-                P { Text("$due due · ${saved.snapshot.reviewItems.size} phrases practised · ${saved.snapshot.lessonProgress.count { it.completedAtEpochMs != null }} lessons completed") }
-                P { Text("Due dates appear in your device's local time. Up to 10 items, including at most 3 new items, per session. Ratings describe recall, not fluency.") }
+                if (session == null) Div(attrs = { classes("review-stats") }) {
+                    for ((count, label) in listOf(due to "ready to revisit", saved.snapshot.reviewItems.size to "phrases practised",
+                        saved.snapshot.lessonProgress.count { it.completedAtEpochMs != null } to "lessons completed")) {
+                        Div { Span(attrs = { classes("review-stat-value") }) { Text("$count") }; Span { Text(label) } }
+                    }
+                }
                 val current = session
                 // Force a render after transient reveal/advance; saved changes alone do not cover reveal.
                 key(tick) {
                     when {
-                        current == null -> {
+                        current == null -> Section(attrs = { classes("review-start") }) {
                             val plan = planReview(cards, saved.snapshot, now)
-                            if (due == 0) P { Text("Nothing is due. Learn something new, introduce a few studied phrases, or deliberately practise ahead.") }
-                            if (plan.isNotEmpty()) PrimaryButton("Start review (${plan.size})", onClick = { session = LocalReviewSession(plan, owner) })
                             val ahead = planReview(cards, saved.snapshot, now, ahead = true)
+                            Div(attrs = { classes("empty-state-symbol"); attr("aria-hidden", "true") }) { StudyIcon("review") }
+                            H2 { Text(if (plan.isNotEmpty()) "Ready for a little review?" else if (cards.isEmpty()) "Your first phrases are ahead." else "All caught up.") }
+                            P { Text(if (plan.isNotEmpty()) "Recall a phrase, reveal the example, then tell us how it felt. Up to 10 phrases at a time."
+                                else if (cards.isEmpty()) "Finish a practice set or a lesson, then return here to help your new words stick."
+                                else "Nothing is due right now. Explore a new lesson or revisit familiar phrases at your own pace.") }
+                            if (plan.isNotEmpty()) PrimaryButton("Start review (${plan.size})", onClick = { session = LocalReviewSession(plan, owner) })
                             if (ahead.isNotEmpty()) SecondaryButton("Practise ahead", onClick = { session = LocalReviewSession(ahead, owner) })
+                            if (plan.isEmpty()) P { Link("/") { Text("Continue learning →") } }
                         }
                         current.expired -> P { Text("Progress was replaced or reloaded. Start a fresh review to use the current schedule.") }
-                        current.complete -> P { Text("Session complete: ${current.index} phrases practised. Again returns in 10 minutes; other intervals range from 1 to 30 days.") }
+                        current.complete -> Section(attrs = { classes("empty-state") }) {
+                            StudyIcon("check")
+                            H2 { Text("A little practice, well spent.") }
+                            P { Text("${current.index} phrases revisited. Again returns in 10 minutes; other intervals range from 1 to 30 days.") }
+                            Link("/") { Text("Back to my path →") }
+                        }
                         else -> current.current?.let { planned ->
                             val card = planned.card
+                            StudyProgress("Review phrases completed", current.index, current.plan.size)
                             H2 { Text("Recall ${current.index + 1} of ${current.plan.size}") }
-                            P { Text(card.context) }; P { Text(card.cue) }
+                            P(attrs = { classes("muted") }) { Text(card.context) }
+                            P(attrs = { classes("review-cue") }) { Text(card.cue) }
                             planned.previous?.dueAtEpochMs?.let { dueAt ->
                                 val offset = -kotlin.js.Date(dueAt.toDouble()).getTimezoneOffset().toInt()
                                 val todayOffset = -kotlin.js.Date(now.toDouble()).getTimezoneOffset().toInt()
@@ -80,14 +96,18 @@ fun ReviewPage() {
                             else {
                                 card.phrase?.let { JapaneseStudyText(it.text, saved.snapshot.preferences.copy(showReadings = true, showTranslation = true)); P { Text("${it.usage} · ${it.register}") } }
                                 card.exercise?.let { AuthoredFeedbackContent(authoredFeedback(it), saved.snapshot.preferences.copy(showReadings = true, showTranslation = true)) }
-                                for ((rating, label) in listOf(ReviewOutcome.AGAIN to "Again", ReviewOutcome.HARD to "Hard", ReviewOutcome.GOOD to "Good"))
-                                    SecondaryButton(label, onClick = { current.rate(index, rating); tick++ })
+                                Div(attrs = { classes("review-ratings"); attr("role", "group"); attr("aria-label", "How well did you recall this phrase?") }) {
+                                    for ((rating, label) in listOf(ReviewOutcome.AGAIN to "Again", ReviewOutcome.HARD to "Hard", ReviewOutcome.GOOD to "Good"))
+                                        SecondaryButton(label, onClick = { current.rate(index, rating); tick++ })
+                                }
+                                P(attrs = { classes("muted") }) { Text("Again: in 10 minutes · Hard: sooner · Good: a longer interval") }
                             }
                             current.error?.let { P(attrs = { attr("role", "alert") }) { Text(it) } }
                         }
                     }
                     if (current != null) SecondaryButton("Exit review", onClick = { session = null; tick++ })
                 }
+                P(attrs = { classes("review-footnote") }) { Text("A session includes at most 3 new items. Ratings describe recall, not fluency. Due dates use your device's local time.") }
             }
         }
     }

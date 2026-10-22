@@ -10,8 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import com.github.nanaki_93.LocalProgress
-import com.github.nanaki_93.components.styles.Colors
-import com.github.nanaki_93.components.styles.Styles
 import com.github.nanaki_93.components.widgets.AuthoredFeedbackContent
 import com.github.nanaki_93.components.widgets.JapaneseAnswerInput
 import com.github.nanaki_93.components.widgets.JapanesePassage
@@ -20,6 +18,8 @@ import com.github.nanaki_93.components.widgets.JapaneseSubmissionGuard
 import com.github.nanaki_93.components.widgets.JapaneseStudyText
 import com.github.nanaki_93.components.widgets.PreviewJapaneseText
 import com.github.nanaki_93.components.widgets.visibleAids
+import com.github.nanaki_93.components.widgets.StudyProgress
+import com.github.nanaki_93.components.widgets.StudyIcon
 import com.github.nanaki_93.components.widgets.PrimaryButton
 import com.github.nanaki_93.components.widgets.SecondaryButton
 import com.github.nanaki_93.content.BrowserContentTextSource
@@ -46,16 +46,12 @@ import com.github.nanaki_93.practice.Assessment
 import com.github.nanaki_93.practice.InvalidReason
 import com.github.nanaki_93.practice.PracticeAnswer
 import com.github.nanaki_93.storage.LocalProgressState
-import com.varabyte.kobweb.compose.foundation.layout.Box
-import com.varabyte.kobweb.compose.foundation.layout.Column
-import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
-import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.components.navigation.Link
-import com.varabyte.kobweb.silk.style.toModifier
-import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import org.jetbrains.compose.web.attributes.InputType
+import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.Ol
+import org.jetbrains.compose.web.dom.Li
 import org.jetbrains.compose.web.dom.Fieldset
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Label
@@ -83,27 +79,16 @@ private val LESSON_ID = Regex("[A-Za-z0-9][A-Za-z0-9_-]*")
 @Composable
 fun LessonPage() {
     val lessonId = requestedLessonId()
-    val darkMode = ColorMode.current == ColorMode.DARK
-    Main {
-        Box(Styles.GameContainer.toModifier().then(
-            if (darkMode) Modifier.backgroundColor(Colors.DarkBackground) else Modifier
-        )) {
-            Column(Styles.Card.toModifier().then(
-                if (darkMode) Modifier.backgroundColor(Colors.DarkCardBackground).color(Colors.DarkText) else Modifier
-            )) {
-                H1 { Text("Workplace lesson") }
-                Link(path = "/review") { Text("Phrase review") }
-                // Logical paths: Kobweb Link applies the configured /hiragame base exactly once.
-                Link(path = "/topics") { Text("Back to Topics") }
-                Link(path = "/") { Text("Back to Home") }
-                if (lessonId == null) Section {
-                    H2 { Text("Choose a lesson from Topics") }
-                    P(attrs = { attr("role", "alert") }) {
-                        Text("The lesson link is missing or invalid. No progress was changed.")
-                    }
-                } else LessonEntry(lessonId)
-            }
+    Main(attrs = { classes("learning-page", "lesson-page") }) {
+        Div(attrs = { classes("lesson-page-heading") }) {
+            Span(attrs = { classes("eyebrow") }) { Text("READ · PRACTISE · SPEAK") }
+            Link(path = "/topics") { Text("← All lessons") }
         }
+        H1 { Text("Learn in context.") }
+        if (lessonId == null) Section {
+            H2 { Text("Choose a lesson to begin") }
+            P(attrs = { attr("role", "alert") }) { Text("The lesson link is missing or invalid. No progress was changed.") }
+        } else LessonEntry(lessonId)
     }
 }
 
@@ -136,7 +121,7 @@ private fun LessonEntry(lessonId: String) {
             H2 { Text("No lessons available") }
             P { Text(when (current.reason) {
                 LessonEmptyReason.EMPTY_CATALOG -> "The content catalog is empty. Your saved progress has not been removed."
-                LessonEmptyReason.NO_LESSONS -> "No workplace lessons are listed. Your saved progress has not been removed."
+                LessonEmptyReason.NO_LESSONS -> "No lessons are listed. Your saved progress has not been removed."
             }) }
             PrimaryButton("Retry loading", onClick = coordinator::retryLoad)
         }
@@ -195,18 +180,30 @@ private fun LessonPlayer(
     val stageNumber = session.plan.stages.indexOf(stage) + 1
     Section(attrs = { style { property("overflow-wrap", "anywhere"); property("min-width", "0") } }) {
         H2 { Text(lesson.title) }
-        P { Text("Stage $stageNumber of ${session.plan.stages.size}: ${stageLabel(session.stage)}") }
-        P { Text(session.plan.stages.joinToString(" → ") { stageLabel(it.stage) }) }
-        P { Text(if (session.itemIndex == null) "Stage introduction" else
-            "Item ${session.itemIndex!! + 1} of ${stage.items.size}") }
+        Ol(attrs = { classes("lesson-stepper"); attr("aria-label", "Lesson stages") }) {
+            session.plan.stages.forEachIndexed { index, step ->
+                Li(attrs = {
+                    if (index + 1 == stageNumber) attr("aria-current", "step")
+                    if (index + 1 < stageNumber) classes("step-past")
+                }) {
+                    Span(attrs = { classes("step-number"); attr("aria-hidden", "true") }) {
+                        if (index + 1 < stageNumber) StudyIcon("check") else Text("${index + 1}")
+                    }
+                    Text(stageLabel(step.stage))
+                }
+            }
+        }
+        StudyProgress("Lesson stages completed", if (active.finished) session.plan.stages.size else stageNumber - 1, session.plan.stages.size)
+        P(attrs = { classes("muted") }) { Text("Step $stageNumber of ${session.plan.stages.size} · ${stageLabel(session.stage)}" +
+            (session.itemIndex?.let { " · Item ${it + 1} of ${stage.items.size}" } ?: "")) }
         session.notice?.let { P(attrs = { attr("role", "status") }) { Text(it) } }
         when (session.stage) {
             LessonStage.SITUATION -> {
                 H3 { Text("Situation") }
                 P { Text(lesson.situation) }
                 P { Text("Communication goal: ${lesson.communicationGoal}") }
-                P { Text("Suggested difficulty: ${lesson.difficulty.name.lowercase()}; about ${lesson.durationMinutes} minutes. These are guidance, not requirements.") }
-                P { Text("Suggested prerequisite lessons (optional): ${lesson.prerequisiteLessonIds.joinToString().ifEmpty { "none" }}") }
+                P(attrs = { classes("muted") }) { Text("${lesson.durationMinutes} minutes · ${lesson.difficulty.name.lowercase()} · Go at your own pace.") }
+                if (lesson.prerequisiteLessonIds.isNotEmpty()) P(attrs = { classes("muted") }) { Text("You can explore this lesson anytime. The lesson preview lists suggested preparation.") }
             }
             LessonStage.DIALOGUE -> when (val item = session.item) {
                 null -> {

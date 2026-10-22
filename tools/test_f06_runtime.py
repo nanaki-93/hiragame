@@ -5,6 +5,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PAGES = ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/pages'
+NAV = PAGES.parent / 'components/widgets/LearningNavigation.kt'
+LAYOUT = PAGES.parent / 'components/layouts/PageLayout.kt'
 
 
 class TopicsNavigationTests(unittest.TestCase):
@@ -14,13 +16,17 @@ class TopicsNavigationTests(unittest.TestCase):
         config = (ROOT / 'site/build.gradle.kts').read_text(encoding='utf-8')
         self.assertIn('configAsKobwebApplication("hiragame")', config)
         self.assertRegex(topics, r'@Page\("/topics"\)\s*@Composable\s*fun TopicsPage\(')
-        for source, destination in ((home, '/topics'), (topics, '/')):
-            self.assertIn('import com.varabyte.kobweb.silk.components.navigation.Link', source)
-            self.assertRegex(source, rf'Link\(path\s*=\s*"{re.escape(destination)}"\)')
-            # Kobweb Link prepends the configured base path. Never prepend it a second time.
-            self.assertNotIn('/hiragame', source)
-        # Navigation must precede practice state branching, not disappear in empty/error/loading.
-        self.assertLess(home.index('Link(path = "/topics")'), home.index('when (val current = state)'))
+        nav = NAV.read_text(encoding='utf-8')
+        layout = LAYOUT.read_text(encoding='utf-8')
+        self.assertIn('Triple("/topics", "Lessons", "book")', nav)
+        self.assertIn('Triple("/", "My path", "path")', nav)
+        self.assertIn('Link(destination', nav)
+        self.assertIn('import com.varabyte.kobweb.silk.components.navigation.Link', nav)
+        for source in (home, topics, nav):
+            self.assertNotIn('Link("/hiragame', source)
+            self.assertNotIn('Link(path = "/hiragame', source)
+        # Shared navigation stays above every loading/error/empty/active page.
+        self.assertLess(layout.index('LearningNavigation()'), layout.index('{ content() }'))
 
     def test_catalog_uses_validated_content_and_live_app_scoped_save(self):
         topics = (PAGES / 'Topics.kt').read_text(encoding='utf-8')
@@ -35,11 +41,11 @@ class TopicsNavigationTests(unittest.TestCase):
         for state in ('Loading', 'Empty', 'Error', 'Ready'):
             self.assertIn(f'LocalCatalogState.{state}', topics)
         self.assertIn('current.safeMessage', topics)
-        self.assertIn('saveStatusMessage(saved)', topics)
+        self.assertIn('saveStatusMessage(saved)', NAV.read_text(encoding='utf-8'))
 
     def test_catalog_controls_and_cards_are_read_only_and_view_local(self):
         topics = (PAGES / 'Topics.kt').read_text(encoding='utf-8')
-        for local in ('topicId', 'beginnerPath', 'selectedLessonId'):
+        for local in ('topicId', 'beginnerPath', 'selectedLessonId', 'area', 'query'):
             self.assertRegex(topics, rf'var {local} by remember \{{ mutableStateOf(?:<[^>]+>)?\(')
         self.assertIn('view.topics', topics)
         self.assertIn('view.cards', topics)
@@ -49,16 +55,16 @@ class TopicsNavigationTests(unittest.TestCase):
         self.assertIn('card.communicationGoal', topics)
         self.assertIn('card.difficulty', topics)
         self.assertIn('card.durationMinutes', topics)
-        self.assertIn('card.prerequisiteLessonIds', topics)
+        self.assertIn('lesson.prerequisiteLessonIds', topics)
         self.assertIn('status.isCompleted', topics)
         self.assertIn('status.checkpointAvailable', topics)
         self.assertIn('Input(type = InputType.Radio', topics)
         self.assertIn('Input(type = InputType.Checkbox', topics)
-        self.assertIn('Clear filter', topics)
+        self.assertIn('Clear search & filters', topics)
         self.assertIn('Back to catalog', topics)
-        self.assertIn('Back to Home', topics)
+        self.assertIn('Go to my path', topics)
         self.assertIn('Not started', topics)
-        # Selection and recommendation open only the preview; navigation to the player is separate.
+        # Preview selection is local; card and recommendation links navigate without starting a session.
         self.assertIn('selectedLessonId = card.lessonId', topics)
         self.assertIn('current.content.lessons[selectedLessonId]', topics)
         for forbidden in ('visitLesson(', 'completeLesson(', 'scheduleReview(', 'progress.mutate(',
@@ -92,7 +98,7 @@ class TopicsNavigationTests(unittest.TestCase):
         self.assertIn('property("overflow-wrap", "anywhere")', renderer)
         for forbidden in ('innerHTML', 'dangerouslySetInnerHTML'):
             self.assertNotIn(forbidden, renderer)
-        self.assertIn('Read-only lesson preview. Viewing this lesson does not change your saved place.', topics)
+        self.assertIn('Take a look before you begin. Your saved place stays as it is.', topics)
         self.assertNotIn('future lesson player', topics)
         self.assertIn('The saved checkpoint is unavailable', topics)
         for forbidden in ('innerHTML', 'dangerouslySetInnerHTML', 'visitLesson(', 'completeLesson(',
@@ -108,9 +114,9 @@ class TopicsNavigationTests(unittest.TestCase):
         for preference in ('showReadings', 'showTranslation', 'showRomaji'):
             self.assertIn(f'preferences.{preference}', topics)
         self.assertIn('is ProgressMutationResult.Rejected', topics)
-        self.assertIn('saveStatusMessage(saved)', topics)
-        self.assertIn('Link(path = "/")', topics)
-        self.assertIn('"Back to Home"', topics)
+        self.assertIn('saveStatusMessage(saved)', NAV.read_text(encoding='utf-8'))
+        self.assertIn('Link("/")', topics)
+        self.assertIn('Go to my path', topics)
 
 
 if __name__ == '__main__':

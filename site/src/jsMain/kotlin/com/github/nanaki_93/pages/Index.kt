@@ -24,8 +24,6 @@ import com.github.nanaki_93.practice.PracticeOutcome
 import com.github.nanaki_93.practice.InvalidReason
 import com.github.nanaki_93.practice.PracticeAnswer
 import com.github.nanaki_93.practice.PracticeSession
-import com.github.nanaki_93.components.styles.Styles
-import com.github.nanaki_93.components.styles.Colors
 import com.github.nanaki_93.components.widgets.StudyWelcome
 import com.github.nanaki_93.components.widgets.TodayStudySection
 import com.github.nanaki_93.components.widgets.StudyProgress
@@ -78,18 +76,9 @@ import com.varabyte.kobweb.silk.theme.colors.ColorMode
 import com.github.nanaki_93.practice.LocalPracticeState
 import com.github.nanaki_93.practice.PracticeCommand
 import com.github.nanaki_93.practice.SessionView
-import com.varabyte.kobweb.compose.foundation.layout.Arrangement
-import com.varabyte.kobweb.compose.foundation.layout.Box
-import com.varabyte.kobweb.compose.foundation.layout.Column
-import com.varabyte.kobweb.compose.ui.Alignment
-import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.modifiers.backgroundColor
-import com.varabyte.kobweb.compose.ui.modifiers.color
 import com.varabyte.kobweb.core.Page
 import com.varabyte.kobweb.silk.components.navigation.Link
-import com.varabyte.kobweb.silk.style.toModifier
 import org.jetbrains.compose.web.attributes.InputType
-import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.dom.Fieldset
 import org.jetbrains.compose.web.dom.Input
 import org.jetbrains.compose.web.dom.Label
@@ -774,16 +763,15 @@ private fun PracticePrompt(
         if (answer == null) missingAssessment = true else submit(answer)
     }
 
-    H2 { Text("Exercise ${view.index + 1} of ${session.plan.size}") }
-    P { Text("${session.counts.completed} resolved of ${session.plan.size}. Checkpoints are saved when possible; typed responses are not retained.") }
-    P { Text(when (exercise) {
+    H2(attrs = { id("exercise-heading"); attr("tabindex", "-1") }) { Text("Exercise ${view.index + 1} of ${session.plan.size}") }
+    P(attrs = { classes("exercise-prompt") }) { Text(when (exercise) {
         is ChoiceExercise -> exercise.prompt
         is ReadingExercise -> exercise.prompt
         is CompletionExercise -> exercise.prompt
         is ProductionExercise -> exercise.prompt
     }) }
     when (exercise) {
-        is ChoiceExercise -> Fieldset {
+        is ChoiceExercise -> Fieldset(attrs = { classes("answer-options") }) {
             Legend { Text("Choose one answer") }
             for (option in exercise.options) {
                 Label(attrs = { classes("practice-choice") }) {
@@ -848,7 +836,7 @@ private fun PracticePrompt(
         }
     }
     if (exercise is ReadingExercise || exercise is ChoiceExercise || exercise is CompletionExercise) {
-        P { Text("Answer-identifying study aids are withheld until you check, skip, or reveal this exercise.") }
+        P(attrs = { classes("muted") }) { Text("Readings and hints appear after you check, skip, or reveal your answer.") }
     }
     val validation = view.validation
     if (validation != null) P(attrs = { attr("role", "alert") }) {
@@ -872,14 +860,24 @@ private fun PracticePrompt(
 @Composable
 private fun SessionCounts(session: PracticeSession) {
     val counts = session.counts
-    P { Text("Session outcomes · ${counts.completed} of ${session.plan.size} resolved: ${counts.correct} correct, ${counts.incorrect} incorrect, ${counts.skipped} skipped, ${counts.revealed} revealed, ${counts.selfAssessed} self-assessed.") }
+    Div(attrs = { classes("session-progress") }) {
+        Div(attrs = { classes("section-heading") }) {
+            Span { Text("Your practice session") }
+            Span { Text("${counts.completed} / ${session.plan.size} complete") }
+        }
+        StudyProgress("Practice exercises completed", counts.completed, session.plan.size)
+    }
+    TagElement<HTMLElement>("details", applyAttrs = { classes("session-details") }) {
+        TagElement<HTMLElement>("summary", applyAttrs = {}) { Text("Session details") }
+        P { Text("${counts.correct} correct · ${counts.incorrect} incorrect · ${counts.skipped} skipped · ${counts.revealed} revealed · ${counts.selfAssessed} self-assessed. Responses are not saved.") }
+    }
 }
 
 /** The stored outcome is read-only in review; only the active feedback view offers Retry/Continue. */
 @Composable
 private fun PracticeFeedback(session: PracticeSession, index: Int, reviewing: Boolean, studyAids: SavePreferences) {
     val outcome = session.outcomes[index] ?: return
-    H2 { Text(if (reviewing) "Review exercise ${index + 1} of ${session.plan.size}" else "Feedback · exercise ${index + 1} of ${session.plan.size}") }
+    H2(attrs = { id("exercise-heading"); attr("tabindex", "-1") }) { Text(if (reviewing) "Review exercise ${index + 1} of ${session.plan.size}" else "Feedback · exercise ${index + 1} of ${session.plan.size}") }
     val exercise = session.plan[index].exercise
     P { Text(when (exercise) {
         is ChoiceExercise -> exercise.prompt
@@ -890,8 +888,8 @@ private fun PracticeFeedback(session: PracticeSession, index: Int, reviewing: Bo
     if (exercise is CompletionExercise) P { Span(attrs = { attr("lang", "ja"); classes("practice-japanese"); style { property("overflow-wrap", "anywhere") } }) {
         Text(exercise.template.replace("{blank}", "＿＿＿"))
     } }
-    P { Text(when (outcome) {
-        is PracticeOutcome.Correct -> "Correct"
+    P(attrs = { classes("feedback-result", if (outcome is PracticeOutcome.Correct) "feedback-result--correct" else "feedback-result--retry"); attr("role", "status") }) { Text(when (outcome) {
+        is PracticeOutcome.Correct -> "Correct · Nicely done!"
         is PracticeOutcome.Incorrect -> "Not quite"
         is PracticeOutcome.Skipped -> "Skipped · not correct"
         is PracticeOutcome.Revealed -> "Revealed · not correct"

@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PAGE = ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/pages/Lesson.kt'
 COORDINATOR = ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/lesson/LocalLessonCoordinator.kt'
 TOPICS = ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/pages/Topics.kt'
+NAV = ROOT / 'site/src/jsMain/kotlin/com/github/nanaki_93/components/widgets/LearningNavigation.kt'
 CATALOG = ROOT / 'shared/src/commonMain/kotlin/com/github/nanaki_93/content/LessonCatalog.kt'
 
 
@@ -31,31 +32,30 @@ class LessonRouteTests(unittest.TestCase):
         self.assertIn('onDispose { coordinator.dispose() }', page)
         self.assertIn('BundledContentLoader(BrowserContentTextSource())', page)
         self.assertIn('import com.varabyte.kobweb.silk.components.navigation.Link', page)
-        for path in ('/topics', '/'):
-            self.assertIn(f'Link(path = "{path}")', page)
+        self.assertIn('Link(path = "/topics")', page)
+        self.assertIn('Triple("/", "My path", "path")', NAV.read_text(encoding='utf-8'))
         self.assertLess(page.index('Link(path = "/topics")'), page.index('when (val current = state)'))
         self.assertNotIn('Link(path = "/hiragame', page)
-        self.assertIn('Link(path = "/review', page)  # F09 adds phrase review navigation.
+        self.assertIn('Triple("/review", "Review", "review")', NAV.read_text(encoding='utf-8'))
 
     def test_topics_links_enter_player_without_starting_a_session_during_browsing(self):
         topics = TOPICS.read_text(encoding='utf-8')
         catalog = CATALOG.read_text(encoding='utf-8')
         preview = topics.split('private fun LessonPreview(', 1)[1].split('private fun LessonCatalogCard(', 1)[0]
         card = topics.split('private fun LessonCatalogCard(', 1)[1].split('private fun LessonEntryLink(', 1)[0]
-        recommendation = topics.split('view.recommendation?.let { recommendation ->', 1)[1].split('if (view.cards.isEmpty())', 1)[0]
+        recommendation = topics.split('view.recommendation?.let { recommendation ->', 1)[1].split('val terms =', 1)[0]
         link = topics.split('private fun LessonEntryLink(', 1)[1].split('private fun CatalogCard(', 1)[0]
         self.assertIn('Link(path = "/lesson?lessonId=$lessonId")', link)
-        self.assertIn('Text("Open lesson player")', link)
+        self.assertIn('Text("Open lesson →")', link)
         self.assertNotIn('/hiragame', topics)  # Kobweb applies the base path once.
         self.assertIn('LessonEntryLink(card.lessonId)', preview)
-        self.assertIn('LessonEntryLink(card.lessonId)', card)
-        self.assertIn('LessonEntryLink(card.lessonId)', recommendation)
-        self.assertIn('SecondaryButton("View lesson: ${card.title}"', recommendation)
-        self.assertIn('PrimaryButton("View lesson: ${card.title}"', card)
+        self.assertIn('Link("/lesson?lessonId=${card.lessonId}"', card)
+        self.assertIn('Link("/lesson?lessonId=${card.lessonId}"', recommendation)
+        self.assertIn('attr("aria-label", "Preview: ${card.title}"); onClick { onSelect() }', card)
         self.assertIn('selectedLessonId = card.lessonId', topics)
         self.assertIn('current.content.lessons[selectedLessonId]', topics)
         self.assertIn('view.unavailableSavedLessons', topics)
-        self.assertIn('lesson document unavailable; saved checkpoint unavailable', topics)
+        self.assertIn('saved checkpoint unavailable', topics)
         self.assertIn('browsing does not change progress', catalog)
         self.assertNotIn('future lesson player', topics)
         for forbidden in ('visitLesson(', 'completeLesson(', 'progress.mutate(', 'coordinator.start(',
@@ -85,9 +85,11 @@ class LessonRouteTests(unittest.TestCase):
         page = PAGE.read_text(encoding='utf-8')
         self.assertIn('LocalLessonState.Active -> LessonPlayer(current, saved, coordinator)', page)
         self.assertIn('session.plan.stage(session.stage)', page)
-        self.assertIn('Stage $stageNumber of ${session.plan.stages.size}', page)
-        self.assertIn('Item ${session.itemIndex!! + 1} of ${stage.items.size}', page)
-        self.assertIn('session.plan.stages.joinToString(" → ")', page)
+        self.assertIn('Step $stageNumber of ${session.plan.stages.size}', page)
+        self.assertIn('session.itemIndex?.let { " · Item ${it + 1} of ${stage.items.size}" }', page)
+        self.assertIn('session.plan.stages.forEachIndexed', page)
+        self.assertIn('attr("aria-current", "step")', page)
+        self.assertIn('StudyProgress("Lesson stages completed"', page)
         self.assertIn('when (session.stage)', page)
         for stage in ('SITUATION', 'DIALOGUE', 'UNDERSTANDING', 'GUIDED_PRACTICE', 'ROLE_PLAY', 'SUMMARY'):
             self.assertIn('LessonStage.' + stage, page)
@@ -177,7 +179,7 @@ class LessonRouteTests(unittest.TestCase):
         self.assertIn('not mastery or a scheduled review', summary)
         self.assertIn('operation is LessonOperation.Finish && commit is LessonCommit.Accepted', coordinator)
         self.assertNotIn('scheduleReview(', page)
-        self.assertIn('Link(path = "/review', page)  # F09 adds phrase review navigation.
+        self.assertIn('Triple("/review", "Review", "review")', NAV.read_text(encoding='utf-8'))
 
     def test_entry_recovery_and_safe_exits(self):
         page = PAGE.read_text(encoding='utf-8')
