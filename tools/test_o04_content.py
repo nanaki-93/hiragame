@@ -6,7 +6,8 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "site/src/jsMain/resources/public/content"
 SLUGS = ("requirements-clarification", "estimates-deadlines", "incident-report", "design-tradeoffs",
-         "technical-interview", "transport", "housing-viewing", "appointment-change", "administration-questions")
+         "technical-interview", "transport", "housing-viewing", "appointment-change", "administration-questions",
+         "konbini-dining", "clinic-pharmacy")
 
 
 class CurriculumExpansionTest(unittest.TestCase):
@@ -14,7 +15,7 @@ class CurriculumExpansionTest(unittest.TestCase):
         catalog = json.loads((CONTENT / "catalog.json").read_text())
         topics = {t["id"]: t for t in catalog["topics"]}
         entries = {e["id"]: e for e in catalog["entries"] if e["kind"] == "lesson"}
-        self.assertEqual(15, len(entries))
+        self.assertEqual(17, len(entries))
         for index, slug in enumerate(SLUGS):
             with self.subTest(slug=slug):
                 doc = json.loads((CONTENT / entries["lesson-" + slug]["path"]).read_text())

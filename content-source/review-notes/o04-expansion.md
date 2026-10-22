@@ -262,3 +262,62 @@ Reviewed `lesson-administration-questions-prompt`: meaning, reading, translation
 Reviewed `lesson-administration-questions-reply`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
 Reviewed `lesson-administration-questions-follow`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
 Reviewed `lesson-administration-questions-end`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+
+Reviewed on 2026-10-03 by an agent. Scope: `lesson-konbini-dining`.
+
+Provenance: original instructional exchange, approved publishable. Review metadata inherited by every nested item. 〜てください politely requests warming; 大丈夫です politely declines a bag; 〜でお願いします specifies the payment method. This checkout exchange is fictional practice. Full readings and English meanings checked by the agent; kana variants are constrained practice spellings, not claims of preferred written style. No recording is referenced.
+
+Reviewed `lesson-konbini-dining`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-colleague`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-learner`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-turn-1`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-turn-2`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-turn-3`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-turn-4`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-turn-5`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-turn-6`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-phrase-2`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-phrase-4`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-phrase-6`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-grammar`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-choice`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-target`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-acknowledge`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-completion`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-production`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-review-phrase`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-review-completion`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-prompt`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-reply`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-follow`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-konbini-dining-end`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+
+Reviewed on 2026-10-03 by an agent. Scope: `lesson-clinic-pharmacy`.
+
+Provenance: original instructional exchange, approved publishable. Review metadata inherited by every nested item. 〜が痛いです describes where something hurts; 〜から marks when the symptom started. This dialogue is fictional language practice, not medical advice. Full readings and English meanings checked by the agent; kana variants are constrained practice spellings, not claims of preferred written style. No recording is referenced.
+
+Reviewed `lesson-clinic-pharmacy`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-colleague`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-learner`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-turn-1`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-turn-2`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-turn-3`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-turn-4`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-turn-5`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-turn-6`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-phrase-2`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-phrase-4`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-phrase-6`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-grammar`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-choice`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-target`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-acknowledge`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-completion`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-production`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-review-phrase`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-review-completion`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-prompt`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-reply`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-follow`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-clinic-pharmacy-end`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+

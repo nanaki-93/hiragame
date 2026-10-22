@@ -224,7 +224,7 @@ class F06ContentTest(unittest.TestCase):
         entries = [entry for entry in catalog["entries"] if entry["kind"] == "lesson"]
         self.assertEqual([entry["id"] for entry in entries[:6]],
                          [f"lesson-{name}" for name, _, _ in starters] + ["lesson-confirm-meeting-time"])
-        self.assertEqual(len(entries), 15)
+        self.assertEqual(len(entries), 17)
         self.assertEqual(catalog["contentVersion"], 13)
         topics = {topic["id"] for topic in catalog["topics"]}
         note = (ROOT.parents[5] / "content-source/review-notes/f06-starter-lessons.md").read_text(encoding="utf-8")

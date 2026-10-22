@@ -66,7 +66,7 @@ class LessonPlayerIntegrationTest {
         val injected = source()
         val loader = BundledContentLoader(injected)
         val bundle = assertIs<CatalogLoad.Ready>(loader.load()).content
-        assertEquals(15, bundle.lessons.size)
+        assertEquals(17, bundle.lessons.size)
         assertEquals(lessonEntries.map { it.getValue("id").jsonPrimitive.content }, bundle.lessons.keys.toList())
         for ((id, lesson) in bundle.lessons) {
             val progress = owner()
@@ -124,7 +124,8 @@ class LessonPlayerIntegrationTest {
     }
 
     @Test fun canonicalEveryStageReopensReadOnlyAndRemovedOrMovedCheckpointNeedsConsent() = runTest {
-        val bundle = assertIs<CatalogLoad.Ready>(BundledContentLoader(source()).load()).content
+        val ready = assertIs<CatalogLoad.Ready>(BundledContentLoader(source()).load())
+        val bundle = ready.content
         for ((id, lesson) in bundle.lessons) {
             val backing = MemoryProgressBacking()
             val progress = owner(backing)
@@ -133,7 +134,7 @@ class LessonPlayerIntegrationTest {
                 val record = LessonProgress(id, 1, 100L, stage.stage, checkpoint, completedAtEpochMs = 90L)
                 progress.mutate { ProgressUpdate.Applied(it.copy(lessonProgress = listOf(record))) }
                 val before = backing.raw
-                val c = LocalLessonCoordinator(this, progress, BundledContentLoader(source())::load)
+                val c = LocalLessonCoordinator(this, progress, { ready })
                 c.load(id); runCurrent()
                 assertIs<LocalLessonState.Entry>(c.state.value)
                 c.resume()
@@ -152,7 +153,7 @@ class LessonPlayerIntegrationTest {
                 val invalid = LessonProgress(id, 1, 100L, LessonStage.DIALOGUE, bad, 90L)
                 progress.mutate { ProgressUpdate.Applied(it.copy(lessonProgress = listOf(invalid))) }
                 val old = backing.raw
-                val c = LocalLessonCoordinator(this, progress, BundledContentLoader(source())::load, { 3_000L })
+                val c = LocalLessonCoordinator(this, progress, { ready }, { 3_000L })
                 c.load(id); runCurrent()
                 assertIs<LocalLessonState.RecoveryRequired>(c.state.value)
                 assertEquals(old, backing.raw)
@@ -166,11 +167,12 @@ class LessonPlayerIntegrationTest {
     }
 
     @Test fun committedStageCheckpointsSurviveLeaveAndFreshOwnerForEveryCanonicalLesson() = runTest {
+        val ready = assertIs<CatalogLoad.Ready>(BundledContentLoader(source()).load())
         for (entry in lessonEntries) {
             val id = entry.getValue("id").jsonPrimitive.content
             val backing = MemoryProgressBacking()
             var progress = owner(backing)
-            var c = LocalLessonCoordinator(this, progress, BundledContentLoader(source())::load, { 3_000L })
+            var c = LocalLessonCoordinator(this, progress, { ready }, { 3_000L })
             try {
                 c.load(id); runCurrent(); c.start()
                 val visited = mutableSetOf<LessonStage>()
@@ -185,7 +187,7 @@ class LessonPlayerIntegrationTest {
                         dispatch(c) { sid, rev -> LessonCommand.Leave(sid, rev) }
                         c.dispose(); progress.dispose()
                         progress = owner(backing)
-                        c = LocalLessonCoordinator(this, progress, BundledContentLoader(source())::load, { 3_000L })
+                        c = LocalLessonCoordinator(this, progress, { ready }, { 3_000L })
                         c.load(id); runCurrent()
                         assertIs<LocalLessonState.Entry>(c.state.value)
                         c.resume()

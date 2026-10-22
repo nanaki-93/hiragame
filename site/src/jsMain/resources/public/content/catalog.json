@@ -86,6 +86,16 @@
       "id": "life-administration-questions",
       "title": "Administration questions",
       "description": "Ask staff what applies to a procedure and clarify how to fill a form."
+    },
+    {
+      "id": "life-konbini-dining",
+      "title": "Convenience store and dining",
+      "description": "Answer checkout questions at a convenience store and order a meal politely in an illustrative exchange."
+    },
+    {
+      "id": "life-clinic-pharmacy",
+      "title": "Clinic and pharmacy visits",
+      "description": "Describe a basic symptom at a clinic reception and confirm medicine timing at a pharmacy in an illustrative exchange."
     }
   ],
   "entries": [
@@ -532,6 +542,18 @@
       "topicId": "life-administration-questions",
       "kind": "lesson",
       "path": "lessons/lesson-administration-questions.json"
+    },
+    {
+      "id": "lesson-konbini-dining",
+      "topicId": "life-konbini-dining",
+      "kind": "lesson",
+      "path": "lessons/lesson-konbini-dining.json"
+    },
+    {
+      "id": "lesson-clinic-pharmacy",
+      "topicId": "life-clinic-pharmacy",
+      "kind": "lesson",
+      "path": "lessons/lesson-clinic-pharmacy.json"
     }
   ]
 }

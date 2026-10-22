@@ -1,0 +1,291 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 13,
+  "id": "lesson-clinic-pharmacy",
+  "topicId": "life-clinic-pharmacy",
+  "title": "Clinic and pharmacy visits",
+  "situation": "A fictional everyday medical reception exchange. Describe a basic symptom at a clinic reception and confirm medicine timing.",
+  "communicationGoal": "Describe a basic symptom at a clinic reception and confirm medicine timing at a pharmacy in an illustrative exchange.",
+  "difficulty": "beginner",
+  "durationMinutes": 8,
+  "prerequisiteLessonIds": [],
+  "dialogue": {
+    "speakers": [
+      {
+        "id": "lesson-clinic-pharmacy-colleague",
+        "name": "Partner",
+        "role": "Clinic or pharmacy staff"
+      },
+      {
+        "id": "lesson-clinic-pharmacy-learner",
+        "name": "You",
+        "role": "Learner in an illustrative exchange"
+      }
+    ],
+    "turns": [
+      {
+        "id": "lesson-clinic-pharmacy-turn-1",
+        "speakerId": "lesson-clinic-pharmacy-colleague",
+        "text": {
+          "surface": "今日はどうされましたか。",
+          "reading": "きょうわどうされましたか。",
+          "translation": "What brings you in today?"
+        }
+      },
+      {
+        "id": "lesson-clinic-pharmacy-turn-2",
+        "speakerId": "lesson-clinic-pharmacy-learner",
+        "text": {
+          "surface": "昨日から喉が痛いです。",
+          "reading": "きのうからのどがいたいです。",
+          "translation": "My throat has been sore since yesterday."
+        }
+      },
+      {
+        "id": "lesson-clinic-pharmacy-turn-3",
+        "speakerId": "lesson-clinic-pharmacy-colleague",
+        "text": {
+          "surface": "保険証はお持ちですか。",
+          "reading": "ほけんしょうわおもちですか。",
+          "translation": "Do you have your health insurance card with you?"
+        }
+      },
+      {
+        "id": "lesson-clinic-pharmacy-turn-4",
+        "speakerId": "lesson-clinic-pharmacy-learner",
+        "text": {
+          "surface": "はい、保険証はこちらです。",
+          "reading": "はい、ほけんしょうわこちらです。",
+          "translation": "Yes, here is my health insurance card."
+        }
+      },
+      {
+        "id": "lesson-clinic-pharmacy-turn-5",
+        "speakerId": "lesson-clinic-pharmacy-colleague",
+        "text": {
+          "surface": "この薬は食後に飲んでください。",
+          "reading": "このくすりわしょくごにのんでください。",
+          "translation": "Please take this medicine after meals."
+        }
+      },
+      {
+        "id": "lesson-clinic-pharmacy-turn-6",
+        "speakerId": "lesson-clinic-pharmacy-learner",
+        "text": {
+          "surface": "食後ですね。ありがとうございます。",
+          "reading": "しょくごですね。ありがとうございます。",
+          "translation": "After meals, right? Thank you."
+        }
+      }
+    ]
+  },
+  "phrases": [
+    {
+      "id": "lesson-clinic-pharmacy-phrase-2",
+      "text": {
+        "surface": "昨日から喉が痛いです。",
+        "reading": "きのうからのどがいたいです。",
+        "translation": "My throat has been sore since yesterday."
+      },
+      "sourceTurnId": "lesson-clinic-pharmacy-turn-2",
+      "usage": "Describe a basic symptom at a clinic reception and confirm medicine timing at a pharmacy in an illustrative exchange.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-clinic-pharmacy-phrase-4",
+      "text": {
+        "surface": "はい、保険証はこちらです。",
+        "reading": "はい、ほけんしょうわこちらです。",
+        "translation": "Yes, here is my health insurance card."
+      },
+      "sourceTurnId": "lesson-clinic-pharmacy-turn-4",
+      "usage": "Describe a basic symptom at a clinic reception and confirm medicine timing at a pharmacy in an illustrative exchange.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-clinic-pharmacy-phrase-6",
+      "text": {
+        "surface": "食後ですね。ありがとうございます。",
+        "reading": "しょくごですね。ありがとうございます。",
+        "translation": "After meals, right? Thank you."
+      },
+      "sourceTurnId": "lesson-clinic-pharmacy-turn-6",
+      "usage": "Describe a basic symptom at a clinic reception and confirm medicine timing at a pharmacy in an illustrative exchange.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    }
+  ],
+  "grammarNotes": [
+    {
+      "id": "lesson-clinic-pharmacy-grammar",
+      "explanation": "〜が痛いです describes where something hurts; 〜から marks when the symptom started. This dialogue is fictional language practice, not medical advice.",
+      "examples": [
+        {
+          "surface": "昨日から喉が痛いです。",
+          "reading": "きのうからのどがいたいです。",
+          "translation": "My throat has been sore since yesterday."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lesson-clinic-pharmacy-choice",
+      "type": "choice",
+      "prompt": "Which response directly serves this goal: Describe a basic symptom at a clinic reception and confirm medicine timing at a pharmacy in an illustrative exchange.",
+      "options": [
+        {
+          "id": "lesson-clinic-pharmacy-target",
+          "text": {
+            "surface": "昨日から喉が痛いです。",
+            "reading": "きのうからのどがいたいです。",
+            "translation": "My throat has been sore since yesterday."
+          }
+        },
+        {
+          "id": "lesson-clinic-pharmacy-acknowledge",
+          "text": {
+            "surface": "分かりました。",
+            "reading": "わかりました。",
+            "translation": "Understood."
+          }
+        }
+      ],
+      "correctOptionId": "lesson-clinic-pharmacy-target",
+      "explanation": "The target response states or asks for the specific information. Acknowledgement alone does not express that information. Other natural responses may also work in open conversation."
+    },
+    {
+      "id": "lesson-clinic-pharmacy-completion",
+      "type": "completion",
+      "prompt": "Complete the specific response from the dialogue. Use the reviewed word for: sore / hurts.",
+      "template": "昨日から喉が{blank}です。",
+      "acceptedAnswers": [
+        {
+          "surface": "痛い",
+          "reading": "いたい",
+          "translation": "sore / painful"
+        },
+        {
+          "surface": "いたい",
+          "reading": "いたい",
+          "translation": "sore / painful (kana)"
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "昨日から喉が痛いです。",
+        "reading": "きのうからのどがいたいです。",
+        "translation": "My throat has been sore since yesterday."
+      },
+      "explanation": "The accepted forms fill this one constrained blank. 〜が痛いです states a symptom politely at clinic reception."
+    },
+    {
+      "id": "lesson-clinic-pharmacy-production",
+      "type": "production",
+      "prompt": "Describe a basic symptom at a clinic reception and confirm medicine timing at a pharmacy in an illustrative exchange. Use your own words and truthful or clearly fictional practice details.",
+      "exampleResponses": [
+        {
+          "surface": "昨日から喉が痛いです。",
+          "reading": "きのうからのどがいたいです。",
+          "translation": "My throat has been sore since yesterday."
+        },
+        {
+          "surface": "はい、保険証はこちらです。食後ですね。",
+          "reading": "はい、ほけんしょうわこちらです。しょくごですね。",
+          "translation": "Yes, here is my health insurance card. After meals, right?"
+        }
+      ],
+      "criteria": [
+        "I communicated the specific goal politely.",
+        "I stated when the symptom started and confirmed the instruction.",
+        "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+      ]
+    }
+  ],
+  "rolePlay": {
+    "task": "Describe a basic symptom at a clinic reception and confirm medicine timing at a pharmacy in an illustrative exchange. Respond to a partner, then confirm the instruction.",
+    "criteria": [
+      "I communicated the specific goal politely.",
+      "I stated when the symptom started and confirmed the instruction.",
+      "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+    ],
+    "hints": [
+      "Use the reviewed phrase bank, then hide it for independent practice.",
+      "Ask for repetition or clarification if you are unsure."
+    ],
+    "examples": [
+      {
+        "surface": "昨日から喉が痛いです。",
+        "reading": "きのうからのどがいたいです。",
+        "translation": "My throat has been sore since yesterday."
+      },
+      {
+        "surface": "はい、保険証はこちらです。食後ですね。",
+        "reading": "はい、ほけんしょうわこちらです。しょくごですね。",
+        "translation": "Yes, here is my health insurance card. After meals, right?"
+      }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "lesson-clinic-pharmacy-review-phrase",
+      "targetKind": "phrase",
+      "targetId": "lesson-clinic-pharmacy-phrase-2",
+      "skill": "Describe a basic symptom at a clinic reception and confirm medicine timing at a pharmacy in an illustrative exchange.",
+      "direction": "meaning-to-japanese"
+    },
+    {
+      "id": "lesson-clinic-pharmacy-review-completion",
+      "targetKind": "exercise",
+      "targetId": "lesson-clinic-pharmacy-completion",
+      "skill": "Describe a basic symptom at a clinic reception and confirm medicine timing at a pharmacy in an illustrative exchange.",
+      "direction": "context-to-utterance"
+    }
+  ],
+  "conversationGraph": {
+    "entryNodeId": "lesson-clinic-pharmacy-prompt",
+    "nodes": [
+      {
+        "id": "lesson-clinic-pharmacy-prompt",
+        "type": "prompt",
+        "speakerId": "lesson-clinic-pharmacy-colleague",
+        "text": {
+          "surface": "今日はどうされましたか。",
+          "reading": "きょうわどうされましたか。",
+          "translation": "What brings you in today?"
+        },
+        "nextNodeId": "lesson-clinic-pharmacy-reply"
+      },
+      {
+        "id": "lesson-clinic-pharmacy-reply",
+        "type": "completionInteraction",
+        "exerciseId": "lesson-clinic-pharmacy-completion",
+        "feedback": "You expressed the target intent using the constrained example. Read the partner’s response next.",
+        "nextNodeId": "lesson-clinic-pharmacy-follow"
+      },
+      {
+        "id": "lesson-clinic-pharmacy-follow",
+        "type": "prompt",
+        "speakerId": "lesson-clinic-pharmacy-colleague",
+        "text": {
+          "surface": "保険証はお持ちですか。",
+          "reading": "ほけんしょうわおもちですか。",
+          "translation": "Do you have your health insurance card with you?"
+        },
+        "nextNodeId": "lesson-clinic-pharmacy-end"
+      },
+      {
+        "id": "lesson-clinic-pharmacy-end",
+        "type": "terminal",
+        "message": "The partner responded. Try the remaining exchange in your own words and self-assess your communication goal."
+      }
+    ]
+  },
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-03",
+    "reviewNote": "o04-expansion.md",
+    "provenance": "Original agent-authored instructional scenario and text; no external lesson passage or audio copied.",
+    "rights": "publishable",
+    "rightsBasis": "Original project-authored text approved publishable; no third-party passage or recording included."
+  }
+}

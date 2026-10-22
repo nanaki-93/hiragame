@@ -1,0 +1,291 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 13,
+  "id": "lesson-konbini-dining",
+  "topicId": "life-konbini-dining",
+  "title": "Convenience store and dining",
+  "situation": "A fictional everyday service exchange. Answer checkout questions at a convenience store and request warming or a bag politely.",
+  "communicationGoal": "Answer checkout questions at a convenience store and order a meal politely in an illustrative exchange.",
+  "difficulty": "beginner",
+  "durationMinutes": 8,
+  "prerequisiteLessonIds": [],
+  "dialogue": {
+    "speakers": [
+      {
+        "id": "lesson-konbini-dining-colleague",
+        "name": "Partner",
+        "role": "Store staff member"
+      },
+      {
+        "id": "lesson-konbini-dining-learner",
+        "name": "You",
+        "role": "Learner in an illustrative exchange"
+      }
+    ],
+    "turns": [
+      {
+        "id": "lesson-konbini-dining-turn-1",
+        "speakerId": "lesson-konbini-dining-colleague",
+        "text": {
+          "surface": "お弁当は温めますか。",
+          "reading": "おべんとうわあたためますか。",
+          "translation": "Would you like your bento warmed up?"
+        }
+      },
+      {
+        "id": "lesson-konbini-dining-turn-2",
+        "speakerId": "lesson-konbini-dining-learner",
+        "text": {
+          "surface": "はい、温めてください。",
+          "reading": "はい、あたためてください。",
+          "translation": "Yes, please warm it up."
+        }
+      },
+      {
+        "id": "lesson-konbini-dining-turn-3",
+        "speakerId": "lesson-konbini-dining-colleague",
+        "text": {
+          "surface": "袋はご利用ですか。",
+          "reading": "ふくろわごりようですか。",
+          "translation": "Would you like a plastic bag?"
+        }
+      },
+      {
+        "id": "lesson-konbini-dining-turn-4",
+        "speakerId": "lesson-konbini-dining-learner",
+        "text": {
+          "surface": "いいえ、袋は大丈夫です。",
+          "reading": "いいえ、ふくろわだいじょうぶです。",
+          "translation": "No thank you, I am fine without a bag."
+        }
+      },
+      {
+        "id": "lesson-konbini-dining-turn-5",
+        "speakerId": "lesson-konbini-dining-colleague",
+        "text": {
+          "surface": "お支払いはどうなさいますか。",
+          "reading": "おしはらいわどうなさいますか。",
+          "translation": "How would you like to pay?"
+        }
+      },
+      {
+        "id": "lesson-konbini-dining-turn-6",
+        "speakerId": "lesson-konbini-dining-learner",
+        "text": {
+          "surface": "カードでお願いします。",
+          "reading": "かーどでおねがいします。",
+          "translation": "By card, please."
+        }
+      }
+    ]
+  },
+  "phrases": [
+    {
+      "id": "lesson-konbini-dining-phrase-2",
+      "text": {
+        "surface": "はい、温めてください。",
+        "reading": "はい、あたためてください。",
+        "translation": "Yes, please warm it up."
+      },
+      "sourceTurnId": "lesson-konbini-dining-turn-2",
+      "usage": "Answer checkout questions at a convenience store and order a meal politely in an illustrative exchange.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-konbini-dining-phrase-4",
+      "text": {
+        "surface": "いいえ、袋は大丈夫です。",
+        "reading": "いいえ、ふくろわだいじょうぶです。",
+        "translation": "No thank you, I am fine without a bag."
+      },
+      "sourceTurnId": "lesson-konbini-dining-turn-4",
+      "usage": "Answer checkout questions at a convenience store and order a meal politely in an illustrative exchange.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-konbini-dining-phrase-6",
+      "text": {
+        "surface": "カードでお願いします。",
+        "reading": "かーどでおねがいします。",
+        "translation": "By card, please."
+      },
+      "sourceTurnId": "lesson-konbini-dining-turn-6",
+      "usage": "Answer checkout questions at a convenience store and order a meal politely in an illustrative exchange.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    }
+  ],
+  "grammarNotes": [
+    {
+      "id": "lesson-konbini-dining-grammar",
+      "explanation": "〜てください politely requests an action (温めてください, please warm it); 大丈夫です politely declines an optional item; 〜でお願いします specifies the payment method. This checkout exchange is fictional practice.",
+      "examples": [
+        {
+          "surface": "はい、温めてください。",
+          "reading": "はい、あたためてください。",
+          "translation": "Yes, please warm it up."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lesson-konbini-dining-choice",
+      "type": "choice",
+      "prompt": "Which response directly serves this goal: Answer checkout questions at a convenience store and order a meal politely in an illustrative exchange.",
+      "options": [
+        {
+          "id": "lesson-konbini-dining-target",
+          "text": {
+            "surface": "はい、温めてください。",
+            "reading": "はい、あたためてください。",
+            "translation": "Yes, please warm it up."
+          }
+        },
+        {
+          "id": "lesson-konbini-dining-acknowledge",
+          "text": {
+            "surface": "分かりました。",
+            "reading": "わかりました。",
+            "translation": "Understood."
+          }
+        }
+      ],
+      "correctOptionId": "lesson-konbini-dining-target",
+      "explanation": "The target response states or asks for the specific information. Acknowledgement alone does not express that information. Other natural responses may also work in open conversation."
+    },
+    {
+      "id": "lesson-konbini-dining-completion",
+      "type": "completion",
+      "prompt": "Complete the specific response from the dialogue. Use the reviewed word for: plastic bag.",
+      "template": "いいえ、{blank}は大丈夫です。",
+      "acceptedAnswers": [
+        {
+          "surface": "袋",
+          "reading": "ふくろ",
+          "translation": "bag"
+        },
+        {
+          "surface": "ふくろ",
+          "reading": "ふくろ",
+          "translation": "bag (kana)"
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "いいえ、袋は大丈夫です。",
+        "reading": "いいえ、ふくろわだいじょうぶです。",
+        "translation": "No thank you, I am fine without a bag."
+      },
+      "explanation": "The accepted forms fill this one constrained blank. 袋は大丈夫です politely declines a shopping bag at checkout."
+    },
+    {
+      "id": "lesson-konbini-dining-production",
+      "type": "production",
+      "prompt": "Answer checkout questions at a convenience store and order a meal politely in an illustrative exchange. Use your own words and truthful or clearly fictional practice details.",
+      "exampleResponses": [
+        {
+          "surface": "はい、温めてください。",
+          "reading": "はい、あたためてください。",
+          "translation": "Yes, please warm it up."
+        },
+        {
+          "surface": "いいえ、袋は大丈夫です。カードでお願いします。",
+          "reading": "いいえ、ふくろわだいじょうぶです。かーどでおねがいします。",
+          "translation": "No thank you, I am fine without a bag. By card, please."
+        }
+      ],
+      "criteria": [
+        "I communicated the specific goal politely.",
+        "I answered the staff member's question clearly and stated my payment or order preference.",
+        "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+      ]
+    }
+  ],
+  "rolePlay": {
+    "task": "Answer checkout questions at a convenience store and order a meal politely in an illustrative exchange. Respond to a partner, then complete the payment request.",
+    "criteria": [
+      "I communicated the specific goal politely.",
+      "I answered the staff member's question clearly and stated my payment or order preference.",
+      "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+    ],
+    "hints": [
+      "Use the reviewed phrase bank, then hide it for independent practice.",
+      "Ask for repetition or clarification if you are unsure."
+    ],
+    "examples": [
+      {
+        "surface": "はい、温めてください。",
+        "reading": "はい、あたためてください。",
+        "translation": "Yes, please warm it up."
+      },
+      {
+        "surface": "いいえ、袋は大丈夫です。カードでお願いします。",
+        "reading": "いいえ、ふくろわだいじょうぶです。かーどでおねがいします。",
+        "translation": "No thank you, I am fine without a bag. By card, please."
+      }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "lesson-konbini-dining-review-phrase",
+      "targetKind": "phrase",
+      "targetId": "lesson-konbini-dining-phrase-2",
+      "skill": "Answer checkout questions at a convenience store and order a meal politely in an illustrative exchange.",
+      "direction": "meaning-to-japanese"
+    },
+    {
+      "id": "lesson-konbini-dining-review-completion",
+      "targetKind": "exercise",
+      "targetId": "lesson-konbini-dining-completion",
+      "skill": "Answer checkout questions at a convenience store and order a meal politely in an illustrative exchange.",
+      "direction": "context-to-utterance"
+    }
+  ],
+  "conversationGraph": {
+    "entryNodeId": "lesson-konbini-dining-prompt",
+    "nodes": [
+      {
+        "id": "lesson-konbini-dining-prompt",
+        "type": "prompt",
+        "speakerId": "lesson-konbini-dining-colleague",
+        "text": {
+          "surface": "袋はご利用ですか。",
+          "reading": "ふくろわごりようですか。",
+          "translation": "Would you like a plastic bag?"
+        },
+        "nextNodeId": "lesson-konbini-dining-reply"
+      },
+      {
+        "id": "lesson-konbini-dining-reply",
+        "type": "completionInteraction",
+        "exerciseId": "lesson-konbini-dining-completion",
+        "feedback": "You expressed the target intent using the constrained example. Read the partner’s response next.",
+        "nextNodeId": "lesson-konbini-dining-follow"
+      },
+      {
+        "id": "lesson-konbini-dining-follow",
+        "type": "prompt",
+        "speakerId": "lesson-konbini-dining-colleague",
+        "text": {
+          "surface": "お支払いはどうなさいますか。",
+          "reading": "おしはらいわどうなさいますか。",
+          "translation": "How would you like to pay?"
+        },
+        "nextNodeId": "lesson-konbini-dining-end"
+      },
+      {
+        "id": "lesson-konbini-dining-end",
+        "type": "terminal",
+        "message": "The partner responded. Try the remaining exchange in your own words and self-assess your communication goal."
+      }
+    ]
+  },
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-03",
+    "reviewNote": "o04-expansion.md",
+    "provenance": "Original agent-authored instructional scenario and text; no external lesson passage or audio copied.",
+    "rights": "publishable",
+    "rightsBasis": "Original project-authored text approved publishable; no third-party passage or recording included."
+  }
+}
