@@ -906,7 +906,7 @@ class LocalPracticeCoordinatorTest {
             "PracticeCommand.Previous(session.id, session.revision)", "PracticeCommand.Next(session.id, session.revision)",
             "PracticeCommand.Return(session.id, session.revision)", "PracticeCommand.Restart(session.id, session.revision, session.id)",
             "PracticeCommand.Leave(session.id, session.revision)", "counts.skipped", "counts.revealed", "counts.selfAssessed",
-            "AuthoredFeedbackContent(outcome.feedback, studyAids)", "Session outcomes", "typed responses are not retained", "not automatically graded")) {
+            "AuthoredFeedbackContent(outcome.feedback, studyAids)", "Session details", "Responses are not retained", "not automatically graded")) {
             assertTrue(required in home, "Home missing feedback/navigation feature $required")
         }
         val promptUi = home.substringAfter("private fun PracticePrompt(").substringBefore("private fun SessionCounts(")
@@ -931,7 +931,7 @@ class LocalPracticeCoordinatorTest {
         }
         for (required in listOf("JapanesePassage(japanese, showRuby = visibleAids(japanese, studyAids, answerHidden = true).ruby)",
             "JapanesePassage(exercise.stimulus, showRuby = visibleAids(exercise.stimulus, studyAids, answerHidden = true).ruby)",
-            "Answer-identifying study aids are withheld", "JapaneseStudyText(example, studyAids)")) {
+            "Readings and hints appear after you check, skip, or reveal", "JapaneseStudyText(example, studyAids)")) {
             assertTrue(required in promptUi, "Unresolved prompt must not expose an aid: $required")
         }
         assertTrue("japanese.translation" !in promptUi && "stimulus.reading" !in promptUi && "stimulus.romaji" !in promptUi)
@@ -962,7 +962,7 @@ class LocalPracticeCoordinatorTest {
         assertTrue("LocalSaveStatus()" in layout, "Save status must render outside content loading states")
         assertTrue("SavePreferencesSection(LocalProgress.current)" in settings, "Settings must retain save controls")
         assertTrue("not saved" !in home && "lost when" !in home, "Home still claims checkpoints are never saved")
-        val launchUi = home.substringAfter("val checkpoints = coordinator.savedCheckpoints()").substringBefore("} else {\n                            // Commands capture")
+        val launchUi = home.substringAfter("val checkpoints = coordinator.savedCheckpoints()").substringBefore("// Commands capture")
         for (required in listOf("PracticeCheckpointResolution.Available", "PracticeCheckpointResolution.Unavailable",
             "CheckpointView.COMPLETE", "coordinator.resume(set.id)", "coordinator.start(set.id)",
             "coordinator.startFreshAfterUnavailable(setId)", "resolution.missingSet", "checkpoint is preserved",
@@ -1017,10 +1017,13 @@ class LocalPracticeCoordinatorTest {
         val navigation = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/components/widgets/LearningNavigation.kt"), "utf8") as String
         assertTrue("LearningNavigation()" in layout && "\"/settings\"" in navigation,
             "Recovery controls must be reachable even on content load failure")
-        assertTrue("ColorMode.current == ColorMode.DARK" in home &&
-            "Modifier.backgroundColor(Colors.DarkBackground)" in home &&
-            "Modifier.backgroundColor(Colors.DarkCardBackground).color(Colors.DarkText)" in home,
-            "Selecting a mode must visibly change the opaque Home surfaces, not just the Silk background")
+        val app = fs.readFileSync(path.resolve(root, "site/src/jsMain/kotlin/com/github/nanaki_93/AppEntry.kt"), "utf8") as String
+        val css = fs.readFileSync(path.resolve(root, "site/src/jsMain/resources/public/learning.css"), "utf8") as String
+        val tokens = fs.readFileSync(path.resolve(root, ".mockups/design-system/tokens.css"), "utf8") as String
+        assertTrue("setAttribute(\"data-theme\", if (mode == ColorMode.DARK) \"dark\" else \"light\")" in app &&
+            "[data-theme=\"dark\"]" in tokens && "--surface-elevated: var(--color-bg-secondary)" in css &&
+            "background: var(--color-bg-primary)" in css && "background: var(--color-bg-secondary)" in css,
+            "The selected theme must reach the page and card surfaces through the canonical CSS tokens")
         val reviewUi = home.substringAfter("is SessionView.Review -> {").substringBefore("SessionView.Complete -> {")
         for (forbidden in listOf("PracticeCommand.Submit(", "PracticeCommand.Retry(", "PracticeCommand.Continue(", "PracticeCommand.Skip(", "PracticeCommand.Reveal(")) {
             assertTrue(forbidden !in reviewUi, "History must be read-only: $forbidden")

@@ -66,15 +66,17 @@ fun ReviewPage() {
                         }
                         current.expired -> P { Text("Progress was replaced or reloaded. Start a fresh review to use the current schedule.") }
                         current.complete -> Section(attrs = { classes("empty-state") }) {
+                            FocusStudyHeading("review-heading", "complete")
                             StudyIcon("check")
-                            H2 { Text("A little practice, well spent.") }
+                            H2(attrs = { id("review-heading"); attr("tabindex", "-1") }) { Text("A little practice, well spent.") }
                             P { Text("${current.index} phrases revisited. Again returns in 10 minutes; other intervals range from 1 to 30 days.") }
                             Link("/") { Text("Back to my path →") }
                         }
                         else -> current.current?.let { planned ->
                             val card = planned.card
+                            FocusStudyHeading("review-heading", current.index to current.revealed)
                             StudyProgress("Review phrases completed", current.index, current.plan.size)
-                            H2 { Text("Recall ${current.index + 1} of ${current.plan.size}") }
+                            H2(attrs = { id("review-heading"); attr("tabindex", "-1") }) { Text("Recall ${current.index + 1} of ${current.plan.size}") }
                             P(attrs = { classes("muted") }) { Text(card.context) }
                             P(attrs = { classes("review-cue") }) { Text(card.cue) }
                             planned.previous?.dueAtEpochMs?.let { dueAt ->

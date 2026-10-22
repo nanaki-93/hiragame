@@ -1,12 +1,23 @@
 package com.github.nanaki_93.components.widgets
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import com.github.nanaki_93.content.DocumentKind
 import com.github.nanaki_93.content.ZeroToJapanRoadmap
 import com.varabyte.kobweb.compose.ui.Modifier
 import com.varabyte.kobweb.compose.ui.attrsModifier
 import com.varabyte.kobweb.silk.components.navigation.Link
 import org.jetbrains.compose.web.dom.*
+import kotlinx.browser.document
+import org.w3c.dom.HTMLElement
+
+/** Move keyboard/screen-reader context only when the study screen changes, never while typing. */
+@Composable
+internal fun FocusStudyHeading(targetId: String, screenKey: Any?) {
+    LaunchedEffect(targetId, screenKey) {
+        (document.getElementById(targetId) as? HTMLElement)?.focus()
+    }
+}
 
 @Composable
 internal fun StudyWelcome() {

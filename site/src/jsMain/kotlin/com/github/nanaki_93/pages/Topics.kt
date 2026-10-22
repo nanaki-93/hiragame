@@ -10,6 +10,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.github.nanaki_93.LocalProgress
 import com.github.nanaki_93.components.widgets.StudyIcon
+import com.github.nanaki_93.components.widgets.FocusStudyHeading
 import com.github.nanaki_93.components.widgets.PrimaryButton
 import com.github.nanaki_93.components.widgets.PreviewJapaneseText
 import com.github.nanaki_93.components.widgets.SecondaryButton
@@ -206,8 +207,9 @@ private fun LessonPreview(
     onSupportNotice: (String?) -> Unit,
     onClose: () -> Unit,
 ) {
+    FocusStudyHeading("lesson-preview-title", lesson.id)
     Section(attrs = { style { property("overflow-wrap", "anywhere"); property("min-width", "0") } }) {
-        H2 { Text(lesson.title) }
+        H2(attrs = { id("lesson-preview-title"); attr("tabindex", "-1") }) { Text(lesson.title) }
         P { Text("Take a look before you begin. Your saved place stays as it is.") }
         P { Text(lessonProgressLabel(card.status)) }
         if (card.status.checkpointAvailable == false) P(attrs = { attr("role", "status") }) {

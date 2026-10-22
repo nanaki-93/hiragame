@@ -19,6 +19,7 @@ import com.github.nanaki_93.components.widgets.JapaneseStudyText
 import com.github.nanaki_93.components.widgets.PreviewJapaneseText
 import com.github.nanaki_93.components.widgets.visibleAids
 import com.github.nanaki_93.components.widgets.StudyProgress
+import com.github.nanaki_93.components.widgets.FocusStudyHeading
 import com.github.nanaki_93.components.widgets.StudyIcon
 import com.github.nanaki_93.components.widgets.PrimaryButton
 import com.github.nanaki_93.components.widgets.SecondaryButton
@@ -178,6 +179,7 @@ private fun LessonPlayer(
     val session = active.session
     val stage = session.plan.stage(session.stage)
     val stageNumber = session.plan.stages.indexOf(stage) + 1
+    FocusStudyHeading("lesson-current-step", listOf(session.id, session.stage, session.itemIndex, session.outcome))
     Section(attrs = { style { property("overflow-wrap", "anywhere"); property("min-width", "0") } }) {
         H2 { Text(lesson.title) }
         Ol(attrs = { classes("lesson-stepper"); attr("aria-label", "Lesson stages") }) {
@@ -194,7 +196,7 @@ private fun LessonPlayer(
             }
         }
         StudyProgress("Lesson stages completed", if (active.finished) session.plan.stages.size else stageNumber - 1, session.plan.stages.size)
-        P(attrs = { classes("muted") }) { Text("Step $stageNumber of ${session.plan.stages.size} · ${stageLabel(session.stage)}" +
+        P(attrs = { classes("muted"); id("lesson-current-step"); attr("tabindex", "-1") }) { Text("Step $stageNumber of ${session.plan.stages.size} · ${stageLabel(session.stage)}" +
             (session.itemIndex?.let { " · Item ${it + 1} of ${stage.items.size}" } ?: "")) }
         session.notice?.let { P(attrs = { attr("role", "status") }) { Text(it) } }
         when (session.stage) {

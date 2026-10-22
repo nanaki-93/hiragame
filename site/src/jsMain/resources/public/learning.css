@@ -324,3 +324,10 @@ main .review-footnote { margin-top: 24px; font-size: 11px; color: var(--color-te
 .catalog-suggestion .study-icon { color: var(--color-success); }
 /* Compose buttons remain inline so related actions share one calm action row. */
 button { display: inline-flex !important; align-items: center; justify-content: center; }
+@media (max-width: 360px) {
+  .learning-nav a { min-width: 0; white-space: nowrap; padding-inline: 6px; }
+  .learning-nav .study-icon { display: none; }
+}
+/* Dialogue and preview passages stay readable without using the oversized quiz glyphs. */
+.lesson-page p > [lang="ja"]:not(.practice-japanese),
+.catalog-page p > [lang="ja"]:not(.practice-japanese) { font-size: 1.3rem; line-height: 2; }

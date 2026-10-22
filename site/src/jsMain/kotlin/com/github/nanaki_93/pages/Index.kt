@@ -27,6 +27,7 @@ import com.github.nanaki_93.practice.PracticeSession
 import com.github.nanaki_93.components.widgets.StudyWelcome
 import com.github.nanaki_93.components.widgets.TodayStudySection
 import com.github.nanaki_93.components.widgets.StudyProgress
+import com.github.nanaki_93.components.widgets.FocusStudyHeading
 import com.github.nanaki_93.components.widgets.PrimaryButton
 import com.github.nanaki_93.components.widgets.AuthoredFeedbackContent
 import com.github.nanaki_93.components.widgets.JapaneseAnswerInput
@@ -246,7 +247,8 @@ fun HomePage() {
                             })
                         }
                         SessionView.Complete -> {
-                            H2 { Text("Session complete") }
+                            FocusStudyHeading("exercise-heading", "complete-${session.id}")
+                            H2(attrs = { id("exercise-heading"); attr("tabindex", "-1") }) { Text("Session complete") }
                             P { Text("This run's checkpoint is saved locally when possible. Typed responses are not retained; this summary does not measure mastery or proficiency.") }
                             SecondaryButton("Review previous exercise", onClick = {
                                 send(PracticeCommand.Previous(session.id, session.revision))
@@ -747,6 +749,7 @@ private fun PracticePrompt(
     session: PracticeSession, view: SessionView.Prompt, studyAids: SavePreferences,
     send: (PracticeCommand) -> Unit, submit: (PracticeAnswer) -> Unit,
 ) {
+    FocusStudyHeading("exercise-heading", session.id to view.index)
     val exercise = session.plan[view.index].exercise
     // This composable leaves composition on feedback; retry or another exercise gets fresh drafts.
     var draft by remember(session.id, exercise.id) { mutableStateOf("") }
@@ -869,13 +872,14 @@ private fun SessionCounts(session: PracticeSession) {
     }
     TagElement<HTMLElement>("details", applyAttrs = { classes("session-details") }) {
         TagElement<HTMLElement>("summary", applyAttrs = {}) { Text("Session details") }
-        P { Text("${counts.correct} correct · ${counts.incorrect} incorrect · ${counts.skipped} skipped · ${counts.revealed} revealed · ${counts.selfAssessed} self-assessed. Responses are not saved.") }
+        P { Text("${counts.correct} correct · ${counts.incorrect} incorrect · ${counts.skipped} skipped · ${counts.revealed} revealed · ${counts.selfAssessed} self-assessed. Responses are not retained.") }
     }
 }
 
 /** The stored outcome is read-only in review; only the active feedback view offers Retry/Continue. */
 @Composable
 private fun PracticeFeedback(session: PracticeSession, index: Int, reviewing: Boolean, studyAids: SavePreferences) {
+    FocusStudyHeading("exercise-heading", session.id to index)
     val outcome = session.outcomes[index] ?: return
     H2(attrs = { id("exercise-heading"); attr("tabindex", "-1") }) { Text(if (reviewing) "Review exercise ${index + 1} of ${session.plan.size}" else "Feedback · exercise ${index + 1} of ${session.plan.size}") }
     val exercise = session.plan[index].exercise
