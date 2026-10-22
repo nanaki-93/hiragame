@@ -456,6 +456,30 @@
       "path": "practice/vocabulary-workplace-reading.json"
     },
     {
+      "id": "practice-foundation-numbers-time-reading",
+      "kind": "practice",
+      "topicId": "foundational-vocabulary",
+      "path": "practice/foundation-numbers-time-reading.json"
+    },
+    {
+      "id": "practice-foundation-grammar-particles-choice",
+      "kind": "practice",
+      "topicId": "foundational-vocabulary",
+      "path": "practice/foundation-grammar-particles-choice.json"
+    },
+    {
+      "id": "practice-foundation-japan-survival-reading",
+      "kind": "practice",
+      "topicId": "foundational-vocabulary",
+      "path": "practice/foundation-japan-survival-reading.json"
+    },
+    {
+      "id": "practice-foundation-engineering-actions-reading",
+      "kind": "practice",
+      "topicId": "foundational-vocabulary",
+      "path": "practice/foundation-engineering-actions-reading.json"
+    },
+    {
       "id": "lesson-requirements-clarification",
       "topicId": "workplace-requirements-clarification",
       "kind": "lesson",

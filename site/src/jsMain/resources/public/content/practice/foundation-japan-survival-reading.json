@@ -1,0 +1,75 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 13,
+  "id": "practice-foundation-japan-survival-reading",
+  "topicId": "foundational-vocabulary",
+  "title": "Living in Japan: read six survival signs and places",
+  "description": "Read essential station signs, medical places, and city hall terms in hiragana for everyday life in Japan.",
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored short daily-survival cues and explanations; common Japanese sign and institution spellings and meanings are linguistic facts.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-written prompts, translations, contexts and explanations; no copied text, audio or third-party assets."
+  },
+  "reviewItems": [
+    {"id": "review-foundation-survival-entrance", "targetKind": "exercise", "targetId": "exercise-foundation-survival-entrance", "skill": "Read 入口 (entrance) on building and station signs", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-survival-exit", "targetKind": "exercise", "targetId": "exercise-foundation-survival-exit", "skill": "Read 出口 (exit) on transit signs", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-survival-hospital", "targetKind": "exercise", "targetId": "exercise-foundation-survival-hospital", "skill": "Read 病院 (hospital/clinic) when seeking medical care", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-survival-pharmacy", "targetKind": "exercise", "targetId": "exercise-foundation-survival-pharmacy", "skill": "Read 薬局 (pharmacy) when picking up medicine", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-survival-city-hall", "targetKind": "exercise", "targetId": "exercise-foundation-survival-city-hall", "skill": "Read 市役所 (city hall) for resident registration", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-survival-address", "targetKind": "exercise", "targetId": "exercise-foundation-survival-address", "skill": "Read 住所 (address) on resident and housing forms", "direction": "written-word-to-hiragana"}
+  ],
+  "exercises": [
+    {
+      "id": "exercise-foundation-survival-entrance", "type": "reading",
+      "prompt": "Outside a station or municipal building, read this sign marking where to enter and type its reading in hiragana.",
+      "stimulus": {"surface": "入口", "reading": "いりぐち", "translation": "entrance", "context": "Follow the entrance sign into a building or station."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "いりぐち", "reading": "いりぐち", "translation": "entrance", "romaji": "iriguchi", "context": "Follow the entrance sign into a building or station."}}],
+      "explanation": "入口 is read いりぐち and means entrance; 口 becomes voiced ぐち in this compound."
+    },
+    {
+      "id": "exercise-foundation-survival-exit", "type": "reading",
+      "prompt": "Inside a train station, read this yellow sign pointing the way out and type its reading in hiragana.",
+      "stimulus": {"surface": "出口", "reading": "でぐち", "translation": "exit", "context": "Check which station exit is closest to your destination."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "でぐち", "reading": "でぐち", "translation": "exit", "romaji": "deguchi", "context": "Check which station exit is closest to your destination."}}],
+      "explanation": "出口 is read でぐち and means exit; station signs across Japan pair 出口 with exit numbers or directions."
+    },
+    {
+      "id": "exercise-foundation-survival-hospital", "type": "reading",
+      "prompt": "When you feel unwell and need to see a doctor, read this word and type its reading in hiragana.",
+      "stimulus": {"surface": "病院", "reading": "びょういん", "translation": "hospital or clinic", "context": "Look for a hospital or medical clinic in your neighborhood."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "びょういん", "reading": "びょういん", "translation": "hospital or clinic", "romaji": "byouin", "context": "Look for a hospital or medical clinic in your neighborhood."}}],
+      "explanation": "病院 is read びょういん and means hospital or medical clinic; note contracted びょ followed by う."
+    },
+    {
+      "id": "exercise-foundation-survival-pharmacy", "type": "reading",
+      "prompt": "After receiving a prescription or looking for cold medicine, read this storefront sign and type its reading in hiragana.",
+      "stimulus": {"surface": "薬局", "reading": "やっきょく", "translation": "pharmacy", "context": "Bring a prescription to the pharmacy."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "やっきょく", "reading": "やっきょく", "translation": "pharmacy", "romaji": "yakkyoku", "context": "Bring a prescription to the pharmacy."}}],
+      "explanation": "薬局 is read やっきょく and means pharmacy; small っ doubles the k sound before contracted きょ."
+    },
+    {
+      "id": "exercise-foundation-survival-city-hall", "type": "reading",
+      "prompt": "When registering your address after moving to Japan, read this municipal office name and type its reading in hiragana.",
+      "stimulus": {"surface": "市役所", "reading": "しやくしょ", "translation": "city hall or municipal office", "context": "Visit city hall to submit a resident registration form."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "しやくしょ", "reading": "しやくしょ", "translation": "city hall or municipal office", "romaji": "shiyakusho", "context": "Visit city hall to submit a resident registration form."}}],
+      "explanation": "市役所 is read しやくしょ and means city hall or municipal office; note full-sized や in やく and small ょ in しょ."
+    },
+    {
+      "id": "exercise-foundation-survival-address", "type": "reading",
+      "prompt": "On a resident registration or apartment application form, read this field label for where you live and type its reading in hiragana.",
+      "stimulus": {"surface": "住所", "reading": "じゅうしょ", "translation": "address", "context": "Write your current address on a city hall or bank form."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "じゅうしょ", "reading": "じゅうしょ", "translation": "address", "romaji": "juusho", "context": "Write your current address on a city hall or bank form."}}],
+      "explanation": "住所 is read じゅうしょ and means residential address; じゅ is lengthened by う."
+    }
+  ]
+}

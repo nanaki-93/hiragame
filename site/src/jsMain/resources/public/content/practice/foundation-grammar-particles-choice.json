@@ -1,0 +1,93 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 13,
+  "id": "practice-foundation-grammar-particles-choice",
+  "topicId": "foundational-vocabulary",
+  "title": "Grammar bridge: core particles and polite endings",
+  "description": "Choose the right particle or polite verb form (は, を, に, で, ます, ています) for everyday and workplace sentences.",
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored beginner grammar-bridge prompts, options and explanations; core Japanese particles and polite endings are linguistic facts.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-written prompts, translations, contexts and explanations; no copied text, audio or third-party assets."
+  },
+  "reviewItems": [
+    {"id": "review-foundation-grammar-topic-wa", "targetKind": "exercise", "targetId": "exercise-foundation-grammar-topic-wa", "skill": "Select topic particle は in AはBです", "direction": "function-to-particle"},
+    {"id": "review-foundation-grammar-object-wo", "targetKind": "exercise", "targetId": "exercise-foundation-grammar-object-wo", "skill": "Select direct object particle を before an action verb", "direction": "function-to-particle"},
+    {"id": "review-foundation-grammar-time-ni", "targetKind": "exercise", "targetId": "exercise-foundation-grammar-time-ni", "skill": "Select particle に for specific clock time or destination", "direction": "function-to-particle"},
+    {"id": "review-foundation-grammar-means-de", "targetKind": "exercise", "targetId": "exercise-foundation-grammar-means-de", "skill": "Select particle で for place of action or transport means", "direction": "function-to-particle"},
+    {"id": "review-foundation-grammar-polite-masen", "targetKind": "exercise", "targetId": "exercise-foundation-grammar-polite-masen", "skill": "Select polite negative わかりません when something is unclear", "direction": "intent-to-polite-verb"},
+    {"id": "review-foundation-grammar-ongoing-teimasu", "targetKind": "exercise", "targetId": "exercise-foundation-grammar-ongoing-teimasu", "skill": "Select ongoing ています form for work in progress", "direction": "intent-to-polite-verb"}
+  ],
+  "exercises": [
+    {
+      "id": "exercise-foundation-grammar-topic-wa", "type": "choice",
+      "prompt": "You want to set ‘the meeting’ (会議 / かいぎ) as the topic in ‘The meeting is at 3 o'clock’ (会議___三時です). Which particle marks the topic?",
+      "options": [
+        {"id": "option-foundation-grammar-wa-correct", "text": {"surface": "は", "reading": "わ", "translation": "topic particle (pronounced wa)"}},
+        {"id": "option-foundation-grammar-wa-wo", "text": {"surface": "を", "reading": "お", "translation": "direct object particle"}},
+        {"id": "option-foundation-grammar-wa-de", "text": {"surface": "で", "reading": "で", "translation": "place of action or means particle"}}
+      ],
+      "correctOptionId": "option-foundation-grammar-wa-correct",
+      "explanation": "The particle は (written with the hiragana ha sign, pronounced wa) marks the sentence topic in AはBです."
+    },
+    {
+      "id": "exercise-foundation-grammar-object-wo", "type": "choice",
+      "prompt": "You want to say ‘check the materials’ (資料___確認します). Which particle marks 資料 (materials) as the direct object of the verb?",
+      "options": [
+        {"id": "option-foundation-grammar-wo-ni", "text": {"surface": "に", "reading": "に", "translation": "time or destination particle"}},
+        {"id": "option-foundation-grammar-wo-correct", "text": {"surface": "を", "reading": "お", "translation": "direct object particle"}},
+        {"id": "option-foundation-grammar-wo-no", "text": {"surface": "の", "reading": "の", "translation": "noun-linking particle"}}
+      ],
+      "correctOptionId": "option-foundation-grammar-wo-correct",
+      "explanation": "The particle を (pronounced o) marks the direct object of a transitive verb such as 確認します (check)."
+    },
+    {
+      "id": "exercise-foundation-grammar-time-ni", "type": "choice",
+      "prompt": "You want to say a train leaves or a meeting starts ‘at 3 o'clock’ (三時___始まります). Which particle marks a specific clock time or destination?",
+      "options": [
+        {"id": "option-foundation-grammar-ni-correct", "text": {"surface": "に", "reading": "に", "translation": "specific time or destination particle"}},
+        {"id": "option-foundation-grammar-ni-wo", "text": {"surface": "を", "reading": "お", "translation": "direct object particle"}},
+        {"id": "option-foundation-grammar-ni-to", "text": {"surface": "と", "reading": "と", "translation": "with or and particle"}}
+      ],
+      "correctOptionId": "option-foundation-grammar-ni-correct",
+      "explanation": "The particle に marks a specific point in time (such as 三時に, at 3 o'clock) or a destination."
+    },
+    {
+      "id": "exercise-foundation-grammar-means-de", "type": "choice",
+      "prompt": "You want to say you commute ‘by train’ (電車___行きます) or work ‘in the office’. Which particle marks the means/tool or the place where an action happens?",
+      "options": [
+        {"id": "option-foundation-grammar-de-he", "text": {"surface": "へ", "reading": "え", "translation": "direction particle (pronounced e)"}},
+        {"id": "option-foundation-grammar-de-correct", "text": {"surface": "で", "reading": "で", "translation": "place of action or means/tool particle"}},
+        {"id": "option-foundation-grammar-de-ka", "text": {"surface": "か", "reading": "か", "translation": "sentence-final question particle"}}
+      ],
+      "correctOptionId": "option-foundation-grammar-de-correct",
+      "explanation": "The particle で marks the means or tool used (電車で, by train; 日本語で, in Japanese) as well as the location where an active event takes place."
+    },
+    {
+      "id": "exercise-foundation-grammar-polite-masen", "type": "choice",
+      "prompt": "When living or working in Japan as a beginner, which polite verb form means ‘I do not understand / I do not know yet’?",
+      "options": [
+        {"id": "option-foundation-grammar-masen-masu", "text": {"surface": "わかります", "reading": "わかります", "translation": "I understand (polite present affirmative)"}},
+        {"id": "option-foundation-grammar-masen-correct", "text": {"surface": "わかりません", "reading": "わかりません", "translation": "I do not understand / know (polite negative)"}},
+        {"id": "option-foundation-grammar-masen-mashita", "text": {"surface": "わかりました", "reading": "わかりました", "translation": "I understood / got it (polite past)"}}
+      ],
+      "correctOptionId": "option-foundation-grammar-masen-correct",
+      "explanation": "The ending 〜ません is the polite present negative form. わかりません politely states that you do not understand or do not know yet."
+    },
+    {
+      "id": "exercise-foundation-grammar-ongoing-teimasu", "type": "choice",
+      "prompt": "In a standup or housing call, you want to say ‘I am currently checking’ (an action in progress) or ‘I live in Tokyo’ (an ongoing state). Which polite ending expresses an ongoing action or state?",
+      "options": [
+        {"id": "option-foundation-grammar-teimasu-correct", "text": {"surface": "かくにんしています", "reading": "かくにんしています", "translation": "am currently checking (ongoing 〜ています form)"}},
+        {"id": "option-foundation-grammar-teimasu-past", "text": {"surface": "かくにんしました", "reading": "かくにんしました", "translation": "checked (completed past 〜ました form)"}},
+        {"id": "option-foundation-grammar-teimasu-negative", "text": {"surface": "かくにんしません", "reading": "かくにんしません", "translation": "do not check (polite negative 〜ません form)"}}
+      ],
+      "correctOptionId": "option-foundation-grammar-teimasu-correct",
+      "explanation": "The 〜ています form (such as かくにんしています, ‘am checking right now’) expresses an action currently in progress or a continuing state."
+    }
+  ]
+}

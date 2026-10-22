@@ -1,0 +1,75 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 13,
+  "id": "practice-foundation-engineering-actions-reading",
+  "topicId": "foundational-vocabulary",
+  "title": "Software engineering: read six core action terms",
+  "description": "Read high-frequency Japanese software engineering words for fixes, implementation, environment setup, and team sharing.",
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored short engineering-workplace cues and explanations; common word spellings and meanings are linguistic facts.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-written prompts, translations, contexts and explanations; no copied text, audio or third-party assets."
+  },
+  "reviewItems": [
+    {"id": "review-foundation-eng-fix", "targetKind": "exercise", "targetId": "exercise-foundation-eng-fix", "skill": "Read 修正 (fix/revision) in bug and PR updates", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-eng-implement", "targetKind": "exercise", "targetId": "exercise-foundation-eng-implement", "skill": "Read 実装 (implementation) in feature work", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-eng-environment", "targetKind": "exercise", "targetId": "exercise-foundation-eng-environment", "skill": "Read 環境 (environment) in bug reproduction and deployment", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-eng-setting", "targetKind": "exercise", "targetId": "exercise-foundation-eng-setting", "skill": "Read 設定 (configuration/setting) in setup tasks", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-eng-consult", "targetKind": "exercise", "targetId": "exercise-foundation-eng-consult", "skill": "Read 相談 (consultation/discussion) when escalating blockers", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-eng-share", "targetKind": "exercise", "targetId": "exercise-foundation-eng-share", "skill": "Read 共有 (sharing) in team handovers", "direction": "written-word-to-hiragana"}
+  ],
+  "exercises": [
+    {
+      "id": "exercise-foundation-eng-fix", "type": "reading",
+      "prompt": "In a pull request or bug ticket, read this word for a code fix or revision and type its reading in hiragana.",
+      "stimulus": {"surface": "修正", "reading": "しゅうせい", "translation": "fix or revision", "context": "Push a fix for a failing test or review comment."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "しゅうせい", "reading": "しゅうせい", "translation": "fix or revision", "romaji": "shuusei", "context": "Push a fix for a failing test or review comment."}}],
+      "explanation": "修正 is read しゅうせい and means a fix, correction, or revision in code or documents."
+    },
+    {
+      "id": "exercise-foundation-eng-implement", "type": "reading",
+      "prompt": "In a sprint task about building a feature, read this engineering term and type its reading in hiragana.",
+      "stimulus": {"surface": "実装", "reading": "じっそう", "translation": "implementation", "context": "Finish the implementation of an API endpoint."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "じっそう", "reading": "じっそう", "translation": "implementation", "romaji": "jissou", "context": "Finish the implementation of an API endpoint."}}],
+      "explanation": "実装 is read じっそう and means software implementation; small っ doubles the s sound before そう."
+    },
+    {
+      "id": "exercise-foundation-eng-environment", "type": "reading",
+      "prompt": "When describing whether a bug happens in test or production, read this word and type its reading in hiragana.",
+      "stimulus": {"surface": "環境", "reading": "かんきょう", "translation": "environment", "context": "Check the test environment before reproducing an issue."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "かんきょう", "reading": "かんきょう", "translation": "environment", "romaji": "kankyou", "context": "Check the test environment before reproducing an issue."}}],
+      "explanation": "環境 is read かんきょう and means environment (such as テスト環境, test environment, or 本番環境, production environment)."
+    },
+    {
+      "id": "exercise-foundation-eng-setting", "type": "reading",
+      "prompt": "When checking configuration files or app preferences, read this word and type its reading in hiragana.",
+      "stimulus": {"surface": "設定", "reading": "せってい", "translation": "setting or configuration", "context": "Update the environment configuration."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "せってい", "reading": "せってい", "translation": "setting or configuration", "romaji": "settei", "context": "Update the environment configuration."}}],
+      "explanation": "設定 is read せってい and means setting or configuration; small っ doubles the t sound."
+    },
+    {
+      "id": "exercise-foundation-eng-consult", "type": "reading",
+      "prompt": "When you hit a blocker and want to ask a senior engineer or lead for advice, read this word and type its reading in hiragana.",
+      "stimulus": {"surface": "相談", "reading": "そうだん", "translation": "consultation or discussion", "context": "Ask a teammate for a quick consultation about a blocker."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "そうだん", "reading": "そうだん", "translation": "consultation or discussion", "romaji": "soudan", "context": "Ask a teammate for a quick consultation about a blocker."}}],
+      "explanation": "相談 is read そうだん and means consultation or discussing an issue to decide the next step."
+    },
+    {
+      "id": "exercise-foundation-eng-share", "type": "reading",
+      "prompt": "When posting logs, links, or status notes to the team channel, read this word and type its reading in hiragana.",
+      "stimulus": {"surface": "共有", "reading": "きょうゆう", "translation": "sharing", "context": "Share status notes and logs with the team."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "きょうゆう", "reading": "きょうゆう", "translation": "sharing", "romaji": "kyouyuu", "context": "Share status notes and logs with the team."}}],
+      "explanation": "共有 is read きょうゆう and means sharing information, documents, or status across a team."
+    }
+  ]
+}

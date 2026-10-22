@@ -1,0 +1,75 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 13,
+  "id": "practice-foundation-numbers-time-reading",
+  "topicId": "foundational-vocabulary",
+  "title": "Time and schedule: read six essential words",
+  "description": "Read everyday time, day, and week words in hiragana before practising meeting and appointment lessons.",
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-02",
+    "reviewNote": "f05-foundations.md",
+    "provenance": "Independently authored short time and schedule cues and explanations; common word spellings and meanings are linguistic facts, not legacy CSV or mock text.",
+    "rights": "publishable",
+    "rightsBasis": "Original agent-written prompts, translations, contexts and explanations; no copied text, audio or third-party assets."
+  },
+  "reviewItems": [
+    {"id": "review-foundation-time-today", "targetKind": "exercise", "targetId": "exercise-foundation-time-today", "skill": "Read 今日 (today) in daily updates", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-time-now", "targetKind": "exercise", "targetId": "exercise-foundation-time-now", "skill": "Read 今 (now) when checking status", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-time-hour", "targetKind": "exercise", "targetId": "exercise-foundation-time-hour", "skill": "Read 時間 (time/hours) when scheduling", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-time-this-week", "targetKind": "exercise", "targetId": "exercise-foundation-time-this-week", "skill": "Read 今週 (this week) in sprint planning", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-time-next-week", "targetKind": "exercise", "targetId": "exercise-foundation-time-next-week", "skill": "Read 来週 (next week) in appointments", "direction": "written-word-to-hiragana"},
+    {"id": "review-foundation-time-every-day", "targetKind": "exercise", "targetId": "exercise-foundation-time-every-day", "skill": "Read 毎日 (every day) in routines", "direction": "written-word-to-hiragana"}
+  ],
+  "exercises": [
+    {
+      "id": "exercise-foundation-time-today", "type": "reading",
+      "prompt": "In a daily standup message, read this word for the current day and type its reading in hiragana.",
+      "stimulus": {"surface": "今日", "reading": "きょう", "translation": "today", "context": "Share what you are working on today."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "きょう", "reading": "きょう", "translation": "today", "romaji": "kyou", "context": "Share what you are working on today."}}],
+      "explanation": "今日 is read きょう and means today; note the contracted きょ followed by う to lengthen the o sound."
+    },
+    {
+      "id": "exercise-foundation-time-now", "type": "reading",
+      "prompt": "When telling a teammate your current status, read this word and type its reading in hiragana.",
+      "stimulus": {"surface": "今", "reading": "いま", "translation": "now", "context": "Say that you are checking a build right now."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "いま", "reading": "いま", "translation": "now", "romaji": "ima", "context": "Say that you are checking a build right now."}}],
+      "explanation": "今 is read いま and means now; it is used constantly before time expressions and ongoing status updates."
+    },
+    {
+      "id": "exercise-foundation-time-hour", "type": "reading",
+      "prompt": "When checking whether someone has a moment to talk, read this noun and type its reading in hiragana.",
+      "stimulus": {"surface": "時間", "reading": "じかん", "translation": "time or hours", "context": "Check the meeting time or duration."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "じかん", "reading": "じかん", "translation": "time or hours", "romaji": "jikan", "context": "Check the meeting time or duration."}}],
+      "explanation": "時間 is read じかん and means time or a duration in hours."
+    },
+    {
+      "id": "exercise-foundation-time-this-week", "type": "reading",
+      "prompt": "On a sprint board for the current week, read this time expression and type its reading in hiragana.",
+      "stimulus": {"surface": "今週", "reading": "こんしゅう", "translation": "this week", "context": "Confirm tasks planned for this week."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "こんしゅう", "reading": "こんしゅう", "translation": "this week", "romaji": "konshuu", "context": "Confirm tasks planned for this week."}}],
+      "explanation": "今週 is read こんしゅう and means this week; しゅ is followed by う for the long u vowel."
+    },
+    {
+      "id": "exercise-foundation-time-next-week", "type": "reading",
+      "prompt": "When moving an appointment or review to the following week, read this word and type its reading in hiragana.",
+      "stimulus": {"surface": "来週", "reading": "らいしゅう", "translation": "next week", "context": "Schedule a room viewing or release for next week."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "らいしゅう", "reading": "らいしゅう", "translation": "next week", "romaji": "raishuu", "context": "Schedule a room viewing or release for next week."}}],
+      "explanation": "来週 is read らいしゅう and means next week."
+    },
+    {
+      "id": "exercise-foundation-time-every-day", "type": "reading",
+      "prompt": "When describing a daily commute or standup routine, read this word and type its reading in hiragana.",
+      "stimulus": {"surface": "毎日", "reading": "まいにち", "translation": "every day", "context": "Describe a routine that happens every day."},
+      "answerRepresentation": "kana",
+      "acceptedAnswers": [{"type": "kana", "text": {"surface": "まいにち", "reading": "まいにち", "translation": "every day", "romaji": "mainichi", "context": "Describe a routine that happens every day."}}],
+      "explanation": "毎日 is read まいにち and means every day."
+    }
+  ]
+}
