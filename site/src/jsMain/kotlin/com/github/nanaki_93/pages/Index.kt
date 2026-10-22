@@ -128,8 +128,8 @@ fun HomePage() {
                 modifier = Styles.Card.toModifier().then(
                     if (darkMode) Modifier.backgroundColor(Colors.DarkCardBackground).color(Colors.DarkText) else Modifier
                 ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(1.cssRem),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(0.85.cssRem),
             ) {
                 H1 { Text("Hiragame") }
                 Link(path = "/review") { Text("Phrase review") }

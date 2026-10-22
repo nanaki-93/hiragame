@@ -5,6 +5,7 @@ import com.github.nanaki_93.content.DocumentKind
 import com.github.nanaki_93.content.ZeroBeginnerReference
 import com.github.nanaki_93.content.ZeroToJapanRoadmap
 import com.varabyte.kobweb.silk.components.navigation.Link
+import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.H3
 import org.jetbrains.compose.web.dom.P
@@ -21,12 +22,14 @@ internal fun ZeroToJapanRoadmapSection(
     onStartOrResumePractice: (setId: String, resumable: Boolean) -> Unit,
 ) {
     Section(attrs = {
-        style {
-            property("width", "100%")
-            property("text-align", "start")
-            property("overflow-wrap", "anywhere")
-        }
+        classes("roadmap-section")
     }) {
+        Div(attrs = { classes("badge-row") }) {
+            Span(attrs = { classes("stage-badge") }) { Text("0 → Japan Path") }
+            val totalDone = roadmap.phases.sumOf { it.completedCount }
+            val totalItems = roadmap.phases.sumOf { it.totalCount }
+            Span(attrs = { classes("stage-badge") }) { Text("$totalDone / $totalItems units completed") }
+        }
         H2 { Text("From 0 to Working & Living in Japan") }
         P {
             Text("Follow the 4-stage progression from your first Hiragana sign to daily life in Japan and software engineering workplace conversations.")
@@ -34,20 +37,21 @@ internal fun ZeroToJapanRoadmapSection(
 
         roadmap.recommendedPractice?.let { recommended ->
             Section(attrs = {
-                style {
-                    property("border", "1px solid currentColor")
-                    property("border-radius", "0.75rem")
-                    property("padding", "1rem")
-                    property("margin-block", "0.75rem")
-                }
+                classes("recommended-card")
             }) {
+                Div(attrs = { classes("badge-row") }) {
+                    Span(attrs = { classes("stage-badge") }) {
+                        Text(if (recommended.resumable) "In Progress" else "Recommended Next Step")
+                    }
+                    Span(attrs = { classes("stage-badge") }) { Text(recommended.topicTitle) }
+                }
                 H3 {
                     Text(
-                        if (recommended.resumable) "Next recommended step: Resume ${recommended.title}"
-                        else "Next recommended step: ${recommended.title}"
+                        if (recommended.resumable) "Resume: ${recommended.title}"
+                        else recommended.title
                     )
                 }
-                P { Text("${recommended.topicTitle} · ${recommended.exerciseCount} exercises · ${recommended.reason}") }
+                P { Text("${recommended.exerciseCount} exercises · ${recommended.reason}") }
                 P { Text("Goal: ${recommended.description}") }
                 PrimaryButton(
                     text = if (recommended.resumable) "Resume recommended practice" else "Start recommended practice",
@@ -57,52 +61,68 @@ internal fun ZeroToJapanRoadmapSection(
         }
 
         TagElement<HTMLElement>("details", applyAttrs = {
-            style {
-                property("width", "100%")
-                property("text-align", "start")
-                property("margin-block", "0.5rem")
-                property("overflow-wrap", "anywhere")
-            }
+            attr("open", "")
         }) {
             TagElement<HTMLElement>("summary", applyAttrs = {}) {
                 val totalDone = roadmap.phases.sumOf { it.completedCount }
                 val totalItems = roadmap.phases.sumOf { it.totalCount }
                 H3 { Text("4-Stage Curriculum Roadmap ($totalDone / $totalItems completed)") }
             }
-            for (phase in roadmap.phases) {
-                Section(attrs = {
-                    style {
-                        property("border", "1px solid currentColor")
-                        property("border-radius", "0.5rem")
-                        property("padding", "0.75rem")
-                        property("margin-block", "0.5rem")
-                    }
-                }) {
-                    H3 { Text("${phase.title} · ${phase.completedCount} / ${phase.totalCount} completed") }
-                    P { Text(phase.subtitle) }
-                    if (phase.inProgressCount > 0) {
-                        P { Text("${phase.inProgressCount} item(s) currently in progress.") }
-                    }
-                    val nextId = phase.nextItemId
-                    val nextTitle = phase.nextItemTitle
-                    if (nextId != null && nextTitle != null) {
-                        when (phase.nextItemKind) {
-                            DocumentKind.PRACTICE -> {
-                                SecondaryButton(
-                                    text = if (phase.nextItemResumable) "Resume: $nextTitle" else "Start next: $nextTitle",
-                                    onClick = { onStartOrResumePractice(nextId, phase.nextItemResumable) },
-                                )
-                            }
-                            DocumentKind.LESSON -> {
-                                P { Text("Suggested next lesson: $nextTitle") }
-                                Link(path = "/lesson?lessonId=$nextId") {
-                                    Text(if (phase.nextItemResumable) "Open & resume lesson: $nextTitle" else "Open lesson: $nextTitle")
+            Div(attrs = { classes("roadmap-grid") }) {
+                for (phase in roadmap.phases) {
+                    val percent = if (phase.totalCount > 0) (phase.completedCount * 100) / phase.totalCount else 0
+                    Section(attrs = {
+                        classes("phase-card")
+                    }) {
+                        Div {
+                            Div(attrs = { classes("badge-row") }) {
+                                Span(attrs = {
+                                    if (phase.completedCount == phase.totalCount && phase.totalCount > 0) {
+                                        classes("stage-badge", "stage-badge--done")
+                                    } else {
+                                        classes("stage-badge")
+                                    }
+                                }) {
+                                    Text("${phase.completedCount} / ${phase.totalCount} completed")
+                                }
+                                if (phase.inProgressCount > 0) {
+                                    Span(attrs = { classes("stage-badge") }) {
+                                        Text("${phase.inProgressCount} active")
+                                    }
                                 }
                             }
-                            null -> Unit
+                            H3 { Text(phase.title) }
+                            Div(attrs = { classes("progress-track") }) {
+                                Div(attrs = {
+                                    classes("progress-fill")
+                                    style { property("width", "$percent%") }
+                                })
+                            }
+                            P { Text(phase.subtitle) }
                         }
-                    } else if (phase.totalCount > 0) {
-                        P { Text("All items in this stage have been completed at least once.") }
+                        Div {
+                            val nextId = phase.nextItemId
+                            val nextTitle = phase.nextItemTitle
+                            if (nextId != null && nextTitle != null) {
+                                when (phase.nextItemKind) {
+                                    DocumentKind.PRACTICE -> {
+                                        SecondaryButton(
+                                            text = if (phase.nextItemResumable) "Resume: $nextTitle" else "Start next: $nextTitle",
+                                            onClick = { onStartOrResumePractice(nextId, phase.nextItemResumable) },
+                                        )
+                                    }
+                                    DocumentKind.LESSON -> {
+                                        P { Text("Up next: $nextTitle") }
+                                        Link(path = "/lesson?lessonId=$nextId") {
+                                            Text(if (phase.nextItemResumable) "Resume lesson: $nextTitle" else "Open lesson: $nextTitle")
+                                        }
+                                    }
+                                    null -> Unit
+                                }
+                            } else if (phase.totalCount > 0) {
+                                P { Text("✓ All units in this stage completed.") }
+                            }
+                        }
                     }
                 }
             }
@@ -113,120 +133,90 @@ internal fun ZeroToJapanRoadmapSection(
 /** Interactive study charts for Kana, pronunciation rules, grammar foundations, and survival phrases. */
 @Composable
 internal fun ZeroBeginnerReferenceDesk() {
-    Section(attrs = {
-        style {
-            property("width", "100%")
-            property("text-align", "start")
-            property("overflow-wrap", "anywhere")
+    Section {
+        Div(attrs = { classes("badge-row") }) {
+            Span(attrs = { classes("stage-badge") }) { Text("Always-Open Study Reference") }
         }
-    }) {
-        H2 { Text("Beginner Study Reference Desk (Study Before & During Practice)") }
+        H2 { Text("Beginner Study Reference Desk") }
         P {
-            Text("Starting from zero? Open these reference sheets anytime to study Hiragana & Katakana signs, sentence grammar rules, and essential Japan survival & workplace expressions before testing yourself.")
+            Text("Starting from zero? Open these reference sheets anytime before or during practice to inspect Hiragana & Katakana signs, core grammar patterns, and workplace survival expressions.")
         }
 
-        TagElement<HTMLElement>("details", applyAttrs = {
-            style {
-                property("width", "100%")
-                property("text-align", "start")
-                property("margin-block", "0.5rem")
-                property("overflow-wrap", "anywhere")
-            }
-        }) {
+        TagElement<HTMLElement>("details", applyAttrs = {}) {
             TagElement<HTMLElement>("summary", applyAttrs = {}) {
-                H3 { Text("Reference 1: Hiragana & Katakana Chart + Pronunciation Rules") }
+                H3 { Text("Reference 1: Hiragana & Katakana Visual Chart + Pronunciation Rules") }
             }
-            H3 { Text("Key Pronunciation & Spelling Rules") }
-            for (rule in ZeroBeginnerReference.pronunciationRules) {
-                P { Text("• $rule") }
+            Section {
+                H3 { Text("Key Pronunciation & Spelling Rules") }
+                for (rule in ZeroBeginnerReference.pronunciationRules) {
+                    P { Text("• $rule") }
+                }
             }
-            H3 { Text("Hiragana / Katakana Sign Chart") }
             for (row in ZeroBeginnerReference.kanaRows) {
-                Section(attrs = {
-                    style {
-                        property("border", "1px solid currentColor")
-                        property("border-radius", "0.5rem")
-                        property("padding", "0.75rem")
-                        property("margin-block", "0.5rem")
+                Section(attrs = { classes("kana-row-card") }) {
+                    Div(attrs = { classes("badge-row") }) {
+                        Span(attrs = { classes("stage-badge") }) { Text(row.category) }
                     }
-                }) {
-                    H3 { Text("${row.rowTitle} (${row.category})") }
-                    P {
-                        row.signs.forEachIndexed { index, sign ->
-                            if (index > 0) Text("  ·  ")
-                            Span(attrs = { attr("lang", "ja") }) {
-                                Text("${sign.hiragana} / ${sign.katakana}")
+                    H3 { Text(row.rowTitle) }
+                    Div(attrs = { classes("kana-grid") }) {
+                        for (sign in row.signs) {
+                            Div(attrs = { classes("kana-tile") }) {
+                                Span(attrs = { attr("lang", "ja"); classes("kana-tile__glyph") }) {
+                                    Text("${sign.hiragana} · ${sign.katakana}")
+                                }
+                                Span(attrs = { classes("kana-tile__romaji") }) {
+                                    Text(sign.romaji)
+                                }
                             }
-                            Text(" (${sign.romaji})")
                         }
                     }
                     for (sign in row.signs.filter { it.note != null }) {
                         P {
                             Span(attrs = { attr("lang", "ja") }) { Text("${sign.hiragana} / ${sign.katakana}") }
-                            Text(": ${sign.note}")
+                            Text(" — ${sign.note}")
                         }
                     }
                 }
             }
         }
 
-        TagElement<HTMLElement>("details", applyAttrs = {
-            style {
-                property("width", "100%")
-                property("text-align", "start")
-                property("margin-block", "0.5rem")
-                property("overflow-wrap", "anywhere")
-            }
-        }) {
+        TagElement<HTMLElement>("details", applyAttrs = {}) {
             TagElement<HTMLElement>("summary", applyAttrs = {}) {
                 H3 { Text("Reference 2: Japanese Grammar from 0 (6 Core Sentence Pillars)") }
             }
-            for (card in ZeroBeginnerReference.grammarFoundations) {
-                Section(attrs = {
-                    style {
-                        property("border", "1px solid currentColor")
-                        property("border-radius", "0.5rem")
-                        property("padding", "0.75rem")
-                        property("margin-block", "0.5rem")
+            Div(attrs = { classes("grammar-grid") }) {
+                for (card in ZeroBeginnerReference.grammarFoundations) {
+                    Section {
+                        Div(attrs = { classes("badge-row") }) {
+                            Span(attrs = { classes("stage-badge") }) { Text(card.pattern) }
+                        }
+                        H3 { Text(card.title) }
+                        P { Text(card.explanation) }
+                        P(attrs = { attr("lang", "ja") }) { Text("Example: ${card.exampleSurface}") }
+                        P(attrs = { attr("lang", "ja") }) { Text("Reading: ${card.exampleReading}") }
+                        P { Text("Meaning: ${card.exampleTranslation}") }
                     }
-                }) {
-                    H3 { Text(card.title) }
-                    P { Text("Pattern: ${card.pattern}") }
-                    P { Text(card.explanation) }
-                    P(attrs = { attr("lang", "ja") }) { Text("Example: ${card.exampleSurface}") }
-                    P(attrs = { attr("lang", "ja") }) { Text("Reading: ${card.exampleReading}") }
-                    P { Text("Meaning: ${card.exampleTranslation}") }
                 }
             }
         }
 
-        TagElement<HTMLElement>("details", applyAttrs = {
-            style {
-                property("width", "100%")
-                property("text-align", "start")
-                property("margin-block", "0.5rem")
-                property("overflow-wrap", "anywhere")
-            }
-        }) {
+        TagElement<HTMLElement>("details", applyAttrs = {}) {
             TagElement<HTMLElement>("summary", applyAttrs = {}) {
                 H3 { Text("Reference 3: Workplace Etiquette & Daily Life Survival Phrases") }
             }
-            for (phrase in ZeroBeginnerReference.survivalPhrases) {
-                Section(attrs = {
-                    style {
-                        property("border", "1px solid currentColor")
-                        property("border-radius", "0.5rem")
-                        property("padding", "0.75rem")
-                        property("margin-block", "0.5rem")
+            Div(attrs = { classes("phrase-grid") }) {
+                for (phrase in ZeroBeginnerReference.survivalPhrases) {
+                    Section {
+                        Div(attrs = { classes("badge-row") }) {
+                            Span(attrs = { classes("stage-badge") }) { Text(phrase.category) }
+                        }
+                        H3 {
+                            Span(attrs = { attr("lang", "ja") }) { Text(phrase.surface) }
+                        }
+                        P(attrs = { attr("lang", "ja") }) { Text("Reading: ${phrase.reading}") }
+                        P { Text("Romaji: ${phrase.romaji} · Meaning: ${phrase.meaning}") }
+                        P { Text("When to use: ${phrase.usageNote}") }
                     }
-                }) {
-                    H3 {
-                        Span(attrs = { attr("lang", "ja") }) { Text(phrase.surface) }
-                        Text(" (${phrase.category})")
-                    }
-                    P(attrs = { attr("lang", "ja") }) { Text("Reading: ${phrase.reading}") }
-                    P { Text("Romaji: ${phrase.romaji} · Meaning: ${phrase.meaning}") }
-                    P { Text("When to use: ${phrase.usageNote}") }
                 }
             }
         }

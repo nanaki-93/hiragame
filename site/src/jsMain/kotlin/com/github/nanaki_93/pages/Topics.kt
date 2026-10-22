@@ -346,10 +346,6 @@ private fun CatalogCard(content: @Composable () -> Unit) {
     Section(attrs = {
         classes("topic-card")
         style {
-            property("border", "1px solid currentColor")
-            property("border-radius", "0.75rem")
-            property("padding", "1rem")
-            property("margin-block", "1rem")
             property("text-align", "start")
             property("overflow-wrap", "anywhere")
         }

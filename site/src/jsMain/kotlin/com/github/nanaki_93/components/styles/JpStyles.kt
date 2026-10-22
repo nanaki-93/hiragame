@@ -23,22 +23,22 @@ fun initSiteStyles(ctx: InitSilkContext) {
         }
     }
     ctx.stylesheet.registerStyleBase("body") {
-        Modifier.fontFamily("var(--font-body)")
-            .fontSize(20.px)
-            .lineHeight(2.0)
+        Modifier.fontFamily("var(--font-ui)")
+            .fontSize(16.px)
+            .lineHeight(1.65)
     }
     ctx.theme.modifyStyleBase(HorizontalDividerStyle) { Modifier.fillMaxWidth() }
     // Native practice fields retain the browser's visible focus outline (unlike the legacy inputs).
     ctx.stylesheet.registerStyleBase(".practice-answer") {
-        Modifier.fillMaxWidth().padding(0.8.cssRem).border(2.px, LineStyle.Solid, Colors.Border)
-            .borderRadius(8.px).fontSize(1.cssRem).color(Colors.Text)
+        Modifier.fillMaxWidth().padding(0.75.cssRem, 1.cssRem).border(2.px, LineStyle.Solid, Colors.Border)
+            .borderRadius(10.px).fontSize(1.cssRem).color(Colors.Text)
             .backgroundColor(Colors.CardBackground)
     }
     ctx.stylesheet.registerStyleBase(".practice-choice") {
-        Modifier.display(DisplayStyle.Block).padding(0.5.cssRem).textAlign(TextAlign.Start)
+        Modifier.display(DisplayStyle.Flex).padding(0.75.cssRem, 1.cssRem).textAlign(TextAlign.Start)
     }
     ctx.stylesheet.registerStyleBase(".practice-japanese") {
-        Modifier.fontSize(1.2.cssRem).lineHeight(2.0)
+        Modifier.fontSize(1.5.cssRem).lineHeight(2.0)
     }
     // Keep save controls usable on narrow screens; native radio focus outlines remain intact.
     ctx.stylesheet.registerStyleBase(".save-preferences") {
@@ -49,8 +49,8 @@ fun initSiteStyles(ctx: InitSilkContext) {
         Modifier.display(DisplayStyle.Flex).flexWrap(FlexWrap.Wrap).gap(0.75.cssRem)
     }
     ctx.stylesheet.registerStyleBase(".save-mode-choice") {
-        Modifier.display(DisplayStyle.Flex).alignItems(AlignItems.Center).gap(0.35.cssRem)
-            .padding(0.3.cssRem)
+        Modifier.display(DisplayStyle.Flex).alignItems(AlignItems.Center).gap(0.45.cssRem)
+            .padding(0.4.cssRem, 0.85.cssRem)
     }
 }
 
@@ -74,16 +74,18 @@ object Colors {
 object Base {
     fun card() = Modifier
         .background(Colors.CardBackground)
-        .borderRadius(15.px)
+        .border(1.px, LineStyle.Solid, Colors.Border)
+        .borderRadius(16.px)
         .padding(2.cssRem)
-        .boxShadow(0.px, 4.px, 15.px, color = rgba(0, 0, 0, 0.1))
+        .boxShadow(0.px, 8.px, 24.px, color = rgba(46, 23, 71, 0.08))
 
     fun button() = Modifier
-        .padding(0.8.cssRem)
-        .borderRadius(8.px)
-        .fontWeight(FontWeight.Bold)
+        .padding(0.65.cssRem, 1.15.cssRem)
+        .borderRadius(10.px)
+        .fontSize(0.92.cssRem)
+        .fontWeight(FontWeight.SemiBold)
         .cursor(Cursor.Pointer)
-        .transition(Transition.all(0.3.s))
+        .transition(Transition.all(0.2.s))
         .border(0.px)
         .textAlign(TextAlign.Center)
         .display(DisplayStyle.Flex)
@@ -91,9 +93,9 @@ object Base {
         .justifyContent(JustifyContent.Center)
 
     fun input() = Modifier
-        .padding(0.8.cssRem)
-        .borderRadius(8.px)
-        .border(2.px, LineStyle.Solid, Colors.Border) // Slightly thicker, more modern border
+        .padding(0.75.cssRem, 1.cssRem)
+        .borderRadius(10.px)
+        .border(2.px, LineStyle.Solid, Colors.Border)
         .backgroundColor(Colors.CardBackground)
         .color(Colors.Text)
 
@@ -104,34 +106,34 @@ object Base {
         .fontStyle(style)
         .color(Colors.Text)
 
-    fun headingText() = Modifier.fontFamily("var(--font-heading)").fontWeight(FontWeight.Bold)
-    fun bodyText() = Modifier.fontFamily("var(--font-body)").fontWeight(FontWeight.Normal)
+    fun headingText() = Modifier.fontFamily("var(--font-ui)").fontWeight(FontWeight.Bold)
+    fun bodyText() = Modifier.fontFamily("var(--font-ui)").fontWeight(FontWeight.Normal)
 }
 
 object Styles {
     val GameContainer = CssStyle.base {
         Modifier.fillMaxWidth().background(Colors.Background).minHeight(100.vh)
             .display(DisplayStyle.Flex).justifyContent(JustifyContent.Center)
-            .alignItems(AlignItems.FlexStart).fontFamily("var(--font-body)")
-            .padding(2.cssRem, 1.cssRem)
+            .alignItems(AlignItems.FlexStart).fontFamily("var(--font-ui)")
+            .padding(1.25.cssRem, 1.cssRem)
     }
 
-    val Card = CssStyle.base { Base.card().maxWidth(800.px).width(90.percent).textAlign(TextAlign.Center).color(Colors.Text) }
+    val Card = CssStyle.base { Base.card().maxWidth(960.px).width(100.percent).textAlign(TextAlign.Start).color(Colors.Text) }
     val QuestionCard = CssStyle.base { Base.card().fillMaxWidth().minHeight(200.px) }
     val StatItem = CssStyle.base { Base.card().padding(0.5.cssRem, 1.cssRem).borderRadius(10.px).flexGrow(1).minWidth(100.px).margin(0.25.cssRem).border(1.px, LineStyle.Solid, Colors.Border) }
-    val Title = CssStyle.base { Base.headingText().fontSize(2.5.cssRem).textShadow(2.px, 2.px, 4.px, rgba(0, 0, 0, 0.1)) }
-    val Subtitle = CssStyle.base { Base.headingText().fontSize(1.5.cssRem) }
-    val Question = CssStyle.base { Base.text(4.cssRem, FontWeight.Bold).margin(1.cssRem, 0.px).textShadow(3.px, 3.px, 6.px, rgba(0, 0, 0, 0.1)) }
-    val Prompt = CssStyle.base { Base.text(1.2.cssRem).color(Colors.TextSubtle).margin(1.cssRem, 0.px) }
-    val Label = CssStyle.base { Base.text(0.8.cssRem).color(Colors.TextSubtle) }
-    val TitleLabel = CssStyle.base { Base.text(size = 1.2.cssRem).color(Colors.TextSubtle) }
-    val TitleValue = CssStyle.base { Base.text(size = 1.2.cssRem, weight = FontWeight.Bold) }
-    val NoValue = CssStyle.base { Base.text(1.2.cssRem).color(Colors.Text) }
+    val Title = CssStyle.base { Base.headingText().fontSize(2.25.cssRem) }
+    val Subtitle = CssStyle.base { Base.headingText().fontSize(1.4.cssRem) }
+    val Question = CssStyle.base { Base.text(3.25.cssRem, FontWeight.Bold).margin(0.75.cssRem, 0.px) }
+    val Prompt = CssStyle.base { Base.text(1.1.cssRem).color(Colors.TextSubtle).margin(0.75.cssRem, 0.px) }
+    val Label = CssStyle.base { Base.text(0.85.cssRem).color(Colors.TextSubtle) }
+    val TitleLabel = CssStyle.base { Base.text(size = 1.1.cssRem).color(Colors.TextSubtle) }
+    val TitleValue = CssStyle.base { Base.text(size = 1.1.cssRem, weight = FontWeight.Bold) }
+    val NoValue = CssStyle.base { Base.text(1.1.cssRem).color(Colors.Text) }
 
-    val Value = CssStyle.base { Base.text(1.2.cssRem, FontWeight.Bold) }
-    val Error = CssStyle.base { Base.text(0.9.cssRem, FontWeight.Bold).textAlign(TextAlign.Center).backgroundColor(Colors.Error).color(Colors.Inverse).borderRadius(8.px).padding(0.5.cssRem).boxShadow(0.px, 2.px, 8.px, color =  rgba(0, 0, 0, 0.08)) }
-    val ButtonPrimary = CssStyle.base { Base.button().backgroundColor(Colors.Primary).color(Colors.Inverse).boxShadow(0.px, 4.px, 15.px, color = rgba(0, 0, 0, 0.2)) }
-    val ButtonSecondary = CssStyle.base { Base.button().backgroundColor(Color.transparent).color(Colors.Text).border(2.px, LineStyle.Solid, Colors.Border)  }
+    val Value = CssStyle.base { Base.text(1.1.cssRem, FontWeight.Bold) }
+    val Error = CssStyle.base { Base.text(0.9.cssRem, FontWeight.Bold).textAlign(TextAlign.Center).backgroundColor(Colors.Error).color(Colors.Inverse).borderRadius(8.px).padding(0.5.cssRem).boxShadow(0.px, 2.px, 8.px, color = rgba(0, 0, 0, 0.08)) }
+    val ButtonPrimary = CssStyle.base { Base.button().backgroundColor(Colors.Primary).color(Colors.Inverse).boxShadow(0.px, 4.px, 12.px, color = rgba(46, 23, 71, 0.18)) }
+    val ButtonSecondary = CssStyle.base { Base.button().backgroundColor(Colors.CardBackground).color(Colors.Text).border(1.5.px, LineStyle.Solid, Colors.Border) }
     val ButtonSmall = CssStyle.base { Base.button().padding(0.5.cssRem, 0.8.cssRem).fontSize(0.9.cssRem).minWidth(80.px) }
     val ButtonLink = CssStyle.base { Modifier.backgroundColor(Color.transparent).color(Colors.Primary).textDecorationLine(TextDecorationLine.Underline).fontSize(0.9.cssRem).cursor(Cursor.Pointer) }
     val Input = CssStyle.base { Base.input().fillMaxWidth() }
