@@ -1,0 +1,293 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 13,
+  "id": "lesson-workplace-etiquette-keigo",
+  "topicId": "workplace-etiquette-keigo",
+  "title": "Workplace greetings and polite requests",
+  "situation": "A fictional workplace exchange. Open a request with a polite workplace greeting and cushion phrase before asking a colleague for a quick check.",
+  "communicationGoal": "Open a workplace request with a cushion phrase and ask a colleague for a short check politely.",
+  "difficulty": "beginner",
+  "durationMinutes": 8,
+  "prerequisiteLessonIds": [
+    "lesson-engineering-introduction"
+  ],
+  "dialogue": {
+    "speakers": [
+      {
+        "id": "lesson-workplace-etiquette-keigo-colleague",
+        "name": "Partner",
+        "role": "Coworker"
+      },
+      {
+        "id": "lesson-workplace-etiquette-keigo-learner",
+        "name": "You",
+        "role": "Learner in an illustrative exchange"
+      }
+    ],
+    "turns": [
+      {
+        "id": "lesson-workplace-etiquette-keigo-turn-1",
+        "speakerId": "lesson-workplace-etiquette-keigo-colleague",
+        "text": {
+          "surface": "お疲れ様です。何かありましたか。",
+          "reading": "おつかれさまです。なにかありましたか。",
+          "translation": "Hello, thank you for your hard work. Did something come up?"
+        }
+      },
+      {
+        "id": "lesson-workplace-etiquette-keigo-turn-2",
+        "speakerId": "lesson-workplace-etiquette-keigo-learner",
+        "text": {
+          "surface": "お忙しいところ恐れ入りますが、少しよろしいでしょうか。",
+          "reading": "おいそがしいところおそれいりますが、すこしよろしいでしょうか。",
+          "translation": "I am sorry to interrupt while you are busy, but do you have a moment?"
+        }
+      },
+      {
+        "id": "lesson-workplace-etiquette-keigo-turn-3",
+        "speakerId": "lesson-workplace-etiquette-keigo-colleague",
+        "text": {
+          "surface": "はい、大丈夫ですよ。どうしましたか。",
+          "reading": "はい、だいじょうぶですよ。どうしましたか。",
+          "translation": "Yes, that is fine. How can I help?"
+        }
+      },
+      {
+        "id": "lesson-workplace-etiquette-keigo-turn-4",
+        "speakerId": "lesson-workplace-etiquette-keigo-learner",
+        "text": {
+          "surface": "こちらの設定ファイルをご確認いただけますでしょうか。",
+          "reading": "こちらのせっていふぁいるをごかくにんいただけますでしょうか。",
+          "translation": "Could you please check this configuration file?"
+        }
+      },
+      {
+        "id": "lesson-workplace-etiquette-keigo-turn-5",
+        "speakerId": "lesson-workplace-etiquette-keigo-colleague",
+        "text": {
+          "surface": "承知しました。今から確認しますね。",
+          "reading": "しょうちしました。いまからかくにんしますね。",
+          "translation": "Certainly. I will check it right now."
+        }
+      },
+      {
+        "id": "lesson-workplace-etiquette-keigo-turn-6",
+        "speakerId": "lesson-workplace-etiquette-keigo-learner",
+        "text": {
+          "surface": "ありがとうございます。よろしくお願いいたします。",
+          "reading": "ありがとうございます。よろしくおねがいいたします。",
+          "translation": "Thank you very much. I appreciate your help."
+        }
+      }
+    ]
+  },
+  "phrases": [
+    {
+      "id": "lesson-workplace-etiquette-keigo-phrase-2",
+      "text": {
+        "surface": "お忙しいところ恐れ入りますが、少しよろしいでしょうか。",
+        "reading": "おいそがしいところおそれいりますが、すこしよろしいでしょうか。",
+        "translation": "I am sorry to interrupt while you are busy, but do you have a moment?"
+      },
+      "sourceTurnId": "lesson-workplace-etiquette-keigo-turn-2",
+      "usage": "Open a workplace request with a cushion phrase and ask a colleague for a short check politely.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-workplace-etiquette-keigo-phrase-4",
+      "text": {
+        "surface": "こちらの設定ファイルをご確認いただけますでしょうか。",
+        "reading": "こちらのせっていふぁいるをごかくにんいただけますでしょうか。",
+        "translation": "Could you please check this configuration file?"
+      },
+      "sourceTurnId": "lesson-workplace-etiquette-keigo-turn-4",
+      "usage": "Open a workplace request with a cushion phrase and ask a colleague for a short check politely.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-workplace-etiquette-keigo-phrase-6",
+      "text": {
+        "surface": "ありがとうございます。よろしくお願いいたします。",
+        "reading": "ありがとうございます。よろしくおねがいいたします。",
+        "translation": "Thank you very much. I appreciate your help."
+      },
+      "sourceTurnId": "lesson-workplace-etiquette-keigo-turn-6",
+      "usage": "Open a workplace request with a cushion phrase and ask a colleague for a short check politely.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    }
+  ],
+  "grammarNotes": [
+    {
+      "id": "lesson-workplace-etiquette-keigo-grammar",
+      "explanation": "お忙しいところ恐れ入りますが is a cushion phrase (クッション言葉) that softens a workplace interruption; ご確認いただけますでしょうか is a respectful request for a check.",
+      "examples": [
+        {
+          "surface": "お忙しいところ恐れ入りますが、少しよろしいでしょうか。",
+          "reading": "おいそがしいところおそれいりますが、すこしよろしいでしょうか。",
+          "translation": "I am sorry to interrupt while you are busy, but do you have a moment?"
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lesson-workplace-etiquette-keigo-choice",
+      "type": "choice",
+      "prompt": "Which response directly serves this goal: Open a workplace request with a cushion phrase and ask a colleague for a short check politely.",
+      "options": [
+        {
+          "id": "lesson-workplace-etiquette-keigo-target",
+          "text": {
+            "surface": "お忙しいところ恐れ入りますが、少しよろしいでしょうか。",
+            "reading": "おいそがしいところおそれいりますが、すこしよろしいでしょうか。",
+            "translation": "I am sorry to interrupt while you are busy, but do you have a moment?"
+          }
+        },
+        {
+          "id": "lesson-workplace-etiquette-keigo-acknowledge",
+          "text": {
+            "surface": "分かりました。",
+            "reading": "わかりました。",
+            "translation": "Understood."
+          }
+        }
+      ],
+      "correctOptionId": "lesson-workplace-etiquette-keigo-target",
+      "explanation": "The target response opens the request politely with a cushion phrase and checks availability before asking."
+    },
+    {
+      "id": "lesson-workplace-etiquette-keigo-completion",
+      "type": "completion",
+      "prompt": "Complete the specific response from the dialogue. Use the reviewed word for: confirmation / check.",
+      "template": "こちらの設定ファイルをご{blank}いただけますでしょうか。",
+      "acceptedAnswers": [
+        {
+          "surface": "確認",
+          "reading": "かくにん",
+          "translation": "confirmation / check"
+        },
+        {
+          "surface": "かくにん",
+          "reading": "かくにん",
+          "translation": "confirmation / check (kana)"
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "こちらの設定ファイルをご確認いただけますでしょうか。",
+        "reading": "こちらのせっていふぁいるをごかくにんいただけますでしょうか。",
+        "translation": "Could you please check this configuration file?"
+      },
+      "explanation": "The accepted forms fill this one constrained blank. ご確認いただけますでしょうか is a respectful way to ask a colleague to check an item."
+    },
+    {
+      "id": "lesson-workplace-etiquette-keigo-production",
+      "type": "production",
+      "prompt": "Open a workplace request with a cushion phrase and ask a colleague for a short check politely. Use your own words and truthful or clearly fictional practice details.",
+      "exampleResponses": [
+        {
+          "surface": "お忙しいところ恐れ入りますが、少しよろしいでしょうか。",
+          "reading": "おいそがしいところおそれいりますが、すこしよろしいでしょうか。",
+          "translation": "I am sorry to interrupt while you are busy, but do you have a moment?"
+        },
+        {
+          "surface": "こちらの設定ファイルをご確認いただけますでしょうか。",
+          "reading": "こちらのせっていふぁいるをごかくにんいただけますでしょうか。",
+          "translation": "Could you please check this configuration file?"
+        }
+      ],
+      "criteria": [
+        "I opened with a polite cushion phrase or workplace greeting.",
+        "I stated what I needed checked and closed politely.",
+        "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+      ]
+    }
+  ],
+  "rolePlay": {
+    "task": "Open a workplace request with a cushion phrase and ask a colleague for a short check politely. Respond to a partner, then close with thanks.",
+    "criteria": [
+      "I opened with a polite cushion phrase or workplace greeting.",
+      "I stated what I needed checked and closed politely.",
+      "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+    ],
+    "hints": [
+      "Use the reviewed phrase bank, then hide it for independent practice.",
+      "Ask for repetition or clarification if you are unsure."
+    ],
+    "examples": [
+      {
+        "surface": "お忙しいところ恐れ入りますが、少しよろしいでしょうか。",
+        "reading": "おいそがしいところおそれいりますが、すこしよろしいでしょうか。",
+        "translation": "I am sorry to interrupt while you are busy, but do you have a moment?"
+      },
+      {
+        "surface": "こちらの設定ファイルをご確認いただけますでしょうか。",
+        "reading": "こちらのせっていふぁいるをごかくにんいただけますでしょうか。",
+        "translation": "Could you please check this configuration file?"
+      }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "lesson-workplace-etiquette-keigo-review-phrase",
+      "targetKind": "phrase",
+      "targetId": "lesson-workplace-etiquette-keigo-phrase-2",
+      "skill": "Open a workplace request with a cushion phrase and ask a colleague for a short check politely.",
+      "direction": "meaning-to-japanese"
+    },
+    {
+      "id": "lesson-workplace-etiquette-keigo-review-completion",
+      "targetKind": "exercise",
+      "targetId": "lesson-workplace-etiquette-keigo-completion",
+      "skill": "Open a workplace request with a cushion phrase and ask a colleague for a short check politely.",
+      "direction": "context-to-utterance"
+    }
+  ],
+  "conversationGraph": {
+    "entryNodeId": "lesson-workplace-etiquette-keigo-prompt",
+    "nodes": [
+      {
+        "id": "lesson-workplace-etiquette-keigo-prompt",
+        "type": "prompt",
+        "speakerId": "lesson-workplace-etiquette-keigo-colleague",
+        "text": {
+          "surface": "はい、大丈夫ですよ。どうしましたか。",
+          "reading": "はい、だいじょうぶですよ。どうしましたか。",
+          "translation": "Yes, that is fine. How can I help?"
+        },
+        "nextNodeId": "lesson-workplace-etiquette-keigo-reply"
+      },
+      {
+        "id": "lesson-workplace-etiquette-keigo-reply",
+        "type": "completionInteraction",
+        "exerciseId": "lesson-workplace-etiquette-keigo-completion",
+        "feedback": "You expressed the target intent using the constrained example. Read the partner’s response next.",
+        "nextNodeId": "lesson-workplace-etiquette-keigo-follow"
+      },
+      {
+        "id": "lesson-workplace-etiquette-keigo-follow",
+        "type": "prompt",
+        "speakerId": "lesson-workplace-etiquette-keigo-colleague",
+        "text": {
+          "surface": "承知しました。今から確認しますね。",
+          "reading": "しょうちしました。いまからかくにんしますね。",
+          "translation": "Certainly. I will check it right now."
+        },
+        "nextNodeId": "lesson-workplace-etiquette-keigo-end"
+      },
+      {
+        "id": "lesson-workplace-etiquette-keigo-end",
+        "type": "terminal",
+        "message": "The partner responded. Try the remaining exchange in your own words and self-assess your communication goal."
+      }
+    ]
+  },
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-03",
+    "reviewNote": "o04-expansion.md",
+    "provenance": "Original agent-authored instructional scenario and text; no external lesson passage or audio copied.",
+    "rights": "publishable",
+    "rightsBasis": "Original project-authored text approved publishable; no third-party passage or recording included."
+  }
+}

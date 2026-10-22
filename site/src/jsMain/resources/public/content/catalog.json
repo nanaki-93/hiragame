@@ -68,6 +68,16 @@
       "description": "Describe a real project and your contribution without inventing experience."
     },
     {
+      "id": "workplace-etiquette-keigo",
+      "title": "Workplace greetings and polite requests",
+      "description": "Open a workplace request with a cushion phrase and ask a colleague for a short check politely."
+    },
+    {
+      "id": "workplace-async-handover",
+      "title": "Written status updates and handovers",
+      "description": "Share a written status handover with completed work, remaining scope, and next steps."
+    },
+    {
       "id": "life-transport",
       "title": "Transport questions",
       "description": "Confirm a destination and platform in an illustrative station exchange."
@@ -518,6 +528,18 @@
       "topicId": "workplace-technical-interview",
       "kind": "lesson",
       "path": "lessons/lesson-technical-interview.json"
+    },
+    {
+      "id": "lesson-workplace-etiquette-keigo",
+      "topicId": "workplace-etiquette-keigo",
+      "kind": "lesson",
+      "path": "lessons/lesson-workplace-etiquette-keigo.json"
+    },
+    {
+      "id": "lesson-async-status-handover",
+      "topicId": "workplace-async-handover",
+      "kind": "lesson",
+      "path": "lessons/lesson-async-status-handover.json"
     },
     {
       "id": "lesson-transport",

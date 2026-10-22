@@ -66,7 +66,7 @@ class LessonPlayerIntegrationTest {
         val injected = source()
         val loader = BundledContentLoader(injected)
         val bundle = assertIs<CatalogLoad.Ready>(loader.load()).content
-        assertEquals(17, bundle.lessons.size)
+        assertEquals(19, bundle.lessons.size)
         assertEquals(lessonEntries.map { it.getValue("id").jsonPrimitive.content }, bundle.lessons.keys.toList())
         for ((id, lesson) in bundle.lessons) {
             val progress = owner()

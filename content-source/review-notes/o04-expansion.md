@@ -321,3 +321,62 @@ Reviewed `lesson-clinic-pharmacy-reply`: meaning, reading, translation, register
 Reviewed `lesson-clinic-pharmacy-follow`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
 Reviewed `lesson-clinic-pharmacy-end`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
 
+Reviewed on 2026-10-03 by an agent. Scope: `lesson-workplace-etiquette-keigo`.
+
+Provenance: original instructional exchange, approved publishable. Review metadata inherited by every nested item. お忙しいところ恐れ入りますが softens a workplace interruption; ご確認いただけますでしょうか is a respectful request for a check. Full readings and English meanings checked by the agent; kana variants are constrained practice spellings, not claims of preferred written style. No recording is referenced.
+
+Reviewed `lesson-workplace-etiquette-keigo`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-colleague`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-learner`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-turn-1`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-turn-2`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-turn-3`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-turn-4`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-turn-5`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-turn-6`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-phrase-2`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-phrase-4`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-phrase-6`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-grammar`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-choice`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-target`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-acknowledge`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-completion`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-production`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-review-phrase`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-review-completion`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-prompt`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-reply`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-follow`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-workplace-etiquette-keigo-end`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+
+Reviewed on 2026-10-03 by an agent. Scope: `lesson-async-status-handover`.
+
+Provenance: original instructional exchange, approved publishable. Review metadata inherited by every nested item. 〜は完了しました states what is finished; 〜が残っています states what still remains to be done. Full readings and English meanings checked by the agent; kana variants are constrained practice spellings, not claims of preferred written style. No recording is referenced.
+
+Reviewed `lesson-async-status-handover`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-colleague`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-learner`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-turn-1`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-turn-2`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-turn-3`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-turn-4`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-turn-5`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-turn-6`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-phrase-2`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-phrase-4`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-phrase-6`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-grammar`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-choice`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-target`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-acknowledge`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-completion`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-production`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-review-phrase`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-review-completion`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-prompt`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-reply`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-follow`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+Reviewed `lesson-async-status-handover-end`: meaning, reading, translation, register, communication intent and references checked; approved publishable.
+
+

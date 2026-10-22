@@ -1,0 +1,293 @@
+{
+  "formatVersion": 1,
+  "contentVersion": 13,
+  "id": "lesson-async-status-handover",
+  "topicId": "workplace-async-handover",
+  "title": "Written status updates and handovers",
+  "situation": "A fictional workplace message exchange. Share a concise written handover with what is finished, what remains, and the next action.",
+  "communicationGoal": "Share a written status handover with completed work, remaining scope, and next steps.",
+  "difficulty": "beginner",
+  "durationMinutes": 8,
+  "prerequisiteLessonIds": [
+    "lesson-daily-update-blocker"
+  ],
+  "dialogue": {
+    "speakers": [
+      {
+        "id": "lesson-async-status-handover-colleague",
+        "name": "Partner",
+        "role": "Coworker"
+      },
+      {
+        "id": "lesson-async-status-handover-learner",
+        "name": "You",
+        "role": "Learner in an illustrative exchange"
+      }
+    ],
+    "turns": [
+      {
+        "id": "lesson-async-status-handover-turn-1",
+        "speakerId": "lesson-async-status-handover-colleague",
+        "text": {
+          "surface": "お疲れ様です。今日の進捗を共有してもらえますか。",
+          "reading": "おつかれさまです。きょうのしんちょくをきょうゆうしてもらえますか。",
+          "translation": "Hello. Could you share today's progress?"
+        }
+      },
+      {
+        "id": "lesson-async-status-handover-turn-2",
+        "speakerId": "lesson-async-status-handover-learner",
+        "text": {
+          "surface": "はい、ログイン画面の修正は完了しました。",
+          "reading": "はい、ろぐいんがめんのしゅうせいわかんりょうしました。",
+          "translation": "Yes, the fix for the login screen is complete."
+        }
+      },
+      {
+        "id": "lesson-async-status-handover-turn-3",
+        "speakerId": "lesson-async-status-handover-colleague",
+        "text": {
+          "surface": "ありがとうございます。残りの作業は何ですか。",
+          "reading": "ありがとうございます。のこりのさぎょうわなんですか。",
+          "translation": "Thank you. What work remains?"
+        }
+      },
+      {
+        "id": "lesson-async-status-handover-turn-4",
+        "speakerId": "lesson-async-status-handover-learner",
+        "text": {
+          "surface": "テスト環境での確認が残っています。",
+          "reading": "てすとかんきょうでのかくにんがのこっています。",
+          "translation": "Verification in the test environment remains."
+        }
+      },
+      {
+        "id": "lesson-async-status-handover-turn-5",
+        "speakerId": "lesson-async-status-handover-colleague",
+        "text": {
+          "surface": "分かりました。いつ頃確認できそうですか。",
+          "reading": "わかりました。いつごろかくにんできそうですか。",
+          "translation": "Understood. Around when do you expect to check it?"
+        }
+      },
+      {
+        "id": "lesson-async-status-handover-turn-6",
+        "speakerId": "lesson-async-status-handover-learner",
+        "text": {
+          "surface": "明日の午前中に確認して共有します。",
+          "reading": "あしたのごぜんちゅうにかくにんしてきょうゆうします。",
+          "translation": "I will check it tomorrow morning and share the result."
+        }
+      }
+    ]
+  },
+  "phrases": [
+    {
+      "id": "lesson-async-status-handover-phrase-2",
+      "text": {
+        "surface": "はい、ログイン画面の修正は完了しました。",
+        "reading": "はい、ろぐいんがめんのしゅうせいわかんりょうしました。",
+        "translation": "Yes, the fix for the login screen is complete."
+      },
+      "sourceTurnId": "lesson-async-status-handover-turn-2",
+      "usage": "Share a written status handover with completed work, remaining scope, and next steps.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-async-status-handover-phrase-4",
+      "text": {
+        "surface": "テスト環境での確認が残っています。",
+        "reading": "てすとかんきょうでのかくにんがのこっています。",
+        "translation": "Verification in the test environment remains."
+      },
+      "sourceTurnId": "lesson-async-status-handover-turn-4",
+      "usage": "Share a written status handover with completed work, remaining scope, and next steps.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    },
+    {
+      "id": "lesson-async-status-handover-phrase-6",
+      "text": {
+        "surface": "明日の午前中に確認して共有します。",
+        "reading": "あしたのごぜんちゅうにかくにんしてきょうゆうします。",
+        "translation": "I will check it tomorrow morning and share the result."
+      },
+      "sourceTurnId": "lesson-async-status-handover-turn-6",
+      "usage": "Share a written status handover with completed work, remaining scope, and next steps.",
+      "register": "Polite illustrative exchange; adapt to the relationship."
+    }
+  ],
+  "grammarNotes": [
+    {
+      "id": "lesson-async-status-handover-grammar",
+      "explanation": "〜は完了しました states what is finished; 〜が残っています states what still remains to be done before a task is truly complete.",
+      "examples": [
+        {
+          "surface": "テスト環境での確認が残っています。",
+          "reading": "てすとかんきょうでのかくにんがのこっています。",
+          "translation": "Verification in the test environment remains."
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "lesson-async-status-handover-choice",
+      "type": "choice",
+      "prompt": "Which response directly serves this goal: Share a written status handover with completed work, remaining scope, and next steps.",
+      "options": [
+        {
+          "id": "lesson-async-status-handover-target",
+          "text": {
+            "surface": "はい、ログイン画面の修正は完了しました。",
+            "reading": "はい、ろぐいんがめんのしゅうせいわかんりょうしました。",
+            "translation": "Yes, the fix for the login screen is complete."
+          }
+        },
+        {
+          "id": "lesson-async-status-handover-acknowledge",
+          "text": {
+            "surface": "分かりました。",
+            "reading": "わかりました。",
+            "translation": "Understood."
+          }
+        }
+      ],
+      "correctOptionId": "lesson-async-status-handover-target",
+      "explanation": "The target response states the specific completed work clearly."
+    },
+    {
+      "id": "lesson-async-status-handover-completion",
+      "type": "completion",
+      "prompt": "Complete the specific response from the dialogue. Use the reviewed word for: fix / revision.",
+      "template": "はい、ログイン画面の{blank}は完了しました。",
+      "acceptedAnswers": [
+        {
+          "surface": "修正",
+          "reading": "しゅうせい",
+          "translation": "fix / revision"
+        },
+        {
+          "surface": "しゅうせい",
+          "reading": "しゅうせい",
+          "translation": "fix / revision (kana)"
+        }
+      ],
+      "expectedCompletedExample": {
+        "surface": "はい、ログイン画面の修正は完了しました。",
+        "reading": "はい、ろぐいんがめんのしゅうせいわかんりょうしました。",
+        "translation": "Yes, the fix for the login screen is complete."
+      },
+      "explanation": "The accepted forms fill this one constrained blank. 修正は完了しました reports that the code fix is complete."
+    },
+    {
+      "id": "lesson-async-status-handover-production",
+      "type": "production",
+      "prompt": "Share a written status handover with completed work, remaining scope, and next steps. Use your own words and truthful or clearly fictional practice details.",
+      "exampleResponses": [
+        {
+          "surface": "はい、ログイン画面の修正は完了しました。",
+          "reading": "はい、ろぐいんがめんのしゅうせいわかんりょうしました。",
+          "translation": "Yes, the fix for the login screen is complete."
+        },
+        {
+          "surface": "テスト環境での確認が残っています。明日の午前中に確認して共有します。",
+          "reading": "てすとかんきょうでのかくにんがのこっています。あしたのごぜんちゅうにかくにんしてきょうゆうします。",
+          "translation": "Verification in the test environment remains. I will check it tomorrow morning and share the result."
+        }
+      ],
+      "criteria": [
+        "I stated what part of the task is complete.",
+        "I separated remaining verification or work from what is already done and stated the next step.",
+        "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+      ]
+    }
+  ],
+  "rolePlay": {
+    "task": "Share a written status handover with completed work, remaining scope, and next steps. Respond to a partner, then state when you will share the next update.",
+    "criteria": [
+      "I stated what part of the task is complete.",
+      "I separated remaining verification or work from what is already done and stated the next step.",
+      "I used my own truthful or explicitly fictional practice details; examples are not the only valid responses."
+    ],
+    "hints": [
+      "Use the reviewed phrase bank, then hide it for independent practice.",
+      "Ask for repetition or clarification if you are unsure."
+    ],
+    "examples": [
+      {
+        "surface": "はい、ログイン画面の修正は完了しました。",
+        "reading": "はい、ろぐいんがめんのしゅうせいわかんりょうしました。",
+        "translation": "Yes, the fix for the login screen is complete."
+      },
+      {
+        "surface": "テスト環境での確認が残っています。明日の午前中に確認して共有します。",
+        "reading": "てすとかんきょうでのかくにんがのこっています。あしたのごぜんちゅうにかくにんしてきょうゆうします。",
+        "translation": "Verification in the test environment remains. I will check it tomorrow morning and share the result."
+      }
+    ]
+  },
+  "reviewItems": [
+    {
+      "id": "lesson-async-status-handover-review-phrase",
+      "targetKind": "phrase",
+      "targetId": "lesson-async-status-handover-phrase-2",
+      "skill": "Share a written status handover with completed work, remaining scope, and next steps.",
+      "direction": "meaning-to-japanese"
+    },
+    {
+      "id": "lesson-async-status-handover-review-completion",
+      "targetKind": "exercise",
+      "targetId": "lesson-async-status-handover-completion",
+      "skill": "Share a written status handover with completed work, remaining scope, and next steps.",
+      "direction": "context-to-utterance"
+    }
+  ],
+  "conversationGraph": {
+    "entryNodeId": "lesson-async-status-handover-prompt",
+    "nodes": [
+      {
+        "id": "lesson-async-status-handover-prompt",
+        "type": "prompt",
+        "speakerId": "lesson-async-status-handover-colleague",
+        "text": {
+          "surface": "お疲れ様です。今日の進捗を共有してもらえますか。",
+          "reading": "おつかれさまです。きょうのしんちょくをきょうゆうしてもらえますか。",
+          "translation": "Hello. Could you share today's progress?"
+        },
+        "nextNodeId": "lesson-async-status-handover-reply"
+      },
+      {
+        "id": "lesson-async-status-handover-reply",
+        "type": "completionInteraction",
+        "exerciseId": "lesson-async-status-handover-completion",
+        "feedback": "You expressed the target intent using the constrained example. Read the partner’s response next.",
+        "nextNodeId": "lesson-async-status-handover-follow"
+      },
+      {
+        "id": "lesson-async-status-handover-follow",
+        "type": "prompt",
+        "speakerId": "lesson-async-status-handover-colleague",
+        "text": {
+          "surface": "ありがとうございます。残りの作業は何ですか。",
+          "reading": "ありがとうございます。のこりのさぎょうわなんですか。",
+          "translation": "Thank you. What work remains?"
+        },
+        "nextNodeId": "lesson-async-status-handover-end"
+      },
+      {
+        "id": "lesson-async-status-handover-end",
+        "type": "terminal",
+        "message": "The partner responded. Try the remaining exchange in your own words and self-assess your communication goal."
+      }
+    ]
+  },
+  "review": {
+    "status": "reviewed",
+    "reviewerType": "agent",
+    "reviewDate": "2026-10-03",
+    "reviewNote": "o04-expansion.md",
+    "provenance": "Original agent-authored instructional scenario and text; no external lesson passage or audio copied.",
+    "rights": "publishable",
+    "rightsBasis": "Original project-authored text approved publishable; no third-party passage or recording included."
+  }
+}

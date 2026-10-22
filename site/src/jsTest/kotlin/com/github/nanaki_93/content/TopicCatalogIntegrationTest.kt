@@ -106,7 +106,7 @@ class TopicCatalogIntegrationTest {
         try {
             val initial = view(content, progress)
             assertEquals(starterIds + seedId, initial.cards.take(6).map { it.lessonId })
-            assertEquals(17, initial.topics.sumOf { it.cards.size })
+            assertEquals(19, initial.topics.sumOf { it.cards.size })
             assertEquals(listOf(
                 "Introduce yourself, your engineering role, and relevant experience, then invite a colleague to share their work.",
                 "Request clarification and confirm an interpretation of a teammate's request without assuming the task is to make a change.",
@@ -144,7 +144,7 @@ class TopicCatalogIntegrationTest {
 
     @Test fun manifestKindsAndLaterInvalidDocumentsNeverPublishPartialContent() = runTest {
         val lessonOnly = loaded(source(manifestFor(entries.filter { it.getValue("kind").jsonPrimitive.content == "lesson" })))
-        assertEquals(17, lessonOnly.lessons.size)
+        assertEquals(19, lessonOnly.lessons.size)
         assertTrue(lessonOnly.practiceSets.isEmpty())
         val practiceOnly = assertIs<CatalogLoad.Ready>(BundledContentLoader(source(
             manifestFor(entries.filter { it.getValue("kind").jsonPrimitive.content == "practice" }))).load()).content
@@ -165,7 +165,7 @@ class TopicCatalogIntegrationTest {
             } finally { noLessons.dispose() }
         }
         val mixed = loaded()
-        assertTrue(mixed.practiceSets.isNotEmpty() && mixed.lessons.size == 17)
+        assertTrue(mixed.practiceSets.isNotEmpty() && mixed.lessons.size == 19)
         val last = entries.last().getValue("path").jsonPrimitive.content
         val broken = source(overrides = mapOf(last to "<html>not a document</html>"))
         val coordinator = LocalCatalogCoordinator(this, BundledContentLoader(broken))
@@ -331,7 +331,7 @@ class TopicCatalogIntegrationTest {
             assertIs<PersistenceStatus.MemoryOnly>(progress.state.value.status)
             assertNull(backing.raw)
             assertFalse(progress.state.value.snapshot.preferences.showTranslation)
-            assertEquals(17, view(content, progress).cards.size)
+            assertEquals(19, view(content, progress).cards.size)
         } finally { progress.dispose() }
 
         val protectedBacking = MemoryProgressBacking("invalid original")
@@ -340,7 +340,7 @@ class TopicCatalogIntegrationTest {
             protected.mutate { changePreferences(it, it.preferences.copy(showRomaji = true)) }
             assertIs<PersistenceStatus.Protected>(protected.state.value.status)
             assertEquals("invalid original", protectedBacking.raw)
-            assertEquals(17, view(content, protected).cards.size)
+            assertEquals(19, view(content, protected).cards.size)
             assertEquals(ReplacementPreparation.Blocked, protected.beginReset(ResetScope.PROGRESS_ONLY))
         } finally { protected.dispose() }
 
@@ -353,7 +353,7 @@ class TopicCatalogIntegrationTest {
             val stored = shared.raw
             stale.mutate { changePreferences(it, it.preferences.copy(showReadings = false)) }
             assertEquals(stored, shared.raw)
-            assertEquals(17, view(content, stale).cards.size)
+            assertEquals(19, view(content, stale).cards.size)
             assertEquals(ReplacementPreparation.Blocked, stale.beginReset(ResetScope.FULL_LEARNER_STATE))
             assertTrue(stale.reloadSavedState())
             assertTrue(stale.state.value.snapshot.preferences.showRomaji)
@@ -381,7 +381,7 @@ class TopicCatalogIntegrationTest {
         }
         coordinator.load(); runCurrent()
         coordinator.retryLoad(); runCurrent()
-        assertEquals(17, assertIs<LocalCatalogState.Ready>(coordinator.state.value).content.lessons.size)
+        assertEquals(19, assertIs<LocalCatalogState.Ready>(coordinator.state.value).content.lessons.size)
         late.complete(CatalogLoad.Empty(EmptyContentReason.EMPTY_CATALOG)); runCurrent()
         assertIs<LocalCatalogState.Ready>(coordinator.state.value)
         coordinator.dispose()

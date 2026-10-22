@@ -6,7 +6,8 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 CONTENT = ROOT / "site/src/jsMain/resources/public/content"
 SLUGS = ("requirements-clarification", "estimates-deadlines", "incident-report", "design-tradeoffs",
-         "technical-interview", "transport", "housing-viewing", "appointment-change", "administration-questions",
+         "technical-interview", "workplace-etiquette-keigo", "async-status-handover",
+         "transport", "housing-viewing", "appointment-change", "administration-questions",
          "konbini-dining", "clinic-pharmacy")
 
 
@@ -15,7 +16,7 @@ class CurriculumExpansionTest(unittest.TestCase):
         catalog = json.loads((CONTENT / "catalog.json").read_text())
         topics = {t["id"]: t for t in catalog["topics"]}
         entries = {e["id"]: e for e in catalog["entries"] if e["kind"] == "lesson"}
-        self.assertEqual(17, len(entries))
+        self.assertEqual(19, len(entries))
         for index, slug in enumerate(SLUGS):
             with self.subTest(slug=slug):
                 doc = json.loads((CONTENT / entries["lesson-" + slug]["path"]).read_text())
@@ -30,7 +31,7 @@ class CurriculumExpansionTest(unittest.TestCase):
                 self.assertEqual(2, len(doc["reviewItems"]))
                 self.assertEqual("terminal", doc["conversationGraph"]["nodes"][-1]["type"])
                 self.assertTrue(doc["rolePlay"]["criteria"] and doc["rolePlay"]["examples"])
-                self.assertEqual(index < 5, bool(doc["prerequisiteLessonIds"]))
+                self.assertEqual(index < 7, bool(doc["prerequisiteLessonIds"]))
                 self.assertTrue(all(prerequisite in entries for prerequisite in doc["prerequisiteLessonIds"]))
                 self.assertEqual("agent", doc["review"]["reviewerType"])
                 self.assertEqual("o04-expansion.md", doc["review"]["reviewNote"])
